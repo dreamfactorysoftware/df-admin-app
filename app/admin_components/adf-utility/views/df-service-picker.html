@@ -1,0 +1,39 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <a data-toggle="collapse" data-target="#select-service-body">
+            <h4 class="panel-title">Select Service</h4>
+        </a>
+    </div>
+    <div id="select-service-body" class="panel-collapse collapse in">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <select class="form-control" data-ng-model="activeService"
+                                    data-ng-options="service.api_name as service.name for service in services">
+                                <option value="">-- Select Service --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <select class="form-control" data-ng-model="activeResource"
+                                    data-ng-options="resource.name as resource.label for resource in resources" data-ng-disabled="(!activeService || activeService == null) || resources.length == 0">
+                                <option value="">-- Select Resource --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-default" data-ng-click="setServiceAndResource()">Set
+                                Service
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        Select Services for Export
+    </div>
+
+    <div style="height: 300px; overflow-x:scroll" class="package-export-table">
+        <table class="table table-hover table-condensed table-striped table-bordered">
+            <tbody>
+            <tr data-ng-repeat="service in services" data-ng-class="service.__dfUI.selected ? 'info' : ''">
+                <td>
+
+                    <input type="checkbox" data-ng-checked="service.__dfUI.selected" data-ng-model="service.__dfUI.selected" data-ng-disabled="!selectedApp"/>
+
+                </td>
+                <td>
+                    {{service.record.name}}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

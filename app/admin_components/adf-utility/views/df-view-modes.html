@@ -1,0 +1,17 @@
+<div class="btn-group btn-group-sm pull-right">
+    <button type="button" class="btn btn-default"
+            data-ng-click="toggleViewMode(0)"
+            data-ng-class="currentViewMode === 'list' ? 'active' : ''" title="List view">
+        <i class="fa fa-fw fa-bars"></i>
+    </button>
+    <button type="button" class="btn btn-default"
+            data-ng-click="toggleViewMode(1)"
+            data-ng-class="currentViewMode === 'thumbnails' ? 'active' : ''" title="Thumbnail view">
+        <i class="fa fa-fw fa-th"></i>
+    </button>
+    <button type="button" class="btn btn-default"
+            data-ng-click="toggleViewMode(2)"
+            data-ng-class="currentViewMode === 'table' ? 'active' : ''" title="Table view">
+        <i class="fa fa-fw fa-table"></i>
+    </button>
+</div>

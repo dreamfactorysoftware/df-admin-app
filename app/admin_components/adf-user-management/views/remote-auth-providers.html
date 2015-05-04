@@ -1,0 +1,13 @@
+<div class="remote-login-providers">
+
+    <p data-ng-if="providers.length > 0">Login with a third party account.<i>Not working yet.</i></p>
+    <p data-ng-if="providers.length === 0">No remote login providers available.</p>
+   <!-- <button type="button" class="btn btn-primary btn-sm" data-ng-click="loginWithProvider()"><i class="fa fa-fw fa-facebook-square"></i></button>
+    <button type="button" class="btn btn-primary btn-sm" data-ng-click="loginWithProvider()"><i class="fa fa-fw fa-git-square"></i></button>
+    <button type="button" class="btn btn-primary btn-sm" data-ng-click="loginWithProvider()"><i class="fa fa-fw fa-twitter-square"></i></button>-->
+
+
+    <!-- Google Plus Provider name needs to be worked out on server so I don't have to change it on the client -->
+    <a data-ng-if="provider.is_active && provider.is_login_provider" data-ng-click="loginWithProvider(provider)" data-ng-repeat="provider in providers"><i class="fa fa-fw fa-2x fa-{{provider.api_name}}-square"></i></a>
+
+</div>

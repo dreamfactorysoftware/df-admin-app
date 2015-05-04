@@ -1,0 +1,38 @@
+<hr class="df-table-divider" />
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <a data-toggle="collapse" data-target="#child-table-body">
+            <h4 class="panel-title">Related Child Table</h4>
+        </a>
+    </div>
+
+    <div id="child-table-body" class="panel-collapse collapse in">
+        <div class="panel-body">
+
+            <div class="form-group">
+                <div class="well well-sm ">
+                    <div class="row">
+                        <div class="col-xs-10 col-sm-6" >
+                            <select class="form-control input-sm" data-ng-model="childRecordsBy" data-ng-options="obj as obj.name for obj in parentSchema.related">
+                                <option value="">-- Select One --</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-2 col-sm-1 col-sm-offset-5">
+                            <div class="btn-group pull-right">
+                                <button type="button" class="btn btn-default btn-sm" data-ng-click="closeChildTable()">close</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <df-table data-options="options"></df-table>
+        </div>
+    </div>
+</div>
+
+
+
+
+

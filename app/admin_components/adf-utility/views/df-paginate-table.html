@@ -1,0 +1,26 @@
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="btn-group">
+            <button type="button" data-ng-class="_isFirstPage() ? 'disabled' : ''"
+                    class="btn btn-default btn-sm"
+                    data-ng-disabled="disableTableBtns"
+                    data-ng-click="getPrevious()" title="Previous page"><i class="fa fa-fw fa-backward"></i>
+            </button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" data-ng-disabled="disableTableBtns" title="Select page">
+                    <span class="hidden-sm hidden-xs">Page</span> {{currentPage.number}} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li data-ng-repeat="page in pagesArr"><a data-ng-click="getPage(page)"><span class="hidden-sm hidden-xs">Page</span>
+                        {{page.number}}</a></li>
+
+                </ul>
+            </div>
+            <button type="button" data-ng-class="_isLastPage() ? 'disabled' : ''"
+                    class="btn btn-default btn-sm"
+                    data-ng-disabled="disableTableBtns"
+                    data-ng-click="getNext()" title="Next page"><i class="fa fa-fw fa-forward"></i>
+            </button>
+        </div>
+    </div>
+</div>

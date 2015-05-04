@@ -1,0 +1,24 @@
+{
+  "name": "dreamfactory-user-management",
+  "version": "2.1.1",
+  "homepage": "https://github.com/dreamfactorysoftware/angular_dreamfactory_user_management_module",
+  "authors": [
+    "Michael Mandato <michaelmandato@dreamfactory.com>"
+  ],
+  "description": "AngularJS module that authenticates and manages a single user for the DreamFactory Services Platform.",
+  "main": "dreamfactory-user-management.js",
+  "keywords": [
+    "AngularJS",
+    "DreamFactory",
+    "User",
+    "Management"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

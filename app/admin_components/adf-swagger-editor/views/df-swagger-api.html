@@ -1,0 +1,22 @@
+<div >
+    <div class="swagger-heading" data-ng-click="toggleApi()">
+        <h5>{{api.record.path}}</h5>
+    </div>
+
+    <div data-ng-if="apiVisible" class="swagger-body">
+        <div class="form-group">
+            <label>Api Path</label>
+            <input type="text" class="form-control" data-ng-model="api.record.path" placeholder="Enter Api Path" />
+        </div>
+
+        <div class="form-group">
+            <label>Api Description</label>
+            <input type="text" class="form-control" data-ng-model="api.record.description" placeholder="Enter Api Description" />
+        </div>
+
+
+        <div class="form-group">
+            <df-swagger-operations data-operations-data="api.record.operations"></df-swagger-operations>
+        </div>
+    </div>
+</div>

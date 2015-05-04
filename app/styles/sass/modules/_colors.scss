@@ -1,0 +1,33 @@
+
+//
+//$brand-primary: orange;
+$brand-secondary: red;
+$brand-black: black;
+$brand-grey: #888;
+$brand-white: white;
+
+$dark-blue: #272B33;
+$medium-blue: #53555E;
+$medium-light-blue: lighten($medium-blue, 50%);
+$medium-dark-blue: lighten($dark-blue, 20%);
+
+
+
+/*$dark-blue: #141d27;
+$medium-blue: #2c3e50;
+$medium-light-blue: lighten($medium-blue, 50%);
+$medium-dark-blue: lighten($dark-blue, 20%);*/
+
+
+$brand-primary-light: lighten($brand-primary, 20%);
+$brand-primary-dark: darken($brand-primary, 20%);
+
+$brand-secondary-light: lighten($brand-secondary, 50%);
+$brand-secondary-dark: darken($brand-secondary, 50%);
+
+$brand-grey-light: lighten($brand-grey, 30%);
+$brand-grey-dark: darken($brand-grey, 50%);
+$brand-grey-medium-light: lighten($brand-grey, 20%);
+$brand-grey-medium-dark: darken($brand-grey, 20%);
+
+$link-hover-background: rgba(255,255,255,.2);

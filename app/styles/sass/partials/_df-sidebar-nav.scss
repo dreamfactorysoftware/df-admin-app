@@ -1,0 +1,68 @@
+
+
+.df-sidebar-nav {
+
+  z-index: 1001;
+  position: relative;
+ // background: $gray-lighter;
+
+
+  @media screen and (max-width: $break-small) {
+
+    background: none !important;
+    height: 0 !important;
+  }
+
+  .nav-pills {
+
+    width: 100%;
+
+
+    li > a {
+
+      border-radius: $border-radius-base;
+
+    }
+
+    li > a:hover {
+
+      background: $gray-dark;
+      color: $gray-light;
+
+    }
+
+    li.active > a {
+
+
+    }
+
+    li.active > a:hover {
+
+
+    }
+  }
+}
+
+
+#sidebar-open {
+  position: absolute;
+  top: -43px;
+  left: 15px;
+}
+
+#sidebar-flyout-panel{
+  height: 100%;
+  background: $gray-lighter !important;
+}
+
+.df-flyout-menu-left {
+  position:fixed;
+  left: -300px;
+  top: $navbar-height;
+  bottom: 0;
+  width: 300px;
+  z-index: 2000;
+}
+
+
+

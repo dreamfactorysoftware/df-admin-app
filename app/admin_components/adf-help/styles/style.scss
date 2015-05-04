@@ -1,0 +1,56 @@
+
+.help-container {
+
+  display: inline;
+  position: absolute;
+}
+
+.help-left {
+
+  margin-right: 10px;
+}
+
+.help-right {
+
+  margin-left: 10px;
+}
+
+.help-box {
+
+  display: none;
+
+}
+
+.dfp-left-top {
+
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10001;
+}
+
+
+.dfp-left-bottom {
+
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10001;
+}
+
+
+.dfp-right-top {
+
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 10001;
+}
+
+.dfp-right-bottom {
+
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10001;
+}

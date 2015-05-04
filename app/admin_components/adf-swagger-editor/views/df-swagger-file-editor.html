@@ -1,0 +1,11 @@
+<p>Swagger File Editor</p>
+
+<df-section-toolbar>
+    <div class="btn-group btn-group-sm">
+        <button type="button" class="btn btn-default" data-ng-click="saveSwaggerFile()">Save</button>
+    </div>
+</df-section-toolbar>
+
+<div class="col-xs-12">
+    <df-ace-editor data-direct-data="currentFile" data-is-editable="isEditable" data-is-clean="isEditorClean" data-current-editor="currentEditor"></df-ace-editor>
+</div>

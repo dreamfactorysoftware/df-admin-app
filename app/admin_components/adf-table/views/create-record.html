@@ -1,0 +1,60 @@
+<div class="row">
+    <div class="col-xs-12">
+        <form data-ng-submit="saveNewRecord()">
+            <div class="well well-sm df-toolbar">
+                <div class="btn-toolbar">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-sm" data-ng-click="closeCreateRecord()">Close</button>
+                        <button type="submit" class="btn btn-default btn-sm">Save</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="df-progress-border df-progress-margin">
+                <div class="progress " data-ng-class="inProgress ? 'progress-striped active' : ''"
+                     style="width: 100%; height: 8px; margin-bottom: 0;">
+                    <div class=""
+                         data-ng-class="inProgress ? 'progress-bar' : ''"
+                         role="progressbar" aria-valuenow="100"
+                         aria-valuemin="100" aria-valuemax="100" style="width: 100%"></div>
+                </div>
+            </div>
+            <div><!-- | dfFilterFormSchema: excludedFields : 'create' | dfGroupFormSchema: options.groupFields-->
+                <div data-ng-repeat="fieldGroup in groupedSchema">
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <a data-toggle="collapse" data-target="#{{fieldGroup.name}}-body">
+                                <h4 class="panel-title">{{fieldGroup.name}}</h4>
+                            </a>
+                        </div>
+
+                        <div id="{{fieldGroup.name}}-body" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <div data-ng-repeat="field in fieldGroup.fields">
+                                    <label data-ng-bind-html-unsafe>{{field.label}}<small style="margin-left: 8px; font-weight: normal" data-ng-if="field.required" class="text-muted">(required)</small></label>
+
+                                    <div data-ng-if="newRecord" dreamfactory-build-field data-service="options.service" data-field="field"
+                                         data-extend-field-types="extendFieldTypes" data-override-fields="overrideFields" data-active-view="activeView" data-injected-callbacks="injectedCallbacks"
+                                         data-current-edit-record="newRecord" class="form-group">
+                                    </div>
+                                    <hr class="df-form-divider" data-ng-if="fieldGroup.dividers && !$last" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-ng-if="(fieldGroup.fields.length > 8 && $last) || (groupedSchema.length > 1)" class="well well-sm df-toolbar">
+                    <div class="btn-toolbar">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm" data-ng-click="closeCreateRecord()">Close</button>
+                            <button type="submit" class="btn btn-default btn-sm">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>

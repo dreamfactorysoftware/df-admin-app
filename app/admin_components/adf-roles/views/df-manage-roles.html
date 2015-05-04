@@ -1,0 +1,141 @@
+<div>
+
+    <div data-ng-hide="currentEditRole">
+
+        <!-- Section Header -->
+        <df-section-header data-title="'Manage Roles'"></df-section-header>
+
+        <df-section-toolbar>
+            <df-toolbar-view-modes></df-toolbar-view-modes>
+            <df-toolbar-paginate data-api="'role'" ></df-toolbar-paginate>
+            <div class="btn-group btn-group-sm hidden-xs df-btn-group" data-ng-if="currentViewMode === 'table'">
+                <button class="btn btn-default" data-ng-click="deleteSelectedRoles()" data-ng-disabled="selectedRoles.length === 0" title="Delete selected roles"><i class="fa fa-fw fa-trash"></i></button>
+            </div>
+            <div style="clear: both"></div>
+        </df-section-toolbar>
+
+
+        <div data-ng-show="roles.length === 0">
+            <df-empty-section></df-empty-section>
+        </div>
+
+
+        <div data-ng-show="roles.length > 0">
+
+            <!-- Table View Mode -->
+            <div data-ng-if="currentViewMode === 'table'">
+                <table class="table table-responsive table-bordered table-striped table-hover table-condensed">
+                    <thead>
+                    <th>
+                        <!-- Removed because of clumsy implementation rules -->
+                        <!--<div class="checkbox">
+                            <label>
+                                <input type="checkbox" data-ng-click="setSelected(role)" />
+                                Select All
+                            </label>
+                        </div>-->
+
+                    </th>
+                    <th data-ng-class="order.orderBy === field.name ? 'df-th-selected' : ''"
+                        data-ng-click="orderOnSelect(field)"
+                        data-ng-repeat="field in fields">
+
+                        <span class="df-th-text" style="white-space: nowrap">{{field.label}}
+                            <i style="margin-left: 5px;" data-ng-if="order.orderBy === field.name"
+                               class="fa"
+                               data-ng-class="order.orderBy === field.name && order.orderByReverse ? 'fa-caret-down' : 'fa-caret-up'"></i>
+                        </span>
+                    </th>
+                    </thead>
+                    <tbody>
+                    <tr data-ng-repeat="obj in roles | orderObjectBy:order.orderBy:order.orderByReverse" class="repeated-item" class="repeated-item" data-ng-class="obj.__dfUI.selected ? 'danger' : ''">
+                        <td style="width: 80px;">
+                            <div class="checkbox" style="margin: 0">
+                                <label>
+                                    <input type="checkbox" data-ng-checked="obj.__dfUI.selected" data-ng-click="setSelected(obj)" />
+                                    <div class="btn-group btn-group-xs">
+                                        <button type="button" class="btn btn-xs btn-default" data-ng-click="deleteRole(obj)" title="Delete role"><i class="fa fa-trash"></i></button>
+                                    </div>
+                                </label>
+                            </div>
+                        </td>
+                        <td data-ng-click="editRole(obj.record)" data-ng-repeat="value in obj.record | orderAndShowValue : fields track by $index">{{value}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Thumbnail View Mode -->
+            <div data-ng-if="currentViewMode === 'thumbnails'">
+                <!-- Roles Listing -->
+                <div class="row">
+                    <div data-ng-repeat="role in roles" class="repeated-item">
+                        <div class="col-sm-6 col-md-4">
+                            <div class="thumbnail df-thumbnail">
+                                <!--<img src="admin_components/adf-roles/imgs/default-role-img.png" alt="...">-->
+
+                                <div class="caption">
+                                    <div class="row">
+                                        <div class="col-xs-12" data-ng-click="editRole(role.record)" title="Edit role">
+                                            <div class="df-thumbnail-title">
+                                                <h3>{{role.record.name}}</h3>
+                                            </div>
+                                            <div class="df-thumbnail-description">
+                                                <p>{{role.record.description}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="btn-group btn-group-justified df-btn-group-justified">
+                                                <div class="btn-group btn-group-sm">
+                                                    <button type="button" class="btn btn-default" data-ng-click="editRole(role.record)" title="Edit role"><i class="fa fa-fw fa-pencil"></i></button>
+                                                </div>
+                                                <div class="btn-group btn-group-sm ">
+                                                    <button type="button" class="btn btn-default" data-ng-click="deleteRole(role)" title="Delete role"><i class="fa fa-fw fa-trash"></i></button>
+                                                </div>
+                                                <!--<button type="button" class="btn btn-default btn-sm" data-ng-click="quickLook(role)" data-ng-disabled="true">Details</button>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List View Mode -->
+            <div data-ng-if="currentViewMode === 'list'">
+                <ul class="list-group">
+                    <li class="list-group-item df-list-group-item" data-ng-repeat="role in roles">
+                        <div class="row">
+                            <div data-ng-click="editRole(role.record)" title="Edit role">
+                                <div class="col-xs-7">
+                                    {{role.record.name}}
+                                </div>
+                            </div>
+                            <div class="col-xs-5">
+                                <div class="btn-group btn-group-sm pull-right">
+                                    <button type="button" class="btn btn-default" data-ng-click="deleteRole(role)" title="Delete role"><i class="fa fa-fw fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <!-- Edit Role -->
+    <div data-ng-show="currentEditRole">
+        <df-role-details data-role-data="currentEditRole" data-new-role="false"></df-role-details>
+    </div>
+
+</div>
+
+

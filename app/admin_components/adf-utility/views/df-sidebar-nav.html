@@ -1,0 +1,28 @@
+<div class="">
+
+    <!-- Regular side bar menu shown on medium/large -->
+    <ul class="nav nav-pills nav-stacked visible-md visible-lg">
+        <li data-ng-repeat="link in links" data-ng-class="link.active ? 'active' : ''" data-ng-click="setActiveView(link)"><a>{{link.label}}</a></li>
+    </ul>
+
+
+    <!-- Responsive flyout menu.  Contains button to show menu and menu structure as well as the mask -->
+    <div class="hidden-lg hidden-md" id="sidebar-open">
+        <button type="button" class="btn btn-default btn-sm" data-ng-click="openMenu()"><i class="fa fa-fw fa-bars"></i></button>
+    </div>
+
+    <div id="sidebar-nav-flyout-menu" class="hidden-lg hidden-md df-flyout-menu df-flyout-menu-left">
+        <div class="panel panel-default" id="sidebar-flyout-panel">
+            <div class="panel-heading">
+                <button class="btn btn-default btn-xs" data-ng-click="closeMenu()">Close</button>
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item" data-ng-repeat="link in links" data-ng-class="link.active ? 'active' : ''" data-ng-click="setActiveView(link)"><a>{{link.label}}</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="sidebar-nav-flyout-mask" class="mask"></div>
+</div>
+
+

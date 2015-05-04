@@ -1,0 +1,129 @@
+
+<div class="navbar navbar-default">
+    <span style="display: inline" class="navbar-brand">Scripts</span>
+</div>
+
+<div data-ng-show="isHostedSystem">
+    <div class="alert alert-info">
+        <li class="fa fa-info-circle"></li>
+        The Free Hosted Edition of the DreamFactory Services Platform does not support Server Side Scripting. Please install DreamFactory on your cloud or server for this capability. Click <a href="https://bitnami.com/stack/dreamfactory" target="df-new">here</a> to download the open source software package.
+    </div>
+</div>
+
+<div data-ng-show="!isHostedSystem">
+    <div class="well well-sm">
+        <div class="btn-toolbar">
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-default" data-ng-click="toggleMenu()">Toggle Menu</button>
+            </div>
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-default" data-ng-click="save()" data-ng-disabled="(!currentScript || currentScript === 'samples') && !newCustomScriptName">Save</button>
+                <button class="btn btn-default" data-ng-click="delete()" data-ng-disabled="!currentScript || currentScript === 'samples'">Delete</button>
+            </div>
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-default" data-ng-click="loadSamples()" >View Samples</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="col-xs-12 col-sm-5 col-md-4" data-ng-show="menuOpen">
+
+        <div class="row">
+            <div class="well well-sm">
+                <div class="row" >
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-default btn-sm" data-ng-click="menuBack()" data-ng-disabled="menuLevel === 0">Back</button>
+                    </div>
+
+
+                    <div class="col-xs-10 ">
+                        <input type="text" data-ng-model="pathFilter" class="form-control input-sm" placeholder="Filter">
+                        <!--<div class="input-group">
+                            <input type="text" data-ng-model="pathFilter" class="form-control" placeholder="Filter">
+
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Recent <span class="caret"></span></button>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                    <li data-ng-repeat="script in recentScripts"><a data-ng-click="openRecent(script.script)">{{script.script}}</a></li>
+                                </ul>
+                            </div>
+                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="" dreamfactory-auto-height auto-height-parent="window" auto-height-padding="0" auto-height-top="175px" data-bottom-height="220" style="overflow: scroll">
+
+                <div class="list-group scripting-list-group" data-ng-show="menuLevel === 0">
+                    <a class="list-group-item" data-ng-repeat="event in events | filter: pathFilter" data-ng-click="setEvent(event)">{{event.name}}<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
+                    <a class="list-group-item" data-ng-click="setCustomScripts(customScripts)">Custom Scripts<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
+                </div>
+
+                <div data-ng-if="!isCustomScript" class="list-group scripting-list-group" data-ng-show="menuLevel === 1 ">
+                    <a class="list-group-item"
+                       data-ng-if="!_isVariablePath(path)"
+                       data-ng-repeat="path in eventList.paths | filter: pathFilter"
+                       data-ng-click="setEventPath(path)">{{path.path}} <i class="fa fa-fw fa-chevron-right pull-right"></i></a>
+
+                </div>
+                <div data-ng-if="isCustomScript" class="list-group scripting-list-group" data-ng-show="menuLevel === 1 ">
+                    <a class="list-group-item" data-ng-click="createNewCustomScript()">Create New Script</a>
+                    <a class="list-group-item"
+                       data-ng-repeat="script in customScripts.records"
+                       data-ng-click="setScript('custom', script.script_id)">{{script.script_id}}</a>
+                </div>
+
+
+
+                <div data-ng-if="!isCustomScript" class="list-group scripting-list-group" data-ng-show="menuLevel === 2 ">
+                    <span data-ng-repeat="verb in menuEventPath.verbs | filter: pathFilter">
+                        <a  data-ng-click="setScript(path.path, event)" data-ng-repeat="event in verb.event">{{event}}
+                            <span data-ng-if="!uppercaseVerbLabels"class="pull-right text-muted" style="font-size: 10px; margin-top: 5px;">{{verb.type}}</span>
+                            <span data-ng-if="uppercaseVerbLabels" class="pull-right text-muted" style="font-size: 10px; margin-top: 5px; text-transform: uppercase;">{{verb.type}}</span>
+                        </a>
+                    </span>
+                </div>
+
+                <div data-ng-if="(isCustomScript && menuLevel === 2) || (!isCustomScript && menuLevel === 3)">
+
+                    <div data-ng-if="!currentScriptObj && isCustomScript">
+                        <div class="alert alert-info">
+                            <p><i class="fa fa-fw fa-info-circle"></i>
+                            A bunch of text right here.
+
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <label>Script Name:</label>
+                            <input class="form-control" type="text" placeholder="Enter script name" data-ng-model="$parent.$parent.newCustomScriptName" />
+                        </div>
+                    </div>
+
+                    <div data-ng-if="currentScriptObj">
+                        <p>{{currentScriptObj.script_id}}</p>
+                        <p>{{currentScriptObj.language}}</p>
+                        <p>{{currentScriptObj.is_user_script}}</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div data-ng-class="menuOpen ? 'hidden-xs col-sm-7 col-md-8' : 'col-xs-12'">
+
+        <ol id="scripting-bc-nav" class="breadcrumb">
+            <li data-ng-if="breadcrumbs.length === 0"></li>
+            <li data-ng-repeat="path in breadcrumbs track by $index" data-ng-class="breadcrumbs.length -1 === $index ? 'active':''">
+                <a data-ng-click="_bcJumpTo($index)" data-ng-if="breadcrumbs.length -1 !== $index">{{path}}</a>
+                <span data-ng-if="breadcrumbs.length -1 === $index">{{path}}</span>
+            </li>
+        </ol>
+        <df-ace-editor data-current-script-obj="currentScriptObj" data-service-name="serviceName" data-file-name="currentScript" data-file-path="currentScriptPath" data-is-clean="isClean" data-is-user-custom="isCustomScript"></df-ace-editor>
+    </div>
+</div>
+

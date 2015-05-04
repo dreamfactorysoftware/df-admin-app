@@ -1,0 +1,48 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        System Access <df-simple-help data-options="dfSimpleHelp.systemAccess"></df-simple-help>
+    </div>
+    <div class="panel-body">
+
+        <label>Assign System Access to this Role</label>
+
+        <hr />
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="col-xs-4">
+                    <label>Component</label>
+                </div>
+                <div class="col-xs-3">
+                    <label>Access</label>
+                </div>
+                <div class="col-xs-3">
+                    <label>Requestor</label>
+                </div>
+                <div class="col-xs-1">
+                    <label>Advanced Filters</label>
+                </div>
+                <div class="col-xs-1" >
+                    <label>
+                        <button type="button" class="btn btn-default btn-sm" data-ng-click="addSystemAccess()" title="Add new system access">
+                            <i class="fa fa-plus fa-fw"></i>
+                        </button>
+                    </label>
+
+                </div>
+            </div>
+        </div>
+
+       <ul class="list-group">
+            <li class="list-group-item" data-ng-repeat="systemAccess in roleSystemAccesses track by $index">
+                <df-system-access data-system-access="systemAccess" data-index="$index"></df-system-access>
+            </li>
+        </ul>
+        <p ng-show="roleSystemAccesses.length === 0">
+            No service access for this role. Click the add button to grant/deny access.
+        </p>
+
+    </div>
+</div>
+
+

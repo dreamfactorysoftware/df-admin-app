@@ -1,0 +1,13 @@
+<div class="">
+
+    <div class="col-md-2 df-sidebar-nav">
+        <df-sidebar-nav></df-sidebar-nav>
+    </div>
+    <div class="col-md-10 df-section"   data-ng-class="activeView.path === 'quickstart-home' ? 'df-section-3-round' : 'df-section-all-round'" df-fs-height>
+        <df-welcome data-ng-if="activeView.path === 'welcome-home'"></df-welcome>
+        <df-quickstart data-ng-if="activeView.path === 'quickstart-home'"></df-quickstart>
+        <df-resource data-ng-if="activeView.path === 'resource-home'"></df-resource>
+        <df-download data-ng-if="activeView.path === 'download-home'"></df-download>
+    </div>
+</div>
+

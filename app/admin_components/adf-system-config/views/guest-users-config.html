@@ -1,0 +1,21 @@
+<div>
+    <df-large-help data-options="dfLargeHelp.guestUsers"></df-large-help>
+
+    <div class="form-group">
+        <div class="checkbox">
+            <label>
+                <input data-ng-model="systemConfig.record.allow_guest_user"
+                       data-ng-checked="systemConfig.record.allow_guest_user" type="checkbox"/>
+                Allow Guest Users
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Select Role for Guest Users</label>
+        <select class="form-control" data-ng-model="systemConfig.record.guest_role_id"
+                data-ng-options="role.id as role.name for role in rolesData">
+            <option value="">- - None - -</option>
+        </select>
+    </div>
+</div>

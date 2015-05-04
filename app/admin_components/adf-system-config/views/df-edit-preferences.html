@@ -1,0 +1,101 @@
+<div>
+    <div class="row">
+        <div class="col-md-6">
+            <div data-ng-repeat="(key, value) in prefs">
+                <div data-ng-if="key === 'application'">
+                    <h3>{{key}}</h3>
+                    <div class="panel panel-default">
+                        <ul class="list-group">
+                            <li class="list-group-item" data-ng-repeat="(key, value) in value">
+                                <h4>{{key}}</h4>
+                                <div data-ng-repeat="obj in value">
+                                    <div class="form-group" data-ng-if="obj.type === 'string'">
+
+                                        <div>
+                                            <label>{{obj.key}}</label>
+                                            <select class="form-control" data-ng-model="obj.value" data-ng-options="o for o in ['pnotify', 'browserAlert', 'browserLog', 'dfModalNotify']"></select>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="form-group" data-ng-if="obj.type === 'number'">
+                                        <label>{{obj.key}}</label>
+                                        <input type="number" class="form-control" data-ng-model="obj.value" />
+                                    </div>
+                                    <div class="form-group" data-ng-if="obj.type === 'array'">
+                                        <label>{{obj.key}}</label>
+                                        <input type="text" class="form-control" data-ng-model="obj.value" />
+                                    </div>
+                                    <div class="form-group" data-ng-if="obj.type === 'boolean'">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" data-ng-model="obj.value" />
+                                                {{obj.key}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" data-ng-if="obj.type === 'object'">
+                                        <label>{{obj.key}}</label>
+                                        <input type="text" class="form-control" data-ng-model="obj.value" />
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <div data-ng-if="key === 'sections'">
+                    <h3>{{key}}</h3>
+                    <div class="panel panel-default">
+                        <ul class="list-group">
+                            <li class="list-group-item" data-ng-repeat="(key, value) in value">
+                                <h4>{{key}}</h4>
+                                <div data-ng-repeat="obj in value">
+                                    <div class="form-group" data-ng-if="obj.type === 'string'">
+
+                                        <div data-ng-if="obj.key === 'manageViewMode'">
+                                            <label>{{obj.key}}</label>
+                                            <select class="form-control" data-ng-model="obj.value" data-ng-options="o for o in ['list', 'thumbnails', 'table']"></select>
+                                        </div>
+
+                                        <div data-ng-if="obj.key !== 'manageViewMode'">
+                                            <label>{{obj.key}}</label>
+                                            <input type="text" class="form-control" data-ng-model="obj.value" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group" data-ng-if="obj.type === 'number'">
+                                        <label>{{obj.key}}</label>
+                                        <input type="number" class="form-control" data-ng-model="obj.value" />
+                                    </div>
+                                    <div class="form-group" data-ng-if="obj.type === 'array'">
+                                        <label>{{obj.key}}</label>
+                                        <input type="text" class="form-control" data-ng-model="obj.value" />
+                                    </div>
+                                    <div class="form-group" data-ng-if="obj.type === 'boolean'">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" data-ng-model="obj.value" />
+                                                {{obj.key}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" data-ng-if="obj.type === 'object'">
+                                        <label>{{obj.key}}</label>
+                                        <input type="text" class="form-control" data-ng-model="obj.value" />
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row df-btn-row" style="padding-bottom: 20px">
+        <div class="col-xs-12">
+            <div class="btn btn-primary" data-ng-click="savePrefs()">Update</div>
+        </div>
+    </div>
+</div>

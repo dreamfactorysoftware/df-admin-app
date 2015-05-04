@@ -1,0 +1,72 @@
+.df-thumbnail {
+  background: $gray-lighter;
+  // border: 2px solid $medium-dark-blue;
+  padding: 0px;
+
+  cursor: pointer;
+
+
+  .caption {
+    padding: 0px;
+    overflow-x: hidden;
+  }
+
+}
+
+.df-thumbnail:hover {
+
+  background: darken($gray-lighter, 10);
+
+}
+
+
+.df-thumbnail-title {
+
+  padding: 10px 10px 0;
+  margin-bottom: 10px;
+
+  h3 {
+    display: inline-block;
+    // color: $medium-light-blue;
+    font-size: 24px;
+    margin: 0;
+    white-space: nowrap;
+  }
+}
+
+
+.df-thumbnail-description {
+  height: 85px;
+  padding: 0 10px;
+  overflow-y: scroll;
+  // color: darken($medium-light-blue, 10%);
+
+
+}
+
+
+.df-btn-group-justified {
+
+
+  width: auto;
+
+  .btn {
+    border: 0;
+    background: $gray;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    // color: $medium-light-blue;
+  }
+
+  .btn:hover {
+
+    background: $gray-dark;
+    // color: white;
+  }
+
+}
+
+
+

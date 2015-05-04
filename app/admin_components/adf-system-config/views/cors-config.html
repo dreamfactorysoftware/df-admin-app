@@ -1,0 +1,38 @@
+<div>
+
+    <df-large-help data-options="dfLargeHelp.corsConfig"></df-large-help>
+
+
+    <table class="table table-striped">
+        <tr>
+            <th>Host</th>
+            <th>Allowed HTTP Verbs</th>
+            <th>Enabled</th>
+            <th><button type="button" class="btn btn-default btn-sm" data-ng-click="addNewHost()"><i class="fa fa-plus fa-fw"></i></button></th>
+        </tr>
+        <tr data-ng-repeat="host in allowedHosts track by $index">
+            <td>
+                <input data-ng-model="host.host" class="form-control" type="text" placeholder="Enter Host Name"/>
+            </td>
+            <td>
+                <!--<dreamfactory-cors-verb-selector host="host"></dreamfactory-cors-verb-selector>-->
+                <df-verb-picker data-allowed-verbs="host.verbs"></df-verb-picker>
+            </td>
+
+            <td>
+                <label>
+                    <small>Enable</small>
+                </label>
+                <input type="checkbox" data-ng-model="host.is_enabled"/>
+            </td>
+            <td>
+                <button type="button" class="btn btn-default btn-sm" data-ng-click="removeHost($index)"><i
+                        class="fa fa-trash-o fa-fw"></i>
+                </button>
+            </td>
+        </tr>
+    </table>
+
+</div>
+
+

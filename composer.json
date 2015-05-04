@@ -1,0 +1,45 @@
+{
+    "name":              "dreamfactory/dsp-admin-app",
+    "type":              "dreamfactory-app",
+    "description":       "DreamFactory Services Platform(tm) Admin Console",
+    "homepage":          "https://github.com/dreamfactorysoftware/dsp-admin-app/",
+    "config":            {
+        "discard-changes": true
+    },
+    "keywords":          [
+        "rest",
+        "framework",
+        "cloud-computing",
+        "remote web services",
+        "dsp-core",
+        "dsp",
+        "service bus",
+        "esb",
+        "admin"
+    ],
+    "license":           ["Apache-2.0"],
+    "authors":           [
+        {
+            "name":  "Todd Appleton",
+            "email": "toddappleton@dreamfactory.com",
+            "role":  "Lead Developer and QA, client-side"
+        }
+    ],
+    "support":           {
+        "email":  "support@dreamfactory.com",
+        "issues": "https://github.com/dreamfactorysoftware/dsp-admin-app/issues",
+        "wiki":   "https://github.com/dreamfactorysoftware/dsp-admin-app/wiki",
+        "source": "https://github.com/dreamfactorysoftware/dsp-admin-app"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable":     true,
+    "require":           {
+        "dreamfactory/installer": "dev-develop as dev-master"
+    },
+    "extra":             {
+        "branch-alias":   {
+            "dev-develop": "0.9-dev"
+        },
+        "installer-name": "dreamfactory"
+    }
+}
