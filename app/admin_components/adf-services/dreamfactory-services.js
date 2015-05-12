@@ -53,6 +53,34 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
     }])
+
+    .service('dfServiceData', [ '$http', '$q', function ($http, $q) {
+        var dfServiceData = {};
+
+        dfServiceData.getServiceTypes = function () {
+            var deferred = $q.defer();
+
+            // Check if service types are in cache. If yes then return them.
+            // Other wise request for service types and then cache them so that
+            // we dont have to request them next time.
+
+            if (dfServiceData.serviceTypes && dfServiceData.serviceTypes.length) {
+                deferred.resolve(dfServiceData.serviceTypes);
+            } else {
+                $http({
+                    method: 'GET',
+                    url: DSP_URL + '/api/v2/system/service_type'
+                }).success(function (data) {
+                    dfServiceData.serviceTypes = data;
+                    deferred.resolve(dfServiceData.serviceTypes);
+                });
+            }
+            return deferred.promise;
+        };
+
+        return dfServiceData;
+    }])
+
     .controller('ServicesCtrl', ['$scope', function($scope) {
 
         $scope.$parent.title = 'Services';
@@ -499,7 +527,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', function(MOD_SERVICES_ASSET_PATH, dfServiceValues, dfObjectService, dfStorageTypeFactory, $compile, $templateCache) {
+    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', function(MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache) {
 
 
         return {
@@ -546,12 +574,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope.hcv = new dfServiceValues();
 
-                if (scope.newService) {
-                    scope.hcv.serviceTypes = scope.hcv.serviceTypes
-                        .filter(function (el) {
-                            return el.name !== "local_sql_db";
-                        });
-                }
+                dfServiceData.getServiceTypes().then(function (serviceTypes) {
+                    scope.hcv.serviceTypes = serviceTypes;
+                    if (scope.newService) {
+                        scope.hcv.serviceTypes = scope.hcv.serviceTypes
+                            .filter(function (el) {
+                                return el.name !== "local_sql_db";
+                            });
+                    }    
+                });
 
                 scope._script = {};
                 scope.serviceInfo = {};
@@ -2412,55 +2443,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
 
             var values = {
-
-                serviceTypes: [
-                    {
-                        name: 'remote_web_service',
-                        label: 'Remote Web Service',
-                        value: 'Remote Web Service'
-                    },
-                    {
-                        name: 'local_sql_db',
-                        label: 'Local SQL DB',
-                        value: 'Local SQL DB'
-                    },
-                    {
-                        name: 'remote_sql_db',
-                        label: 'Remote SQL DB',
-                        value: 'Remote SQL DB'
-                    },
-                    {
-                        name: 'nosql_db',
-                        label: 'NoSQL DB',
-                        value: 'NoSQL DB'
-                    },
-                    {
-                        name: 'salesforce',
-                        label: 'Salesforce',
-                        value: 'Salesforce'
-                    },
-                    {
-                        name: 'local_file_storage',
-                        label: 'Local File Storage',
-                        value: 'Local File Storage'
-                    },
-                    {
-                        name: 'remote_file_storage',
-                        label: 'Remote File Storage',
-                        value: 'Remote File Storage'
-                    },
-                    {
-                        name: 'email_service',
-                        label: 'Email Service',
-                        value: 'Email Service'
-                    },
-                    {
-                        name: 'push_service',
-                        label: 'Push Service',
-                        value: 'Push Service'
-                    }
-                ],
-
 
                 emailOptions: [
                     {name: "Server Default", value: 'default'},
