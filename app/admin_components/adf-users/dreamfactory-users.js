@@ -418,7 +418,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope._sendInvite = function (userId) {
 
                     return  $http({
-                        url: DSP_URL + '/rest/system/user',
+                        url: DSP_URL + '/api/v2/system/user',
                         method: 'PATCH',
                         params: {
                             send_invite: true
@@ -1023,7 +1023,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     return $http({
                         method: 'POST',
-                        url: DSP_URL + '/rest/system/user',
+                        url: DSP_URL + '/api/v2/system/user',
                         headers: {
                             "Content-Type" : scope.importType === 'csv' ? 'text/csv' : 'application/' + scope.importType
                         },
@@ -1176,7 +1176,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         // Jason's method to make it work.  He doesn't check for bad response.
                         // I'll look into angularJS's $location to fix this.
-                        $window.location.href= DSP_URL + '/rest/system/user?' + params;
+                        $window.location.href= DSP_URL + '/api/v2/system/user?' + params;
                     }
                 }
             }

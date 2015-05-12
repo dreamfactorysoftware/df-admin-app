@@ -105,7 +105,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
         $scope.options = {
             service: $scope.selected.service,
             table: $scope.selected.resource,
-            url: DSP_URL + '/rest/' + $scope.selected.service + '/' + $scope.selected.resource,
+            url: DSP_URL + '/api/v2/' + $scope.selected.service + '/' + $scope.selected.resource,
             allowChildTable: true,
             childTableAttachPoint: '#child-table-attach'
         };
@@ -115,7 +115,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
             var options = {
                 service: newValue.service,
                 table: newValue.resource,
-                url: DSP_URL + '/rest/' + newValue.service + '/' + newValue.resource,
+                url: DSP_URL + '/api/v2/' + newValue.service + '/' + newValue.resource,
                 allowChildTable: true,
                 childTableAttachPoint: '#child-table-attach'
             };

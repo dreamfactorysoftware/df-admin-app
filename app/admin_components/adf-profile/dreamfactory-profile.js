@@ -137,7 +137,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                     return $http({
                         method: 'GET',
-                        url: DSP_URL + '/rest/user/profile'
+                        url: DSP_URL + '/api/v2/user/profile'
                     })
                 };
 
@@ -145,7 +145,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                     return $http({
                         method: 'POST',
-                        url: DSP_URL + '/rest/user/profile',
+                        url: DSP_URL + '/api/v2/user/profile',
                         data: requestDataObj.data
                     })
                 };
@@ -159,7 +159,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                     return $http({
                         method: 'POST',
-                        url: DSP_URL + '/rest/user/password',
+                        url: DSP_URL + '/api/v2/user/password',
                         params: requestDataObj.params,
                         data: requestDataObj.data
                     })

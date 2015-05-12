@@ -209,7 +209,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             // PRIVATE API
 
             // Dynamically create event names on the client because no one thought it
-            // would be a good idea to build that list on the server and send it on a GET /rest/script
+            // would be a good idea to build that list on the server and send it on a GET /api/v2/script
             $scope._createEvents = function(event, associatedData) {
 
                 // returns an empty Path Object
@@ -444,7 +444,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return $http({
                     method: 'GET',
-                    url: DSP_URL + '/rest/' + requestDataObj.eventName,
+                    url: DSP_URL + '/api/v2/' + requestDataObj.eventName,
                     params: requestDataObj.params
                 })
 
@@ -455,7 +455,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return $http({
                     method: 'GET',
-                    url: DSP_URL + '/rest/system/script/' + requestDataObj.script_id,
+                    url: DSP_URL + '/api/v2/system/script/' + requestDataObj.script_id,
                     params: requestDataObj.params
                 })
             };
@@ -465,7 +465,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return $http({
                     method: 'PUT',
-                    url: DSP_URL + '/rest/system/script/' + requestDataObj.script_id,
+                    url: DSP_URL + '/api/v2/system/script/' + requestDataObj.script_id,
                     headers: {
                         'Content-Type': 'text/plain'
                     },
@@ -479,7 +479,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return $http({
                     method: 'DELETE',
-                    url: DSP_URL + '/rest/system/script/' + requestDataObj.script_id,
+                    url: DSP_URL + '/api/v2/system/script/' + requestDataObj.script_id,
                     params: requestDataObj.params
                 })
             };

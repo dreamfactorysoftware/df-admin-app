@@ -2954,7 +2954,7 @@ angular.module('dfTable', ['dfUtility'])
 
                         scope._buildURL = function (serviceNameStr, tableNameStr) {
 
-                            return DSP_URL + '/rest/' + serviceNameStr + '/' + tableNameStr
+                            return DSP_URL + '/api/v2/' + serviceNameStr + '/' + tableNameStr
                         };
 
                         scope.relatedOptions = {
@@ -3164,7 +3164,7 @@ angular.module('dfTable', ['dfUtility'])
                     var options = {
                         service: scope._setSystemService(newValue.ref_table),
                         table: newValue.ref_table,
-                        url: DSP_URL + '/rest/' + scope._setSystemService(newValue.ref_table) + '/' + scope._parseSystemTableName(newValue.ref_table),
+                        url: DSP_URL + '/api/v2/' + scope._setSystemService(newValue.ref_table) + '/' + scope._parseSystemTableName(newValue.ref_table),
                         params: {
                             filter: newValue.ref_field + ' = '  + scope.childTableParentRecord[newValue.field]
                         }
