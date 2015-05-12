@@ -51,7 +51,7 @@ angular
     // Set global header for calls made to DSP
     .config(['$httpProvider', 'DSP_API_KEY', function($httpProvider, DSP_API_KEY) {
 
-        $httpProvider.defaults.headers.common['X-Dreamfactory-Application-Name'] = DSP_API_KEY;
+        $httpProvider.defaults.headers.common['X-Dreamfactory-Application-Key'] = DSP_API_KEY;
     }])
 
     // Configure main app routing rules
