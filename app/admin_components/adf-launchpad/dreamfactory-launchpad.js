@@ -21,7 +21,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                             if (SystemConfigDataService.getSystemConfig().allow_guest_user && !UserDataService.getCurrentUser()) {
 
                                 // We make a call to user session to get guest user apps
-                                $http.get(DSP_URL + '/rest/user/session').then(
+                                $http.get(DSP_URL + '/api/v2/user/session').then(
                                     function (result) {
 
                                         // we set the current user to the guest user
@@ -61,7 +61,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                             if (UserDataService.getCurrentUser()) {
 
                                 // We make a call to user session to get user apps
-                                $http.get(DSP_URL + '/rest/user/session').then(
+                                $http.get(DSP_URL + '/api/v2/user/session').then(
                                     function (result) {
 
                                         // we set the current user

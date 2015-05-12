@@ -1275,7 +1275,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     },
                     apiName: {
                         title: 'Api Name ',
-                        text: 'Select a name for making API requests, such as \'db\' in /rest/db.'
+                        text: 'Select a name for making API requests, such as \'db\' in /api/v2/db.'
                     },
                     name: {
                         title: 'Name ',
@@ -1288,7 +1288,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     baseUrl: {
                         title: 'Base Url ',
                         text: 'Specify the base URL for the remote web service. For example, if you named the API \'mydb\'' +
-                            ' and the base URL is http://api.myservice.com/v1/api/, then a REST call to /rest/mydb/mytable' +
+                            ' and the base URL is http://api.myservice.com/v1/api/, then a REST call to /api/v2/mydb/mytable' +
                             ' would tell DreamFactory to call http://api.myservice.com/v1/api/mydb/mytable.'
                     },
                     userName: {

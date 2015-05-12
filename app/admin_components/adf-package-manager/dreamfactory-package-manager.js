@@ -112,7 +112,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         $http({
                             method: 'GET',
-                            url: DSP_URL + '/rest/system/app/' + newValue.id,
+                            url: DSP_URL + '/api/v2/system/app/' + newValue.id,
                             params: {
                                 fields: '*',
                                 related: 'app_service_relations'
@@ -433,7 +433,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: "PUT",
-                        url: DSP_URL + '/rest/system/app/' + scope.selectedApp.id,
+                        url: DSP_URL + '/api/v2/system/app/' + scope.selectedApp.id,
                         params: requestDataObj.params,
                         data: requestDataObj.data
                     })
@@ -473,7 +473,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     scope._updateAppsToService(requestDataObj).then(
                         function(result) {
 
-                            var exportUrl = DSP_URL + '/rest/system/app/' + scope.selectedApp.id + '?app_name=admin&pkg=true';
+                            var exportUrl = DSP_URL + '/api/v2/system/app/' + scope.selectedApp.id + '?app_name=admin&pkg=true';
 
 
                             if (scope.includeAppFiles) {

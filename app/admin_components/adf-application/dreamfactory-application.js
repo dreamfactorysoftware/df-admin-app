@@ -829,7 +829,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             getSystemApisFromServer: function (api) {
 
                 return $http({
-                    url: DSP_URL + '/rest/system/' + api.api_name,
+                    url: DSP_URL + '/api/v2/system/' + api.api_name,
                     method: 'GET',
                     params: api.params
                 });
@@ -842,7 +842,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     delete: function() {
                         return $http({
-                            url: DSP_URL + '/rest/system/' + api,
+                            url: DSP_URL + '/api/v2/system/' + api,
                             method: 'DELETE',
                             data: options.data
                         })
@@ -861,7 +861,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 options = dfObjectService.mergeObjects(options, defaults);
 
                 // Return a resource for our service so we can just call the operation we want.
-                return $resource(DSP_URL + '/rest/system/:api/:id', {api: '@api', id: '@id'}, {
+                return $resource(DSP_URL + '/api/v2/system/:api/:id', {api: '@api', id: '@id'}, {
 
                     get: {
                         method: 'GET',

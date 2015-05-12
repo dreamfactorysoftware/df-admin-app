@@ -1171,7 +1171,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 xhr = new ActiveXObject("Microsoft.XMLHTTP");
             }
 
-            xhr.open("GET", DSP_URL + '/rest/system/config', false);
+            xhr.open("GET", DSP_URL + '/api/v2/system/config', false);
             xhr.setRequestHeader("X-DreamFactory-Application-Name", "admin");
             xhr.setRequestHeader("Content-Type", "application/json");
 

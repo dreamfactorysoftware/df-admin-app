@@ -173,7 +173,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope._loginRequest = function (credsDataObj) {
 
                         // Return the posted request data as a promise
-                        return $http.post(DSP_URL + '/rest/user/session', credsDataObj);
+                        return $http.post(DSP_URL + '/api/v2/user/session', credsDataObj);
                     };
 
 
@@ -387,13 +387,13 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 scope._resetPasswordRequest = function (requestDataObj) {
 
                     // Post request for password change and return promise
-                    return $http.post(DSP_URL + '/rest/user/password?reset=true', requestDataObj);
+                    return $http.post(DSP_URL + '/api/v2/user/password?reset=true', requestDataObj);
                 };
 
                 scope._resetPasswordSQ = function (requestDataObj) {
 
                     // Post request for password change and return promise
-                    return $http.post(DSP_URL + '/rest/user/password?login=false', requestDataObj);
+                    return $http.post(DSP_URL + '/api/v2/user/password?login=false', requestDataObj);
                 };
 
                 // Test if our entered passwords are identical
@@ -599,7 +599,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope._setPasswordRequest = function (requestDataObj) {
 
                         return $http({
-                            url: DSP_URL + '/rest/user/password',
+                            url: DSP_URL + '/api/v2/user/password',
                             method: 'POST',
                             params: {
                                 login: scope.options.login
@@ -706,7 +706,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope._logoutRequest = function () {
 
                         // return a promise object from the rest call
-                        return $http.delete(DSP_URL + '/rest/user/session');
+                        return $http.delete(DSP_URL + '/api/v2/user/session');
                     };
 
                     // COMPLEX IMPLEMENTATION ** See login directive for more info **
@@ -832,7 +832,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope._registerRequest = function (registerDataObj) {
 
                         return $http({
-                            url: DSP_URL + '/rest/user/register',
+                            url: DSP_URL + '/api/v2/user/register',
                             method: 'POST',
                             params: {
                                 login: scope.options.login
@@ -844,7 +844,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // Returns the system configuration object
                     scope._getSystemConfig = function () {
 
-                        return $http.get(DSP_URL + '/rest/system/config');
+                        return $http.get(DSP_URL + '/api/v2/system/config');
                     };
 
 
@@ -1175,7 +1175,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope._confirmUserToServer = function (requestDataObj) {
 
                         return $http({
-                            url: DSP_URL + '/rest/user/register',
+                            url: DSP_URL + '/api/v2/user/register',
                             method: 'POST',
                             params: {
                                 login: false
@@ -1392,7 +1392,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         function _saveUserSetting(userSettings) {
 
             return $http({
-                url: DSP_URL + '/rest/user/custom',
+                url: DSP_URL + '/api/v2/user/custom',
                 method: 'POST',
                 data: userSettings
             })
@@ -1414,7 +1414,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
 
             return $http({
-                url: DSP_URL + '/rest/user/custom/' + setting,
+                url: DSP_URL + '/api/v2/user/custom/' + setting,
                 method: 'GET'
             })
         }
@@ -1638,7 +1638,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
 
             // Do XHR
-            xhr.open(_method, DSP_URL + '/rest/' + _url + params, _async);
+            xhr.open(_method, DSP_URL + '/api/v2/' + _url + params, _async);
 
             // Set headers
             _setHeaders(xhr, _headers);
