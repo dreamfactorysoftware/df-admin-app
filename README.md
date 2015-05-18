@@ -17,7 +17,7 @@ One Time Setup:
 ```
 install node and npm (downloadable installer)
 sudo npm install -g bower
-sudo npm install grunt-cli
+sudo npm install -g grunt-cli
 cd ~/repos/admin2 (or wherever your repo is)
 npm install
 bower install
