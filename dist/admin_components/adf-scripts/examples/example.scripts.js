@@ -3,7 +3,7 @@
 //****************** Working with System Events ******************
 
 //	system.users.list.js
-//	A script to be run when the event 'system.users.list' is triggered by a GET on /rest/system/user
+//	A script to be run when the event 'system.users.list' is triggered by a GET on /api/v2/system/user
 
 var ENABLE_ADD_PROPERTY = true;
 
@@ -18,7 +18,7 @@ if (event.request.body.record) {
 }
 
 //	system.apps.create.js
-//	A script to be run when the event 'system.apps.create' is triggered by a POST to /rest/system/app
+//	A script to be run when the event 'system.apps.create' is triggered by a POST to /api/v2/system/app
 
 //	Inspect the inbound request
 if (event.request.body.record) {
@@ -31,7 +31,7 @@ if (event.request.body.record) {
 //****************** Local Database Events ******************
 
 //	db.todo.select.js
-//	A script to be run when the event 'db.todo.select' is triggered by a GET to /rest/db/todo
+//	A script to be run when the event 'db.todo.select' is triggered by a GET to /api/v2/db/todo
 
 //	Rename all outbound to-do items to be the same string
 if (event.request.body.record) {
@@ -41,7 +41,7 @@ if (event.request.body.record) {
 }
 
 //	db.todo.insert.js
-//	A script to be run when the event 'db.todo.select' is triggered by a POST to /rest/db/todo
+//	A script to be run when the event 'db.todo.select' is triggered by a POST to /api/v2/db/todo
 
 if (event.request.body.record) {
 	//	Loop through the record array and add a complete indicator
