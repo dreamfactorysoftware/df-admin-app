@@ -124,7 +124,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 var User = function  (userData) {
 
                     var _user = {
-                        display_name: null,
+                        name: null,
                         first_name: null,
                         last_name: null,
                         email: null,
@@ -137,7 +137,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         user_source: 0,
                         user_data: [],
                         password: null,
-                        lookup_keys: []
+                        user_lookup_by_user_id: []
                     };
 
                     userData = userData || _user;
@@ -222,7 +222,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'lookup_keys',
+                            related: 'user_lookup_by_user_id',
                             send_invite: scope.sendEmailOnCreate
                         },
                         data: scope.user.record
@@ -280,7 +280,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         params: {
                             fields: '*',
-                            related: 'lookup_keys'
+                            related: 'user_lookup_by_user_id'
                         },
                         data: scope.user.record
                     };
@@ -549,7 +549,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         tempArr.push(lk.record);
                     });
 
-                    scope.user.record.lookup_keys = tempArr;
+                    scope.user.record.user_lookup_by_user_id = tempArr;
                 };
 
 
@@ -573,11 +573,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     if (!newValue) return;
 
-                    if (newValue.record.hasOwnProperty('lookup_keys') && newValue.record.lookup_keys.length > 0) {
+                    if (newValue.record.hasOwnProperty('user_lookup_by_user_id') && newValue.record.user_lookup_by_user_id.length > 0) {
 
                         scope.lookupKeys = [];
 
-                        angular.forEach(newValue.record.lookup_keys, function (lookupKeyData) {
+                        angular.forEach(newValue.record.user_lookup_by_user_id, function (lookupKeyData) {
 
                             scope.lookupKeys.push(new LookupKey(lookupKeyData))
 
@@ -679,13 +679,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         active: true
                     },
                     {
-                        name: 'display_name',
+                        name: 'name',
                         label: 'Display Name',
-                        active: true
-                    },
-                    {
-                        name: 'role_id',
-                        label:'Role',
                         active: true
                     },
                     {
@@ -698,6 +693,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         label: 'Last_name',
                         active: true
                     },
+					{
+						name: 'role_id',
+						label:'Role',
+						active: true
+					},
                     {
                         name: 'is_active',
                         label: 'Active',
@@ -735,7 +735,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.deleteUser = function (user) {
 
-                    if (dfNotify.confirm("Delete " + user.record.display_name + "?")) {
+                    if (dfNotify.confirm("Delete " + user.record.name + "?")) {
                         scope._deleteUser(user);
                     }
                 };

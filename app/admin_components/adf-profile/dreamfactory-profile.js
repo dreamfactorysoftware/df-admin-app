@@ -73,7 +73,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
         $scope.currentUser = UserDataService.getCurrentUser();
 
         // Set Title in parent
-        // $scope.$parent.title = $scope.currentUser.display_name + ' Profile';
+        // $scope.$parent.title = $scope.currentUser.name + ' Profile';
         $scope.$parent.title = '';
 
         // Set module links

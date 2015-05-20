@@ -87,10 +87,10 @@
                                     <!-- <td data-ng-click="editUser(obj.record)" data-ng-repeat="value in obj.record | orderAndShowValue : fields track by $index">{{value}}</td>-->
                                     <td data-ng-click="editUser(obj.record)">{{obj.record.id}}</td>
                                     <td data-ng-click="editUser(obj.record)">{{obj.record.email}}</td>
-                                    <td data-ng-click="editUser(obj.record)">{{obj.record.display_name}}</td>
+                                    <td data-ng-click="editUser(obj.record)">{{obj.record.name}}</td>
+									<td data-ng-click="editUser(obj.record)">{{obj.record.first_name}}</td>
+									<td data-ng-click="editUser(obj.record)">{{obj.record.last_name}}</td>
                                     <td data-ng-click="editUser(obj.record)">{{_getUserRoleName(obj.record.role_id)}}</td>
-                                    <td data-ng-click="editUser(obj.record)">{{obj.record.first_name}}</td>
-                                    <td data-ng-click="editUser(obj.record)">{{obj.record.last_name}}</td>
                                     <td data-ng-click="editUser(obj.record)">{{obj.record.is_active}}</td>
                                     <td data-ng-click="editUser(obj.record)">{{obj.record.is_sys_admin}}</td>
                                     <td data-ng-click="editUser(obj.record)">{{obj.record.confirmed}}</td>
@@ -109,7 +109,7 @@
                         <div class="row">
                             <div data-ng-click="editUser(user.record)">
                                 <div class="col-xs-7">
-                                    {{user.record.display_name}}
+                                    {{user.record.name}}
                                 </div>
                             </div>
                             <div class="col-xs-5">
@@ -134,7 +134,7 @@
                                     <div class="row">
                                         <div class="col-xs-12" data-ng-click="editUser(user.record)" title="Edit user">
                                             <div class="df-thumbnail-title">
-                                                <h3 >{{user.record.display_name}}</h3>
+                                                <h3 >{{user.record.name}}</h3>
                                             </div>
                                             <div class="df-thumbnail-description">
                                                 <p>

@@ -91,8 +91,8 @@ angular.module('dfDownloads', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'
                 var url = "//www.dreamfactory.com/in_product_downloads.html";
 
                 angular.forEach(dfApplicationData.getApiData('app'), function (app) {
-                    if (app.hasOwnProperty('api_name') && (app.hasOwnProperty('launch_url'))) {
-                        if (app.api_name == 'df-downloads') {
+                    if (app.hasOwnProperty('name') && (app.hasOwnProperty('launch_url'))) {
+                        if (app.name == 'df-downloads') {
                             url = app.launch_url;
                         }
                     }

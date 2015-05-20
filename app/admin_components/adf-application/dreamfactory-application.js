@@ -903,28 +903,28 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     app: {
                         include_count: true,
                         limit: 100,
-                        related: 'roles'
+                        related: 'role_by_role_id'
                     },
                     app_group: {
                         include_count: true,
                         limit: 100,
-                        related: 'apps'
+                        related: 'app_by_app_to_app_group'
                     },
                     role: {
                         include_count: true,
-                        related: 'role_service_accesses,role_system_accesses,lookup_keys',
+                        related: 'role_service_access_by_role_id,role_lookup_by_role_id',
                         limit: 100
                     },
                     user: {
                         include_count: true,
                         limit: 20,
-                        related: 'lookup_keys'
+                        related: 'user_lookup_by_user_id'
                     },
                     service: {
                         include_count: true,
                         include_components: true,
                         limit: 100,
-                        related: 'docs'
+                        related: 'service_doc_by_service_id'
                     },
                     config: {
 

@@ -117,8 +117,8 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             link: function (scope, elem, attrs) {
                 var url = "//www.dreamfactory.com/in_product_welcome.html";
                 angular.forEach(dfApplicationData.getApiData('app'), function (app) {
-                    if (app.hasOwnProperty('api_name') && (app.hasOwnProperty('launch_url'))) {
-                        if (app.api_name == 'df-welcome') {
+                    if (app.hasOwnProperty('name') && (app.hasOwnProperty('launch_url'))) {
+                        if (app.name == 'df-welcome') {
                             url = app.launch_url;
                         }
                     }
@@ -144,10 +144,10 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     var _app = {
                         name: '',
+						api_key: '',
+						description: '',
                         native: false,
                         is_url_external: '0',
-                        api_name: '',
-                        description: '',
                         storage_service_id: null,
                         storage_container: 'applications',
                         launch_url: '',
@@ -308,7 +308,7 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'roles'
+                            related: 'role_by_role_id'
                         },
                         data: scope._prepareAppData(scope.app)
                     };
@@ -393,8 +393,8 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 var url = "//www.dreamfactory.com/in_product_resources.html";
 
                 angular.forEach(dfApplicationData.getApiData('app'), function (app) {
-                    if (app.hasOwnProperty('api_name') && (app.hasOwnProperty('launch_url'))) {
-                        if (app.api_name == 'df-resources') {
+                    if (app.hasOwnProperty('name') && (app.hasOwnProperty('launch_url'))) {
+                        if (app.name == 'df-resources') {
                             url = app.launch_url;
                         }
                     }
@@ -414,8 +414,8 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     var url = "//www.dreamfactory.com/in_product_downloads.html";
 
                     angular.forEach(dfApplicationData.getApiData('app'), function (app) {
-                        if (app.hasOwnProperty('api_name') && (app.hasOwnProperty('launch_url'))) {
-                            if (app.api_name == 'df-downloads') {
+                        if (app.hasOwnProperty('name') && (app.hasOwnProperty('launch_url'))) {
+                            if (app.name == 'df-downloads') {
                                 url = app.launch_url;
                             }
                         }

@@ -322,7 +322,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                             var _new = {
                                 service_id: service.record.id,
-                                api_name: service.record.api_name
+                                name: service.record.name
                             }
 
                             tempServicesArr.push(_new);

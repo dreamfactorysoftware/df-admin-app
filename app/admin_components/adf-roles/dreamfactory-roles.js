@@ -135,10 +135,9 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         description: '',
                         is_active: false,
                         default_app_id: null,
-                        role_service_accesses:[],
-                        role_system_accesses:[],
+                        role_service_access_by_role_id:[],
                         id: null,
-                        lookup_keys: []
+                        role_lookup_by_role_id: []
                     };
 
                     roleData = angular.copy(roleData) || newRole;
@@ -164,13 +163,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 // Other Data
                 scope.services = dfApplicationData.getApiData('service');
-                scope.system = dfApplicationData.getApiData('system');
-
-                // add All component to array of system components
-                // because it's not sent to us from the server
-                if (scope.system[0].name !== '*') {
-                    scope.system.unshift({label: 'All', name: '*'});
-                }
 
                 if (scope.services[0].name !== 'All') {
                     scope.services.unshift({id: null, name: 'All', components: ["","*"]});
@@ -227,7 +219,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     }
 
                     scope._prepareServiceAccessData();
-                    scope._prepareSystemAccessData();
                     scope._prepareRoleLookUpKeysData();
                     scope._prepareAppsToRoleData();
                 };
@@ -263,7 +254,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     var requestDataObj = {
                         params:{
                             fields: '*',
-                            related: 'role_service_accesses,role_system_accesses,lookup_keys'
+                            related: 'role_service_access_by_role_id,role_lookup_by_role_id'
                         },
                         data: scope.role.record
                     };
@@ -397,7 +388,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     var requestDataObj = {
                         params:{
                             fields: '*',
-                            related: 'role_service_accesses,role_system_accesses,lookup_keys'
+                            related: 'role_service_access_by_role_id,role_lookup_by_role_id'
                         },
                         data: scope.role.record
                     };
@@ -618,11 +609,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 scope.dfSimpleHelp = {
                     serviceAccess: {
                         title: 'Role Service Access Information',
-                        text: 'Access rules for your DSP services.'
-                    },
-                    systemAccess: {
-                        title: 'Role System Access Information',
-                        text: 'Access rules for DSP system services. Use caution when allowing system access.'
+                        text: 'Access rules for DSP services. Use caution when allowing system access.'
                     }
                 };
 
@@ -659,253 +646,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             'interface.<span style="color: red;">  Lookup keys for service configuration and credentials must be made private.</span>'
                     }
                 }
-            }
-        }
-    }])
-
-    .directive('assignSystemAccess', ['MOD_ROLES_ASSET_PATH', function(MOD_ROLES_ASSET_PATH) {
-
-        return {
-            restrict: 'E',
-            scope: false,
-            templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-assign-system-access.html',
-            link: function(scope, elem, attrs) {
-
-                // @TODO: Refactor to factory.
-                var SystemAccess = function () {
-
-                    return {
-                        __dfUI: {
-                            allowFilters: true,
-                            showFilters: false
-                        },
-                        record: {
-                            "verb_mask": 0,
-                            "requestor_mask": 1,
-                            "component": scope.system[scope.system.length -1].name || null,
-                            "filters": [],
-                            "filter_op": "AND",
-                            "show_filters": false
-                        }
-                    };
-                };
-
-                // Members
-                scope.roleSystemAccesses = [];
-
-
-                // PUBLIC API
-                scope.addSystemAccess = function () {
-
-                    scope._addSystemAccess();
-                };
-
-                scope.removeSystemAccess = function (systemAccessObjIndex) {
-
-                    scope._removeSystemAccess(systemAccessObjIndex);
-                };
-
-
-                // PRIVATE API
-                scope._prepareSystemAccessData = function () {
-
-                    var preppedArr = [];
-
-                    angular.forEach(scope.roleSystemAccesses, function (obj) {
-
-                        // Copy the system access obj
-                        var _obj = angular.copy(obj.record);
-
-                        // add role id
-                        //_obj.role_id = scope.role.id;
-
-                        // push all this onto a fresh array
-                        preppedArr.push(_obj);
-                    });
-
-                    // assign that array to the role obj
-                    scope.role.record.role_system_accesses = preppedArr;
-                };
-
-
-                // COMPLEX IMPLEMENTATION
-                scope._addSystemAccess = function () {
-
-                    scope.roleSystemAccesses.push(new SystemAccess());
-                };
-
-                scope._removeSystemAccess = function (systemAccessObjIndex) {
-
-                    scope.roleSystemAccesses.splice(systemAccessObjIndex, 1);
-                };
-
-
-                // WATCHERS
-                var watchRole = scope.$watch('role', function(newValue, oldValue) {
-
-                    if (!newValue) return false;
-
-                    scope.roleSystemAccesses = [];
-
-                    // Do we have a new role
-                    if (scope.newRole) {
-
-                        // Yes.  We can set roleServiceAccesses to empty array
-                        scope.roleSystemAccesses = [];
-                    }
-                    else {
-
-                        // We need to create our role service objects
-                        angular.forEach(newValue.record.role_system_accesses, function (obj) {
-
-                            // Make a new role service object
-                            var _newSA = new SystemAccess();
-
-                            // assign data from current role service that was returned
-                            // in the role to the role service obj
-                            _newSA.record = obj;
-
-                            // store on the scope
-                            scope.roleSystemAccesses.push(_newSA);
-                        })
-                    }
-                });
-
-
-                // MESSAGES
-                scope.$on('$destroy', function(e) {
-                    watchRole();
-                });
-
-
-                // HELP
-
-            }
-        }
-    }])
-
-    .directive('dfSystemAccess', ['MOD_ROLES_ASSET_PATH', function (MOD_ROLES_ASSET_PATH){
-
-        return {
-
-            restrict: 'E',
-            scope: {
-                systemAccess: '=',
-                index: '='
-            },
-            templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-system-access.html',
-            link: function (scope, elem, attrs) {
-
-                // @TODO: Refactor to factory.
-                var SystemAccessFilter = function () {
-
-                    return {
-                        "name":     "",
-                        "operator": "=",
-                        "value":    ""
-                    }
-                };
-
-                scope.filterOperators =  [
-                    "=",
-                    "!=",
-                    ">",
-                    "<",
-                    ">=",
-                    "<=",
-                    "in",
-                    "not in",
-                    "starts with",
-                    "ends with",
-                    "contains",
-                    "is null",
-                    "is not null"
-                ];
-
-
-                // PUBLIC API
-                scope.toggleSystemAccessFilters = function () {
-
-                    scope._toggleSystemAccessFilters();
-                };
-
-                scope.addSystemAccessFilter = function () {
-
-                    scope._addSystemAccessFilter();
-                };
-
-                scope.removeSystemAccessFilter = function (systemAccessFilterIndex) {
-
-                    scope._removeSystemAccessFilter(systemAccessFilterIndex);
-                };
-
-                scope.toggleSystemFilterOp = function() {
-
-                    scope._toggleSystemFilterOp();
-                };
-
-
-                // PRIVATE API
-                scope.allowFilters = function () {
-
-                    scope.systemAccess.__dfUI.allowFilters = true;
-
-                    /*switch(scope.systemAccess.record.service.type) {
-
-                        case "Local SQL DB":
-                        case "Remote SQL DB":
-                        case "NoSQL DB":
-                        case "Salesforce":
-                            scope.serviceAccess.__dfUI.allowFilters = true;
-                            break;
-                        default:
-                            scope.serviceAccess.__dfUI.allowFilters = false;
-                    }*/
-                };
-
-
-                // COMPLEX IMPLEMENTATION
-                scope._toggleSystemAccessFilters = function () {
-
-                    scope.systemAccess.__dfUI.showFilters = !scope.systemAccess.__dfUI.showFilters;
-                };
-
-                scope._addSystemAccessFilter = function () {
-
-                    scope.systemAccess.record.filters.push(new SystemAccessFilter());
-                };
-
-                scope._removeSystemAccessFilter = function (systemAccessFilterIndex) {
-
-                    scope.systemAccess.record.filters.splice(systemAccessFilterIndex, 1);
-                };
-
-                scope._toggleSystemFilterOp = function () {
-
-                    scope.systemAccess.record.filter_op = scope.systemAccess.record.filter_op === 'AND' ? 'OR' : 'AND';
-                };
-
-
-                // WATCHERS
-
-                // Left in just in case I missed a reason why filters would be turned off
-                /*var watchSystemAccess = scope.$watch('systemAccess', function(newValue, oldValue) {
-                    if (!newValue) return false;
-
-                    // set filters if allowed
-                    scope.allowFilters();
-
-                    // update service_id prop
-                    scope.serviceAccess.record.service_id = newValue.id;
-                });*/
-
-                // MESSAGES
-
-                /*scope.$on('$destroy', function (e) {
-                    watchService();
-                });*/
-
-
             }
         }
     }])
@@ -979,7 +719,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     });
 
                     // assign that array to the role obj
-                    scope.role.record.role_service_accesses = preppedArr;
+                    scope.role.record.role_service_access_by_role_id = preppedArr;
                 };
 
 
@@ -1036,7 +776,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     else {
 
                         // We need to create our role service objects
-                        angular.forEach(newValue.record.role_service_accesses, function (obj) {
+                        angular.forEach(newValue.record.role_service_access_by_role_id, function (obj) {
 
 
                             // Make a new role service object
@@ -1160,10 +900,13 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     switch(scope.serviceAccess.record.service.type) {
 
-                        case "Local SQL DB":
-                        case "Remote SQL DB":
-                        case "NoSQL DB":
-                        case "Salesforce":
+                        case "sql_db":
+                        case "mongo_db":
+                        case "aws_dynamodb":
+                        case "aws_simpledb":
+                        case "azure_table":
+                        case "couch_db":
+                        case "salesforce_db":
                             scope.serviceAccess.__dfUI.allowFilters = true;
                             break;
                         default:
@@ -2054,7 +1797,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     var requestDataObj = {
                         params:{
                             fields: '*',
-                            related: 'roles'
+                            related: 'role_by_role_id'
                         },
                         data: apps
                     };
@@ -2143,7 +1886,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     });
 
 
-                    scope.role.record.lookup_keys = tempArr;
+                    scope.role.record.role_lookup_by_role_id = tempArr;
                 };
 
                 scope._isUniqueKey = function () {
@@ -2191,7 +1934,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     else {
 
                         scope.roleLookUpKeys = [];
-                        angular.forEach(newValue.record.lookup_keys, function(lkObj) {
+                        angular.forEach(newValue.record.role_lookup_by_role_id, function(lkObj) {
 
                             scope.roleLookUpKeys.push(new LookUpKey(lkObj));
                         })

@@ -11,8 +11,8 @@
                     <h3>Choose an Application ID</h3>
 
                     <p>
-                        Before writing your application, you must specify an application ID. This ID is your API key for
-                        making API calls to DreamFactory. Your application ID can contain letters A-Z, numbers, underscores,
+                        Before writing your application, you must specify an application name. This name is used to generate your API key for
+                        making API calls to DreamFactory. Your application name can contain letters A-Z, numbers, underscores,
                         and dashes. Other characters are not allowed.
                     </p>
 
@@ -21,13 +21,13 @@
                                id="app_api_name"
                                name="api-name"
                                class="form-control required"
-                               data-ng-model="app.record.api_name"
+                               data-ng-model="app.record.name"
                                data-ng-maxlength="64"
                                data-ng-minlength="3"
                                data-ng-pattern="/^[a-zA-Z0-9_\-]*$/"
-                               placeholder="Your Application ID">
-                        <p class="text-danger" data-ng-show="form.$dirty && form.$invalid">Your api_name contains invalid characters.</p>
-                        <p class="text-danger" data-ng-show="form.$dirty && !_isApiNameUnique() && form.$valid">This api name has already been taken.</p>
+                               placeholder="Your Application Name">
+                        <p class="text-danger" data-ng-show="form.$dirty && form.$invalid">Your name contains invalid characters.</p>
+                        <p class="text-danger" data-ng-show="form.$dirty && !_isApiNameUnique() && form.$valid">This name has already been taken.</p>
                     </div>
                 </div>
 
@@ -69,7 +69,7 @@
 
                 <div class="form-group">
                     <button id="btn-step-1" class="btn btn-primary" title="Continue to the next step"
-                            data-ng-disabled="!app.record.api_name || form.$invalid || !_isApiNameUnique()" data-ng-click="setStep(2)">Continue
+                            data-ng-disabled="!app.record.name || form.$invalid || !_isApiNameUnique()" data-ng-click="setStep(2)">Continue
                     </button>
                 </div>
             </form>

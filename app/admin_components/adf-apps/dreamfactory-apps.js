@@ -125,7 +125,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                 var getLocalFileStorageServiceId = function () {
 
-                    var a = dfApplicationData.getApiData('service', {type: 'Local File Storage'});
+                    var a = dfApplicationData.getApiData('service', {type: 'local_file'});
 
                     return  a && a.length ? a[0].id : null;
                 }
@@ -135,15 +135,15 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     var _app = {
                         name: '',
+						api_key: '',
+						description: '',
                         native: true,
                         is_url_external: '0',
-                        api_name: '',
-                        description: '',
                         storage_service_id: getLocalFileStorageServiceId(),
                         storage_container: 'applications',
                         launch_url: '',
                         url: '',
-                        roles:[]
+                        role_id: null
                     };
 
                     appData = appData || _app;
@@ -224,7 +224,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                 // Other data
                 scope.roles = scope.rolesPrepFunc(dfApplicationData.getApiData('role'));
-                scope.storageServices = dfApplicationData.getApiData('service', {type: 'Local File Storage,File Storage'});
+                scope.storageServices = dfApplicationData.getApiData('service', {type: 'local_file,aws_s3,azure_blob'});
                 scope.storageContainers = [];
 
                 if (scope.newApp) {
@@ -254,9 +254,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 scope._prepareAppData = function (record) {
 
 
-                    // Collect roles that have been selected for app
-                    // and add them to roles prop on app.
-                    scope._addRolesToApp();
+                    // Assign role to app
+                    scope._assignRoleToApp();
 
                     var _app = angular.copy(record);
 
@@ -316,10 +315,10 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     role.__dfUI.selected = !role.__dfUI.selected;
                 };
 
-                scope._addRolesToApp = function () {
+                scope._assignRoleToApp = function () {
 
                     // Let's make sure we start with an empty array
-                    scope.app.record.roles = [];
+                    scope.app.record.role_id = null;
 
                     // Loop through roles
                     angular.forEach(scope.roles, function (role) {
@@ -327,8 +326,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         // Is this a selected role
                         if (role.__dfUI.selected) {
 
-                            // yes.  Add to array
-                            scope.app.record.roles.push(role.record);
+                            // yes.  Assign
+                            scope.app.record.role_id = role.record.id;
                         }
                     })
                 };
@@ -391,7 +390,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'roles'
+                            related: 'role_by_role_id'
                         },
                         data: scope._prepareAppData(scope.app)
                     };
@@ -405,7 +404,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                                 module: 'Apps',
                                 type: 'success',
                                 provider: 'dreamfactory',
-                                message: scope.app.record.api_name + ' saved successfully.'
+                                message: scope.app.record.name + ' saved successfully.'
                             };
 
                             dfNotify.success(messageOptions);
@@ -441,7 +440,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'roles'
+                            related: 'role_by_role_id'
                         },
                         data: scope._prepareAppData(scope.app)
                     };
@@ -549,17 +548,10 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     angular.forEach(scope.roles, function(roleObj) {
 
-                        var i = 0;
-
-                        while (i < scope.app.record.roles.length) {
-
-                            if (roleObj.record.id === scope.app.record.roles[i].id) {
+                            if (roleObj.record.id === scope.app.record.role_id) {
 
                                 roleObj.__dfUI.selected = true;
                             }
-
-                            i++
-                        }
                     });
 
 
@@ -577,14 +569,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                 scope.dfHelp = {
                     applicationName: {
-                        title: 'Application API Name',
-                        text: 'This is your API KEY. It must be included with each API request as a query ' +
-                            'param (app_name=yourappname) or a header (X-DreamFactory-Application-Name: yourappname).'
+                        title: 'Application API Key',
+                        text: 'This API KEY is unique per application and must be included with each API request as a query ' +
+                            'param (api_key=yourapikey) or a header (X-DreamFactory-API-Key: yourapikey).'
                     },
-                    displayName: {
+                    name: {
                         title: "Display Name",
-                        text: 'The display name or label for your app, seen by users of the app in the LaunchPad UI.' +
-                        ' It is usually different from the API name used in API requests.'
+                        text: 'The display name or label for your app, seen by users of the app in the LaunchPad UI.'
                     },
                     description: {
                         title: "Description",
@@ -615,8 +606,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     },
                     assignRole: {
                         title: "Assigning a Role",
-                        text: 'Each user who is assigned to one of the selected roles will have access to this ' +
-                            'app. Go to the Roles tab to create and manage roles.'
+                        text: 'Each application is assigned a default role dictating what privileges that application has by default. ' +
+                            'Go to the Roles tab to create and manage roles.'
                     }
                 }
             }
@@ -656,14 +647,14 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         label: 'Id',
                         active: true
                     },
+					{
+						name: 'name',
+						label: 'Name',
+						active: true
+					},
                     {
-                        name: 'api_name',
-                        label: 'API Name',
-                        active: true
-                    },
-                    {
-                        name: 'name',
-                        label: 'Name',
+                        name: 'api_key',
+                        label: 'API Key',
                         active: true
                     },
                     {
@@ -764,7 +755,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     var requestDataObj = {
                         params: {
                             delete_storage: scope.removeFilesOnDelete,
-                            related: 'roles',
+                            related: 'role_by_role_id',
                             fields: '*'
                         },
                         data: app.record
@@ -985,7 +976,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
             link: function (scope, elem, attrs) {
 
 
-                scope.services = dfApplicationData.getApiData('service', {type: 'Local File Storage,File Storage'});
+                scope.services = dfApplicationData.getApiData('service', {type: 'local_file,aws_s3,azure_blob'});
                 scope.containers = [];
 
                 scope.appPath = null;
@@ -1432,7 +1423,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'apps'
+                            related: 'app_by_app_to_app_group'
                         },
                         data: scope.selectedAppGroup.record
                     };
@@ -1491,7 +1482,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'apps'
+                            related: 'app_by_app_to_app_group'
                         },
                         data: appGroup.record
                     };
@@ -1554,7 +1545,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'apps'
+                            related: 'app_by_app_to_app_group'
                         },
                         data: appGroup.record
                     };

@@ -24,7 +24,7 @@ if (event.request.body.record) {
 if (event.request.body.record) {
 	//	Loop through the record array and modify the data before it gets to the database.
 	_.each(event.request.body.record, function(record, index, list) {
-		record.api_name = 'user_' + record.api_name;
+		record.name = 'user_' + record.name;
 	});
 }
 

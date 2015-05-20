@@ -11,13 +11,8 @@
                 <div class="col-md-6">
                     <!-- Application Name -->
                     <div class="form-group">
-                        <label>Application API Name </label><df-simple-help data-options="dfHelp.applicationName"></df-simple-help>
-                        <input class="form-control" type="text" data-ng-model="app.record.api_name" placeholder="Enter Application API Name" data-ng-required="true"/>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Display Name</label><df-simple-help data-options="dfHelp.displayName"></df-simple-help>
-                        <input class="form-control" type="text" data-ng-model="app.record.name" placeholder="Enter Display Name" data-ng-required="true"/>
+                        <label>Application Name</label><df-simple-help data-options="dfHelp.name"></df-simple-help>
+                        <input class="form-control" type="text" data-ng-model="app.record.name" placeholder="Enter Name" data-ng-required="true"/>
                     </div>
 
                     <div class="form-group">
@@ -25,7 +20,15 @@
                         <input class="form-control" type="text" data-ng-model="app.record.description" placeholder="Enter Description"/>
                     </div>
 
-                    <hr />
+					<!-- Your Application API Key -->
+
+					<div class="form-group" data-ng-if="app.record.api_key !== 0">
+						<div class="alert alert-info">
+							<p><i class="fa fa-fw fa-cloud">&nbsp;</i>Your API key is: <span>{{app.record.api_key}}</span></p>
+						</div>
+					</div>
+
+					<hr />
 
                     <!-- Application Location -->
                     <div class="form-group">
@@ -71,11 +74,11 @@
                         <hr />
                     </div>
 
-                    <!-- Your app url -->
+                    <!-- Your Application URL -->
 
                     <div class="form-group" data-ng-if="app.record.is_url_external == 0">
                         <div class="alert alert-info">
-                            <p><i class="fa fa-fw fa-cloud">&nbsp;</i>Your URL will be: {{currentServer}}{{storageContainers[app.record.storage_service_id].name}}/{{app.record.storage_container}}/{{app.record.api_name}}<span>{{app.record.url}}</span></p>
+                            <p><i class="fa fa-fw fa-cloud">&nbsp;</i>Your URL will be: {{currentServer}}{{storageContainers[app.record.storage_service_id].name}}/{{app.record.storage_container}}/{{app.record.name}}<span>{{app.record.url}}</span></p>
                         </div>
                     </div>
 
@@ -87,7 +90,7 @@
                     <!-- Assign a Role -->
                     <div class="form-group">
 
-                        <label>Assign this App to a Role</label><df-simple-help data-options="dfHelp.assignRole"></df-simple-help>
+                        <label>Assign a Role to this App</label><df-simple-help data-options="dfHelp.assignRole"></df-simple-help>
                         <table class="table table-bordered table-striped ">
                             <tr>
                                 <th></th>

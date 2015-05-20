@@ -59,7 +59,7 @@ angular.module('dreamfactoryApp')
             },
             {
                 path: '#/profile',
-                label: UserDataService.getCurrentUser().display_name || 'Guest',
+                label: UserDataService.getCurrentUser().name || 'Guest',
                 name: 'profile',
                 icon: dfIconService().profile,
                 show: false
@@ -251,7 +251,7 @@ angular.module('dreamfactoryApp')
             else if (newValue.is_sys_admin) {
 
                 // Have to set this explicitly
-                $scope.setTopLevelLinkValue('profile', 'label', newValue.display_name);
+                $scope.setTopLevelLinkValue('profile', 'label', newValue.name);
 
                 // Set active links fpr this user in the UI
                 $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'admin', 'profile']);
@@ -262,14 +262,14 @@ angular.module('dreamfactoryApp')
             else if (!newValue.is_sys_admin) {
 
                 // Have to set this explicitly
-                $scope.setTopLevelLinkValue('profile', 'label', newValue.display_name);
+                $scope.setTopLevelLinkValue('profile', 'label', newValue.name);
 
                 // Sets active links for user in the UI
                 $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'profile']);
             }
         })
 
-        $scope.$watch(function () {return UserDataService.getCurrentUser().display_name}, function (n, o) {
+        $scope.$watch(function () {return UserDataService.getCurrentUser().name}, function (n, o) {
 
 
             if (!n) return;

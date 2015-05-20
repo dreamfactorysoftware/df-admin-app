@@ -99,7 +99,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     unfolded: false
                 },
                 name: schemaData.name,
-                api_name: schemaData.api_name,
+                label: schemaData.label,
                 components: getSchemaComponents(schemaData.components),
                 updateComponents : function (array) {
 
@@ -265,7 +265,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             return $http({
                 method: 'GET',
-                url: DSP_URL + '/api/v2/'+ $scope.currentService.api_name + '/' + requestDataObj.componentPath,
+                url: DSP_URL + '/api/v2/'+ $scope.currentService.name + '/' + requestDataObj.componentPath,
                 params: {
                     refresh: true
                 }
@@ -277,7 +277,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             return $http({
                 method: 'DELETE',
-                url: DSP_URL + '/api/v2/' + $scope.currentService.api_name + '/' + requestDataObj.tablePath
+                url: DSP_URL + '/api/v2/' + $scope.currentService.name + '/' + requestDataObj.tablePath
             })
         };
 
@@ -285,14 +285,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             return $http({
                 method: 'POST',
-                url: DSP_URL + '/api/v2/' + $scope.currentService.api_name + '/_schema',
+                url: DSP_URL + '/api/v2/' + $scope.currentService.name + '/_schema',
                 data: requestDataObj.data
             })
         };
 
         $scope._refreshServiceFromServer = function () {
 
-            return $http.get(DSP_URL + '/api/v2/' + $scope.currentService.api_name + '/_schema', {params: {refresh: true, fields: 'name'}});
+            return $http.get(DSP_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {params: {refresh: true, fields: 'name'}});
         };
 
 
@@ -428,7 +428,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     });
 
                     for (var i = 0; i < appObj.apis.service.record.length; i++) {
-                        if (appObj.apis.service.record[i].api_name === $scope.currentService.api_name) {
+                        if (appObj.apis.service.record[i].name === $scope.currentService.name) {
                             appObj.apis.service.record[i].components = tempArr;
                             break;
                         }
@@ -742,7 +742,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                         for (var i = 0; i < appObj.apis.service.record.length; i++) {
 
-                            if (appObj.apis.service.record[i].api_name === scope.tableData.currentService.api_name) {
+                            if (appObj.apis.service.record[i].name === scope.tableData.currentService.name) {
 
                                 appObj.apis.service.record[i].components.push(tableName);
                                 appObj.apis.service.record[i].components.push('_schema/' + tableName);
@@ -770,7 +770,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     var requestDataObj = {
 
-                        path: scope.tableData.currentService.api_name + '/_schema/' + scope.table.record.name + '/' + field.name
+                        path: scope.tableData.currentService.name + '/_schema/' + scope.table.record.name + '/' + field.name
                     };
 
                     scope._deleteFieldFromTableOnServer(requestDataObj).then (
@@ -839,7 +839,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             include_schema: true
                         },
                         data: scope.table.record,
-                        path: scope.tableData.currentService.api_name + '/_schema'
+                        path: scope.tableData.currentService.name + '/_schema'
                     };
 
 
@@ -886,7 +886,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             include_schema: true
                         },
                         data: scope.table.record,
-                        path: scope.tableData.currentService.api_name + '/_schema'
+                        path: scope.tableData.currentService.name + '/_schema'
                     };
 
 
@@ -1107,7 +1107,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 // PRIVATE API
                 scope._loadReferenceTables = function () {
 
-                    $http.get(DSP_URL + '/api/v2/' + scope.fieldData.currentService.api_name + '/_schema/').then(
+                    $http.get(DSP_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/').then(
 
                         function (result) {
                             scope.field.record.ref_tables = result.data.resource;
@@ -1138,7 +1138,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         return;
                     }
 
-                    $http.get(DSP_URL + '/api/v2/' + scope.fieldData.currentService.api_name + '/_schema/' + scope.field.record.ref_table).then(
+                    $http.get(DSP_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/' + scope.field.record.ref_table).then(
                         function (result) {
 
                             scope.refFields = result.data.field;
@@ -1169,7 +1169,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         delete recordObj.ref_tables;
 
                     return $http({
-                        url: DSP_URL + '/api/v2/' + scope.fieldData.currentService.api_name + '/_schema/' + scope.currentTable + '/' + recordObj.name,
+                        url: DSP_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/' + scope.currentTable + '/' + recordObj.name,
                         method: 'PATCH',
                         data: recordObj
                     })
@@ -1237,7 +1237,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
 
 
-                    $http.get(DSP_URL + '/api/v2/' + scope.fieldData.currentService.api_name + '/_schema/' + scope.field.record.ref_table).then(
+                    $http.get(DSP_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/' + scope.field.record.ref_table).then(
                         function (result) {
 
                             scope.refFields = result.data.field
