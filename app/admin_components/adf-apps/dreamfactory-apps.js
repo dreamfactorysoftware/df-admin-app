@@ -157,19 +157,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     }
                 };
 
-                // Need to refactor into factory.
-                var Role = function (roleData) {
-
-                    return {
-
-                        __dfUI: {
-                            selected: false
-                        },
-                        record: roleData
-
-                    }
-                }
-
                 scope.appsPrepFunc = function(appsDataArr) {
 
                     var newAppsArr = [];
@@ -184,26 +171,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     return newAppsArr;
                 };
 
-                scope.rolesPrepFunc = function(rolesDataArr) {
-
-                    var newRolesArr = [];
-
-                    angular.forEach(rolesDataArr, function (roleData) {
-
-                        var _newRoleObj = new Role(roleData);
-
-                        newRolesArr.push(_newRoleObj);
-                    });
-
-                    return newRolesArr;
-                };
-
-
                 scope.currentServer = dfServerInfoService.currentServer();
 
                 scope.app = null;
-
-                scope.roles = null;
 
                 // Radio button options
                 scope.locations = [
@@ -221,9 +191,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     }
                 ];
 
-
                 // Other data
-                scope.roles = scope.rolesPrepFunc(dfApplicationData.getApiData('role'));
+                scope.roles = dfApplicationData.getApiData('role');
+                scope.selectedRoleId = null;
                 scope.storageServices = dfApplicationData.getApiData('service', {type: 'local_file,aws_s3,azure_blob'});
                 scope.storageContainers = [];
 
@@ -310,33 +280,21 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     return dfApplicationData.updateApiData('app', requestDataObj).$promise;
                 };
 
-                scope._selectRole = function(role) {
-
-                    role.__dfUI.selected = !role.__dfUI.selected;
-                };
-
                 scope._assignRoleToApp = function () {
 
-                    // Let's make sure we start with an empty array
                     scope.app.record.role_id = null;
 
                     // Loop through roles
                     angular.forEach(scope.roles, function (role) {
 
-                        // Is this a selected role
-                        if (role.__dfUI.selected) {
+                        if (scope.selectedRoleId) {
 
-                            // yes.  Assign
-                            scope.app.record.role_id = role.record.id;
-                        }
-                    })
-                };
+                            // Is this the selected role
+                            if (role.id === scope.selectedRoleId) {
 
-                scope._resetSelectedRoles = function () {
-
-                    angular.forEach(scope.roles, function(role) {
-                        if ((role.hasOwnProperty('__dfUI') && role.__dfUI.hasOwnProperty('selected')) && role.__dfUI.selected) {
-                            role.__dfUI.selected = false;
+                                // yes.  Assign
+                                scope.app.record.role_id = role.id;
+                            }
                         }
                     })
                 };
@@ -351,7 +309,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         scope.appData = null;
                     }
 
-                    scope._resetSelectedRoles();
+                    scope.selectedRoleId = null;
                 };
 
                 scope._setExternalUrl = function(data) {
@@ -545,16 +503,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     scope.app = new App(newValue);
 
-
                     angular.forEach(scope.roles, function(roleObj) {
 
-                            if (roleObj.record.id === scope.app.record.role_id) {
+                        if (roleObj.id === scope.app.record.role_id) {
 
-                                roleObj.__dfUI.selected = true;
-                            }
+                            scope.selectedRoleId = roleObj.id;
+                        }
                     });
-
-
                 });
 
                 // MESSAGES
@@ -605,9 +560,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             'This could be an app on some other server or a web site URL.'
                     },
                     assignRole: {
-                        title: "Assigning a Role",
-                        text: 'Each application is assigned a default role dictating what privileges that application has by default. ' +
-                            'Go to the Roles tab to create and manage roles.'
+                        title: "Assign a Default Role",
+                        text: 'Unauthenticated or guest users of the app will have this role.'
                     }
                 }
             }
