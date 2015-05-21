@@ -185,6 +185,63 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             });
         }
 
+        function _fetchFromApi(apiName) {
+            var api = {
+                api_name: apiName,
+                params: {}
+            };
+
+            api.params = dfApplicationPrefs.getPrefs().data[apiName];
+
+
+            // check for and remove null value params
+            _checkParams(api);
+
+            // This is a special case and could be handled better
+            // do we just want a list of system components
+            if (api.api_name === 'system') {
+
+                // set the name to empty string because already build the
+                // url with 'system' in it.
+                api.api_name = '';
+            }
+
+            return dfSystemData.getSystemApisFromServer(api).then(
+
+                function (result) {
+
+                    switch(apiName) {
+
+                        case 'system':
+
+                            // Set our application object system prop
+                            dfApplicationObj['apis']['system'] = {};
+                            dfApplicationObj.apis.system['record'] = result.data.resource;
+
+                            break;
+
+                        case 'config':
+
+                            // Set our application object config prop
+                            dfApplicationObj['apis']['config'] = {};
+
+                            // This returns an object so store in an array to mimick other apis
+                            dfApplicationObj.apis.config['record'] = new Array(result.data);
+
+                            break;
+
+                        default:
+
+                            dfApplicationObj['apis'][apiName] = result.data;
+                    }
+
+                    // Set the loading screen
+                    // dfMainLoading.update(apiName);
+                },
+                $q.reject;
+            );
+        }
+
         // Loads modules data and builds application object from async calls
         function _asyncInit(options) {
 
@@ -221,79 +278,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 var totalApis = options.length;
 
 
-                dfMainLoading.start(totalApis);
-
-                angular.forEach(options, function (apiName) {
-
-                    var api = {
-                        api_name: apiName,
-                        params: {}
-                    };
-
-                    api.params = dfApplicationPrefs.getPrefs().data[apiName];
-
-
-                    // check for and remove null value params
-                    _checkParams(api);
-
-                    // This is a special case and could be handled better
-                    // do we just want a list of system components
-                    if (api.api_name === 'system') {
-
-                        // set the name to empty string because already build the
-                        // url with 'system' in it.
-                        api.api_name = '';
-                    }
-
-
-
-
-                    promises.push(dfSystemData.getSystemApisFromServer(api).then(
-
-                        function (result) {
-
-                            switch(apiName) {
-
-                                case 'system':
-
-                                    // Set our application object system prop
-                                    dfApplicationObj['apis']['system'] = {};
-                                    dfApplicationObj.apis.system['record'] = result.data.resource;
-
-                                    break;
-
-                                case 'config':
-
-                                    // Set our application object config prop
-                                    dfApplicationObj['apis']['config'] = {};
-
-                                    // This returns an object so store in an array to mimick other apis
-                                    dfApplicationObj.apis.config['record'] = new Array(result.data);
-
-                                    break;
-
-                                default:
-
-                                    dfApplicationObj['apis'][apiName] = result.data;
-                            }
-
-                            // Set the loading screen
-                            dfMainLoading.update(apiName);
-                        },
-                        function (reject) {
-
-                            return $q.reject(reject);
-                        }
-                    ));
-                });
-
-
+                promises = options.map(_fetchFromApi);
 
                $q.all(promises).then(
                     function () {
-
-                        // All apis finished loading
-                        dfMainLoading.finish();
 
                         // Set our bootstrapped application object into sessionStorage
                         dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
@@ -304,12 +292,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         // showing.  Init is in progress it will allow this module to handle login/logout and user location
                         $rootScope.initInProgress = false;
                     },
-                    function () {
-
-                        // All apis finished loading
-                        dfMainLoading.finish();
-                        defer.reject();
-                    }
+                    defer.reject     
                );
 
 
