@@ -1573,7 +1573,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         function _setHeaders(_xhrObj, _headersDataObj) {
 
             // Setting Dreamfactory Headers
-            _xhrObj.setRequestHeader("X-DreamFactory-Application-Name", DSP_API_KEY);
+            _xhrObj.setRequestHeader("X-DreamFactory-API-Key", DSP_API_KEY);
             _xhrObj.setRequestHeader("X-DreamFactory-Session-Token", $cookies.PHPSESSID);
 
             // Set additional headers

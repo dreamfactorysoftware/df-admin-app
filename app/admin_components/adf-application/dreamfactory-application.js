@@ -238,7 +238,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     // Set the loading screen
                     // dfMainLoading.update(apiName);
                 },
-                $q.reject;
+                $q.reject
             );
         }
 

@@ -1172,7 +1172,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             }
 
             xhr.open("GET", DSP_URL + '/api/v2/system/config', false);
-            xhr.setRequestHeader("X-DreamFactory-Application-Name", "admin");
+            xhr.setRequestHeader("X-DreamFactory-API-Key", "6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d");
             xhr.setRequestHeader("Content-Type", "application/json");
 
             //if (xhr.overrideMimeType) xhr.overrideMimeType("application/json");

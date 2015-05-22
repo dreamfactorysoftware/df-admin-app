@@ -35,7 +35,7 @@
                         <label>Where will this app live</label><df-simple-help data-options="dfHelp.appLocation"></df-simple-help>
                         <div class="radio" data-ng-repeat="location in locations">
                             <label>
-                                <input type="radio" data-ng-model="app.record.is_url_external" value="{{location.value}}">
+                                <input type="radio" data-ng-model="app.record.type" value="{{location.value}}">
                                 {{location.label}}
                             </label>
                         </div>
@@ -44,7 +44,7 @@
                     <hr />
 
                     <!-- Application Storage Service -->
-                    <div data-ng-if="app.record.is_url_external == 0">
+                    <div data-ng-if="app.record.type == 1">
                         <!--<df-simple-help data-options="dfHelp.storageAndLaunchpad"></df-simple-help> -->
                         <div class="form-group">
                             <label>Storage Service</label><df-simple-help data-options="dfHelp.storageService"></df-simple-help>
@@ -52,20 +52,20 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Storage Container</label><df-simple-help data-options="dfHelp.storageContainer"></df-simple-help>
+                            <label>Storage Folder</label><df-simple-help data-options="dfHelp.storageContainer"></df-simple-help>
                             <select class="form-control" data-ng-model="app.record.storage_container" data-ng-options="value as value for value in storageContainers"></select>
                         </div>
 
                         <div class="form-group">
-                            <label>Default Path</label><df-simple-help data-options="dfHelp.defaultPath"></df-simple-help>
-                            <input class="form-control" type="text" data-ng-model="app.record.url" placeholder="Enter Default file to load." />
+                            <label>Launch Path</label><df-simple-help data-options="dfHelp.defaultPath"></df-simple-help>
+                            <input class="form-control" type="text" data-ng-model="app.record.path" placeholder="Enter default path and file to launch." />
                         </div>
 
                         <hr />
                     </div>
 
                     <!-- Supply URL -->
-                    <div data-ng-if="app.record.is_url_external == 1">
+                    <div data-ng-if="app.record.type == 2">
                         <div class="form-group">
                             <label>URL to Application</label><df-simple-help data-options="dfHelp.remoteUrl"></df-simple-help>
                             <input class="form-control" type="text" data-ng-model="app.record.url" placeholder="Enter full URL e.g. http://www.myserver.com" data-ng-required="true"/>
@@ -74,13 +74,28 @@
                         <hr />
                     </div>
 
+                    <!-- Supply Path -->
+                    <div data-ng-if="app.record.type == 3">
+                        <div class="form-group">
+                            <label>Path to Application</label><df-simple-help data-options="dfHelp.defaultPath"></df-simple-help>
+                            <input class="form-control" type="text" data-ng-model="app.record.path" placeholder="Enter path relative to this web server." data-ng-required="true"/>
+                        </div>
+
+                        <hr />
+                    </div>
+
                     <!-- Your Application URL -->
 
-                    <div class="form-group" data-ng-if="app.record.is_url_external == 0">
+                    <div class="form-group" data-ng-if="app.record.type == 1">
                         <div class="alert alert-info">
-                            <p><i class="fa fa-fw fa-cloud">&nbsp;</i>Your URL will be: {{currentServer}}{{storageContainers[app.record.storage_service_id].name}}/{{app.record.storage_container}}/{{app.record.name}}<span>{{app.record.url}}</span></p>
+                            <p><i class="fa fa-fw fa-cloud">&nbsp;</i>Your URL will be: {{currentServer}}{{storageContainers[app.record.storage_service_id].name}}/{{app.record.storage_container}}/{{app.record.name}}/{{app.record.path}}</p>
                         </div>
                     </div>
+					<div class="form-group" data-ng-if="app.record.type == 3">
+						<div class="alert alert-info">
+							<p><i class="fa fa-fw fa-cloud">&nbsp;</i>Your URL will be: {{currentServer}}/{{app.record.path}}</p>
+						</div>
+					</div>
 
 
                 </div>

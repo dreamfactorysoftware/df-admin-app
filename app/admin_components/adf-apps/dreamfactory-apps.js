@@ -1,7 +1,5 @@
 'use strict';
 
-// @TODO: Issue with updating apps is_url_external property
-
 angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'dfTable'])
 
     .constant('MOD_APPS_ROUTER_PATH', '/apps')
@@ -137,11 +135,10 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         name: '',
 						api_key: '',
 						description: '',
-                        native: true,
-                        is_url_external: '0',
+                        type: '0',
                         storage_service_id: getLocalFileStorageServiceId(),
                         storage_container: 'applications',
-                        launch_url: '',
+                        path: '',
                         url: '',
                         role_id: null
                     };
@@ -178,16 +175,20 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 // Radio button options
                 scope.locations = [
                     {
-                        label: 'File Storage',
+                        label: 'No Storage Required - remote device, client, or desktop.',
                         value: '0'
                     },
                     {
-                        label: 'Native device or remote client/desktop.',
-                        value: '-1'
+                        label: 'On a provisioned file storage service.',
+                        value: '1'
                     },
                     {
-                        label: 'Supply a URL for the application',
-                        value: '1'
+                        label: 'On this web server.',
+                        value: '3'
+                    },
+                    {
+                        label: 'On a remote URL.',
+                        value: '2'
                     }
                 ];
 
@@ -229,37 +230,41 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     var _app = angular.copy(record);
 
-                    switch (_app.record.is_url_external) {
+					// prepare data to be sent to server
+                    switch (_app.record.type) {
 
+                        case '0': // no storage
 
-                        case '0':
+							// No need for storage service.  Make sure
+							// it's set to null
+							_app.record.storage_service_id = null;
+							_app.record.storage_container = null;
+							_app.record.path = null;
+							_app.record.url = null;
 
-                            // prepare data to be sent to server
                             return _app.record;
 
-                        case '-1':
+                        case '1': // storage service
+
+                            return _app.record;
+
+                        case '2': // url
 
                             // No need for storage service.  Make sure
                             // it's set to null
                             _app.record.storage_service_id = null;
                             _app.record.storage_container = null;
+                            _app.record.path = null;
 
-                            // no need for a launch_url
-                            _app.record.launch_url = "";
+                            return _app.record
 
-                            // this is actually supposed to be a bool but
-                            // we have set the radio buttons value to -1
-                            // to distinguish it from a url supplied app
-                            _app.record.is_url_external = 0;
-
-                            return _app.record;
-
-                        case '1':
+                        case '3': // path
 
                             // No need for storage service.  Make sure
                             // it's set to null
                             _app.record.storage_service_id = null;
                             _app.record.storage_container = null;
+							_app.record.url = null;
 
                             return _app.record
 
@@ -311,35 +316,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     scope.selectedRoleId = null;
                 };
-
-                scope._setExternalUrl = function(data) {
-
-                    // If this isn't a new app and it has the 'is_url_external' property
-                    if (!scope.newApp && data.hasOwnProperty('is_url_external')) {
-
-                        // If url is not external and there is a launch url
-                        // This is a hosted app
-                        if (data.is_url_external == 0 && data.launch_url.length > 0) {
-
-                            data.is_url_external = '0';
-                        }
-
-                        // If the url is external
-                        // This app has a user supplied url
-                        else if (data.is_url_external == 1) {
-
-                            data.is_url_external = '1';
-                        }
-
-                        // This app is native ios/android
-                        // or remote client desktop app
-                        else {
-                            data.is_url_external = '-1';
-
-                        }
-                    }
-                }
-
 
                 // COMPLEX IMPLEMENTATION
                 scope._saveApp = function () {
@@ -416,8 +392,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             };
 
                             dfNotify.success(messageOptions);
-
-                            scope._setExternalUrl(result);
 
                             scope.app = new App(result);
 
@@ -498,8 +472,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 var watchAppData = scope.$watch('appData', function (newValue, oldValue) {
 
                     if (!newValue) return false;
-
-                    scope._setExternalUrl(newValue);
 
                     scope.app = new App(newValue);
 

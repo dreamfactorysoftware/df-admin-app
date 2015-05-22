@@ -40,18 +40,18 @@ angular
     ])
 
     // Set application version number
-    .constant('APP_VERSION', '1.0.11')
+    .constant('APP_VERSION', '2.0.0')
 
     // Set global url for this application
     .constant('DSP_URL', '')
 
     // Set app name(api key) for this application
-    .constant('DSP_API_KEY', 'admin')
+    .constant('DSP_API_KEY', '6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d')
 
     // Set global header for calls made to DSP
     .config(['$httpProvider', 'DSP_API_KEY', function($httpProvider, DSP_API_KEY) {
 
-        $httpProvider.defaults.headers.common['X-Dreamfactory-Application-Key'] = DSP_API_KEY;
+        $httpProvider.defaults.headers.common['X-Dreamfactory-API-Key'] = DSP_API_KEY;
     }])
 
     // Configure main app routing rules
