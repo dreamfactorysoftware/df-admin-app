@@ -319,6 +319,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             var params = options.params;
             params['api'] = api;
 
+            // add wrapper
+            options.data = {"record": [options.data]};
+
             // return response from server as promise
             return dfSystemData.resource(options).post(params, options.data, function(result) {
 

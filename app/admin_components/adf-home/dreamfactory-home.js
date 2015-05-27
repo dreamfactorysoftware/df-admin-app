@@ -143,23 +143,15 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 var App = function  (appData) {
 
                     var _app = {
-                        name: '',
-						api_key: '',
-						description: '',
-                        native: false,
-                        is_url_external: '0',
-                        storage_service_id: null,
-                        storage_container: 'applications',
-                        launch_url: '',
-                        roles:[]
+                        name: ''
                     };
 
                     appData = appData || _app;
 
                     return {
                         __dfUI: {
-                            selected: false,
-                            devLocal: null
+                            quickStartAppType: 'web',   // web or native
+                            quickStartWebType: null     // force selection, desktop or admin
                         },
                         record: angular.copy(appData),
                         recordCopy: angular.copy(appData)
@@ -169,7 +161,7 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.step = 1;
 
-                // This is where we will store you new app object during the
+                // This is where we will store your new app object during the
                 // quickstart
                 scope.app = new App();
 
@@ -181,13 +173,7 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 // We'll need your storage containers because we 'll need to assign
                 // this app to a storage container if it is a 'hosted on this system' app.
-                scope.storageServices = dfApplicationData.getApiData('service', {type: 'Local File Storage,File Storage'});
-
-                // We don't know the containers you may have because you haven't chosen
-                // a service yet. In reality we just find the 'applications' container from your
-                // local storage and put the app there if you are creating a 'hosted' app.
-                scope.storageContainers = [];
-
+                scope.storageServices = dfApplicationData.getApiData('service', {type: 'local_file'});
 
                 scope.downloadSDK = function() {
 
@@ -205,15 +191,15 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
 
-                // This checks to see if you have already used this api name
+                // This checks to see if you have already used this app name
                 // for an application
-                scope._isApiNameUnique = function () {
+                scope._isAppNameUnique = function () {
 
                     // let's loop through the apps
                     for (var i = 0; i < scope.apps.length; i++) {
 
-                        // Do we already have an app with that api_name
-                        if (dfStringService.areIdentical(scope.apps[i].api_name, scope.app.record.api_name)) {
+                        // Do we already have an app with that name
+                        if (dfStringService.areIdentical(scope.apps[i].name, scope.app.record.name)) {
 
                             // Yes.
                             return false;
@@ -233,76 +219,46 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     var _app = angular.copy(record);
 
-                    if (_app.record.native) {
+                    // translate UI selections to actual app type
 
-                        // No need for storage service.  Make sure
-                        // it's set to null
-                        _app.record.storage_service_id = null;
-                        _app.record.storage_container = null;
+                    switch (_app.__dfUI.quickStartAppType) {
 
-                        // we take care of the app name for the user
-                        _app.record.name = _app.record.api_name;
+                        case 'web':
 
-                        // no need for a launch_url
-                        _app.record.launch_url = "";
+                            if (_app.__dfUI.quickStartWebType === "desktop") {
 
-                        // this is actually supposed to be a bool but
-                        // we have set the radio buttons value to -1
-                        // to distinguish it from a url supplied app
-                        _app.record.is_url_external = 0;
+                                // native
+                                _app.record.type = 0;
 
-                        // prepare data to be sent to server
-                        return _app.record;
-                    }
-                    else {
+                            } else {
 
-                        if (_app.__dfUI.devLocal == 1) {
+                                // local file storage
+                                _app.record.type = 1;
 
-                            // No need for storage service.  Make sure
-                            // it's set to null
-                            _app.record.storage_service_id = null;
-                            _app.record.storage_container = null;
+                                // TODO can't assume service and container exist
+                                angular.forEach(scope.storageServices, function (service) {
 
-
-                        }
-                        else {
-
-                            angular.forEach(scope.storageServices, function (service) {
-
-                                if (service.type === 'Local File Storage') {
-                                    _app.record.storage_service_id = service.id
-                                }
-                                else {
-
-                                    var messageOptions = {
-                                        module: 'Quickstart Error',
-                                        type: 'error',
-                                        provider: 'dreamfactory',
-                                        message: 'No local file storage service found.'
+                                    if (service.type === 'local_file') {
+                                        _app.record.storage_service_id = service.id;
+                                        _app.record.storage_container = 'applications';
                                     }
+                                });
+                            }
 
-                                    dfNotify.error(messageOptions);
-                                }
-                            });
+                            break;
 
-                            _app.record.storage_container = 'applications';
+                        case 'native':
 
-                        }
+                            // native
+                            _app.record.type = 0;
 
-                        _app.record.is_url_external = false;
-
-                        // we take care of the app name for the user
-                        _app.record.name = _app.record.api_name;
-
-                        return _app.record;
+                            break;
                     }
+
+                    return _app.record;
                 };
 
-                scope._createApp = function (stepOnSuccess) {
-
-
-                    // Set so we can distinguish a remote client web app from a native app
-                    scope.isWebAppOnLocalMachine = scope.app.__dfUI.devLocal;
+                scope._createApp = function () {
 
                     // Create our request obj
                     var requestDataObj = {
@@ -313,8 +269,8 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         data: scope._prepareAppData(scope.app)
                     };
 
-
                     scope._saveAppToServer(requestDataObj).then(
+
                         function (result) {
 
                             // notify success
@@ -322,23 +278,19 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 module: 'Apps',
                                 type: 'success',
                                 provider: 'dreamfactory',
-                                message: scope.app.record.api_name + ' saved successfully.'
+                                message: scope.app.record.name + ' saved successfully.'
                             };
 
                             dfNotify.success(messageOptions);
 
+                            // save and restore UI settings
+                            var ui = angular.copy(scope.app.__dfUI);
                             scope.app = new App (result);
+                            scope.app.__dfUI = ui;
 
-                            if (!scope.app.record.is_url_external && !scope.app.record.storage_service_id && (scope.isWebAppOnLocalMachine === null)) {
-                                scope.app.record['native'] = true;
-                            }
-                            else {
-                                scope.app.record['native'] = false;
-                            }
-
-                            scope.setStep(stepOnSuccess);
-
+                            scope.setStep(3);
                         },
+
                         function (reject) {
 
                             var messageOptions = {
@@ -349,7 +301,6 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             };
 
                             dfNotify.error(messageOptions);
-
                         }
                     )
                 }
@@ -362,9 +313,8 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             scope.step = step;
 
                         case 2:
-                            if (scope.app.record.native) {
-
-                                scope._createApp(3);
+                            if (scope.app.__dfUI.quickStartAppType === 'native') {
+                                scope._createApp();
                                 break;
                             }
 

@@ -16,10 +16,10 @@
                         and dashes. Other characters are not allowed.
                     </p>
 
-                    <div class="col-xs-12 col-sm-6 col-md-4" data-ng-class="!_isApiNameUnique() || form.$invalid ? 'has-error' : ''" style="padding-left: 0;">
+                    <div class="col-xs-12 col-sm-6 col-md-4" data-ng-class="!_isAppNameUnique() || form.$invalid ? 'has-error' : ''" style="padding-left: 0;">
                         <input type="text"
-                               id="app_api_name"
-                               name="api-name"
+                               id="app_name"
+                               name="app-name"
                                class="form-control required"
                                data-ng-model="app.record.name"
                                data-ng-maxlength="64"
@@ -27,7 +27,7 @@
                                data-ng-pattern="/^[a-zA-Z0-9_\-]*$/"
                                placeholder="Your Application Name">
                         <p class="text-danger" data-ng-show="form.$dirty && form.$invalid">Your name contains invalid characters.</p>
-                        <p class="text-danger" data-ng-show="form.$dirty && !_isApiNameUnique() && form.$valid">This name has already been taken.</p>
+                        <p class="text-danger" data-ng-show="form.$dirty && !_isAppNameUnique() && form.$valid">This name has already been taken.</p>
                     </div>
                 </div>
 
@@ -45,8 +45,8 @@
                             <input type="radio"
                                    name="app_type"
                                    id="app-type-web"
-                                   data-ng-model="app.record.native"
-                                   value="0"
+                                   data-ng-model="app.__dfUI.quickStartAppType"
+                                   value="web"
                                    checked="checked" style="margin-top: 5px;">Web-Based
                             &nbsp;<i class="fa fa-html5" title="HTML5"></i>
                             &nbsp;<i class="fa fa-css3" title="CSS3"></i>
@@ -59,8 +59,8 @@
                             <input type="radio"
                                    name="app_type"
                                    id="app-type-native"
-                                   value="1"
-                                   data-ng-model="app.record.native" style="margin-top: 5px;">Native
+                                   value="native"
+                                   data-ng-model="app.__dfUI.quickStartAppType" style="margin-top: 5px;">Native
                             &nbsp;<i class="fa fa-android" title="Android SDK"></i>
                             &nbsp;<i class="fa fa-apple" title="Apple iOS"></i>
                         </label>
@@ -69,7 +69,7 @@
 
                 <div class="form-group">
                     <button id="btn-step-1" class="btn btn-primary" title="Continue to the next step"
-                            data-ng-disabled="!app.record.name || form.$invalid || !_isApiNameUnique()" data-ng-click="setStep(2)">Continue
+                            data-ng-disabled="!app.record.name || form.$invalid || !_isAppNameUnique()" data-ng-click="setStep(2)">Continue
                     </button>
                 </div>
             </form>
@@ -96,10 +96,10 @@
                     <label>
                         <input type="radio"
                                name="development-locale"
-                               id="development-local"
-                               value="1"
+                               id="development-desktop"
+                               value="desktop"
                                checked="checked"
-                               data-ng-model="app.__dfUI.devLocal">
+                               data-ng-model="app.__dfUI.quickStartWebType">
                         Locally (edit code on your desktop)
                     </label>
                 </div>
@@ -108,9 +108,9 @@
                     <label>
                         <input type="radio"
                                name="development-locale"
-                               id="development-remote"
-                               value="0"
-                               data-ng-model="app.__dfUI.devLocal">
+                               id="development-admin"
+                               value="admin"
+                               data-ng-model="app.__dfUI.quickStartWebType">
                         Here in the Admin Console (edit code in your browser)
                     </label>
                 </div>
@@ -118,9 +118,9 @@
 
             <div class="form-group pull-right" style="clear: both;padding-top: 10px;margin-bottom: 5px;">
                 <button class="btn btn-primary" data-ng-click="setStep(1)" title="Go back to the previous step">Previous</button>
-                <button data-ng-disabled="app.__dfUI.devLocal === null" title="Continue to the next step"
+                <button data-ng-disabled="app.__dfUI.quickStartWebType === null" title="Continue to the next step"
                         class="btn btn-primary"
-                        data-ng-click="_createApp(3)">Continue
+                        data-ng-click="_createApp()">Continue
                 </button>
             </div>
         </div>
@@ -133,10 +133,10 @@
             <h3>Congratulations!</h3>
 
             <!-- Web Apps -->
-            <div data-ng-show="app.record.native == false">
+            <div data-ng-show="app.__dfUI.quickStartAppType === 'web'">
 
-                <!-- Remote Web Apps (Apps NOT stored in DSP local storage -->
-                <div data-ng-show="!app.record.storage_service_id">
+                <!-- Apps NOT stored in DSP local storage -->
+                <div data-ng-show="app.__dfUI.quickStartWebType === 'desktop'">
                     <p>
                         Your application ID has been created. You'll now see your application in the Apps tab of the Admin
                         Console. Here you can change application properties, preview your application, edit any hosted
@@ -151,8 +151,8 @@
 
                 </div>
 
-                <!-- Local Web Apps (Apps stored in DSP local storage) -->
-                <div ng-show="app.record.storage_service_id">
+                <!-- Apps stored in DSP local storage -->
+                <div ng-show="app.__dfUI.quickStartWebType === 'admin'">
                     <p>Your application has been successfully created. When you select the
                         Apps tab from the left sidebar, you will see your application in the list. Each DSP
                         instance comes with example applications to help get you started as well.
@@ -218,7 +218,7 @@
             </div>
 
             <!-- Native (iOS/Android) Apps -->
-            <div data-ng-show="app.record.native == true">
+            <div data-ng-show="app.__dfUI.quickStartAppType === 'native'">
 
 
                 <p>

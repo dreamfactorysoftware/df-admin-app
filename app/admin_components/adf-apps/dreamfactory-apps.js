@@ -133,9 +133,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     var _app = {
                         name: '',
-						api_key: '',
 						description: '',
-                        type: '0',
+                        type: 0,
                         storage_service_id: getLocalFileStorageServiceId(),
                         storage_container: 'applications',
                         path: '',
@@ -152,20 +151,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         record: angular.copy(appData),
                         recordCopy: angular.copy(appData)
                     }
-                };
-
-                scope.appsPrepFunc = function(appsDataArr) {
-
-                    var newAppsArr = [];
-
-                    angular.forEach(appsDataArr, function(appData) {
-
-                        var _newApp = new App(appData);
-
-                        newAppsArr.push(_newApp);
-                    });
-
-                    return newAppsArr;
                 };
 
                 scope.currentServer = dfServerInfoService.currentServer();
@@ -230,48 +215,38 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     var _app = angular.copy(record);
 
-					// prepare data to be sent to server
-                    switch (_app.record.type) {
+					// prepare data to be sent to server, delete N/A fields
+                    switch (parseInt(_app.record.type)) {
 
-                        case '0': // no storage
+                        case 0: // no storage
 
-							// No need for storage service.  Make sure
-							// it's set to null
-							_app.record.storage_service_id = null;
-							_app.record.storage_container = null;
-							_app.record.path = null;
-							_app.record.url = null;
+							delete _app.record.storage_service_id;
+                            delete _app.record.storage_container;
+                            delete _app.record.path;
+                            delete _app.record.url;
+                            break;
 
-                            return _app.record;
+                        case 1: // storage service
 
-                        case '1': // storage service
+                            delete _app.record.url;
+                            break;
 
-                            return _app.record;
+                        case 2: // url
 
-                        case '2': // url
+                            delete _app.record.storage_service_id;
+                            delete _app.record.storage_container;
+                            delete _app.record.path;
+                            break;
 
-                            // No need for storage service.  Make sure
-                            // it's set to null
-                            _app.record.storage_service_id = null;
-                            _app.record.storage_container = null;
-                            _app.record.path = null;
+                        case 3: // path
 
-                            return _app.record
-
-                        case '3': // path
-
-                            // No need for storage service.  Make sure
-                            // it's set to null
-                            _app.record.storage_service_id = null;
-                            _app.record.storage_container = null;
-							_app.record.url = null;
-
-                            return _app.record
-
-                        default:
-
-
+                            delete _app.record.storage_service_id;
+                            delete _app.record.storage_container;
+                            delete _app.record.url;
+                            break;
                     }
+
+                    return _app.record;
 
                 };
 
@@ -465,8 +440,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                         i++
                     }
-
-                    // scope._setExternalUrl(newValue);
                 });
 
                 var watchAppData = scope.$watch('appData', function (newValue, oldValue) {
