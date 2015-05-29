@@ -155,7 +155,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.user = null;
                 scope.roles = dfApplicationData.getApiData('role');
-
+                scope.apps = dfApplicationData.getApiData('app');
 
                 if (scope.newUser) {
                     scope.user = new User();
@@ -474,6 +474,59 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
             }
         }
+    }])
+
+    .directive('dfUserRoles', ['MOD_USER_ASSET_PATH', function(MOD_USER_ASSET_PATH) {
+        return {
+            restrict: 'E',
+            scope: false,
+            templateUrl: MOD_USER_ASSET_PATH + 'views/df-user-roles.html',
+            link: function (scope, elem, attrs) {
+
+                scope.roleToAppMap = {};
+
+                scope.$watch('user', function () {
+                    if (!scope.user) return;
+
+                    scope.user.record.user_to_app_to_role_by_user_id.forEach(function (item) {
+                        scope.roleToAppMap[item.app_id] = item.role_id;
+                    });
+                });
+
+                scope.selectRole = function () {
+                    Object.keys(scope.roleToAppMap).forEach(function (item) {
+                        if (scope.roleToAppMap[item]) {
+                            scope._updateRoleApp(item, scope.roleToAppMap[item]);
+                        } else {
+                            scope._removeRoleApp(item, scope.roleToAppMap[item])
+                        }
+                    });
+                };
+
+                scope._removeRoleApp = function (appId) {
+                    scope.user.record.user_to_app_to_role_by_user_id = scope.user.record.user_to_app_to_role_by_user_id.filter(function (item) {
+                        return item.app_id != appId;
+                    });
+                };
+
+                scope._updateRoleApp = function (appId, roleId) {
+                    var existing = scope.user.record.user_to_app_to_role_by_user_id.filter(function (item) {
+                        return item.app_id == appId && item.role_id == roleId;
+                    })[0];
+
+                    if (existing) {
+                        existing.app_id = appId;
+                        existing.role_id = roleId;
+                    } else {
+                        scope.user.record.user_to_app_to_role_by_user_id.push({
+                            app_id: appId,
+                            role_id: roleId,
+                            user_id: scope.user.record.id
+                        });
+                    }
+                };
+            }
+        };
     }])
 
     .directive('dfUserLookupKeys', ['MOD_USER_ASSET_PATH', 'dfStringService', function(MOD_USER_ASSET_PATH, dfStringService) {
