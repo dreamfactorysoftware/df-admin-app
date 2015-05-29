@@ -904,7 +904,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     user: {
                         include_count: true,
                         limit: 20,
-                        related: 'user_lookup_by_user_id'
+                        related: 'user_lookup_by_user_id,user_to_app_to_role_by_user_id'
                     },
                     service: {
                         include_count: true,

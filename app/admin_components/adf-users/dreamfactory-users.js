@@ -137,7 +137,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         user_source: 0,
                         user_data: [],
                         password: null,
-                        user_lookup_by_user_id: []
+                        user_lookup_by_user_id: [],
+                        user_to_app_to_role_by_user_id: []
                     };
 
                     userData = userData || _user;
@@ -222,7 +223,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'user_lookup_by_user_id',
+                            related: 'user_to_app_to_role_by_user_id,user_lookup_by_user_id',
                             send_invite: scope.sendEmailOnCreate
                         },
                         data: scope.user.record
@@ -280,7 +281,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         params: {
                             fields: '*',
-                            related: 'user_lookup_by_user_id'
+                            related: 'user_to_app_to_role_by_user_id,user_lookup_by_user_id'
                         },
                         data: scope.user.record
                     };
