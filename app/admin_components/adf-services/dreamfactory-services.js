@@ -54,7 +54,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
     }])
 
-    .service('dfServiceData', [ '$http', '$q', function ($http, $q) {
+    .service('dfServiceData', [ '$http', '$q', 'DSP_URL', function ($http, $q, DSP_URL) {
         var dfServiceData = {};
 
         dfServiceData.getServiceTypes = function () {
