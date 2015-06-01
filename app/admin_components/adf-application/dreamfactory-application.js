@@ -901,6 +901,11 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         related: 'role_service_access_by_role_id,role_lookup_by_role_id',
                         limit: 100
                     },
+                    admin: {
+                        include_count: true,
+                        limit: 20,
+                        related: 'user_lookup_by_user_id'
+                    },
                     user: {
                         include_count: true,
                         limit: 20,
@@ -929,6 +934,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         manageViewMode: 'table'
                     },
                     role: {
+                        autoClose: false,
+                        manageViewMode: 'table'
+                    },
+                    admin: {
                         autoClose: false,
                         manageViewMode: 'table'
                     },
@@ -963,7 +972,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
         return {
 
-            apis: ['system', 'config', 'service', 'app', 'role', 'user', 'email_template', 'app_group', 'event'],
+            apis: ['system', 'config', 'service', 'app', 'role', 'admin', 'user', 'email_template', 'app_group', 'event'],
 
             getApis: function () {
                 return this;

@@ -87,6 +87,11 @@ angular.module('dreamfactoryApp')
                 path: '/apps'
             },
             {
+                name: 'admins',
+                label: 'Admins',
+                path: '/admins'
+            },
+            {
                 name: 'users',
                 label: 'Users',
                 path: '/users'

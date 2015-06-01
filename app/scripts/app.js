@@ -20,6 +20,7 @@ angular
         'dfHome',
         'dfDownloads',
         'dfSystemConfig',
+        'dfAdmins',
         'dfUsers',
         'dfApps',
         'dfData',

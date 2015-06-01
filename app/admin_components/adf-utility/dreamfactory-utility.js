@@ -53,6 +53,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                         case '/home':
                         case '/apps':
+                        case '/admins':
                         case '/users':
                         case '/roles':
                         case '/services':
@@ -357,6 +358,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                         case '/home':
                         case '/apps':
+                        case '/admins':
                         case '/users':
                         case '/roles':
                         case '/services':
@@ -1854,7 +1856,7 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
-    // allows user to set security quesetion and answer
+    // allows user to set security question and answer
     .directive('dfSetSecurityQuestion', ['MOD_UTILITY_ASSET_PATH', '$compile', function (MOD_UTILITY_ASSET_PATH, $compile) {
 
 
