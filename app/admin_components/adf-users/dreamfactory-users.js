@@ -131,8 +131,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         phone: null,
                         confirmed: false,
                         is_active: true,
-                        is_sys_admin: false,
-                        role_id: null,
                         default_app_id: null,
                         user_source: 0,
                         user_data: [],
@@ -747,19 +745,9 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         label: 'Last_name',
                         active: true
                     },
-					{
-						name: 'role_id',
-						label:'Role',
-						active: true
-					},
                     {
                         name: 'is_active',
                         label: 'Active',
-                        active: true
-                    },
-                    {
-                        name: 'is_sys_admin',
-                        label: 'Administrator',
                         active: true
                     },
                     {

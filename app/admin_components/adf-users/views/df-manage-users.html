@@ -90,9 +90,7 @@
                                     <td data-ng-click="editUser(obj.record)">{{obj.record.name}}</td>
 									<td data-ng-click="editUser(obj.record)">{{obj.record.first_name}}</td>
 									<td data-ng-click="editUser(obj.record)">{{obj.record.last_name}}</td>
-                                    <td data-ng-click="editUser(obj.record)">{{_getUserRoleName(obj.record.role_id)}}</td>
                                     <td data-ng-click="editUser(obj.record)">{{obj.record.is_active}}</td>
-                                    <td data-ng-click="editUser(obj.record)">{{obj.record.is_sys_admin}}</td>
                                     <td data-ng-click="editUser(obj.record)">{{obj.record.confirmed}}</td>
                                 </tr>
                                 </tbody>
@@ -140,9 +138,7 @@
                                                 <p>
                                                     Full name: {{user.record.first_name}}&nbsp;{{user.record.last_name}}<br />
                                                     Email: {{user.record.email}}<br />
-                                                    Role: <span data-ng-if="user.record.role_id !== null">{{user.record.role_id}}</span><span data-ng-if="user.record.role_id === null">Unassigned</span><br/>
                                                     Active: <span data-ng-if="user.record.is_active">True</span><span data-ng-if="!user.record.is_active">False</span><br />
-                                                    Admin: <span data-ng-if="user.record.is_sys_admin">True</span><span data-ng-if="!user.record.is_sys_admin">False</span><br />
                                                     Confirmed:  <span data-ng-if="user.record.confirmed">True</span><span data-ng-if="!user.record.confirmed">False</span><br />
                                                 </p>
                                             </div>
