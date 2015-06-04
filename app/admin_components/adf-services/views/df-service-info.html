@@ -1,1 +1,10 @@
-<div class="form-group"></div>
+<div>
+    <div class="form-group">
+        <label>Name</label>
+        <select class="form-control" data-ng-model="serviceData.type" data-ng-options="type.name as type.label for type in hcv.serviceTypes" data-ng-change="changeServiceType()" required/>
+    </div>
+    <div class="form-group" data-ng-repeat="(key, value) in selectedSchema.config_schema">
+        <label>{{ value.label }}</label>
+        <input class="form-control" data-ng-model="serviceData.info[value.key]" type="text" ng-required="value.required" />
+    </div>
+</div>
