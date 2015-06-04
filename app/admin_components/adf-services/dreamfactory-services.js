@@ -559,13 +559,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope.changeServiceType = function () {
-                    if (!scope.serviceData) {
+                    if (!scope.serviceInfo && !scope.serviceInfo.record) {
                         return;
                     }
 
-                    scope.serviceData.info = {};
+                    scope.serviceInfo.record.configData = {};
                     scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
-                        return item.name === scope.serviceData.type;
+                        return item.name === scope.serviceInfo.record.type;
                     })[0]; 
                 };
 
@@ -578,7 +578,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             .filter(function (el) {
                                 return el.name !== "local_sql_db";
                             });
-                    }  
+                    }
+
+                    if (!scope.serviceInfo.record)
+                        return;
+
+                    scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
+                        return item.name === scope.serviceInfo.record.type;
+                    })[0];
                 });
 
 
@@ -1241,9 +1248,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     // Create a ServiceInfo object
                     scope.serviceInfo = new ServiceInfo(newValue.record);
-                    scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
-                        return item.name === scope.serviceData.type;
-                    })[0]; 
+ 
                     // We set this to null and then during the _renderServiceFields function
                     // a storage type will be assigned
                     scope._storageType = null;
