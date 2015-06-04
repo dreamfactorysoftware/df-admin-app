@@ -561,14 +561,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.hcv = new dfServiceValues();
 
                 dfServiceData.getServiceTypes().then(function (serviceTypes) {
-                    scope.hcv.serviceTypes = serviceTypes;
+                    scope.hcv.serviceTypes = serviceTypes.record;
                     if (scope.newService) {
                         scope.hcv.serviceTypes = scope.hcv.serviceTypes
                             .filter(function (el) {
                                 return el.name !== "local_sql_db";
                             });
-                    }    
+                    }  
                 });
+
+
 
                 scope._script = {};
                 scope.serviceInfo = {};
