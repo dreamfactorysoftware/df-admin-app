@@ -558,6 +558,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 };
 
+                scope.changeServiceType = function () {
+                    if (!scope.hcv.serviceTypes || !scope.serviceData) {
+                        return;
+                    }
+                    scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
+                        return item.name === scope.serviceData.type;
+                    })[0]; 
+                };
+
                 scope.hcv = new dfServiceValues();
 
                 dfServiceData.getServiceTypes().then(function (serviceTypes) {
@@ -1230,6 +1239,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     // Create a ServiceInfo object
                     scope.serviceInfo = new ServiceInfo(newValue.record);
+                    scope.changeServiceType();
 
                     // We set this to null and then during the _renderServiceFields function
                     // a storage type will be assigned
