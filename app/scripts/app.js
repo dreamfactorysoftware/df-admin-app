@@ -18,7 +18,6 @@ angular
         'ngTouch',
         'dfUtility',
         'dfHome',
-        'dfDownloads',
         'dfSystemConfig',
         'dfAdmins',
         'dfUsers',
