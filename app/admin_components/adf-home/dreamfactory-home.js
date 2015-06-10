@@ -79,35 +79,52 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
     }])
 
-    .controller('HomeCtrl', ['$scope',
-        function($scope){
+    .controller('HomeCtrl', ['$scope', '$sce', 'dfApplicationData', 'SystemConfigDataService',
+        function($scope, $sce, dfApplicationData, SystemConfigDataService){
+
+            $scope.trustUrl = function (url) {
+                return $sce.trustAsResourceUrl(url);
+            }
 
             $scope.$parent.title = 'Home';
 
             // Set module links
-            $scope.links = [
+            $scope.links = SystemConfigDataService.getSystemConfig().home_links || [
                 {
                     name: 'welcome-home',
                     label: 'Welcome',
-                    path: 'welcome-home'
-                },
-                {
-                    name: 'quickstart-home',
-                    label: 'Quickstart',
-                    path: 'quickstart-home'
+                    href: "//www.dreamfactory.com/in_product_welcome.html",
+                    attributes: []
                 },
                 {
                     name: 'resource-home',
                     label: 'Resources',
-                    path: 'resource-home'
+                    href: "//www.dreamfactory.com/in_product_resources.html",
+                    attributes: []
                 },
                 {
                     name: 'download-home',
                     label: 'Download',
-                    path: 'download-home'
+                    href: "//www.dreamfactory.com/in_product_downloads.html",
+                    attributes: []
                 }
             ];
+
+            $scope.links.push({
+                name: 'quickstart-home',
+                label: 'Quickstart',
+                href: null,
+                attributes: []
+            });
+
+            angular.forEach($scope.links, function (link) {
+                if (!link.label) {
+                    link.label = link.name;
+                }
+            });
+
         }])
+
 
     .directive('dfWelcome', ['$sce', 'MOD_HOME_ASSET_PATH', '$http', 'dfApplicationData', function($sce, MOD_HOME_ASSET_PATH, $http, dfApplicationData) {
         return {
