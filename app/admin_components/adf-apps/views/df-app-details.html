@@ -88,7 +88,7 @@
 
                     <div class="form-group" data-ng-if="app.record.type == 1">
                         <div class="alert alert-info">
-                            <p><i class="fa fa-fw fa-cloud">&nbsp;</i>Your URL will be: {{currentServer}}{{storageContainers[app.record.storage_service_id].name}}/{{app.record.storage_container}}/{{app.record.name}}/{{app.record.path}}</p>
+                            <p><i class="fa fa-fw fa-cloud">&nbsp;</i>Your URL will be: {{currentServer}}/files{{storageContainers[app.record.storage_service_id].name}}/{{app.record.storage_container}}/{{app.record.api_name}}<span>{{app.record.url}}</span></p>
                         </div>
                     </div>
 					<div class="form-group" data-ng-if="app.record.type == 3">
