@@ -89,7 +89,7 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             $scope.$parent.title = 'Home';
 
             // Set module links
-            $scope.links = SystemConfigDataService.getSystemConfig().home_links || [
+            $scope.links = angular.copy(SystemConfigDataService.getSystemConfig().home_links) || [
                 {
                     name: 'welcome-home',
                     label: 'Welcome',
@@ -122,7 +122,6 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     link.label = link.name;
                 }
             });
-
         }])
 
     .directive('dfQuickstart', ['MOD_HOME_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'dfStringService', function(MOD_HOME_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, dfStringService) {
