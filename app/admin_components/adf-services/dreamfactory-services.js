@@ -174,7 +174,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 // Other Data
 
-
                 // PUBLIC API
                 scope.saveService = function() {
 
@@ -563,10 +562,32 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         return;
                     }
 
-                    scope.serviceInfo.record.configData = {};
+                    scope.serviceInfo.record.config = {};
                     scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
                         return item.name === scope.serviceInfo.record.type;
                     })[0]; 
+
+                    if (scope.selectedSchema)
+                        scope.configureTabs(scope.selectedSchema);
+                };
+
+                 scope.tabConfig = {
+                    'rws': [ 'parameters', 'headers', 'serviceDef' ],
+                    'sql_db': [ 'serviceDef' ],
+                    'mongo_db': [ 'serviceDef' ],
+                    'smtp_email': [ 'parameters', 'serviceDef' ],
+                    'local_file': [ 'privates', 'serviceDef' ]
+                };
+
+                scope.configureTabs = function (selectedSchema) {
+                    var array = scope.tabConfig[selectedSchema.name] || [];
+                    Object.keys(scope.tabs).forEach(function (key) {
+                        var exist = array.filter(function (tabName) {
+                            return tabName === key;
+                        }).length;
+
+                        scope.tabs[key] = !!exist;
+                    });
                 };
 
                 scope.hcv = new dfServiceValues();
@@ -702,7 +723,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
                     }
 
-                    scope.serviceInfo.record.config = data;//dfObjectService.mergeObjects(scope.serviceInfo.record.config, data);
+                    // scope.serviceInfo.record.config = data;//dfObjectService.mergeObjects(scope.serviceInfo.record.config, data);
                     scope.service.record = dfObjectService.mergeObjects(scope.serviceInfo.record, scope.service.record);
                 };
                 

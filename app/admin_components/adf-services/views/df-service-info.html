@@ -19,7 +19,7 @@
 
     <div class="form-group" data-ng-repeat="(key, value) in selectedSchema.config_schema">
         <label>{{ value.label }}</label>
-        <input class="form-control" data-ng-model="serviceInfo.record.typeData[value.key]" type="text" ng-required="value.required" />
+        <input class="form-control" ng-model="serviceInfo.record.config[value.name || key]" type="text" ng-required="value.required" />
     </div>
 
     <div class="form-group ng-scope">
