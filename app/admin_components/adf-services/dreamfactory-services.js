@@ -607,6 +607,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
                         return item.name === scope.serviceInfo.record.type;
                     })[0];
+
+                    scope.configureTabs(scope.selectedSchema);
                 });
 
 
