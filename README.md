@@ -1,7 +1,7 @@
-# dsp-admin-app
-AngularJS administration application for the DSP v2.0 and up
+# df-admin-app
+AngularJS administration application for the DreamFactory v2.0 and up
 
-Administer your DSP from anywhere with this Admin application.  Customize with themes from Bootswatch or roll your own with SCSS/SASS.  Concat, minify, and uglify component modules with Node.js, Grunt, and the included grunt script for a deployment ready application.
+Administer your DreamFactory instance from anywhere with this Admin application.  Customize with themes from Bootswatch or roll your own with SCSS/SASS.  Concat, minify, and uglify component modules with Node.js, Grunt, and the included grunt script for a deployment ready application.
 
 ## Installing Admin App
 Clone the repo.  Navigate to the top level directory of where you cloned the repo and type `bower install`.  **NOTE: you must have Node, Grunt, and GruntCLI installed.**  
