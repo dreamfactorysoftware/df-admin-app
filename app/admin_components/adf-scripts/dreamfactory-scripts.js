@@ -29,7 +29,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     templateUrl: MODSCRIPTING_ASSET_PATH + 'views/main.html',
                     controller: 'ScriptsCtrl',
                     resolve: {
-                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
 
                             if (dfApplicationData.initInProgress) {
 
@@ -78,16 +78,15 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
     }])
     .controller('ScriptsCtrl', ['DSP_URL', 'SystemConfigDataService', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'MODSCRIPTING_EXAMPLES_PATH',
-        function(DSP_URL, SystemConfigDataService, $scope, $http, dfApplicationData, dfNotify, MODSCRIPTING_EXAMPLES_PATH) {
+        function (DSP_URL, SystemConfigDataService, $scope, $http, dfApplicationData, dfNotify, MODSCRIPTING_EXAMPLES_PATH) {
 
             $scope.$parent.title = 'Scripts';
 
             // Loosely defined script object for when a script is non-existent.
-            var ScriptObj = function (scriptId, isCustomScript, scriptLanguage, scriptData) {
+            var ScriptObj = function (scriptId, scriptLanguage, scriptData) {
 
                 return {
                     script_id: scriptId,
-                    is_user_script: isCustomScript || false,
                     language: scriptLanguage || 'js',
                     script_body: scriptData || '',
                     __newScript: true
@@ -104,34 +103,20 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                         return httpResponseObj.data.record;
 
-                    }else if (httpResponseObj.data.hasOwnProperty('resource')) {
+                    } else if (httpResponseObj.data.hasOwnProperty('resource')) {
 
                         return httpResponseObj.data.resource;
 
-                    }else {
+                    } else {
 
                         return httpResponseObj.data;
                     }
-                }else {
+                } else {
 
                 }
             };
 
             $scope.isHostedSystem = false; // SystemConfigDataService.getSystemConfig().is_hosted;
-
-
-            // Array containing data that describes the scripting types.
-            $scope.scriptTypes = [
-
-                {
-                    name: 'event-scripts',
-                    label: 'Event Scripts'
-                },
-                {
-                    name: 'custom-scripts',
-                    label: "Custom Scripts"
-                }
-            ];
 
             // Sample Scripts
             $scope.samplesScripts = null;
@@ -148,17 +133,13 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.postprocessEventsOn = true;
             $scope.uppercaseVerbs = false;
             $scope.uppercaseVerbLabels = true;
-            $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete', 'merge']
+            $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete']
 
             // Keep track of what's going on in the module
             $scope.currentScriptTypeObj = null;
             $scope.currentEventObj = null;
             $scope.currentPathObj = null;
             $scope.currentScriptObj = null;
-
-            // Keep track of custom scripts
-            $scope.isCustomScript = false;
-            $scope.customScripts = [];
 
             // Stuff for the editor
             $scope.editor = null;
@@ -193,7 +174,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope.deleteScript = function () {
 
-                if (dfNotify.confirm('Delete ' +  $scope.currentScriptObj.script_id + '?')) {
+                if (dfNotify.confirm('Delete ' + $scope.currentScriptObj.script_id + '?')) {
 
                     $scope._deleteScript();
                 }
@@ -205,12 +186,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
 
-
             // PRIVATE API
 
             // Dynamically create event names on the client because no one thought it
             // would be a good idea to build that list on the server and send it on a GET /api/v2/script
-            $scope._createEvents = function(event, associatedData) {
+            $scope._createEvents = function (event, associatedData) {
 
                 // returns an empty Path Object
                 function PathObj() {
@@ -266,7 +246,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 // change verbs to uppercase
 
                 if ($scope.uppercaseVerbs) {
-                    angular.forEach(event.paths[0].verbs, function(verb) {
+                    angular.forEach(event.paths[0].verbs, function (verb) {
                         verb.type = verb.type.toUpperCase();
                     });
                 }
@@ -279,7 +259,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     var staticEvents;
 
                     // Loop through the associated data (tables returned from 'GET' on the service name)
-                    angular.forEach(associatedData, function(pathRef) {
+                    angular.forEach(associatedData, function (pathRef) {
 
                         // Set our staticEvents empty
                         staticEvents = [];
@@ -296,7 +276,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                             verbs = pathRef.access || ['GET', 'POST', 'PATCH', 'DELETE'];
 
-                        }else {
+                        } else {
 
                             angular.forEach(pathRef.access, function (verb, index) {
                                 pathRef.access[index] = verb.toLowerCase();
@@ -323,7 +303,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         });
 
                         verbs = allowedVerbs;
-
 
 
                         // Loop through the verbs and create Verb Objects
@@ -362,12 +341,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                         staticEvents.push(buildVerbObj(event.name, pathRef.name, verb, 'update'));
                                         break;
 
-                                    case "MERGE":
-                                    case "merge":
-
-                                        // No support for a static merge event at this time
-                                        break;
-
                                     case "DELETE":
                                     case "delete":
                                         // SAO
@@ -397,7 +370,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                             // Yes.  Loop through the array
                             // array reverse to get events in proper order
-                            angular.forEach(staticEvents.reverse(), function(event) {
+                            angular.forEach(staticEvents.reverse(), function (event) {
 
                                 // put events at the front of the verbs array in the Path Object
                                 npo.verbs.unshift(event);
@@ -439,7 +412,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             // Retrieves associated path(s) data for an event
-            $scope._getEventFromServer = function(requestDataObj) {
+            $scope._getEventFromServer = function (requestDataObj) {
 
 
                 return $http({
@@ -451,21 +424,21 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             // Retrieves script object from server
-            $scope._getScriptFromServer = function(requestDataObj) {
+            $scope._getScriptFromServer = function (requestDataObj) {
 
                 return $http({
                     method: 'GET',
-                    url: DSP_URL + '/api/v2/system/script/' + requestDataObj.script_id,
+                    url: DSP_URL + '/api/v2/system/event/script/' + requestDataObj.script_id,
                     params: requestDataObj.params
                 })
             };
 
             // Save script object to server
-            $scope._saveScriptToServer = function(requestDataObj) {
+            $scope._saveScriptToServer = function (requestDataObj) {
 
                 return $http({
                     method: 'PUT',
-                    url: DSP_URL + '/api/v2/system/script/' + requestDataObj.script_id,
+                    url: DSP_URL + '/api/v2/system/event/script/' + requestDataObj.script_id,
                     headers: {
                         'Content-Type': 'text/plain'
                     },
@@ -475,11 +448,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             // Delete a script from the server
-            $scope._deleteScriptFromServer = function(requestDataObj) {
+            $scope._deleteScriptFromServer = function (requestDataObj) {
 
                 return $http({
                     method: 'DELETE',
-                    url: DSP_URL + '/api/v2/system/script/' + requestDataObj.script_id,
+                    url: DSP_URL + '/api/v2/system/event/process/' + requestDataObj.script_id,
                     params: requestDataObj.params
                 })
             };
@@ -496,7 +469,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 if ($scope.menuPathArr.length === 0) return false;
 
-                while($scope.menuPathArr.length !== 0) {
+                while ($scope.menuPathArr.length !== 0) {
                     $scope.menuBack();
                 }
             };
@@ -504,14 +477,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             // check for extension.  Just JS right now
             $scope._checkExtension = function (idStr) {
 
-                if (idStr.substr(idStr.length -3, 3) === '.js') {
-                    return idStr.substr(0, idStr.length -3);
+                if (idStr.substr(idStr.length - 3, 3) === '.js') {
+                    return idStr.substr(0, idStr.length - 3);
                 }
 
                 return idStr;
             };
-
-
 
 
             // COMPLEX IMPLEMENTATION
@@ -520,47 +491,9 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 $scope._resetAll();
 
-                if (typeObj.name === 'custom-scripts') {
-
-                    var requestDataObj = {
-                        script_id: '',
-                        params: {
-                            include_user_scripts: true,
-                            include_only_user_scripts: true
-                        }
-                    };
-
-                    $scope._getScriptFromServer(requestDataObj).then(
-
-                        function(result) {
-
-                            $scope.customScripts = $scope.__getDataFromHttpResponse(result);
-                            $scope.menuPathArr.push(typeObj.label);
-                            $scope.currentScriptTypeObj = typeObj;
-                            $scope.isCustomScript = true;
-                            $scope.pathFilter = '';
-
-                        },
-
-                        function(reject) {
-
-                            console.log(reject);
-                        }
-
-                    ).finally(
-                            function() {
-
-                                // console.log('Get Scripts Custom finally')
-                            }
-                        )
-                }
-                else {
-
-                    $scope.menuPathArr.push(typeObj.label);
-                    $scope.currentScriptTypeObj = typeObj;
-                    $scope.pathFilter = '';
-
-                }
+                $scope.menuPathArr.push(typeObj.label);
+                $scope.currentScriptTypeObj = typeObj;
+                $scope.pathFilter = '';
             };
 
             $scope._setEvent = function (eventObj) {
@@ -584,7 +517,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 // Get the event from the server
                 $scope._getEventFromServer(requestDataObj).then(
-                    function(result) {
+                    function (result) {
 
                         $scope._createEvents(eventObj, $scope.__getDataFromHttpResponse(result));
                         $scope.menuPathArr.push(eventObj.name);
@@ -594,7 +527,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         $scope.builtEventsList[eventObj.name] = true;
 
                     },
-                    function(reject) {
+                    function (reject) {
 
                         throw {
                             module: 'Scripts',
@@ -604,11 +537,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         }
                     }
                 ).finally(
-                        function() {
+                    function () {
 
-                            // console.log('Get Event finally.')
-                        }
-                    )
+                        // console.log('Get Event finally.')
+                    }
+                )
             };
 
             $scope._setPathObj = function (pathObj) {
@@ -625,29 +558,26 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 var requestDataObj = {
 
                     script_id: scriptIdStr,
-                    params: {
-                        is_user_script: $scope.isCustomScript,
-                        include_script_body: true
-                    }
+                    params: {}
                 };
 
                 $scope._getScriptFromServer(requestDataObj).then(
-                    function(result) {
+                    function (result) {
 
                         $scope.currentScriptObj = $scope.__getDataFromHttpResponse(result);
                         $scope.menuPathArr.push(scriptIdStr);
                     },
 
-                    function(reject) {
+                    function (reject) {
 
-                        $scope.currentScriptObj = new ScriptObj(scriptIdStr, $scope.isCustomScript, null, null);
+                        $scope.currentScriptObj = new ScriptObj(scriptIdStr, null, null);
                         $scope.menuPathArr.push(scriptIdStr);
                     }
                 ).finally(
-                        function() {
-                            // console.log('get Script finally')
-                        }
-                    )
+                    function () {
+                        // console.log('get Script finally')
+                    }
+                )
             };
 
             $scope._saveScript = function () {
@@ -660,37 +590,30 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 var requestDataObj = {
 
                     script_id: $scope._checkExtension($scope.currentScriptObj.script_id),
-                    params: {
-                        is_user_script: $scope.isCustomScript
-                    },
+                    params: {},
                     data: {
                         post_body: $scope.editor.getValue() || ' '
                     }
                 };
 
                 $scope._saveScriptToServer(requestDataObj).then(
-                    function(result) {
+                    function (result) {
 
                         $scope.editor.session.getUndoManager().reset();
                         $scope.editor.session.getUndoManager().markClean();
                         $scope.isEditorClean = true;
 
-                        // Is this a new custom script
-                        if ($scope.currentScriptObj.__newScript) {
-                            $scope.customScripts.push($scope.__getDataFromHttpResponse(result));
-                        }
-
                         // Needs to be replaced with angular messaging
-                        $(function(){
+                        $(function () {
                             new PNotify({
                                 title: 'Scripts',
-                                type:  'success',
-                                text:  'Script "' + $scope.currentScriptObj.script_id + '" saved successfully.'
+                                type: 'success',
+                                text: 'Script "' + $scope.currentScriptObj.script_id + '" saved successfully.'
                             });
                         });
                     },
 
-                    function(reject) {
+                    function (reject) {
 
                         throw {
                             module: 'Scripts',
@@ -700,11 +623,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         }
                     }
                 ).finally(
-                        function() {
+                    function () {
 
-                            // console.log('Script Save finally function.')
-                        }
-                    )
+                        // console.log('Script Save finally function.')
+                    }
+                )
             };
 
             $scope._deleteScript = function () {
@@ -712,20 +635,18 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 var requestDataObj = {
 
                     script_id: $scope.currentScriptObj.script_id,
-                    params: {
-                        is_user_script: $scope.isCustomScript
-                    }
+                    params: {}
                 };
 
                 $scope._deleteScriptFromServer(requestDataObj).then(
-                    function(result) {
+                    function (result) {
 
                         // Needs to be replaced with angular messaging
-                        $(function(){
+                        $(function () {
                             new PNotify({
                                 title: 'Scripts',
-                                type:  'success',
-                                text:  'Script "' + $scope.currentScriptObj.script_id + '" deleted successfully.'
+                                type: 'success',
+                                text: 'Script "' + $scope.currentScriptObj.script_id + '" deleted successfully.'
                             });
                         });
 
@@ -735,26 +656,9 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         $scope.editor.session.getUndoManager().reset();
                         $scope.editor.session.getUndoManager().markClean();
 
-                        if ($scope.isCustomScript) {
-
-                            var _result = $scope.__getDataFromHttpResponse(result);
-
-                            var found = false,
-                                i = 0;
-
-                            while(!found && i <= $scope.customScripts.length -1) {
-
-                                if ($scope.customScripts[i].script_id === _result.script_id) {
-                                    $scope.customScripts.splice(i, 1);
-                                    found = true;
-                                }
-
-                                i++;
-                            }
-                        }
                     },
 
-                    function(reject) {
+                    function (reject) {
 
                         throw {
                             module: 'Scripts',
@@ -765,10 +669,10 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                     }
                 ).finally(
-                        function() {
+                    function () {
 
-                        }
-                    )
+                    }
+                )
 
             };
 
@@ -777,7 +681,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope._resetAll();
 
                 $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.js').then(
-                    function(result) {
+                    function (result) {
 
                         $scope.sampleScripts = new ScriptObj('sample-scripts', false, null, result.data);
                         $scope.currentScriptTypeObj = {name: 'sample-scripts', label: 'Sample Scripts'};
@@ -794,20 +698,18 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
 
-
             // MESSAGES
 
 
-
         }])
-    .directive('scriptSidebarMenu', ['MODSCRIPTING_ASSET_PATH', function(MODSCRIPTING_ASSET_PATH) {
+    .directive('scriptSidebarMenu', ['MODSCRIPTING_ASSET_PATH', function (MODSCRIPTING_ASSET_PATH) {
 
         return {
 
             restrict: 'E',
             scope: false,
             templateUrl: MODSCRIPTING_ASSET_PATH + 'views/script-sidebar-menu.html',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
 
                 scope.menuOpen = true;
@@ -822,7 +724,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     scope._toggleMenu();
                 };
 
-                scope.menuBack = function() {
+                scope.menuBack = function () {
 
                     // Check if we have chnaged the script
                     if (!scope.isEditorClean) {
@@ -831,7 +733,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         if (!scope._confirmCloseScript()) {
 
                             return false;
-                        }else {
+                        } else {
                             scope.editor.session.getUndoManager().reset();
                             scope.editor.session.getUndoManager().markClean();
                             scope.isEditorClean = true;
@@ -841,7 +743,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     scope._menuBack();
                 };
 
-                scope.jumpTo = function(index) {
+                scope.jumpTo = function (index) {
 
                     scope._jumpTo(index);
                 };
@@ -863,11 +765,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     if (!scope.currentScriptTypeObj) return false;
 
 
-                    switch(scope.currentScriptTypeObj.name) {
+                    switch (scope.currentScriptTypeObj.name) {
 
                         case 'event-scripts':
 
-                            switch(scope.menuPathArr.length) {
+                            switch (scope.menuPathArr.length) {
 
                                 case 0:
                                     break;
@@ -904,31 +806,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             break;
 
 
-                        case 'custom-scripts':
-
-
-                            switch(scope.menuPathArr.length) {
-
-                                case 0:
-                                    break;
-
-                                case 1:
-
-                                    scope.menuPathArr.pop();
-                                    scope.currentScriptTypeObj = null;
-                                    scope.isCustomScript = false;
-                                    scope.pathFilter = '';
-
-                                    break;
-
-                                case 2:
-
-                                    scope.menuPathArr.pop();
-                                    scope.currentScriptObj = null;
-                                    break;
-                            }
-                            break;
-
                         case 'sample-scripts':
 
                             scope.menuPathArr.pop();
@@ -936,7 +813,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             scope.currentPathObj = null;
                             scope.currentEventObj = null;
                             scope.currentScriptTypeObj = null;
-                            scope.isCustomScript = false;
 
                             break;
 
@@ -947,7 +823,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 scope._jumpTo = function (index) {
 
-                    while(scope.menuPathArr.length - 1 !== index) {
+                    while (scope.menuPathArr.length - 1 !== index) {
                         scope.menuBack();
                     }
                 };
@@ -985,14 +861,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             highlightActiveLine: false,
                             highlightGutterLine: false
                         })
-                        scope.editor.renderer.$cursorLayer.element.style.opacity=0;
-                    }else {
+                        scope.editor.renderer.$cursorLayer.element.style.opacity = 0;
+                    } else {
                         scope.editor.setOptions({
                             readOnly: false,
                             highlightActiveLine: true,
                             highlightGutterLine: true
                         })
-                        scope.editor.renderer.$cursorLayer.element.style.opacity=100;
+                        scope.editor.renderer.$cursorLayer.element.style.opacity = 100;
                     }
                 };
 
@@ -1004,9 +880,9 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                     //scope.editor.setTheme("ace/theme/twilight");
 
-                    if(mode){
+                    if (mode) {
                         scope.editor.session.setMode("ace/mode/json");
-                    }else{
+                    } else {
                         scope.editor.session.setMode("ace/mode/javascript");
                     }
 
@@ -1018,8 +894,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                     scope.editor.focus();
 
-                    scope.editor.on('input', function() {
-                        scope.$apply(function() {
+                    scope.editor.on('input', function () {
+                        scope.$apply(function () {
                             scope.isClean = scope.editor.session.getUndoManager().isClean();
                         });
                     });
@@ -1035,10 +911,10 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         return false;
                     }
 
-                    scope._loadEditor (newValue, false, false);
+                    scope._loadEditor(newValue, false, false);
                 });
 
-                scope.$on('$destroy', function(e) {
+                scope.$on('$destroy', function (e) {
 
                     watchCurrentEditObj();
                 });

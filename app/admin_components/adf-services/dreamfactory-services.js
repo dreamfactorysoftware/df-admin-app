@@ -62,7 +62,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
             // Check if service types are in cache. If yes then return them.
             // Other wise request for service types and then cache them so that
-            // we dont have to request them next time.
+            // we do not have to request them next time.
 
             if (dfServiceData.serviceTypes && dfServiceData.serviceTypes.length) {
                 deferred.resolve(dfServiceData.serviceTypes);
@@ -220,7 +220,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope._prepareServiceParamsData();
                     scope._prepareServiceHeadersData();
 
-                    if (scope.service.record.type === 'Remote File Storage' || scope.service.record.type === 'Local File Storage') {
+                    // would be better to check group here, i.e service_type.group = "files"
+                    if (scope.service.record.type === 'local_file' || scope.service.record.type === 'aws_s3') {
 
                         scope._prepareServicePrivateData();
                     }
@@ -235,6 +236,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         scope._prepareServiceDefinitionData();
                     }
 
+                    // would be better to check group here, i.e service_type.group = "database"
                     if (scope.service.record.type === 'mongo_db') {
                         scope._prepareServiceNoSQLData();
                     }
@@ -597,7 +599,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     if (scope.newService) {
                         scope.hcv.serviceTypes = scope.hcv.serviceTypes
                             .filter(function (el) {
-                                return el.name !== "local_sql_db";
+                                return el.name !== "sql_db";
                             });
                     }
 

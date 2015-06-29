@@ -12,7 +12,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                     controller: 'LaunchpadCtrl',
                     resolve: {
 
-                        loadApps: ['SystemConfigDataService', 'UserDataService', '$location', '$q', '$http', 'DSP_URL', function(SystemConfigDataService, UserDataService, $location, $q, $http, DSP_URL) {
+                        loadApps: ['SystemConfigDataService', 'UserDataService', '$location', '$q', '$http', 'DSP_URL', function (SystemConfigDataService, UserDataService, $location, $q, $http, DSP_URL) {
 
 
                             var defer = $q.defer();
@@ -49,7 +49,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                             }
 
 
-                            // We don't allow guset users and there is no currentUser
+                            // We don't allow guest users and there is no currentUser
                             if (!SystemConfigDataService.getSystemConfig().allow_guest_user && !UserDataService.getCurrentUser()) {
 
                                 $location.url('/login');
@@ -93,8 +93,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
 
 
     }])
-    .controller('LaunchpadCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', 'loadApps', function($scope, UserDataService, SystemConfigDataService, loadApps) {
-
+    .controller('LaunchpadCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', 'loadApps', function ($scope, UserDataService, SystemConfigDataService, loadApps) {
 
 
         $scope.apps = [];
@@ -103,7 +102,9 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
         $scope.noGroupTitle = 'Other Apps';
 
 
-        $scope.$watch(function() {return loadApps}, function (newValue, oldValue) {
+        $scope.$watch(function () {
+            return loadApps
+        }, function (newValue, oldValue) {
 
 
             if (!newValue) return;
@@ -146,7 +147,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                     $scope.apps = temp
                 }
                 else if (temp.length > 0) {
-                    $scope.apps.push({name: $scope.noGroupTitle, id:'000', apps: temp});
+                    $scope.apps.push({name: $scope.noGroupTitle, id: '000', apps: temp});
                 }
             }
 
@@ -165,7 +166,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
             },
             replace: true,
             templateUrl: MOD_LAUNCHPAD_ASSET_PATH + 'views/df-app-group.html',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
             }
         }
@@ -180,7 +181,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
             },
             replace: true,
             templateUrl: MOD_LAUNCHPAD_ASSET_PATH + 'views/df-app.html',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
 
                 scope.launchApp = function (app) {

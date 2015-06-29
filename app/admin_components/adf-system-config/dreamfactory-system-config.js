@@ -31,7 +31,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/main.html',
                     controller: 'SystemConfigurationCtrl',
                     resolve: {
-                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
 
                             if (dfApplicationData.initInProgress) {
 
@@ -100,10 +100,12 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.es = SystemConfigEventsService.systemConfigController;
 
             // PUBLIC API
+            $scope.systemEnv = dfApplicationData.getApiData('environment');
             // Config will always be the first in the array so we grab the 0th value
             $scope.systemConfig = new SystemConfig(dfApplicationData.getApiData('config')[0]);
-            $scope.rolesData = dfApplicationData.getApiData('role');
             $scope.servicesData = dfApplicationData.getApiData('service');
+            $scope.corsEntriesData = dfApplicationData.getApiData('cors');
+            $scope.globalLookupsData = dfApplicationData.getApiData('lookup');
             $scope.emailTemplatesData = dfApplicationData.getApiData('email_template');
 
 
@@ -116,33 +118,15 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     active: true
                 },
                 {
+                    name: 'cache',
+                    label: 'Cache',
+                    path: 'cache',
+                    active: false
+                },
+                {
                     name: 'cors',
                     label: 'CORS',
                     path: 'cors',
-                    active: false
-                },
-                {
-                    name: 'guest-users',
-                    label: 'Guest Users',
-                    path: 'guest-users',
-                    active: false
-                },
-                {
-                    name: 'open-registration',
-                    label: 'Open Registration',
-                    path: 'open-registration',
-                    active: false
-                },
-                {
-                    name: 'user-invites',
-                    label: 'User Invites',
-                    path: 'user-invites',
-                    active: false
-                },
-                {
-                    name: 'password-reset',
-                    label: 'Password Reset',
-                    path: 'password-reset',
                     active: false
                 },
                 {
@@ -181,7 +165,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 SystemConfigDataService.setSystemConfig(systemConfigDataObj);
             };
 
-            $scope._prepareSystemConfigData = function() {
+            $scope._prepareSystemConfigData = function () {
 
                 $scope._prepareLookupKeyData();
             };
@@ -201,7 +185,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 };
 
                 $scope._updateConfigData(requestDataObj).then(
-                    function(result) {
+                    function (result) {
 
                         var systemConfigDataObj = result;
 
@@ -230,7 +214,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         $scope.$emit($scope.es.updateSystemConfigSuccess, systemConfigDataObj);
                     },
-                    function(reject) {
+                    function (reject) {
 
                         var messageOptions = {
                             module: 'Api Error',
@@ -260,34 +244,20 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             });
 
 
-
             // HELP
             $scope.dfLargeHelp = {
 
                 systemInfo: {
                     title: 'System Info Overview',
-                    text: 'Displays current system information. Use the cache clearing functions below to refresh any changes made to your system configuration values.'
+                    text: 'Displays current system information.'
+                },
+                cacheConfig: {
+                    title: 'Cache Overview',
+                    text: 'Flush system-wide cache or per-service cache. Use the cache clearing buttons below to refresh any changes made to your system configuration values.'
                 },
                 corsConfig: {
                     title: 'CORS Overview',
                     text: 'Enter allowed hosts and HTTP verbs. You can enter * for all hosts. Use the * option for development to enable application code running locally on your computer to communicate directly with your DreamFactory instance.'
-                },
-                guestUsers: {
-                    title: 'Guest Users Overview',
-                    text: ' Enable Guest Users to allow access to applications and services without authentication. Guest User privileges are governed by the Guest Role.'
-                },
-                openRegistration: {
-                    title: 'Open Registration Overview',
-                    text: 'Turn on Open Registration to allow users to self-register for applications. Set a Role for newly registered users, select an email service to turn on email registration confirmation, and optionally select a custom email template.'+
-                        '<span style="color: red;">  Make sure to configure an email service to prevent spam, bots, and scripts from abusing the Open Registration function.</span>'
-                },
-                userInvites: {
-                    title: 'User Invites Overview',
-                    text: 'Set an email service and optional custom template for User Invite.'
-                },
-                passwordReset: {
-                    title: 'Password Reset Overview',
-                    text: 'Set an email service and optional custom template for Password Reset.'
                 },
                 emailTemplates: {
                     title: 'Email Templates Overview',
@@ -296,12 +266,12 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 globalLookupKeys: {
                     title: 'Global Lookup Keys Overview',
                     text: 'An administrator can create any number of "key value" pairs attached to DreamFactory. The key values are automatically substituted on the server. ' +
-                        'For example, you can use Lookup Keys in Email Templates, as parameters in external REST Services, and in the username and password fields to connect ' +
-                        'to a SQL or NoSQL database. Mark any Lookup Key as private to securely encrypt the key value on the server and hide it in the user interface.' +
-                        '<span style="color: red;">  Note that Lookup Keys for REST service configuration and credentials must be private.</span>'
+                    'For example, you can use Lookup Keys in Email Templates, as parameters in external REST Services, and in the username and password fields to connect ' +
+                    'to a SQL or NoSQL database. Mark any Lookup Key as private to securely encrypt the key value on the server and hide it in the user interface.' +
+                    '<span style="color: red;">  Note that Lookup Keys for REST service configuration and credentials must be private.</span>'
                 }
             }
-    }])
+        }])
 
     .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', 'DSP_URL', 'APP_VERSION', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, DSP_URL, APP_VERSION, $http, dfNotify) {
 
@@ -309,21 +279,34 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             restrict: 'E',
             scope: false,
             templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/system-info.html',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
-                scope.upgrade = function() {
+                scope.upgrade = function () {
 
-                    window.top.location = DSP_URL + '/web/upgrade';
+                    window.top.location = 'http://wiki.dreamfactory.com/';
                 };
+
+                scope.APP_VERSION = APP_VERSION;
+            }
+        }
+    }])
+
+    .directive('dreamfactoryCacheConfig', ['MODSYSCONFIG_ASSET_PATH', 'DSP_URL', 'APP_VERSION', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, DSP_URL, APP_VERSION, $http, dfNotify) {
+
+        return {
+            restrict: 'E',
+            scope: false,
+            templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/cache-config.html',
+            link: function (scope, elem, attrs) {
 
                 scope.flushSystemCache = function () {
 
-                    $http.get(DSP_URL + '/web/flush?cache=platform')
+                    $http.delete(DSP_URL + '/rest/system/cache')
                         .success(
-                            function () {
+                        function () {
 
                             var messageOptions = {
-                                module: 'Config',
+                                module: 'Cache',
                                 type: 'success',
                                 provider: 'dreamfactory',
                                 message: 'Platform cache flushed.'
@@ -334,29 +317,29 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         .error(function (error) {
 
 
-                        var messageOptions = {
-                            module: 'Api Error',
-                            type: 'error',
-                            provider: 'dreamfactory',
-                            message: error
-                        }
+                            var messageOptions = {
+                                module: 'Api Error',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: error
+                            }
 
-                        dfNotify.error(messageOptions);
-                    })
+                            dfNotify.error(messageOptions);
+                        })
 
                 };
 
-                scope.flushSwaggerCache = function () {
+                scope.flushServiceCache = function () {
 
-                    $http.get(DSP_URL + '/web/flush?cache=swagger')
+                    $http.get(DSP_URL + '/rest/system/cache/swagger')
                         .success(
                         function () {
 
                             var messageOptions = {
-                                module: 'Config',
+                                module: 'Cache',
                                 type: 'success',
                                 provider: 'dreamfactory',
-                                message: 'Swagger cache flushed.'
+                                message: 'Service cache flushed.'
                             }
 
                             dfNotify.success(messageOptions);
@@ -375,642 +358,1014 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         })
                 };
-
-                scope.APP_VERSION = APP_VERSION;
             }
         }
     }])
 
-    .directive('dreamfactoryCorsConfig', ['MODSYSCONFIG_ASSET_PATH', 'SystemConfigDataService',
-        function (MODSYSCONFIG_ASSET_PATH, SystemConfigDataService) {
+    .directive('dreamfactoryCorsConfig', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfNotify',
+        function (MODSYSCONFIG_ASSET_PATH, dfApplicationData, dfNotify) {
 
             return {
                 restrict: 'E',
+                scope: false,
                 templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/cors-config.html',
-                scope: true,
                 link: function (scope, elem, attrs) {
 
-                    elem.bind('change', function(){
-                        scope.systemConfig.record.allowed_hosts = scope.allowedHosts;
-                    });
 
-                    scope.allowedHosts = scope.systemConfig.record.allowed_hosts;
+                    var CorsEntry = function (corsEntryData) {
 
-                    scope.supportedVerbs = [
-                        'GET',
-                        'POST',
-                        'PUT',
-                        'PATCH',
-                        'MERGE',
-                        'DELETE',
-                        'COPY'
-                    ];
+                        function genTempId() {
+                            return Math.floor(Math.random() * 100000)
+                        }
+
+                        var _new = {
+                            id: null,
+                            origin: 'NEW',
+                            path: null,
+                            methods: [],
+                            enabled: false
+                        };
+
+                        corsEntryData = corsEntryData || _new;
+
+                        return {
+                            __dfUI: {
+                                newHost: corsEntryData.id === null,
+                                tempId: genTempId()
+                            },
+                            record: angular.copy(corsEntryData),
+                            recordCopy: angular.copy(corsEntryData)
+                        }
+                    };
+
+
+                    scope.corsEntries = null;
+                    scope.selectedCorsEntry = null;
 
 
                     // PUBLIC API
-                    scope.addNewHost = function () {
+                    scope.addCorsEntry = function () {
 
-                        scope._addNewHost();
+                        scope._addCorsEntry();
                     };
 
-                    scope.removeHost = function (hostDataObjIndex) {
+                    scope.deleteCorsEntry = function () {
 
-                        scope._confirmRemoveHost(hostDataObjIndex) ? scope._removeHost(hostDataObjIndex) : false;
+                        if (dfNotify.confirm("Delete " + scope.selectedCorsEntry.record.origin + "?")) {
+
+                            scope._deleteCorsEntry();
+                        }
+                    };
+
+                    scope.saveCorsEntry = function () {
+
+                        var template = scope.selectedCorsEntry;
+
+                        if (template == null) {
+
+                            var messageOptions = {
+                                module: 'CORS',
+                                type: 'warn',
+                                provider: 'dreamfactory',
+                                message: 'No host selected.'
+                            };
+
+                            dfNotify.warn(messageOptions);
+
+                            angular.element('#select-cors-host').focus();
+
+                            return;
+                        }
+
+                        if (template.record.id === null) {
+
+                            if (template.record.origin === 'NEW') {
+
+                                var messageOptions = {
+                                    module: 'CORS',
+                                    type: 'warn',
+                                    provider: 'dreamfactory',
+                                    message: 'Entries should have a unique origin.  Please rename your origin to something other than the default \'new\' origin name.'
+                                };
+
+                                dfNotify.warn(messageOptions);
+
+                                return;
+                            }
+                            scope._saveCorsEntry(template);
+                        } else {
+
+                            scope._updateCorsEntry(template);
+                        }
                     };
 
 
                     // PRIVATE API
-                    scope._createNewHostModel = function () {
+                    scope._saveCorsEntryToServer = function (requestDataObj) {
 
-                        return {
-                            host: null,
-                            is_enabled: true,
-                            verbs: []
+                        return dfApplicationData.saveApiData('cors', requestDataObj).$promise;
+                    };
+
+                    scope._updateCorsEntryToServer = function (requestDataObj) {
+
+                        return dfApplicationData.updateApiData('cors', requestDataObj).$promise;
+                    };
+
+                    scope._deleteCorsEntryFromServer = function (requestDataObj) {
+
+                        return dfApplicationData.deleteApiData('cors', requestDataObj).$promise;
+                    };
+
+
+                    // PRIVATE API
+                    scope._addCorsEntry = function () {
+
+                        scope.corsEntries.push(new CorsEntry());
+
+                        scope.selectedCorsEntry = scope.corsEntries[scope.corsEntries.length - 1];
+                    };
+
+                    scope._deleteCorsEntry = function () {
+
+
+                        // If this is a recently add/new template that hasn't been saved yet.
+                        if (scope.selectedCorsEntry.__dfUI.newHost) {
+
+                            var i = 0;
+
+                            while (i < scope.corsEntries.length) {
+                                if (scope.corsEntries[i].__dfUI.tempId === scope.selectedCorsEntry.__dfUI.tempId) {
+                                    scope.corsEntries.splice(i, 1);
+                                    break;
+                                }
+
+                                i++
+                            }
+
+                            var messageOptions = {
+                                module: 'CORS',
+                                type: 'success',
+                                provider: 'dreamfactory',
+                                message: 'CORS entry deleted successfully.'
+
+                            };
+
+                            dfNotify.success(messageOptions);
+
+                            scope.selectedCorsEntry = null;
+
+                            return;
                         }
-                    };
 
-                    scope._addNewHostData = function () {
-
-                        scope.allowedHosts.push(scope._createNewHostModel());
-                    };
-
-                    scope._removeHostData = function (hostDataObjIndex) {
-
-                        scope.allowedHosts.splice(hostDataObjIndex, 1);
-                    };
-
-                    scope._confirmRemoveHost = function (hostDataObjIndex) {
-
-                        return confirm('Delete Host: ' + scope.allowedHosts[hostDataObjIndex].host)
-                    };
+                        var requestDataObj = {
+                            params: {
+                                fields: '*'
+                            },
+                            data: scope.selectedCorsEntry.record
+                        };
 
 
-                    // COMPLEX IMPLEMENTATION
-                    scope._addNewHost = function () {
+                        scope._deleteCorsEntryFromServer(requestDataObj).then(
+                            function (result) {
 
-                        scope._addNewHostData();
-                    };
+                                var messageOptions = {
+                                    module: 'CORS',
+                                    type: 'success',
+                                    provider: 'dreamfactory',
+                                    message: 'CORS entry deleted successfully.'
+                                };
 
-                    scope._removeHost = function (hostDataObjIndex) {
+                                dfNotify.success(messageOptions);
 
-                        scope._removeHostData(hostDataObjIndex);
-                    };
+                                scope.selectedCorsEntry = null;
+
+                            },
+                            function (reject) {
+
+                                var messageOptions = {
+                                    module: 'Api Error',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+                                };
+
+                                dfNotify.error(messageOptions);
+
+                            }
+                        )
+                    }
+
+                    scope._saveCorsEntry = function (template) {
 
 
-                    // WATCHERS AND INIT
+                        var requestDataObj = {
+                            params: {
+                                fields: '*'
+                            },
+                            data: template.record
+                        };
+
+                        scope._saveCorsEntryToServer(requestDataObj).then(
+                            function (result) {
+
+
+                                var messageOptions = {
+                                    module: 'CORS',
+                                    type: 'success',
+                                    provider: 'dreamfactory',
+                                    message: 'CORS entry created successfully.'
+
+                                };
+
+                                dfNotify.success(messageOptions);
+
+
+                                // Reinsert into the matrix.....HA!
+                                // No Seriously
+                                // Find where this template is in the array of templates and
+                                // replace with the new record sent back from server.
+                                // also replace the selectedTemplate with the new record as well
+                                var i = 0;
+
+                                while (i < scope.corsEntries.length) {
+
+                                    if (scope.corsEntries[i].record.origin === result.origin) {
+
+                                        var _newHost = new CorsEntry(result);
+
+                                        scope.corsEntries[i] = _newHost;
+                                        scope.selectedCorsEntry = _newHost;
+                                    }
+
+                                    i++;
+                                }
+                            },
+                            function (reject) {
+
+                                var messageOptions = {
+                                    module: 'Api Error',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+
+                                };
+
+                                dfNotify.error(messageOptions);
+                            }
+                        )
+                    }
+
+                    scope._updateCorsEntry = function (template) {
+
+
+                        var requestDataObj = {
+                            params: {
+                                fields: '*'
+                            },
+                            data: template.record
+                        };
+
+
+                        scope._updateCorsEntryToServer(requestDataObj).then(
+                            function (result) {
+
+                                var messageOptions = {
+                                    module: 'CORS',
+                                    type: 'success',
+                                    provider: 'dreamfactory',
+                                    message: 'CORS entry updated successfully.'
+                                };
+
+                                dfNotify.success(messageOptions);
+
+
+                            },
+                            function (reject) {
+
+                                var messageOptions = {
+                                    module: 'Api Error',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+                                };
+
+                                dfNotify.error(messageOptions);
+
+                            }
+                        )
+                    }
+
+
+                    var watchcorsEntries = scope.$watch('corsEntries', function (newValue, oldValue) {
+
+                        if (newValue === null) {
+
+                            scope.corsEntries = [];
+                            angular.forEach(dfApplicationData.getApiData('cors'), function (emailData) {
+
+                                scope.corsEntries.push(new CorsEntry(emailData));
+                            })
+                        }
+                    });
+
+                    var watchdfApplicationData = scope.$watchCollection(function () {
+                        return dfApplicationData.getApiData('cors')
+                    }, function (newValue, oldValue) {
+
+                        if (!newValue) return;
+
+
+                        scope.corsEntries = [];
+                        angular.forEach(newValue, function (hostData) {
+
+                            scope.corsEntries.push(new CorsEntry(hostData));
+                        })
+                    });
+
+
+                    scope.$on('$destroy', function (e) {
+
+                        watchcorsEntries();
+                        watchdfApplicationData();
+                    });
+
 
                 }
             }
         }])
 
-    .directive('dreamfactoryGuestUsersConfig', ['MODSYSCONFIG_ASSET_PATH',
-        function (MODSYSCONFIG_ASSET_PATH) {
+    .directive('dreamfactoryEmailTemplates', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfNotify',
+        function (MODSYSCONFIG_ASSET_PATH, dfApplicationData, dfNotify) {
 
             return {
                 restrict: 'E',
-                templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/guest-users-config.html',
-                scope: true
-            }
-        }])
-
-    .directive('dreamfactoryOpenRegistrationConfig', ['MODSYSCONFIG_ASSET_PATH', function(MODSYSCONFIG_ASSET_PATH) {
-
-        return {
-            restrict: 'E',
-            templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/open-registration-config.html',
-            scope: true
-        }
-    }])
-
-    .directive('dreamfactoryUserInvitesConfig', ['MODSYSCONFIG_ASSET_PATH', function(MODSYSCONFIG_ASSET_PATH) {
-
-        return {
-            restrict: 'E',
-            templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/user-invites-config.html',
-            scope: true
-
-        }
-    }])
-
-    .directive('dreamfactoryPasswordResetConfig', ['MODSYSCONFIG_ASSET_PATH', function(MODSYSCONFIG_ASSET_PATH) {
-
-        return {
-
-            restrict: 'E',
-            templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/password-reset-config.html',
-            scope: true
-
-        }
+                scope: false,
+                templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/email-templates.html',
+                link: function (scope, elem, attrs) {
 
 
-    }])
+                    var EmailTemplate = function (emailTemplateData) {
 
-    .directive('dreamfactoryEmailTemplates', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfNotify', function(MODSYSCONFIG_ASSET_PATH, dfApplicationData, dfNotify) {
+                        function genTempId() {
+                            return Math.floor(Math.random() * 100000)
+                        }
 
-        return {
-            restrict: 'E',
-            scope: false,
-            templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/email-templates.html',
-            link: function (scope, elem, attrs) {
-
-
-
-                var EmailTemplate = function (emailTemplateData) {
-
-                    function genTempId () {
-                        return Math.floor(Math.random() * 100000)
-                    }
-
-                    var _new = {
-                        bcc: null,
-                        body_html: null,
-                        body_text: null,
-                        cc: null,
-                        defaults: [],
-                        description: null,
-                        from_email: null,
-                        from_name: null,
-                        id: null,
-                        name: 'NEW EMAIL TEMPLATE',
-                        replay_to_email: null,
-                        replay_to_name: null,
-                        subject: null,
-                        to: null
-                    };
-
-                    emailTemplateData = emailTemplateData || _new;
-
-                    return {
-                        __dfUI: {
-                            newTemplate: emailTemplateData.id === null,
-                            tempId: genTempId()
-                        },
-                        record: angular.copy(emailTemplateData),
-                        recordCopy: angular.copy(emailTemplateData)
-                    }
-                };
-
-
-                scope.emailTemplates = null;
-                scope.selectedEmailTemplate = null;
-
-
-
-                // PUBLIC API
-                scope.addEmailTemplate = function () {
-
-                    scope._addEmailTemplate();
-                };
-
-                scope.deleteEmailTemplate = function () {
-
-                    if (dfNotify.confirm("Delete " + scope.selectedEmailTemplate.record.name + "?")) {
-
-                        scope._deleteEmailTemplate();
-                    }
-                };
-
-                scope.saveEmailTemplate = function () {
-
-                    var template = scope.selectedEmailTemplate;
-
-                    if (template == null) {
-
-                        var messageOptions = {
-                            module: 'Config',
-                            type: 'warn',
-                            provider: 'dreamfactory',
-                            message: 'No email template selected.'
+                        var _new = {
+                            bcc: null,
+                            body_html: null,
+                            body_text: null,
+                            cc: null,
+                            defaults: [],
+                            description: null,
+                            from_email: null,
+                            from_name: null,
+                            id: null,
+                            name: 'NEW EMAIL TEMPLATE',
+                            replay_to_email: null,
+                            replay_to_name: null,
+                            subject: null,
+                            to: null
                         };
 
-                        dfNotify.warn(messageOptions);
+                        emailTemplateData = emailTemplateData || _new;
 
-                        angular.element('#select-email-template').focus();
+                        return {
+                            __dfUI: {
+                                newTemplate: emailTemplateData.id === null,
+                                tempId: genTempId()
+                            },
+                            record: angular.copy(emailTemplateData),
+                            recordCopy: angular.copy(emailTemplateData)
+                        }
+                    };
 
-                        return;
-                    }
 
-                    if (template.record.id === null) {
+                    scope.emailTemplates = null;
+                    scope.selectedEmailTemplate = null;
 
-                        if (template.record.name === 'NEW EMAIL TEMPLATE') {
+
+                    // PUBLIC API
+                    scope.addEmailTemplate = function () {
+
+                        scope._addEmailTemplate();
+                    };
+
+                    scope.deleteEmailTemplate = function () {
+
+                        if (dfNotify.confirm("Delete " + scope.selectedEmailTemplate.record.name + "?")) {
+
+                            scope._deleteEmailTemplate();
+                        }
+                    };
+
+                    scope.saveEmailTemplate = function () {
+
+                        var template = scope.selectedEmailTemplate;
+
+                        if (template == null) {
 
                             var messageOptions = {
-                                module: 'Config',
+                                module: 'Email Templates',
                                 type: 'warn',
                                 provider: 'dreamfactory',
-                                message: 'Email templates should have a unique name.  Please rename your email template to something other than the default \'new\' template name.'
+                                message: 'No email template selected.'
                             };
 
                             dfNotify.warn(messageOptions);
 
+                            angular.element('#select-email-template').focus();
+
                             return;
                         }
-                        scope._saveEmailTemplate(template);
-                    }else {
 
-                        scope._updateEmailTemplate(template);
-                    }
-                };
+                        if (template.record.id === null) {
 
+                            if (template.record.name === 'NEW EMAIL TEMPLATE') {
 
-                // PRIVATE API
-                scope._saveEmailTemplateToServer = function (requestDataObj) {
+                                var messageOptions = {
+                                    module: 'Email Templates',
+                                    type: 'warn',
+                                    provider: 'dreamfactory',
+                                    message: 'Email templates should have a unique name.  Please rename your email template to something other than the default \'new\' template name.'
+                                };
 
-                    return dfApplicationData.saveApiData('email_template', requestDataObj).$promise;
-                };
+                                dfNotify.warn(messageOptions);
 
-                scope._updateEmailTemplateToServer = function (requestDataObj) {
-
-                    return dfApplicationData.updateApiData('email_template', requestDataObj).$promise;
-                };
-
-                scope._deleteEmailTemplateFromServer = function (requestDataObj) {
-
-                    return dfApplicationData.deleteApiData('email_template', requestDataObj).$promise;
-                };
-
-
-
-                // PRIVATE API
-                scope._addEmailTemplate = function () {
-
-                    scope.emailTemplates.push(new EmailTemplate());
-
-                    scope.selectedEmailTemplate = scope.emailTemplates[scope.emailTemplates.length -1];
-                };
-
-                scope._deleteEmailTemplate = function () {
-
-
-                    // If this is a recently add/new template that hasn't been saved yet.
-                    if (scope.selectedEmailTemplate.__dfUI.newTemplate) {
-
-                        var i = 0;
-
-                        while (i < scope.emailTemplates.length) {
-                            if(scope.emailTemplates[i].__dfUI.tempId === scope.selectedEmailTemplate.__dfUI.tempId) {
-                                scope.emailTemplates.splice(i, 1);
-                                break;
+                                return;
                             }
+                            scope._saveEmailTemplate(template);
+                        } else {
 
-                            i++
+                            scope._updateEmailTemplate(template);
                         }
-
-                        var messageOptions = {
-                            module: 'Email Templates',
-                            type: 'success',
-                            provider: 'dreamfactory',
-                            message: 'Email template deleted successfully.'
-
-                        };
-
-                        dfNotify.success(messageOptions);
-
-                        scope.selectedEmailTemplate = null;
-
-                        return;
-                    }
-
-                    var requestDataObj = {
-                        params: {
-                            fields: '*'
-                        },
-                        data: scope.selectedEmailTemplate.record
                     };
 
 
-                    scope._deleteEmailTemplateFromServer(requestDataObj).then(
-                        function (result) {
+                    // PRIVATE API
+                    scope._saveEmailTemplateToServer = function (requestDataObj) {
+
+                        return dfApplicationData.saveApiData('email_template', requestDataObj).$promise;
+                    };
+
+                    scope._updateEmailTemplateToServer = function (requestDataObj) {
+
+                        return dfApplicationData.updateApiData('email_template', requestDataObj).$promise;
+                    };
+
+                    scope._deleteEmailTemplateFromServer = function (requestDataObj) {
+
+                        return dfApplicationData.deleteApiData('email_template', requestDataObj).$promise;
+                    };
+
+
+                    // PRIVATE API
+                    scope._addEmailTemplate = function () {
+
+                        scope.emailTemplates.push(new EmailTemplate());
+
+                        scope.selectedEmailTemplate = scope.emailTemplates[scope.emailTemplates.length - 1];
+                    };
+
+                    scope._deleteEmailTemplate = function () {
+
+
+                        // If this is a recently add/new template that hasn't been saved yet.
+                        if (scope.selectedEmailTemplate.__dfUI.newTemplate) {
+
+                            var i = 0;
+
+                            while (i < scope.emailTemplates.length) {
+                                if (scope.emailTemplates[i].__dfUI.tempId === scope.selectedEmailTemplate.__dfUI.tempId) {
+                                    scope.emailTemplates.splice(i, 1);
+                                    break;
+                                }
+
+                                i++
+                            }
 
                             var messageOptions = {
                                 module: 'Email Templates',
                                 type: 'success',
                                 provider: 'dreamfactory',
                                 message: 'Email template deleted successfully.'
+
                             };
 
                             dfNotify.success(messageOptions);
 
                             scope.selectedEmailTemplate = null;
 
-                        },
-                        function (reject) {
-
-                            var messageOptions = {
-                                module: 'Api Error',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            };
-
-                            dfNotify.error(messageOptions);
-
+                            return;
                         }
-                    )
-                }
 
-                scope._saveEmailTemplate = function (template) {
-
-
-                    var requestDataObj = {
-                        params: {
-                            fields: '*'
-                        },
-                        data: template.record
-                    };
-
-                    scope._saveEmailTemplateToServer(requestDataObj).then(
-                        function (result) {
+                        var requestDataObj = {
+                            params: {
+                                fields: '*'
+                            },
+                            data: scope.selectedEmailTemplate.record
+                        };
 
 
-                            var messageOptions = {
-                                module: 'Email Templates',
-                                type: 'success',
-                                provider: 'dreamfactory',
-                                message: 'Email template created successfully.'
+                        scope._deleteEmailTemplateFromServer(requestDataObj).then(
+                            function (result) {
 
-                            };
+                                var messageOptions = {
+                                    module: 'Email Templates',
+                                    type: 'success',
+                                    provider: 'dreamfactory',
+                                    message: 'Email template deleted successfully.'
+                                };
 
-                            dfNotify.success(messageOptions);
+                                dfNotify.success(messageOptions);
 
+                                scope.selectedEmailTemplate = null;
 
-                            // Reinsert into the matrix.....HA!
-                            // No Seriously
-                            // Find where this template is in the array of templates and
-                            // replace with the new record sent back from server.
-                            // also replace the selectedTemplate with the new record as well
-                            var i = 0;
+                            },
+                            function (reject) {
 
-                            while (i < scope.emailTemplates.length) {
+                                var messageOptions = {
+                                    module: 'Api Error',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+                                };
 
-                                if (scope.emailTemplates[i].record.name === result.name) {
+                                dfNotify.error(messageOptions);
 
-                                    var _newTemplate = new EmailTemplate(result);
-
-                                    scope.emailTemplates[i] = _newTemplate;
-                                    scope.selectedEmailTemplate = _newTemplate;
-                                }
-
-                                i++;
                             }
-                        },
-                        function (reject) {
+                        )
+                    }
 
-                            var messageOptions = {
-                                module: 'Api Error',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
+                    scope._saveEmailTemplate = function (template) {
 
-                            };
 
-                            dfNotify.error(messageOptions);
+                        var requestDataObj = {
+                            params: {
+                                fields: '*'
+                            },
+                            data: template.record
+                        };
+
+                        scope._saveEmailTemplateToServer(requestDataObj).then(
+                            function (result) {
+
+
+                                var messageOptions = {
+                                    module: 'Email Templates',
+                                    type: 'success',
+                                    provider: 'dreamfactory',
+                                    message: 'Email template created successfully.'
+
+                                };
+
+                                dfNotify.success(messageOptions);
+
+
+                                // Reinsert into the matrix.....HA!
+                                // No Seriously
+                                // Find where this template is in the array of templates and
+                                // replace with the new record sent back from server.
+                                // also replace the selectedTemplate with the new record as well
+                                var i = 0;
+
+                                while (i < scope.emailTemplates.length) {
+
+                                    if (scope.emailTemplates[i].record.name === result.name) {
+
+                                        var _newTemplate = new EmailTemplate(result);
+
+                                        scope.emailTemplates[i] = _newTemplate;
+                                        scope.selectedEmailTemplate = _newTemplate;
+                                    }
+
+                                    i++;
+                                }
+                            },
+                            function (reject) {
+
+                                var messageOptions = {
+                                    module: 'Api Error',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+
+                                };
+
+                                dfNotify.error(messageOptions);
+                            }
+                        )
+                    }
+
+                    scope._updateEmailTemplate = function (template) {
+
+
+                        var requestDataObj = {
+                            params: {
+                                fields: '*'
+                            },
+                            data: template.record
+                        };
+
+
+                        scope._updateEmailTemplateToServer(requestDataObj).then(
+                            function (result) {
+
+                                var messageOptions = {
+                                    module: 'Email Templates',
+                                    type: 'success',
+                                    provider: 'dreamfactory',
+                                    message: 'Email template updated successfully.'
+                                };
+
+                                dfNotify.success(messageOptions);
+
+
+                            },
+                            function (reject) {
+
+                                var messageOptions = {
+                                    module: 'Api Error',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+                                };
+
+                                dfNotify.error(messageOptions);
+
+                            }
+                        )
+                    }
+
+
+                    var watchEmailTemplates = scope.$watch('emailTemplates', function (newValue, oldValue) {
+
+                        if (newValue === null) {
+
+                            scope.emailTemplates = [];
+                            angular.forEach(dfApplicationData.getApiData('email_template'), function (emailData) {
+
+                                scope.emailTemplates.push(new EmailTemplate(emailData));
+                            })
                         }
-                    )
-                }
+                    });
 
-                scope._updateEmailTemplate = function (template) {
+                    var watchdfApplicationData = scope.$watchCollection(function () {
+                        return dfApplicationData.getApiData('email_template')
+                    }, function (newValue, oldValue) {
 
+                        if (!newValue) return;
 
-                    var requestDataObj = {
-                        params: {
-                            fields: '*'
-                        },
-                        data: template.record
-                    };
-
-
-                    scope._updateEmailTemplateToServer(requestDataObj).then(
-                        function (result) {
-
-                            var messageOptions = {
-                                module: 'Email Templates',
-                                type: 'success',
-                                provider: 'dreamfactory',
-                                message: 'Email template updated successfully.'
-                            };
-
-                            dfNotify.success(messageOptions);
-
-
-
-                        },
-                        function (reject) {
-
-                            var messageOptions = {
-                                module: 'Api Error',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            };
-
-                            dfNotify.error(messageOptions);
-
-                        }
-                    )
-                }
-
-
-
-                var watchEmailTemplates = scope.$watch('emailTemplates', function (newValue, oldValue) {
-
-                    if (newValue === null) {
 
                         scope.emailTemplates = [];
-                        angular.forEach(dfApplicationData.getApiData('email_template'), function (emailData) {
+                        angular.forEach(newValue, function (emailData) {
 
                             scope.emailTemplates.push(new EmailTemplate(emailData));
                         })
-                    }
-                });
-
-                var watchdfApplicationData = scope.$watchCollection(function () {return dfApplicationData.getApiData('email_template')}, function(newValue, oldValue) {
-
-                    if (!newValue) return;
+                    });
 
 
-                    scope.emailTemplates = [];
-                    angular.forEach(newValue, function (emailData) {
+                    scope.$on('$destroy', function (e) {
 
-                        scope.emailTemplates.push(new EmailTemplate(emailData));
-                    })
-                });
-
-
-                scope.$on('$destroy', function (e) {
-
-                    watchEmailTemplates();
-                    watchdfApplicationData();
-                });
+                        watchEmailTemplates();
+                        watchdfApplicationData();
+                    });
 
 
+                }
             }
-        }
-    }])
+        }])
 
-    .directive('dreamfactoryGlobalLookupKeysConfig', ['MODSYSCONFIG_ASSET_PATH', function(MODSYSCONFIG_ASSET_PATH) {
+    .directive('dreamfactoryGlobalLookupKeys', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfNotify',
+        function (MODSYSCONFIG_ASSET_PATH, dfApplicationData, dfNotify) {
 
-        return {
-            restrict: 'E',
-            templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/global-lookup-keys-config.html',
-            scope: false,
-            link: function (scope, elem, attrs) {
+            return {
+                restrict: 'E',
+                scope: false,
+                templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/global-lookup-keys.html',
+                link: function (scope, elem, attrs) {
 
 
-                var LookupKey = function (lookupKeyData) {
+                    var Lookup = function (lookupKeyData) {
 
-                    var _new = {
-                        name: "",
-                        value: "",
-                        private: false
+                        function genTempId() {
+                            return Math.floor(Math.random() * 100000)
+                        }
+
+                        var _new = {
+                            id: null,
+                            name: "NEW",
+                            value: null
+                        };
+
+                        lookupKeyData = lookupKeyData || _new;
+
+                        return {
+                            __dfUI: {
+                                newLookup: lookupKeyData.id === null,
+                                tempId: genTempId()
+                            },
+                            record: angular.copy(lookupKeyData),
+                            recordCopy: angular.copy(lookupKeyData)
+                        }
                     };
 
 
-                    return {
-                        __dfUI: {
-                            unique: true
-                        },
-                        record: angular.copy(lookupKeyData || _new),
-                        recordCopy: angular.copy(lookupKeyData || _new)
+                    scope.globalLookups = null;
+                    scope.selectedLookup = null;
+
+
+                    // PUBLIC API
+                    scope.addLookup = function () {
+
+                        scope._addLookup();
                     };
-                }
 
-                scope.lookupKeys = [];
+                    scope.deleteLookup = function () {
 
-                scope.sameKeys = [];
+                        if (dfNotify.confirm("Delete " + scope.selectedLookup.record.name + "?")) {
 
+                            scope._deleteLookup();
+                        }
+                    };
 
-                // PUBLIC API
-                scope.newKey = function () {
+                    scope.saveLookup = function () {
 
-                    scope._newKey();
-                };
+                        var lookup = scope.selectedLookup;
 
-                scope.removeKey = function(index) {
+                        if (lookup == null) {
 
-                    scope._removeKey(index);
-                };
+                            var messageOptions = {
+                                module: 'Global Lookup Keys',
+                                type: 'warn',
+                                provider: 'dreamfactory',
+                                message: 'No lookup key selected.'
+                            };
 
+                            dfNotify.warn(messageOptions);
 
+                            angular.element('#select-global-lookup').focus();
 
-                // PRIVATE API
+                            return;
+                        }
 
-                scope._isUniqueKey = function () {
+                        if (lookup.record.id === null) {
 
-                    scope.sameKeys = [];
+                            if (lookup.record.name === 'NEW') {
 
-                    angular.forEach(scope.lookupKeys, function(value, index) {
-                        angular.forEach(scope.lookupKeys, function (_value, _index) {
+                                var messageOptions = {
+                                    module: 'Global Lookup Keys',
+                                    type: 'warn',
+                                    provider: 'dreamfactory',
+                                    message: 'Lookup keys should have a unique name.  Please rename your key to something other than the default \'new\' key name.'
+                                };
 
-                            if (index === _index) return;
+                                dfNotify.warn(messageOptions);
 
-                            if (value.record.name === _value.record.name) {
-                                scope.sameKeys.push(value);
+                                return;
                             }
+                            scope._saveLookup(lookup);
+                        } else {
+
+                            scope._updateLookup(lookup);
+                        }
+                    };
+
+
+                    // PRIVATE API
+                    scope._saveLookupToServer = function (requestDataObj) {
+
+                        return dfApplicationData.saveApiData('lookup', requestDataObj).$promise;
+                    };
+
+                    scope._updateLookupToServer = function (requestDataObj) {
+
+                        return dfApplicationData.updateApiData('lookup', requestDataObj).$promise;
+                    };
+
+                    scope._deleteLookupFromServer = function (requestDataObj) {
+
+                        return dfApplicationData.deleteApiData('lookup', requestDataObj).$promise;
+                    };
+
+
+                    // PRIVATE API
+                    scope._addLookup = function () {
+
+                        scope.globalLookups.push(new Lookup());
+
+                        scope.selectedLookup = scope.globalLookups[scope.globalLookups.length - 1];
+                    };
+
+                    scope._deleteLookup = function () {
+
+
+                        // If this is a recently add/new template that hasn't been saved yet.
+                        if (scope.selectedLookup.__dfUI.newLookup) {
+
+                            var i = 0;
+
+                            while (i < scope.globalLookups.length) {
+                                if (scope.globalLookups[i].__dfUI.tempId === scope.selectedLookup.__dfUI.tempId) {
+                                    scope.globalLookups.splice(i, 1);
+                                    break;
+                                }
+
+                                i++
+                            }
+
+                            var messageOptions = {
+                                module: 'Global Lookup Keys',
+                                type: 'success',
+                                provider: 'dreamfactory',
+                                message: 'Lookup key deleted successfully.'
+
+                            };
+
+                            dfNotify.success(messageOptions);
+
+                            scope.selectedLookup = null;
+
+                            return;
+                        }
+
+                        var requestDataObj = {
+                            params: {
+                                fields: '*'
+                            },
+                            data: scope.selectedLookup.record
+                        };
+
+
+                        scope._deleteLookupFromServer(requestDataObj).then(
+                            function (result) {
+
+                                var messageOptions = {
+                                    module: 'Global Lookup Keys',
+                                    type: 'success',
+                                    provider: 'dreamfactory',
+                                    message: 'Lookup key deleted successfully.'
+                                };
+
+                                dfNotify.success(messageOptions);
+
+                                scope.selectedLookup = null;
+
+                            },
+                            function (reject) {
+
+                                var messageOptions = {
+                                    module: 'Api Error',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+                                };
+
+                                dfNotify.error(messageOptions);
+
+                            }
+                        )
+                    }
+
+                    scope._saveLookup = function (lookup) {
+
+
+                        var requestDataObj = {
+                            params: {
+                                fields: '*'
+                            },
+                            data: lookup.record
+                        };
+
+                        scope._saveLookupToServer(requestDataObj).then(
+                            function (result) {
+
+
+                                var messageOptions = {
+                                    module: 'Global Lookup Keys',
+                                    type: 'success',
+                                    provider: 'dreamfactory',
+                                    message: 'Lookup key created successfully.'
+
+                                };
+
+                                dfNotify.success(messageOptions);
+
+
+                                // Reinsert into the matrix.....HA!
+                                // No Seriously
+                                // Find where this template is in the array of templates and
+                                // replace with the new record sent back from server.
+                                // also replace the selectedTemplate with the new record as well
+                                var i = 0;
+
+                                while (i < scope.globalLookups.length) {
+
+                                    if (scope.globalLookups[i].record.name === result.name) {
+
+                                        var _newLookup = new Lookup(result);
+
+                                        scope.globalLookups[i] = _newLookup;
+                                        scope.selectedLookup = _newLookup;
+                                    }
+
+                                    i++;
+                                }
+                            },
+                            function (reject) {
+
+                                var messageOptions = {
+                                    module: 'Api Error',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+
+                                };
+
+                                dfNotify.error(messageOptions);
+                            }
+                        )
+                    }
+
+                    scope._updateLookup = function (lookup) {
+
+
+                        var requestDataObj = {
+                            params: {
+                                fields: '*'
+                            },
+                            data: lookup.record
+                        };
+
+
+                        scope._updateLookupToServer(requestDataObj).then(
+                            function (result) {
+
+                                var messageOptions = {
+                                    module: 'Global Lookup Keys',
+                                    type: 'success',
+                                    provider: 'dreamfactory',
+                                    message: 'Lookup key updated successfully.'
+                                };
+
+                                dfNotify.success(messageOptions);
+
+
+                            },
+                            function (reject) {
+
+                                var messageOptions = {
+                                    module: 'Api Error',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+                                };
+
+                                dfNotify.error(messageOptions);
+
+                            }
+                        )
+                    }
+
+
+                    var watchGlobalLookupKeys = scope.$watch('globalLookups', function (newValue, oldValue) {
+
+                        if (newValue === null) {
+
+                            scope.globalLookups = [];
+                            angular.forEach(dfApplicationData.getApiData('lookup'), function (lookupData) {
+
+                                scope.globalLookups.push(new Lookup(lookupData));
+                            })
+                        }
+                    });
+
+                    var watchdfApplicationData = scope.$watchCollection(function () {
+                        return dfApplicationData.getApiData('lookup')
+                    }, function (newValue, oldValue) {
+
+                        if (!newValue) return;
+
+
+                        scope.globalLookups = [];
+                        angular.forEach(newValue, function (lookupData) {
+
+                            scope.globalLookups.push(new Lookup(lookupData));
                         })
                     });
 
-                }
 
-                scope._prepareLookupKeyData = function () {
+                    scope.$on('$destroy', function (e) {
 
-                    var tempArr = [];
-
-                    angular.forEach(scope.lookupKeys, function (lk) {
-
-                        tempArr.push(lk.record);
+                        watchGlobalLookupKeys();
+                        watchdfApplicationData();
                     });
 
-                    scope.systemConfig.record.lookup_keys = tempArr;
-                };
 
-
-
-
-                // COMPLEX IMPLEMENTATION
-                scope._newKey = function () {
-
-                    scope.lookupKeys.push(new LookupKey());
-
-                };
-
-                scope._removeKey = function (index) {
-
-                    scope.lookupKeys.splice(index, 1);
-                };
-
-
-
-                // WATCHERS AND INIT
-                var watchUser = scope.$watch('systemConfig', function (newValue, oldValue) {
-
-                    if (!newValue) return;
-
-                    if (newValue.record.hasOwnProperty('lookup_keys') && newValue.record.lookup_keys.length > 0) {
-
-                        scope.lookupKeys = [];
-
-                        angular.forEach(newValue.record.lookup_keys, function (lookupKeyData) {
-
-                            scope.lookupKeys.push(new LookupKey(lookupKeyData))
-
-                        });
-                    }
-                });
-
-                var watchSameKeys = scope.$watch('sameKeys', function (newValue, oldValue) {
-
-
-                    if (newValue.length === 0) {
-
-                        angular.forEach(scope.lookupKeys, function (lk) {
-
-                            lk.__dfUI.unique = true;
-
-                        })
-
-                        return;
-                    }
-
-
-                    angular.forEach(scope.lookupKeys, function (lk) {
-
-                        angular.forEach(newValue, function (_lk) {
-
-                            if (lk.record.name === _lk.record.name) {
-                                lk.__dfUI.unique = false;
-
-
-                            }else {
-                                lk.__dfUI.unique = true;
-                            }
-                        })
-                    })
-                })
-
-                var watchLookupKeys = scope.$watchCollection('lookupKeys', function (newValue, oldValue) {
-
-                    if (!newValue) return;
-
-                    // we added or removed a key
-                    // check if unique
-                    scope._isUniqueKey();
-
-
-                })
-
-
-                // MESSAGES
-                scope.$on('$destroy', function (e) {
-                    watchUser();
-                    watchSameKeys();
-                    watchLookupKeys();
-                });
+                }
             }
-        }
-    }])
+        }])
 
-    .directive('dfEditPreferences', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfPrefFactory', 'dfNotify', function(MODSYSCONFIG_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfPrefFactory, dfNotify) {
+    .directive('dfEditPreferences', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfPrefFactory', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfPrefFactory, dfNotify) {
 
         return {
 
@@ -1029,11 +1384,11 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                     scope.prefs[key] = {};
 
-                    angular.forEach(value, function(_value, _key) {
+                    angular.forEach(value, function (_value, _key) {
 
                         scope.prefs[key][_key] = [];
 
-                        angular.forEach(_value, function(__value, __key) {
+                        angular.forEach(_value, function (__value, __key) {
 
                             scope.prefs[key][_key].push(dfPrefFactory(__key, __value));
 
@@ -1046,7 +1401,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                     scope._savePrefs();
                 };
-
 
 
                 scope._savePrefsToServer = function (requestDataObj) {
@@ -1062,11 +1416,11 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         _prefs[key] = {};
 
-                        angular.forEach(value, function(_value, _key) {
+                        angular.forEach(value, function (_value, _key) {
 
                             _prefs[key][_key] = {};
 
-                            angular.forEach(_value, function(obj) {
+                            angular.forEach(_value, function (obj) {
 
                                 _prefs[key][_key][obj.key] = obj.value;
                             })
@@ -1077,14 +1431,12 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 }
 
 
-
                 scope._savePrefs = function () {
 
                     var requestDataObj = scope._formatPrefs();
 
                     scope._savePrefsToServer(requestDataObj).then(
-                        function(result) {
-
+                        function (result) {
 
 
                             var messageOptions = {
@@ -1099,7 +1451,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             dfApplicationPrefs.setPrefs(requestDataObj);
 
                         },
-                        function(reject) {
+                        function (reject) {
 
                             var messageOptions = {
                                 module: 'Api Error',
@@ -1129,7 +1481,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             };
 
 
-            switch(Object.prototype.toString.call(value)) {
+            switch (Object.prototype.toString.call(value)) {
 
                 case '[object String]':
                     return new Pref('string', key, value);
@@ -1146,7 +1498,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
         }
     }])
 
-    .service('SystemConfigEventsService', [function() {
+    .service('SystemConfigEventsService', [function () {
 
         return {
             systemConfigController: {
@@ -1171,7 +1523,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 xhr = new ActiveXObject("Microsoft.XMLHTTP");
             }
 
-            xhr.open("GET", DSP_URL + '/api/v2/system/config', false);
+            xhr.open("GET", DSP_URL + '/api/v2/system/environment', false);
             xhr.setRequestHeader("X-DreamFactory-API-Key", "6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d");
             xhr.setRequestHeader("Content-Type", "application/json");
 

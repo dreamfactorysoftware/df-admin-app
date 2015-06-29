@@ -3,26 +3,22 @@
         <df-sidebar-nav data-links="links"></df-sidebar-nav>
     </div>
 
-    <div class="col-md-10 df-section"  data-ng-class="activeView.path === 'system-info' ? 'df-section-3-round' : 'df-section-all-round'" df-fs-height>
+    <div class="col-md-10 df-section"
+         data-ng-class="activeView.path === 'system-info' ? 'df-section-3-round' : 'df-section-all-round'" df-fs-height>
 
 
         <!-- Section Header -->
         <df-section-header data-title="activeView.label"></df-section-header>
 
-        <form name="systemConfigForm" data-ng-submit="updateConfig()">
+        <dreamfactory-system-info data-ng-show="activeView.path === 'system-info'"></dreamfactory-system-info>
+        <dreamfactory-cache-config data-ng-show="activeView.path === 'cache'"></dreamfactory-cache-config>
+        <dreamfactory-cors-config data-ng-show="activeView.path === 'cors'"></dreamfactory-cors-config>
+        <dreamfactory-email-templates
+                data-ng-show="activeView.path === 'email-templates'"></dreamfactory-email-templates>
+        <dreamfactory-global-lookup-keys
+                data-ng-show="activeView.path === 'global-lookup-keys'"></dreamfactory-global-lookup-keys>
+        <df-edit-preferences data-ng-show="activeView.path === 'edit-preferences'"></df-edit-preferences>
 
-            <dreamfactory-system-info data-ng-show="activeView.path === 'system-info'"></dreamfactory-system-info>
-            <dreamfactory-cors-config data-ng-show="activeView.path === 'cors'"></dreamfactory-cors-config>
-            <dreamfactory-guest-users-config data-ng-show="activeView.path === 'guest-users'"></dreamfactory-guest-users-config>
-            <dreamfactory-open-registration-config data-ng-show="activeView.path === 'open-registration'"></dreamfactory-open-registration-config>
-            <dreamfactory-user-invites-config data-ng-show="activeView.path === 'user-invites'"></dreamfactory-user-invites-config>
-            <dreamfactory-password-reset-config data-ng-show="activeView.path === 'password-reset'"></dreamfactory-password-reset-config>
-            <dreamfactory-email-templates data-ng-show="activeView.path === 'email-templates'"></dreamfactory-email-templates>
-            <dreamfactory-global-lookup-keys-config data-ng-show="activeView.path === 'global-lookup-keys'"></dreamfactory-global-lookup-keys-config>
-            <df-edit-preferences data-ng-show="activeView.path === 'edit-preferences'"></df-edit-preferences>
-
-            <button type="submit" class="btn btn-primary" data-ng-if="activeView.path !== 'email-templates' && activeView.path !== 'edit-preferences'">Update</button>
-        </form>
     </div>
 </div>
 

@@ -1969,7 +1969,7 @@ angular.module('dfUtility', ['dfApplication'])
                     module: null
                 };
 
-                scope.moduleNames = ['Services', 'Apps', 'Roles', 'System','Users', 'Config', 'Email Templates', 'App Groups', 'Events', 'Current User'];
+                scope.moduleNames = ['Services', 'Apps', 'Roles', 'System','Users', 'Config', 'Email Templates', 'Lookup Keys', 'CORS Config', 'App Groups', 'Events', 'Current User'];
                 var loadingDots = null;
 
 
@@ -2017,12 +2017,16 @@ angular.module('dfUtility', ['dfApplication'])
                             return scope.moduleNames[5];
                         case 'email_template':
                             return scope.moduleNames[6];
-                        case 'app_group':
+                        case 'lookup':
                             return scope.moduleNames[7];
-                        case 'event':
+                        case 'cors':
                             return scope.moduleNames[8];
-                        case 'Current User':
+                        case 'app_group':
                             return scope.moduleNames[9];
+                        case 'event':
+                            return scope.moduleNames[10];
+                        case 'Current User':
+                            return scope.moduleNames[11];
 
 
                     }
@@ -2491,7 +2495,7 @@ angular.module('dfUtility', ['dfApplication'])
                 xhr = new ActiveXObject("Microsoft.XMLHTTP");
             }
 
-            xhr.open("GET", DSP_URL + '/api/v2/system/config', false);
+            xhr.open("GET", DSP_URL + '/api/v2/system/environment', false);
             xhr.setRequestHeader("X-DreamFactory-API-Key", "6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d");
             xhr.setRequestHeader("Content-Type", "application/json");
 

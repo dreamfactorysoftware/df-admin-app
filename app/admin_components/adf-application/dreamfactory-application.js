@@ -1,11 +1,10 @@
 'use strict';
 
 
-
 angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
 
-    .run(['$q', 'dfApplicationData', 'dfApplicationPrefs', 'dfAvailableApis', 'dfSessionStorage', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', function($q, dfApplicationData, dfApplicationPrefs, dfAvailableApis, dfSessionStorage, UserDataService, SystemConfigDataService, $location, $rootScope) {
+    .run(['$q', 'dfApplicationData', 'dfApplicationPrefs', 'dfAvailableApis', 'dfSessionStorage', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', function ($q, dfApplicationData, dfApplicationPrefs, dfAvailableApis, dfSessionStorage, UserDataService, SystemConfigDataService, $location, $rootScope) {
 
 
         // Get the System Config synchronously because we are
@@ -37,7 +36,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                 // we are hosted.  Add the event api for scripting
                 dfApplicationData.init(dfAvailableApis.getApis().addEventApi().apis).then(
-
                     // Success
                     function () {
 
@@ -150,7 +148,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
     }])
 
-    .service('dfApplicationData', ['$q', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function($q, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
+    .service('dfApplicationData', ['$q', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
 
 
         var dfApplicationObj = {
@@ -177,7 +175,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 options['params'] = {};
                 return;
             }
-            angular.forEach(options.params, function(value, key) {
+            angular.forEach(options.params, function (value, key) {
 
                 if (value == null) {
                     delete options.params[key];
@@ -207,10 +205,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             }
 
             return dfSystemData.getSystemApisFromServer(api).then(
-
                 function (result) {
 
-                    switch(apiName) {
+                    switch (apiName) {
 
                         case 'system':
 
@@ -280,7 +277,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                 promises = options.map(_fetchFromApi);
 
-               $q.all(promises).then(
+                $q.all(promises).then(
                     function () {
 
                         // Set our bootstrapped application object into sessionStorage
@@ -292,8 +289,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         // showing.  Init is in progress it will allow this module to handle login/logout and user location
                         $rootScope.initInProgress = false;
                     },
-                    defer.reject     
-               );
+                    defer.reject
+                );
 
 
                 return defer.promise;
@@ -310,7 +307,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
 
         // Save api data to server
-        function _saveApiData (api, options) {
+        function _saveApiData(api, options) {
 
             // check for and remove null value params
             _checkParams(options);
@@ -323,7 +320,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             options.data = {"record": [options.data]};
 
             // return response from server as promise
-            return dfSystemData.resource(options).post(params, options.data, function(result) {
+            return dfSystemData.resource(options).post(params, options.data, function (result) {
 
                 // update the application object and session storage.
                 __insertApiData(api, result);
@@ -331,7 +328,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
 
         // Save api data to server
-        function _updateApiData (api, options) {
+        function _updateApiData(api, options) {
 
             // check for and remove null value params
             _checkParams(options);
@@ -348,7 +345,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             }
 
             // return response from server as promise
-            return dfSystemData.resource().put(params, options.data, function(result) {
+            return dfSystemData.resource().put(params, options.data, function (result) {
 
                 // update the application object and session storage.
                 __updateApiData(api, result);
@@ -357,7 +354,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
         // Delete api data from server
         // update session storage and app obj
-        function _deleteApiData (api, options) {
+        function _deleteApiData(api, options) {
 
             // check for and remove null value params
             _checkParams(options);
@@ -367,7 +364,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             params['api'] = api;
             params['rollback'] = dfApplicationPrefs.getPrefs().data[api].rollback;
 
-            return dfSystemData.resource().delete(params, options.data, function(result) {
+            return dfSystemData.resource().delete(params, options.data, function (result) {
 
                 // update the application object and session storage.
                 __deleteApiData(api, result);
@@ -376,9 +373,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
         // retrieves new data set from server
         // update session storage and app obj
-        function _getDataSetFromServer (api, options) {
+        function _getDataSetFromServer(api, options) {
 
-            options = options || {params:{}};
+            options = options || {params: {}};
 
             var defaults = dfApplicationPrefs.getPrefs().data[api];
 
@@ -389,7 +386,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             params['api'] = api;
 
             // return response from server as promise
-            return dfSystemData.resource(options).get(params, function(result) {
+            return dfSystemData.resource(options).get(params, function (result) {
 
                 // update the application object and session storage.
                 __replaceApiData(api, result);
@@ -414,7 +411,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
 
         // Insert data into local model dfApplicationObj
-        function __insertApiData (api, dataObj) {
+        function __insertApiData(api, dataObj) {
 
             // Check for existence of api and ensure that it is an array
             if (dfApplicationObj.apis.hasOwnProperty(api) && Object.prototype.toString.call(dfApplicationObj.apis[api].record) === '[object Array]') {
@@ -443,7 +440,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
 
         // Insert data into local model dfApplicationObj
-        function __updateApiData (api, dataObj) {
+        function __updateApiData(api, dataObj) {
 
             // Check for existence of api and ensure that it is an array
             if (dfApplicationObj.apis.hasOwnProperty(api) && Object.prototype.toString.call(dfApplicationObj.apis[api].record) === '[object Array]') {
@@ -477,7 +474,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
 
         // Deletes data from local model dfApplicationObj
-        function __deleteApiData (api, result) {
+        function __deleteApiData(api, result) {
 
             // Searches for and removes a record from the local model
             function removeRecord(record) {
@@ -504,7 +501,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }
             }
 
-            function updateCount () {
+            function updateCount() {
 
                 // Update record count
                 if (dfApplicationObj.apis.hasOwnProperty(api) && dfApplicationObj.apis[api].hasOwnProperty('meta') && Object.prototype.toString.call(dfApplicationObj.apis[api].meta) === '[object Object]') {
@@ -526,7 +523,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 if (result.hasOwnProperty('record')) {
 
                     // loop through them
-                    angular.forEach(result.record, function(_record) {
+                    angular.forEach(result.record, function (_record) {
 
                         // remove from local model
                         removeRecord(_record);
@@ -551,7 +548,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
         // Replaces a entire single api data set in
         // local model dfApplicationObj
-        function __replaceApiData (api, result) {
+        function __replaceApiData(api, result) {
 
             // Check for existence of api and ensure that it is an array
             if (dfApplicationObj.apis.hasOwnProperty(api) && Object.prototype.toString.call(dfApplicationObj.apis[api].record) === '[object Array]') {
@@ -569,7 +566,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         function _getLocation() {
             return $location.path();
         }
-        
+
 
         return {
 
@@ -577,7 +574,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             initDeferred: null,
 
             // Public function to init the app
-            init: function(options) {
+            init: function (options) {
 
                 options = options || [];
 
@@ -585,7 +582,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             },
 
             // Returns app obj that is stored in the service
-            getApplicationObj: function() {
+            getApplicationObj: function () {
 
                 return dfApplicationObj;
             },
@@ -594,7 +591,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             // Useful for when the app obj is pulled from session storage
             // Otherwise the app obj should be built by init or other functions
             // strictly for editing the app obj
-            setApplicationObj: function(appObj) {
+            setApplicationObj: function (appObj) {
 
                 dfApplicationObj = appObj;
             },
@@ -616,7 +613,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             },
 
             // removes the app obj from session storage and sets local copy to empty obj
-            destroyApplicationObj: function() {
+            destroyApplicationObj: function () {
 
                 // Set local app obj to empty
                 _resetApplicationObj();
@@ -628,7 +625,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             },
 
             // gets bootstrapped api data by name
-            getApiData: function(api, options) {
+            getApiData: function (api, options) {
 
                 options = options || null;
 
@@ -674,10 +671,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                             }
 
                             // Loop through each of the objects in the api we have asked for
-                            angular.forEach(dfApplicationObj.apis[api].record, function(obj) {
+                            angular.forEach(dfApplicationObj.apis[api].record, function (obj) {
 
                                 // Loop through each value in option prop
-                                angular.forEach(options[key], function(value) {
+                                angular.forEach(options[key], function (value) {
 
                                     // does the obj have that prop and does the value equal the
                                     // current iterative value
@@ -695,13 +692,16 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     else {
 
                         // return if it exists
-                        return dfApplicationObj.apis[api].record;
+                        if (dfApplicationObj.apis[api].record)
+                            return dfApplicationObj.apis[api].record;
+                        else
+                            return dfApplicationObj.apis[api];
                     }
                 }
             },
 
             // save data to server and update app obj
-            saveApiData: function(api, options) {
+            saveApiData: function (api, options) {
 
                 if (dfApplicationObj.apis.hasOwnProperty(api)) {
 
@@ -719,7 +719,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             },
 
             // delete data on server and update app obj
-            deleteApiData: function(api, options) {
+            deleteApiData: function (api, options) {
 
                 if (dfApplicationObj.apis.hasOwnProperty(api)) {
 
@@ -729,7 +729,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             // retrieves more records from the db.  Will replace current
             // working set of records for specified api in the application obj
-            getDataSetFromServer: function(api, options) {
+            getDataSetFromServer: function (api, options) {
 
                 if (dfApplicationObj.apis.hasOwnProperty(api)) {
 
@@ -738,7 +738,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             },
 
             // retrieves the stored currentUser from local data model
-            getCurrentUser: function() {
+            getCurrentUser: function () {
 
                 if (dfApplicationObj.hasOwnProperty('currentUser')) {
 
@@ -765,14 +765,14 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 return dfMainLoadData;
             },
 
-            getLocation: function() {
+            getLocation: function () {
                 return _getLocation();
             }
 
         }
     }])
 
-    .service('dfSystemData', ['$http', 'XHRHelper', 'DSP_URL', '$resource', 'dfObjectService', function($http, XHRHelper, DSP_URL, $resource, dfObjectService) {
+    .service('dfSystemData', ['$http', 'XHRHelper', 'DSP_URL', '$resource', 'dfObjectService', function ($http, XHRHelper, DSP_URL, $resource, dfObjectService) {
 
 
         // Private synchronous function to retrieve services when app is bootstrapped
@@ -802,7 +802,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             // Public synchronous function to retrieve our system services
             // and store them in our service
-            getSystemApisFromServerSync: function(api) {
+            getSystemApisFromServerSync: function (api) {
 
                 var requestDataObj = {
                     url: 'system/' + api.api_name,
@@ -822,11 +822,11 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             },
 
-            http: function(api, options) {
+            http: function (api, options) {
 
                 return {
 
-                    delete: function() {
+                    delete: function () {
                         return $http({
                             url: DSP_URL + '/api/v2/system/' + api,
                             method: 'DELETE',
@@ -836,7 +836,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }
             },
 
-            resource: function(options) {
+            resource: function (options) {
 
                 options = options || {};
 
@@ -855,7 +855,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     },
                     post: {
                         method: 'POST',
-                        headers: options.headers,
+                        headers: options.headers
                     },
                     put: {
                         method: 'PUT',
@@ -874,83 +874,79 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
     }])
 
-    .service('dfApplicationPrefs', [function() {
+    .service('dfApplicationPrefs', [function () {
 
         var prefs = {
 
-                application: {
-                    notificationSystem: {
-                        success: 'pnotify',
-                        error: 'pnotify',
-                        warn: 'pnotify'
-                    }
+            application: {
+                notificationSystem: {
+                    success: 'pnotify',
+                    error: 'pnotify',
+                    warn: 'pnotify'
+                }
+            },
+            data: {
+                app: {
+                    include_count: true,
+                    limit: 100,
+                    related: 'role_by_role_id'
                 },
-                data: {
-                    app: {
-                        include_count: true,
-                        limit: 100,
-                        related: 'role_by_role_id'
-                    },
-                    app_group: {
-                        include_count: true,
-                        limit: 100,
-                        related: 'app_by_app_to_app_group'
-                    },
-                    role: {
-                        include_count: true,
-                        related: 'role_service_access_by_role_id,role_lookup_by_role_id',
-                        limit: 100
-                    },
-                    admin: {
-                        include_count: true,
-                        limit: 20,
-                        related: 'user_lookup_by_user_id'
-                    },
-                    user: {
-                        include_count: true,
-                        limit: 20,
-                        related: 'user_lookup_by_user_id,user_to_app_to_role_by_user_id'
-                    },
-                    service: {
-                        include_count: true,
-                        include_components: true,
-                        limit: 100,
-                        related: 'service_doc_by_service_id'
-                    },
-                    config: {
-
-                    },
-                    email_template: {
-
-                    },
-                    event: {
-                        all_events: true
-                    }
+                app_group: {
+                    include_count: true,
+                    limit: 100,
+                    related: 'app_by_app_to_app_group'
                 },
+                role: {
+                    include_count: true,
+                    related: 'role_service_access_by_role_id,role_lookup_by_role_id',
+                    limit: 100
+                },
+                admin: {
+                    include_count: true,
+                    limit: 20,
+                    related: 'user_lookup_by_user_id'
+                },
+                user: {
+                    include_count: true,
+                    limit: 20,
+                    related: 'user_lookup_by_user_id,user_to_app_to_role_by_user_id'
+                },
+                service: {
+                    include_count: true,
+                    include_components: true,
+                    limit: 100,
+                    related: 'service_doc_by_service_id'
+                },
+                config: {},
+                email_template: {},
+                lookup: {},
+                cors: {},
+                event: {}
+            },
 
-                sections: {
-                    app: {
-                        autoClose: false,
-                        manageViewMode: 'table'
-                    },
-                    role: {
-                        autoClose: false,
-                        manageViewMode: 'table'
-                    },
-                    admin: {
-                        autoClose: false,
-                        manageViewMode: 'table'
-                    },
-                    user: {
-                        autoClose: false,
-                        manageViewMode: 'table'
-                    },
-                    service: {
-                        autoClose: false,
-                        manageViewMode: 'table'
-                    }
+            sections: {
+                app: {
+                    autoClose: false,
+                    manageViewMode: 'table'
+                },
+                role: {
+                    autoClose: false,
+                    manageViewMode: 'table'
+                },
+                admin: {
+                    autoClose: false,
+                    manageViewMode: 'table'
+                },
+                user: {
+                    autoClose: false,
+                    manageViewMode: 'table'
+                },
+                service: {
+                    autoClose: false,
+                    manageViewMode: 'table'
                 }
             }
+        }
 
         return {
 
@@ -972,7 +968,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
         return {
 
-            apis: ['system', 'config', 'service', 'app', 'role', 'admin', 'user', 'email_template', 'app_group', 'event'],
+            apis: ['system', 'environment', 'config', 'service', 'app', 'role', 'admin', 'user', 'email_template', 'lookup', 'cors', 'app_group', 'event'],
 
             getApis: function () {
                 return this;
@@ -987,11 +983,11 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
     // This intercepts outgoing http calls.  Checks for restricted verbs from config
     // and tunnels them through a POST if necessary
-    .factory('httpVerbInterceptor', ['$q', 'SystemConfigDataService', function($q, SystemConfigDataService) {
+    .factory('httpVerbInterceptor', ['$q', 'SystemConfigDataService', function ($q, SystemConfigDataService) {
 
         return {
 
-            request: function(config) {
+            request: function (config) {
 
                 if (SystemConfigDataService.getSystemConfig().restricted_verbs.length <= 0) return config;
 
@@ -999,7 +995,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     i = 0,
                     currMethod = config.method;
 
-                while(i < restricted_verbs.length) {
+                while (i < restricted_verbs.length) {
 
                     if (currMethod === restricted_verbs[i]) {
                         config.method = "POST";
@@ -1016,7 +1012,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
     }])
 
     // Intercepts outgoing http calls.  Checks for valid session.  If 403 or 401 will trigger a pop up login screen.
-    .factory('httpValidSession', ['$q', '$rootScope', '$location', function($q, $rootScope, $location) {
+    .factory('httpValidSession', ['$q', '$rootScope', '$location', function ($q, $rootScope, $location) {
 
 
         return {
@@ -1026,7 +1022,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 return config;
             },
 
-            requestError: function(reject) {
+            requestError: function (reject) {
 
                 return $q.reject(reject);
             },
@@ -1042,14 +1038,14 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 // If we get an error from any of the
                 // login / register pages, ignore it.
                 // No need to pop up a login.
-                switch($location.path()) {
+                switch ($location.path()) {
 
                     case '/login':
                     case '/user-invite':
                     case '/register-confirm':
                     case '/register':
                     case '/register-complete':
-                    break;
+                        break;
 
                     default:
 
@@ -1069,297 +1065,291 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
     // paginates tables
     .directive('dfPaginateTable', ['MOD_UTILITY_ASSET_PATH', 'DSP_URL', '$http', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify',
-        function(MOD_UTILITY_ASSET_PATH, DSP_URL, $http, dfApplicationData, dfApplicationPrefs, dfNotify) {
+        function (MOD_UTILITY_ASSET_PATH, DSP_URL, $http, dfApplicationData, dfApplicationPrefs, dfNotify) {
 
             return {
 
-            restrict: 'E',
-            scope: {
-                api: '=',
-                linkedData: '=',
-                prepFunc: '&'
-            },
-            templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-paginate-table.html',
-            link: function (scope, elem, attrs) {
+                restrict: 'E',
+                scope: {
+                    api: '=',
+                    linkedData: '=',
+                    prepFunc: '&'
+                },
+                templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-paginate-table.html',
+                link: function (scope, elem, attrs) {
 
 
-
-                scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
-                scope.pagesArr = [];
-                scope.currentPage = {};
-                scope.isInProgress = false;
-
+                    scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+                    scope.pagesArr = [];
+                    scope.currentPage = {};
+                    scope.isInProgress = false;
 
 
-                // PUBLIC API
-                scope.getPrevious = function () {
+                    // PUBLIC API
+                    scope.getPrevious = function () {
 
-                    if (scope._isFirstPage() || scope.isInProgress) {
-                        return false;
-                    } else {
+                        if (scope._isFirstPage() || scope.isInProgress) {
+                            return false;
+                        } else {
 
                             scope._getPrevious();
 
-                    }
-                };
+                        }
+                    };
 
-                scope.getNext = function () {
+                    scope.getNext = function () {
 
-                    if (scope._isLastPage() || scope.isInProgress) {
-                        return false;
-                    } else {
+                        if (scope._isLastPage() || scope.isInProgress) {
+                            return false;
+                        } else {
 
                             scope._getNext();
 
+                        }
+                    };
+
+                    scope.getPage = function (pageObj) {
+
+                        scope._getPage(pageObj);
                     }
-                };
 
-                scope.getPage = function (pageObj) {
 
-                    scope._getPage(pageObj);
+                    // PRIVATE API
+
+
+                    // Data
+                    scope._getDataFromServer = function (offset) {
+
+                        return dfApplicationData.getDataSetFromServer(scope.api, {
+                            params: {
+                                offset: offset
+                            }
+                        }).$promise
+                    };
+
+                    // Pagination
+                    scope._calcTotalPages = function (totalCount, numPerPage) {
+
+                        return Math.ceil(totalCount / numPerPage);
+                    };
+
+                    scope._createPageObj = function (_pageNum) {
+
+                        return {
+                            number: _pageNum + 1,
+                            value: _pageNum,
+                            offset: _pageNum * dfApplicationPrefs.getPrefs().data[scope.api].limit,
+                            stopPropagation: false
+                        }
+                    };
+
+                    scope._createPagesArr = function (_totalCount) {
+
+
+                        scope.pagesArr = [];
+
+                        for (var i = 0; i < _totalCount; i++) {
+
+                            scope.pagesArr.push(scope._createPageObj(i));
+                        }
+                    };
+
+                    scope._setCurrentPage = function (pageDataObj) {
+
+                        scope.currentPage = pageDataObj;
+                    };
+
+                    scope._getCurrentPage = function () {
+
+                        if (!scope.currentPage && scope.pagesArr.length > 0) {
+                            scope.currentPage = scope.pagesArr[0];
+                        } else if (!scope.currentPage && !scope.pagesArr.length) {
+
+                            scope.pagesArr.push(scope._createPageObj(0));
+                            scope.currentPage = scope.pagesArr[0];
+                        }
+
+                        return scope.currentPage;
+                    };
+
+                    scope._isFirstPage = function () {
+
+                        return scope._getCurrentPage().value === 0;
+                    };
+
+                    scope._isLastPage = function () {
+
+                        return scope.currentPage.value === scope.pagesArr.length - 1
+                    };
+
+                    scope._previousPage = function () {
+
+                        scope.currentPage = scope.pagesArr[scope.currentPage.value - 1]
+                    };
+
+                    scope._nextPage = function () {
+
+                        scope.currentPage = scope.pagesArr[scope.currentPage.value + 1]
+                    };
+
+                    scope._calcPagination = function (newValue) {
+
+                        scope.pagesArr = [];
+
+                        if (scope.totalCount == 0) {
+                            scope.pagesArr.push(scope._createPageObj(0));
+                            return false;
+                        }
+
+                        scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationPrefs.getPrefs().data[newValue].limit));
+                    };
+
+
+                    // COMPLEX IMPLEMENTATION
+                    scope._getPrevious = function () {
+
+                        if (scope.isInProgress) return false;
+
+                        scope.isInProgress = true;
+
+                        var offset = scope.pagesArr[scope.currentPage.value - 1].offset
+
+                        scope._getDataFromServer(offset).then(
+                            function (result) {
+
+                                scope.linkedData = scope.prepFunc({dataArr: result.record});
+                                scope._previousPage();
+                            },
+
+                            function (reject) {
+
+                                var messageOptions = {
+                                    module: 'DreamFactory Paginate Table',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+                                }
+
+                                dfNotify.error(messageOptions);
+                            }
+                        ).finally(
+                            function () {
+
+                                scope.isInProgress = false;
+                            }
+                        )
+                    };
+
+                    scope._getNext = function () {
+
+                        if (scope.isInProgress) return false;
+
+                        scope.isInProgress = true;
+
+                        var offset = scope.pagesArr[scope.currentPage.value + 1].offset
+
+                        scope._getDataFromServer(offset).then(
+                            function (result) {
+                                scope.linkedData = scope.prepFunc({dataArr: result.record});
+                                scope._nextPage();
+                            },
+
+                            function (reject) {
+
+                                var messageOptions = {
+                                    module: 'DreamFactory Paginate Table',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+                                }
+
+                                dfNotify.error(messageOptions);
+                            }
+                        ).finally(
+                            function () {
+
+                                scope.isInProgress = false;
+                            }
+                        )
+                    };
+
+                    scope._getPage = function (pageObj) {
+
+                        if (scope.isInProgress) return false;
+
+                        scope.isInProgress = true;
+
+                        scope._getDataFromServer(pageObj.offset).then(
+                            function (result) {
+
+                                scope.linkedData = scope.prepFunc({dataArr: result.record});
+                                scope._setCurrentPage(pageObj);
+                            },
+
+                            function (reject) {
+
+                                var messageOptions = {
+                                    module: 'DreamFactory Paginate Table',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+                                }
+
+                                dfNotify.error(messageOptions);
+                            }
+                        ).finally(
+                            function () {
+
+                                scope.isInProgress = false;
+                            }
+                        )
+
+                    };
+
+
+                    // WATCHERS
+                    var watchApi = scope.$watch('api', function (newValue, oldValue) {
+
+                        if (!newValue) return false;
+                        scope._calcPagination(newValue);
+                        scope._setCurrentPage(scope.pagesArr[0]);
+                    });
+
+
+                    // MESSAGES
+                    scope.$on('dfPaginate:reset:' + scope.api, function (e) {
+
+                        if (scope.isInProgress) return false;
+
+                        scope.isInProgress = true;
+
+                        var offset = 0;
+
+                        scope._getDataFromServer(offset).then(
+                            function (result) {
+                                scope.linkedData = scope.prepFunc({dataArr: result.record});
+                                scope._setCurrentPage(scope.pagesArr[0]);
+                            },
+
+                            function (reject) {
+
+                                var messageOptions = {
+                                    module: 'DreamFactory Paginate Table',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+                                }
+
+                                dfNotify.error(messageOptions);
+                            }
+                        ).finally(
+                            function () {
+
+                                scope.isInProgress = false;
+                            }
+                        )
+                    })
                 }
-
-
-                // PRIVATE API
-
-
-                // Data
-                scope._getDataFromServer = function(offset) {
-
-                    return dfApplicationData.getDataSetFromServer(scope.api, {
-                        params: {
-                            offset: offset
-                        }
-                    }).$promise
-                };
-
-                // Pagination
-                scope._calcTotalPages = function (totalCount, numPerPage) {
-
-                    return Math.ceil(totalCount / numPerPage);
-                };
-
-                scope._createPageObj = function (_pageNum) {
-
-                    return {
-                        number: _pageNum + 1,
-                        value: _pageNum,
-                        offset: _pageNum * dfApplicationPrefs.getPrefs().data[scope.api].limit,
-                        stopPropagation: false
-                    }
-                };
-
-                scope._createPagesArr = function (_totalCount) {
-
-
-                    scope.pagesArr = [];
-
-                    for (var i = 0; i < _totalCount; i++) {
-
-                        scope.pagesArr.push(scope._createPageObj(i));
-                    }
-                };
-
-                scope._setCurrentPage = function (pageDataObj) {
-
-                    scope.currentPage = pageDataObj;
-                };
-
-                scope._getCurrentPage = function () {
-
-                    if (!scope.currentPage && scope.pagesArr.length > 0) {
-                        scope.currentPage = scope.pagesArr[0];
-                    } else if (!scope.currentPage && !scope.pagesArr.length) {
-
-                        scope.pagesArr.push(scope._createPageObj(0));
-                        scope.currentPage = scope.pagesArr[0];
-                    }
-
-                    return scope.currentPage;
-                };
-
-                scope._isFirstPage = function () {
-
-                    return scope._getCurrentPage().value === 0;
-                };
-
-                scope._isLastPage = function () {
-
-                    return scope.currentPage.value === scope.pagesArr.length - 1
-                };
-
-                scope._previousPage = function () {
-
-                    scope.currentPage = scope.pagesArr[scope.currentPage.value - 1]
-                };
-
-                scope._nextPage = function () {
-
-                    scope.currentPage = scope.pagesArr[scope.currentPage.value + 1]
-                };
-
-                scope._calcPagination = function (newValue) {
-
-                    scope.pagesArr = [];
-
-                    if (scope.totalCount == 0) {
-                        scope.pagesArr.push(scope._createPageObj(0));
-                        return false;
-                    }
-
-                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationPrefs.getPrefs().data[newValue].limit));
-                };
-
-
-                // COMPLEX IMPLEMENTATION
-                scope._getPrevious = function () {
-
-                    if (scope.isInProgress) return false;
-
-                    scope.isInProgress = true;
-
-                    var offset = scope.pagesArr[scope.currentPage.value - 1].offset
-
-                    scope._getDataFromServer(offset).then(
-
-                        function(result) {
-
-                            scope.linkedData = scope.prepFunc({dataArr: result.record});
-                            scope._previousPage();
-                        },
-
-                        function(reject) {
-
-                            var messageOptions = {
-                                module: 'DreamFactory Paginate Table',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            }
-
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(
-                        function() {
-
-                            scope.isInProgress = false;
-                        }
-                    )
-                };
-
-                scope._getNext = function () {
-
-                    if (scope.isInProgress) return false;
-
-                    scope.isInProgress = true;
-
-                    var offset = scope.pagesArr[scope.currentPage.value + 1].offset
-
-                    scope._getDataFromServer(offset).then(
-
-                        function(result) {
-                            scope.linkedData = scope.prepFunc({dataArr: result.record});
-                            scope._nextPage();
-                        },
-
-                        function(reject) {
-
-                            var messageOptions = {
-                                module: 'DreamFactory Paginate Table',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            }
-
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(
-                        function() {
-
-                            scope.isInProgress = false;
-                        }
-                    )
-                };
-
-                scope._getPage = function (pageObj) {
-
-                    if (scope.isInProgress) return false;
-
-                    scope.isInProgress = true;
-
-                    scope._getDataFromServer(pageObj.offset).then(
-
-                        function(result) {
-
-                            scope.linkedData = scope.prepFunc({dataArr: result.record});
-                            scope._setCurrentPage(pageObj);
-                        },
-
-                        function(reject) {
-
-                            var messageOptions = {
-                                module: 'DreamFactory Paginate Table',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            }
-
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(
-                        function() {
-
-                            scope.isInProgress = false;
-                        }
-                    )
-
-                };
-
-
-                // WATCHERS
-                var watchApi = scope.$watch('api', function(newValue, oldValue) {
-
-                    if (!newValue) return false;
-                    scope._calcPagination(newValue);
-                    scope._setCurrentPage(scope.pagesArr[0]);
-                });
-
-
-                // MESSAGES
-                scope.$on('dfPaginate:reset:' + scope.api, function (e) {
-
-                    if (scope.isInProgress) return false;
-
-                    scope.isInProgress = true;
-
-                    var offset = 0;
-
-                    scope._getDataFromServer(offset).then(
-
-                        function(result) {
-                            scope.linkedData = scope.prepFunc({dataArr: result.record});
-                            scope._setCurrentPage(scope.pagesArr[0]);
-                        },
-
-                        function(reject) {
-
-                            var messageOptions = {
-                                module: 'DreamFactory Paginate Table',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            }
-
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(
-                        function() {
-
-                            scope.isInProgress = false;
-                        }
-                    )
-                })
             }
-        }
-    }])
+        }])
 

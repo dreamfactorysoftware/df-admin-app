@@ -844,7 +844,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // Returns the system configuration object
                     scope._getSystemConfig = function () {
 
-                        return $http.get(DSP_URL + '/api/v2/system/config');
+                        return $http.get(DSP_URL + '/api/v2/system/environment');
                     };
 
 
@@ -996,7 +996,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             //scope.options.confirmationRequired = xhrHelper.getSystemConfigFromServer().allow_open_registration;
 
                             var config = dfXHRHelper.get({
-                                url: 'system/config'
+                                url: 'system/environment'
                             });
 
                             scope.options.confirmationRequired = config.allow_open_registration && config.open_reg_email_service_id ? true : null;
