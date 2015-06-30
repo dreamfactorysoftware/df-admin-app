@@ -253,7 +253,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 },
                 cacheConfig: {
                     title: 'Cache Overview',
-                    text: 'Flush system-wide cache or per-service cache. Use the cache clearing buttons below to refresh any changes made to your system configuration values.'
+                    text: 'Flush system-wide cache or per-service caches. Use the cache clearing buttons below to refresh any changes made to your system configuration values.'
                 },
                 corsConfig: {
                     title: 'CORS Overview',
@@ -301,61 +301,56 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.flushSystemCache = function () {
 
-                    $http.delete(DSP_URL + '/rest/system/cache')
-                        .success(
-                        function () {
+                    $http.delete(DSP_URL + '/api/v2/system/cache')
+                        .success(function () {
 
                             var messageOptions = {
                                 module: 'Cache',
                                 type: 'success',
                                 provider: 'dreamfactory',
-                                message: 'Platform cache flushed.'
-                            }
+                                message: 'System-wide cache flushed.'
+                            };
 
                             dfNotify.success(messageOptions);
                         })
                         .error(function (error) {
 
-
                             var messageOptions = {
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: error
-                            }
+                                message: {'data': {'error': [error.error]}}
+                            };
 
                             dfNotify.error(messageOptions);
                         })
 
                 };
 
-                scope.flushServiceCache = function () {
+                scope.flushServiceCache = function (index) {
 
-                    $http.get(DSP_URL + '/rest/system/cache/swagger')
-                        .success(
-                        function () {
+                    $http.delete(DSP_URL + '/api/v2/system/cache/' + scope.servicesData[index].name)
+                        .success(function () {
 
                             var messageOptions = {
                                 module: 'Cache',
                                 type: 'success',
                                 provider: 'dreamfactory',
-                                message: 'Service cache flushed.'
-                            }
+                                message: scope.servicesData[index].label + ' service cache flushed.'
+                            };
 
                             dfNotify.success(messageOptions);
                         })
                         .error(function (error) {
 
-
                             var messageOptions = {
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: error
-                            }
+                                message: {'data': {'error': [error.error]}}
+                            };
 
                             dfNotify.error(messageOptions);
-
                         })
                 };
             }

@@ -3,16 +3,17 @@
     <df-large-help data-options="dfLargeHelp.cacheConfig"></df-large-help>
 
     <!--<h3>System Cache</h3>-->
-    <button type="button" class="btn btn-primary" data-ng-click="flushSystemCache()">Flush System Cache</button>
-
+    <button type="button" class="btn btn-primary" data-ng-click="flushSystemCache()">Flush System-Wide Cache</button>
+    <br/>
+    <br/>
     <table class="table table-striped">
         <tr>
-            <th>Service Name</th>
-            <th><button type="button" class="btn btn-default btn-sm" data-ng-click="addNewHost()"><i class="fa fa-plus fa-fw"></i></button></th>
+            <th>Per-Service Caches</th>
+            <th></th>
         </tr>
-        <tr data-ng-repeat="service in services track by $index">
+        <tr data-ng-repeat="service in servicesData track by $index">
             <td>
-                <input data-ng-model="host.host" class="form-control" type="text" placeholder="Enter Host Name"/>
+                {{service.label}}
             </td>
             <td>
                 <button type="button" class="btn btn-default btn-sm" data-ng-click="flushServiceCache($index)"><i
