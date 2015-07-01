@@ -122,6 +122,37 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     scope.loginForm = {};
 
+                    //////////////////////[Arif's changes for OAuth]//////////////////////
+                    var queryString = location.search.substring(1);
+
+                    if(queryString){
+                        $http.post(DSP_URL + '/api/v2/user/session?oauth_callback=true&'+queryString).then(
+                            // success method
+                            function (result) {
+                                // remove unnecessary apps data
+                                // this is temporary and cleans up our
+                                // session obj that is returned by the login function
+                                // If a user has a large number of apps it can overflow our cookie
+                                // So we're not going to store this info
+                                delete result.data.no_group_apps;
+                                delete result.data.app_groups;
+
+                                // Set the cookies
+                                scope._setCookies(result.data);
+
+                                // Set the DreamFactory session header
+                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = $cookies.PHPSESSID;
+
+                                // Set the current user in the UserDataService service
+                                UserDataService.setCurrentUser(result.data);
+
+                                // Emit a success message so we can hook in
+                                scope.$emit(scope.es.loginSuccess, result.data);
+                            }
+                        );
+                    }
+                    /////////////////////////////////////////////////////////////////////////////
+
                     // This is the function we call in the UI for login.
                     scope.login = function (credsDataObj) {
 
@@ -1067,8 +1098,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope.systemConfig = SystemConfigDataService.getSystemConfig();
 
 
-                    scope.providers = scope.systemConfig.remote_login_providers;
-
+                    scope.oauths = scope.systemConfig.authentication.oauth;
 
                     scope.loginWithProvider = function (providerData) {
 
@@ -1077,8 +1107,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
 
                     scope._loginWithProvider = function (providerData) {
-
-                        window.top.location.href = '/web/remoteLogin?pid=' + providerData.api_name + '&return_url=' + encodeURI(window.top.location);
+                        window.top.location.href = '/api/v2/'+providerData;
+                        //window.top.location.href = '/web/remoteLogin?pid=' + providerData.api_name + '&return_url=' + encodeURI(window.top.location);
                     }
                 }
             }
