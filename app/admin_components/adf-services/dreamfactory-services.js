@@ -529,7 +529,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-info.html',
             link: function(scope, elem, attrs) {
 
-
                 // @TODO: Refactor to factory
                 var ServiceInfo = function (serviceInfoData) {
 
@@ -558,6 +557,89 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         recordCopy: angular.copy(data)
                     }
                 };
+
+                var customConfig = [
+                    {
+                        types: [ 'aws_dynamodb', 'aws_simpledb', 'aws_s3', 'aws_sns', 'aws_ses' ],
+                        schema: [
+                            region: {
+                                type: 'dropdown',
+                                options: [
+                                    {name: "US EAST (N Virgina)", value: "us-east-1"},
+                                    {name: "US WEST (N California)", value: "us-west-1"},
+                                    {name: "US WEST (Oregon)", value: "us-west-2"},
+                                    {name: "EU WEST (Ireland)", value: "eu-west-1"},
+                                    {name: "Asia Pacific (Singapore)", value: "ap-southeast-1"},
+                                    {name: "Asia Pacific (Sydney)", value: "ap-southeast-2"},
+                                    {name: "Asia Pacific (Tokyo)", value: "ap-northeast-1"},
+                                    {name: "South America (Sao Paulo)", value: "sa-east-1"}
+                                ]
+                            }
+                        ]
+                    },
+
+                    {
+                        types: [ 'local_file', 'ros_file', 'aws_s3', 'azure_blob' ],
+                        schema: [
+                            {
+                                name: 'public_path',
+                                type: 'array(string)'
+                            }
+                        ]
+                    },
+
+                    {
+                        types: [ 'mongo_db' ],
+                        schema: [
+                            {
+                                name: 'options',
+                                type: 'object(string,string)'
+                            },
+                            {
+                                name: 'driver_options',
+                                type: 'object(string,string)'
+                            }
+                        ]
+                    },
+
+                    {
+                        type: 'script',
+                        schema: [
+                            {
+                                name: 'type',
+                                type: 'dropdown',
+                                options: 'script_types'
+                            },
+                            {
+                                name: 'content',
+                                type: 'editor'
+                            }
+                        ]
+                    },
+                    {
+                        type: 'sql_db',
+                        schema: [
+                            {
+                                name: 'options',
+                                type: 'object(string,string)'
+                            },
+                            {
+                                name: 'attributes',
+                                type: 'object(string,string)'
+                            },
+                        ]
+                    },
+                    {
+                        type: 'user',
+                        schema: [
+                            {
+                                name: 'open_reg_email_service_id',
+                                type: 'dropdown',
+                                options: 'services'
+                            }
+                        ]
+                    }
+                ];
 
                 scope.changeServiceType = function () {
                     if (!scope.serviceInfo && !scope.serviceInfo.record) {
