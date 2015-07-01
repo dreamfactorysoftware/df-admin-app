@@ -59,7 +59,7 @@
             <div class="" dreamfactory-auto-height auto-height-parent="window" auto-height-padding="0" auto-height-top="175px" data-bottom-height="220" style="overflow: scroll">
 
                 <div class="list-group scripting-list-group" data-ng-show="menuLevel === 0">
-                    <a class="list-group-item" data-ng-repeat="event in events | filter: pathFilter" data-ng-click="setEvent(event)">{{event.name}}<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
+                    <a class="list-group-item" data-ng-repeat="event in events | filter: pathFilter" data-ng-click="setService(event)">{{event.name}}<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
                     <a class="list-group-item" data-ng-click="setCustomScripts(customScripts)">Custom Scripts<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
                 </div>
 
@@ -74,7 +74,7 @@
                     <a class="list-group-item" data-ng-click="createNewCustomScript()">Create New Script</a>
                     <a class="list-group-item"
                        data-ng-repeat="script in customScripts.records"
-                       data-ng-click="setScript('custom', script.script_id)">{{script.script_id}}</a>
+                       data-ng-click="setScript('custom', script.name)">{{script.name}}</a>
                 </div>
 
 
@@ -104,7 +104,7 @@
                     </div>
 
                     <div data-ng-if="currentScriptObj">
-                        <p>{{currentScriptObj.script_id}}</p>
+                        <p>{{currentScriptObj.name}}</p>
                         <p>{{currentScriptObj.language}}</p>
                         <p>{{currentScriptObj.is_user_script}}</p>
                     </div>

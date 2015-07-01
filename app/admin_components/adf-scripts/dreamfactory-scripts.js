@@ -86,9 +86,10 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             var ScriptObj = function (scriptId, scriptLanguage, scriptData) {
 
                 return {
-                    script_id: scriptId,
-                    language: scriptLanguage || 'js',
-                    script_body: scriptData || '',
+                    name: scriptId,
+                    type: scriptLanguage || 'v8js',
+                    content: scriptData || '',
+                    is_active: false,
                     __newScript: true
                 }
             };
@@ -118,26 +119,33 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope.isHostedSystem = false; // SystemConfigDataService.getSystemConfig().is_hosted;
 
+
+            // Array containing data that describes the scripting types.
+            $scope.eventTypes = [
+
+                {
+                    name: 'process-scripts',
+                    label: 'Process Event Scripts'
+                },
+                {
+                    name: 'broadcast-scripts',
+                    label: "Broadcast Event Scripts"
+                }
+            ];
+
             // Sample Scripts
             $scope.samplesScripts = null;
-            // $scope.sampleScripts = new ScriptObj('sample-scripts', false, null, getSampleScripts.data);
+            // $scope.sampleScripts = new ScriptObj('sample-scripts', 'v8js', getSampleScripts.data);
 
             // All these vars pertain to building of events dynamically on the client
             $scope.events = dfApplicationData.getApiData('event');
-            $scope.builtEventsList = {};
-            $scope.staticEventName = 'static';
-            $scope.preprocessEventName = "pre_process";
-            $scope.postprocessEventName = "post_process";
-            $scope.staticEventsOn = false;
-            $scope.preprocessEventsOn = true;
-            $scope.postprocessEventsOn = true;
-            $scope.uppercaseVerbs = false;
+            $scope.scriptTypes = dfApplicationData.getApiData('script_type');
             $scope.uppercaseVerbLabels = true;
             $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete']
 
             // Keep track of what's going on in the module
-            $scope.currentScriptTypeObj = null;
-            $scope.currentEventObj = null;
+            $scope.currentEventTypeObj = null;
+            $scope.currentServiceObj = null;
             $scope.currentPathObj = null;
             $scope.currentScriptObj = null;
 
@@ -147,19 +155,19 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
 
             // PUBLIC API
-            $scope.setScriptType = function (typeObj) {
+            $scope.setEventType = function (typeObj) {
 
-                $scope._setScriptType(typeObj);
+                $scope._setEventType(typeObj);
             };
 
-            $scope.setEvent = function (eventObj) {
+            $scope.setService = function (name, eventObj) {
 
-                $scope._setEvent(eventObj);
+                $scope._setService(name, eventObj);
             };
 
-            $scope.setPathObj = function (pathObj) {
+            $scope.setPath = function (name, pathObj) {
 
-                $scope._setPathObj(pathObj);
+                $scope._setPath(name, pathObj);
             };
 
             $scope.setScript = function (scriptIdStr) {
@@ -174,7 +182,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope.deleteScript = function () {
 
-                if (dfNotify.confirm('Delete ' + $scope.currentScriptObj.script_id + '?')) {
+                if (dfNotify.confirm('Delete ' + $scope.currentScriptObj.name + '?')) {
 
                     $scope._deleteScript();
                 }
@@ -187,229 +195,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
 
             // PRIVATE API
-
-            // Dynamically create event names on the client because no one thought it
-            // would be a good idea to build that list on the server and send it on a GET /api/v2/script
-            $scope._createEvents = function (event, associatedData) {
-
-                // returns an empty Path Object
-                function PathObj() {
-
-                    return {
-                        path: null,
-                        verbs: []
-                    }
-                }
-
-                // returns an empty Verb Object
-                function VerbObj() {
-
-                    return {
-                        event: [],
-                        type: null
-                    };
-                }
-
-                // builds a Verb Object
-                function buildVerbObj(eventName, pathRefName, verb, operation, includeVerbInFileName) {
-
-                    includeVerbInFileName = includeVerbInFileName || false;
-
-
-                    var nvo = new VerbObj(),
-                        eventString;
-
-                    eventString = eventName ? eventName + '.' : '';
-                    eventString += pathRefName ? pathRefName + '.' : '';
-                    eventString += includeVerbInFileName ? verb + '.' : '';
-                    eventString += operation ? operation : '';
-
-                    nvo.event.push(eventString);
-
-                    nvo.type = verb;
-
-                    return nvo;
-                }
-
-                // Are we dealing with a table
-                function isTable() {
-
-                    return event.paths[1].path.indexOf("table_name") != '-1';
-                }
-
-                // Are we dealing with a container
-                function isContainer() {
-
-                    return event.paths[1].path.indexOf("container") != '-1';
-                }
-
-                // change verbs to uppercase
-
-                if ($scope.uppercaseVerbs) {
-                    angular.forEach(event.paths[0].verbs, function (verb) {
-                        verb.type = verb.type.toUpperCase();
-                    });
-                }
-
-
-                // Is this a database service
-                if (isTable() || isContainer()) {
-
-                    // place to store static events
-                    var staticEvents;
-
-                    // Loop through the associated data (tables returned from 'GET' on the service name)
-                    angular.forEach(associatedData, function (pathRef) {
-
-                        // Set our staticEvents empty
-                        staticEvents = [];
-
-                        // Create a new empty Path Object
-                        var npo = new PathObj();
-
-                        // Set the path in the Path Obj
-                        npo.path = '/' + event.name + '/' + pathRef.name;
-
-                        // Store the verbs from the associated data. if !associatedData assign array.
-                        var verbs;
-                        if ($scope.uppercaseVerbs) {
-
-                            verbs = pathRef.access || ['GET', 'POST', 'PATCH', 'DELETE'];
-
-                        } else {
-
-                            angular.forEach(pathRef.access, function (verb, index) {
-                                pathRef.access[index] = verb.toLowerCase();
-                            });
-
-                            verbs = pathRef.access || ['get', 'post', 'patch', 'delete'];
-                        }
-
-                        var allowedVerbs = [];
-
-                        angular.forEach(verbs, function (verb) {
-
-                            var i = 0;
-
-                            while (i < $scope.allowedVerbs.length) {
-
-                                if (verb.toLowerCase() === $scope.allowedVerbs[i]) {
-
-                                    allowedVerbs.push(verb);
-                                }
-
-                                i++
-                            }
-                        });
-
-                        verbs = allowedVerbs;
-
-
-                        // Loop through the verbs and create Verb Objects
-                        angular.forEach(verbs, function (verb, index) {
-
-                            // Do we want static events
-                            if ($scope.staticEventsOn) {
-
-                                // What verb are we dealing with
-                                switch (verb) {
-
-                                    case "GET":
-                                    case "get":
-
-                                        // build Verb Object and store in static events
-                                        staticEvents.push(buildVerbObj(event.name, pathRef.name, verb, 'select'));
-                                        break;
-
-                                    case "POST":
-                                    case "post":
-
-                                        // SAO
-                                        staticEvents.push(buildVerbObj(event.name, pathRef.name, verb, 'insert'));
-                                        break;
-
-                                    case "PUT":
-                                    case "put":
-
-                                        // SAO
-                                        staticEvents.push(buildVerbObj(event.name, pathRef.name, verb, 'update'));
-                                        break;
-
-                                    case "PATCH":
-                                    case "patch":
-                                        // SAO
-                                        staticEvents.push(buildVerbObj(event.name, pathRef.name, verb, 'update'));
-                                        break;
-
-                                    case "DELETE":
-                                    case "delete":
-                                        // SAO
-                                        staticEvents.push(buildVerbObj(event.name, pathRef.name, verb, 'delete'));
-                                        break;
-                                }
-                            }
-
-                            // Do we want pre-process events
-                            if ($scope.preprocessEventsOn) {
-
-                                // Yep.  Build Verb Object and store in our Path Object verbs array
-                                npo.verbs.push(buildVerbObj(event.name, pathRef.name, verb, $scope.preprocessEventName, true))
-                            }
-
-                            // Do we want post-process events
-                            if ($scope.postprocessEventsOn) {
-
-                                // Yep.  Build Verb Object and store in our Path Object verbs array
-                                npo.verbs.push(buildVerbObj(event.name, pathRef.name, verb, $scope.postprocessEventName, true))
-                            }
-
-                        });
-
-                        // Do we want static events
-                        if ($scope.staticEventsOn) {
-
-                            // Yes.  Loop through the array
-                            // array reverse to get events in proper order
-                            angular.forEach(staticEvents.reverse(), function (event) {
-
-                                // put events at the front of the verbs array in the Path Object
-                                npo.verbs.unshift(event);
-                            })
-                        }
-
-                        // push our Path Object back to our event
-                        event.paths.push(npo);
-                    });
-
-                }
-
-                else {
-                    angular.forEach(event.paths, function (pathRef) {
-
-                        var pathName = pathRef.path.split('/')[2];
-
-                        angular.forEach(pathRef.verbs, function (verb) {
-
-                            if ($scope.uppercaseVerbs) {
-                                verb.type = verb.type.toUpperCase();
-                            }
-
-                            // Do we want pre-process events
-                            if ($scope.preprocessEventsOn) {
-
-                                // Yep.  Build Verb Object and store in our Path Object verbs array
-                                pathRef.verbs.push(buildVerbObj(event.name, pathName, verb.type, $scope.preprocessEventName, true))
-                            }
-
-                            // Do we want post-process events
-                            if ($scope.postprocessEventsOn) {
-                                // Yep.  Build Verb Object and store in our Path Object verbs array
-                                pathRef.verbs.push(buildVerbObj(event.name, pathName, verb.type, $scope.postprocessEventName, true))
-                            }
-                        });
-                    });
-                }
-            };
 
             // Retrieves associated path(s) data for an event
             $scope._getEventFromServer = function (requestDataObj) {
@@ -428,7 +213,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return $http({
                     method: 'GET',
-                    url: DSP_URL + '/api/v2/system/event/script/' + requestDataObj.script_id,
+                    url: DSP_URL + '/api/v2/system/event/' + requestDataObj.name,
                     params: requestDataObj.params
                 })
             };
@@ -437,11 +222,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope._saveScriptToServer = function (requestDataObj) {
 
                 return $http({
-                    method: 'PUT',
-                    url: DSP_URL + '/api/v2/system/event/script/' + requestDataObj.script_id,
-                    headers: {
-                        'Content-Type': 'text/plain'
-                    },
+                    method: 'POST',
+                    url: DSP_URL + '/api/v2/system/event/' + requestDataObj.name,
                     params: requestDataObj.params,
                     data: requestDataObj.data
                 })
@@ -452,7 +234,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return $http({
                     method: 'DELETE',
-                    url: DSP_URL + '/api/v2/system/event/process/' + requestDataObj.script_id,
+                    url: DSP_URL + '/api/v2/system/event/' + requestDataObj.name,
                     params: requestDataObj.params
                 })
             };
@@ -474,80 +256,30 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             };
 
-            // check for extension.  Just JS right now
-            $scope._checkExtension = function (idStr) {
-
-                if (idStr.substr(idStr.length - 3, 3) === '.js') {
-                    return idStr.substr(0, idStr.length - 3);
-                }
-
-                return idStr;
-            };
-
-
             // COMPLEX IMPLEMENTATION
 
-            $scope._setScriptType = function (typeObj) {
+            $scope._setEventType = function (typeObj) {
 
                 $scope._resetAll();
 
                 $scope.menuPathArr.push(typeObj.label);
-                $scope.currentScriptTypeObj = typeObj;
+                $scope.currentEventTypeObj = typeObj;
                 $scope.pathFilter = '';
             };
 
-            $scope._setEvent = function (eventObj) {
+            $scope._setService = function (name, eventObj) {
 
+                $scope.menuPathArr.push(name);
+                $scope.currentServiceObj = { "name": name, "paths": eventObj };
+                $scope.pathFilter = '';
 
-                var requestDataObj = {
-                    eventName: eventObj.name
-                };
-
-                // Check if we have already retrieved and built this events list
-                if ($scope.builtEventsList.hasOwnProperty(eventObj.name) &&
-                    $scope.builtEventsList[eventObj.name] == true) {
-
-                    $scope.menuPathArr.push(eventObj.name);
-                    $scope.currentEventObj = eventObj;
-                    $scope.pathFilter = '';
-
-                    return false;
-                }
-
-
-                // Get the event from the server
-                $scope._getEventFromServer(requestDataObj).then(
-                    function (result) {
-
-                        $scope._createEvents(eventObj, $scope.__getDataFromHttpResponse(result));
-                        $scope.menuPathArr.push(eventObj.name);
-                        $scope.currentEventObj = eventObj;
-                        $scope.pathFilter = '';
-
-                        $scope.builtEventsList[eventObj.name] = true;
-
-                    },
-                    function (reject) {
-
-                        throw {
-                            module: 'Scripts',
-                            type: 'error',
-                            provider: 'dreamfactory',
-                            exception: reject
-                        }
-                    }
-                ).finally(
-                    function () {
-
-                        // console.log('Get Event finally.')
-                    }
-                )
+                return false;
             };
 
-            $scope._setPathObj = function (pathObj) {
+            $scope._setPath = function (name, pathObj) {
 
-                $scope.menuPathArr.push(pathObj.path);
-                $scope.currentPathObj = pathObj;
+                $scope.menuPathArr.push(name);
+                $scope.currentPathObj = { "name": name, "verbs": pathObj };
                 $scope.pathFilter = '';
 
             };
@@ -557,7 +289,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 var requestDataObj = {
 
-                    script_id: scriptIdStr,
+                    name: scriptIdStr,
                     params: {}
                 };
 
@@ -565,6 +297,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     function (result) {
 
                         $scope.currentScriptObj = $scope.__getDataFromHttpResponse(result);
+                        console.log($scope.currentScriptObj);
                         $scope.menuPathArr.push(scriptIdStr);
                     },
 
@@ -582,18 +315,17 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope._saveScript = function () {
 
-                if (!$scope.currentScriptObj.script_id) {
+                if (!$scope.currentScriptObj.name) {
                     alert('Please enter a script name.');
                     return false;
                 }
 
+                $scope.currentScriptObj.content = $scope.editor.getValue() || ' ';
                 var requestDataObj = {
 
-                    script_id: $scope._checkExtension($scope.currentScriptObj.script_id),
+                    name: $scope.currentScriptObj.name,
                     params: {},
-                    data: {
-                        post_body: $scope.editor.getValue() || ' '
-                    }
+                    data: $scope.currentScriptObj
                 };
 
                 $scope._saveScriptToServer(requestDataObj).then(
@@ -608,7 +340,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             new PNotify({
                                 title: 'Scripts',
                                 type: 'success',
-                                text: 'Script "' + $scope.currentScriptObj.script_id + '" saved successfully.'
+                                text: 'Script "' + $scope.currentScriptObj.name + '" saved successfully.'
                             });
                         });
                     },
@@ -634,7 +366,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 var requestDataObj = {
 
-                    script_id: $scope.currentScriptObj.script_id,
+                    name: $scope.currentScriptObj.name,
                     params: {}
                 };
 
@@ -646,7 +378,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             new PNotify({
                                 title: 'Scripts',
                                 type: 'success',
-                                text: 'Script "' + $scope.currentScriptObj.script_id + '" deleted successfully.'
+                                text: 'Script "' + $scope.currentScriptObj.name + '" deleted successfully.'
                             });
                         });
 
@@ -683,8 +415,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.js').then(
                     function (result) {
 
-                        $scope.sampleScripts = new ScriptObj('sample-scripts', false, null, result.data);
-                        $scope.currentScriptTypeObj = {name: 'sample-scripts', label: 'Sample Scripts'};
+                        $scope.sampleScripts = new ScriptObj('sample-scripts', 'v8js', result.data);
+                        $scope.currentEventTypeObj = {name: 'sample-scripts', label: 'Sample Scripts'};
                         $scope.currentScriptObj = $scope.sampleScripts;
                         $scope.menuPathArr.push('Sample Scripts');
                     },
@@ -762,12 +494,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 scope._menuBack = function () {
 
                     // Do we have a script type.  If not stop.
-                    if (!scope.currentScriptTypeObj) return false;
+                    if (!scope.currentEventTypeObj) return false;
 
 
-                    switch (scope.currentScriptTypeObj.name) {
+                    switch (scope.currentEventTypeObj.name) {
 
-                        case 'event-scripts':
+                        case 'process-scripts':
 
                             switch (scope.menuPathArr.length) {
 
@@ -777,7 +509,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                 case 1:
 
                                     scope.menuPathArr.pop();
-                                    scope.currentScriptTypeObj = null;
+                                    scope.currentEventTypeObj = null;
                                     scope.pathFilter = '';
 
                                     break;
@@ -785,7 +517,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                 case 2:
 
                                     scope.menuPathArr.pop();
-                                    scope.currentEventObj = null;
+                                    scope.currentServiceObj = null;
                                     scope.pathFilter = '';
 
                                     break
@@ -806,13 +538,37 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             break;
 
 
+                        case 'broadcast-scripts':
+
+
+                            switch (scope.menuPathArr.length) {
+
+                                case 0:
+                                    break;
+
+                                case 1:
+
+                                    scope.menuPathArr.pop();
+                                    scope.currentEventTypeObj = null;
+                                    scope.pathFilter = '';
+
+                                    break;
+
+                                case 2:
+
+                                    scope.menuPathArr.pop();
+                                    scope.currentScriptObj = null;
+                                    break;
+                            }
+                            break;
+
                         case 'sample-scripts':
 
                             scope.menuPathArr.pop();
                             scope.currentScriptObj = null;
                             scope.currentPathObj = null;
-                            scope.currentEventObj = null;
-                            scope.currentScriptTypeObj = null;
+                            scope.currentServiceObj = null;
+                            scope.currentEventTypeObj = null;
 
                             break;
 
