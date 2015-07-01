@@ -618,8 +618,7 @@ angular.module('dfUtility', ['dfApplication'])
                         POST: {name: 'POST', active: false, description: ' (create)', mask: 2},
                         PUT: {name: 'PUT', active: false, description: ' (replace)', mask: 4},
                         PATCH: {name: 'PATCH', active: false, description: ' (update)', mask: 8},
-                        MERGE: {name: 'MERGE', active: false, description: ' (update)', mask: 16},
-                        DELETE: {name: 'DELETE', active: false, description: ' (remove)', mask: 32}
+                        DELETE: {name: 'DELETE', active: false, description: ' (remove)', mask: 16}
                     };
 
                     scope.btnText = 'None Selected';
