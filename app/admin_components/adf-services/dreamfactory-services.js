@@ -683,7 +683,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     'sql_db': [ 'serviceDef' ],
                     'mongo_db': [ 'serviceDef' ],
                     'smtp_email': [ 'parameters', 'serviceDef' ],
-                    'local_file': [ 'privates', 'serviceDef' ]
+                    'local_file': [ 'privates' ]
                 };
 
                 scope.configureTabs = function (selectedSchema) {
