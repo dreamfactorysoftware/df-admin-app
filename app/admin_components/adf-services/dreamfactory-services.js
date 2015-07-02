@@ -520,7 +520,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', function(MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache) {
+    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', function(MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache) {
 
 
         return {
@@ -558,88 +558,109 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 };
 
-                var customConfig = [
+
+                var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
+
+                scope.customConfig = [
                     {
-                        types: [ 'aws_dynamodb', 'aws_simpledb', 'aws_s3', 'aws_sns', 'aws_ses' ],
-                        schema: [
-                            region: {
-                                type: 'dropdown',
-                                options: [
-                                    {name: "US EAST (N Virgina)", value: "us-east-1"},
-                                    {name: "US WEST (N California)", value: "us-west-1"},
-                                    {name: "US WEST (Oregon)", value: "us-west-2"},
-                                    {name: "EU WEST (Ireland)", value: "eu-west-1"},
-                                    {name: "Asia Pacific (Singapore)", value: "ap-southeast-1"},
-                                    {name: "Asia Pacific (Sydney)", value: "ap-southeast-2"},
-                                    {name: "Asia Pacific (Tokyo)", value: "ap-northeast-1"},
-                                    {name: "South America (Sao Paulo)", value: "sa-east-1"}
-                                ]
-                            }
+                        applicableTo: [ 'aws_dynamodb', 'aws_simpledb', 'aws_s3', 'aws_sns', 'aws_ses' ],
+                        name: 'region',
+                        type: 'dropdown',
+                        options: [
+                            {name: "US EAST (N Virgina)", value: "us-east-1"},
+                            {name: "US WEST (N California)", value: "us-west-1"},
+                            {name: "US WEST (Oregon)", value: "us-west-2"},
+                            {name: "EU WEST (Ireland)", value: "eu-west-1"},
+                            {name: "Asia Pacific (Singapore)", value: "ap-southeast-1"},
+                            {name: "Asia Pacific (Sydney)", value: "ap-southeast-2"},
+                            {name: "Asia Pacific (Tokyo)", value: "ap-northeast-1"},
+                            {name: "South America (Sao Paulo)", value: "sa-east-1"}
                         ]
+                    },
+                    {
+                        applicableTo: [ 'local_file', 'ros_file', 'aws_s3', 'azure_blob' ],        
+                        name: 'public_path',
+                        type: 'array(string)'
+                    },                        
+                    {
+                        applicableTo: [ 'mongo_db' ],
+                        name: 'options',
+                        type: 'object(string,string)'
+                    },
+                    {
+                        applicableTo: [ 'mongo_db' ],
+                        name: 'driver_options',
+                        type: 'object(string,string)'
                     },
 
                     {
-                        types: [ 'local_file', 'ros_file', 'aws_s3', 'azure_blob' ],
-                        schema: [
-                            {
-                                name: 'public_path',
-                                type: 'array(string)'
-                            }
-                        ]
+                        applicableTo: [ 'script' ],
+                        name: 'type',
+                        type: 'dropdown',
+                        options: dfApplicationObjApis.script_type.record.map(function (item) { return { name: item.name, value: item.name };  })
                     },
 
                     {
-                        types: [ 'mongo_db' ],
-                        schema: [
-                            {
-                                name: 'options',
-                                type: 'object(string,string)'
-                            },
-                            {
-                                name: 'driver_options',
-                                type: 'object(string,string)'
-                            }
-                        ]
+                        applicableTo: [ 'script' ],
+                        name: 'content',
+                        type: 'editor'
                     },
 
                     {
-                        type: 'script',
-                        schema: [
-                            {
-                                name: 'type',
-                                type: 'dropdown',
-                                options: 'script_types'
-                            },
-                            {
-                                name: 'content',
-                                type: 'editor'
-                            }
-                        ]
+                        applicableTo: [ 'sql_db' ],
+                        name: 'options',
+                        type: 'object(string,string)'
                     },
                     {
-                        type: 'sql_db',
-                        schema: [
-                            {
-                                name: 'options',
-                                type: 'object(string,string)'
-                            },
-                            {
-                                name: 'attributes',
-                                type: 'object(string,string)'
-                            },
-                        ]
+                        applicableTo: [ 'sql_db' ],
+                        name: 'attributes',
+                        type: 'object(string,string)'
                     },
                     {
-                        type: 'user',
-                        schema: [
-                            {
-                                name: 'open_reg_email_service_id',
-                                type: 'dropdown',
-                                options: 'services'
-                            }
-                        ]
-                    }
+                        applicableTo: ['user'],
+                        name: 'open_reg_email_service_id',
+                        type: 'dropdown',
+                        options: dfApplicationObjApis.service.record.filter(function (item) {
+                            return item.type.indexOf('email') > -1; 
+                        }).map(function (item) { return { name: item.name, value: item.id };  })
+                    },
+                    {
+                        applicableTo: ['user'],
+                        name: 'open_reg_role_id',
+                        type: 'dropdown',
+                        options: dfApplicationObjApis.role.record.map(function (item) { return { name: item.name, value: item.id };  })
+                    },
+
                 ];
+
+                scope.addKeyValue = function (obj, value) {
+                    if (!obj[value.name || value.key])  {
+                        obj[value.name || value.key] = [];
+                    }
+
+                    
+                    obj[value.name || value.key].push({
+                        key: '',
+                        value: ''
+                    });
+                };
+
+                scope.deleteKeyValue = function (arr, index) {
+                    arr.splice(index, 1);
+                };
+
+                scope.decorateSchema = function () {
+                    var selectedType = scope.serviceInfo.record.type;
+                    var customConfigs = scope.customConfig.filter(function (config) {
+                        return config.applicableTo.some(function (item) {
+                            return item === selectedType;
+                        })
+                    });
+
+                    customConfigs.forEach(function (item) {
+                        angular.extend(scope.selectedSchema.config_schema[item.name], item)
+                    });
+                };
 
                 scope.changeServiceType = function () {
                     if (!scope.serviceInfo && !scope.serviceInfo.record) {
@@ -651,8 +672,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         return item.name === scope.serviceInfo.record.type;
                     })[0]; 
 
-                    if (scope.selectedSchema)
+                    if (scope.selectedSchema) {
+                        scope.decorateSchema();
                         scope.configureTabs(scope.selectedSchema);
+                    }
                 };
 
                  scope.tabConfig = {
