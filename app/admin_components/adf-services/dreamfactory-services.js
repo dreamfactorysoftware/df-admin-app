@@ -566,16 +566,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         applicableTo: [ 'aws_dynamodb', 'aws_simpledb', 'aws_s3', 'aws_sns', 'aws_ses' ],
                         name: 'region',
                         type: 'dropdown',
-                        options: [
-                            {name: "US EAST (N Virgina)", value: "us-east-1"},
-                            {name: "US WEST (N California)", value: "us-west-1"},
-                            {name: "US WEST (Oregon)", value: "us-west-2"},
-                            {name: "EU WEST (Ireland)", value: "eu-west-1"},
-                            {name: "Asia Pacific (Singapore)", value: "ap-southeast-1"},
-                            {name: "Asia Pacific (Sydney)", value: "ap-southeast-2"},
-                            {name: "Asia Pacific (Tokyo)", value: "ap-northeast-1"},
-                            {name: "South America (Sao Paulo)", value: "sa-east-1"}
-                        ]
+                        options: dfServiceValues.awsRegions
                     },
                     {
                         applicableTo: [ 'local_file', 'ros_file', 'aws_s3', 'azure_blob' ],        
@@ -633,13 +624,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 ];
 
-                scope.addKeyValue = function (obj, value) {
-                    if (!obj[value.name || value.key])  {
-                        obj[value.name || value.key] = [];
+                scope.addKeyValue = function (obj, key) {
+                    if (!obj[key])  {
+                        obj[key] = [];
                     }
 
                     
-                    obj[value.name || value.key].push({
+                    obj[key].push({
                         key: '',
                         value: ''
                     });
@@ -647,6 +638,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope.deleteKeyValue = function (arr, index) {
                     arr.splice(index, 1);
+                };
+
+                scope.addStringInArray = function (configObj, key) {
+                    if (!configObj[key]) {
+                        configObj[key] = [];
+                    }
+
+                    configObj[key].push('');
                 };
 
                 scope.decorateSchema = function () {
@@ -1378,6 +1377,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     // Create a ServiceInfo object
                     scope.serviceInfo = new ServiceInfo(newValue.record);
+
+                    scope.selectedSchema = scope.hcv.serviceTypes && scope.hcv.serviceTypes.filter(function (item) {
+                        return scope.serviceInfo && scope.serviceInfo.record && item.name === scope.serviceInfo.record.type;
+                    })[0]; 
+
+                    if (scope.selectedSchema) {
+                        scope.decorateSchema();
+                        scope.configureTabs(scope.selectedSchema);    
+                    }
  
                     // We set this to null and then during the _renderServiceFields function
                     // a storage type will be assigned
