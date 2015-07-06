@@ -454,7 +454,11 @@ angular.module('dreamfactoryApp')
             dfApplicationData.destroyApplicationObj();
 
             // redirect
-            $location.url('/login')
+            //$location.url('/login')
+
+            //Removing any oauth query string by doing the following. Any better way to do this?
+            var uri = window.location.href.split('?');
+            window.location.href = uri[0];
         });
     }])
 
