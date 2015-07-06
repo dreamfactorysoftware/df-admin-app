@@ -520,7 +520,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', function(MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache) {
+    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', function(MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache) {
 
 
         return {
@@ -528,7 +528,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             scope: false,
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-info.html',
             link: function(scope, elem, attrs) {
-
 
                 // @TODO: Refactor to factory
                 var ServiceInfo = function (serviceInfoData) {
@@ -559,6 +558,109 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 };
 
+
+                var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
+
+                scope.customConfig = [
+                    {
+                        applicableTo: [ 'aws_dynamodb', 'aws_simpledb', 'aws_s3', 'aws_sns', 'aws_ses' ],
+                        name: 'region',
+                        type: 'dropdown',
+                        options: dfServiceValues.awsRegions
+                    },
+                    {
+                        applicableTo: [ 'local_file', 'ros_file', 'aws_s3', 'azure_blob' ],        
+                        name: 'public_path',
+                        type: 'array(string)'
+                    },                        
+                    {
+                        applicableTo: [ 'mongo_db' ],
+                        name: 'options',
+                        type: 'object(string,string)'
+                    },
+                    {
+                        applicableTo: [ 'mongo_db' ],
+                        name: 'driver_options',
+                        type: 'object(string,string)'
+                    },
+
+                    {
+                        applicableTo: [ 'script' ],
+                        name: 'type',
+                        type: 'dropdown',
+                        options: dfApplicationObjApis.script_type.record.map(function (item) { return { name: item.name, value: item.name };  })
+                    },
+
+                    {
+                        applicableTo: [ 'script' ],
+                        name: 'content',
+                        type: 'editor'
+                    },
+
+                    {
+                        applicableTo: [ 'sql_db' ],
+                        name: 'options',
+                        type: 'object(string,string)'
+                    },
+                    {
+                        applicableTo: [ 'sql_db' ],
+                        name: 'attributes',
+                        type: 'object(string,string)'
+                    },
+                    {
+                        applicableTo: ['user'],
+                        name: 'open_reg_email_service_id',
+                        type: 'dropdown',
+                        options: dfApplicationObjApis.service.record.filter(function (item) {
+                            return item.type.indexOf('email') > -1; 
+                        }).map(function (item) { return { name: item.name, value: item.id };  })
+                    },
+                    {
+                        applicableTo: ['user'],
+                        name: 'open_reg_role_id',
+                        type: 'dropdown',
+                        options: dfApplicationObjApis.role.record.map(function (item) { return { name: item.name, value: item.id };  })
+                    },
+
+                ];
+
+                scope.addKeyValue = function (obj, key) {
+                    if (!obj[key])  {
+                        obj[key] = [];
+                    }
+
+                    
+                    obj[key].push({
+                        key: '',
+                        value: ''
+                    });
+                };
+
+                scope.deleteKeyValue = function (arr, index) {
+                    arr.splice(index, 1);
+                };
+
+                scope.addStringInArray = function (configObj, key) {
+                    if (!configObj[key]) {
+                        configObj[key] = [];
+                    }
+
+                    configObj[key].push('');
+                };
+
+                scope.decorateSchema = function () {
+                    var selectedType = scope.serviceInfo.record.type;
+                    var customConfigs = scope.customConfig.filter(function (config) {
+                        return config.applicableTo.some(function (item) {
+                            return item === selectedType;
+                        })
+                    });
+
+                    customConfigs.forEach(function (item) {
+                        angular.extend(scope.selectedSchema.config_schema[item.name], item)
+                    });
+                };
+
                 scope.changeServiceType = function () {
                     if (!scope.serviceInfo && !scope.serviceInfo.record) {
                         return;
@@ -569,8 +671,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         return item.name === scope.serviceInfo.record.type;
                     })[0]; 
 
-                    if (scope.selectedSchema)
+                    if (scope.selectedSchema) {
+                        scope.decorateSchema();
                         scope.configureTabs(scope.selectedSchema);
+                    }
                 };
 
                  scope.tabConfig = {
@@ -578,7 +682,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     'sql_db': [ 'serviceDef' ],
                     'mongo_db': [ 'serviceDef' ],
                     'smtp_email': [ 'parameters', 'serviceDef' ],
-                    'local_file': [ 'privates', 'serviceDef' ]
+                    'local_file': [ 'privates' ]
                 };
 
                 scope.configureTabs = function (selectedSchema) {
@@ -1273,6 +1377,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     // Create a ServiceInfo object
                     scope.serviceInfo = new ServiceInfo(newValue.record);
+
+                    scope.selectedSchema = scope.hcv.serviceTypes && scope.hcv.serviceTypes.filter(function (item) {
+                        return scope.serviceInfo && scope.serviceInfo.record && item.name === scope.serviceInfo.record.type;
+                    })[0]; 
+
+                    if (scope.selectedSchema) {
+                        scope.decorateSchema();
+                        scope.configureTabs(scope.selectedSchema);    
+                    }
  
                     // We set this to null and then during the _renderServiceFields function
                     // a storage type will be assigned
