@@ -129,13 +129,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         $http.post(DSP_URL + '/api/v2/user/session?oauth_callback=true&'+queryString).then(
                             // success method
                             function (result) {
-                                // remove unnecessary apps data
-                                // this is temporary and cleans up our
-                                // session obj that is returned by the login function
-                                // If a user has a large number of apps it can overflow our cookie
-                                // So we're not going to store this info
-                                delete result.data.no_group_apps;
-                                delete result.data.app_groups;
 
                                 // Set the cookies
                                 scope._setCookies(result.data);
