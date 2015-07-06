@@ -2213,7 +2213,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                 // COMPLEX IMPLEMENTATION
                 scope._openLoginWindow = function (errormsg) {
-                    var html = '<div id="df-login-frame" style="overflow: hidden; position: absolute; top:0; z-index:99999; background: rgba(0, 0, 0, .8); width: 100%; height: 100%"><div style="padding-top: 120px;"><dreamfactory-user-login data-in-err-msg="errormsg.data.error[0].message" data-options="popupLoginOptions"></dreamfactory-user-login></div></div>';
+                    var html = '<div id="df-login-frame" style="overflow: hidden; position: absolute; top:0; z-index:99999; background: rgba(0, 0, 0, .8); width: 100%; height: 100%"><div style="padding-top: 120px;"><dreamfactory-user-login data-in-err-msg="errormsg.data.error.message" data-options="popupLoginOptions"></dreamfactory-user-login></div></div>';
                     $('#popup-login-container').html($compile(html)(scope));
                 };
 
@@ -2824,13 +2824,8 @@ angular.module('dfUtility', ['dfApplication'])
                 // let's assume it came from the server
             } else {
 
-                // add the message from each error obj to the error store
-                for (i = 0; i < errorDataObj.data.error.length; i++) {
-                    if (i > 0) {
-                        error += '\n';
-                    }
-                    error += errorDataObj.data.error[i].message;
-                }
+                // add the message from the error obj to the error store
+                error += errorDataObj.data.error.message;
             }
 
             // return message to display to the user

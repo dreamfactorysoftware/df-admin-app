@@ -584,7 +584,7 @@ angular.module('dreamfactoryApp')
         $scope.$on(UserEventsService.login.loginError, function(e, errMsg) {
 
             e.stopPropagation();
-            $scope.registerLoginErrorMsg = errMsg.data.error[0].message;
+            $scope.registerLoginErrorMsg = errMsg.data.error.message;
         });
     }])
 
@@ -688,7 +688,7 @@ angular.module('dreamfactoryApp')
         $scope.$on(UserEventsService.login.loginError, function(e, errMsg) {
 
             e.stopPropagation();
-            $scope.resetPasswordLoginErrorMsg = errMsg.data.error[0].message;
+            $scope.resetPasswordLoginErrorMsg = errMsg.data.error.message;
         });
 
     }])
@@ -753,7 +753,7 @@ angular.module('dreamfactoryApp')
         $scope.$on(UserEventsService.login.loginError, function(e, errMsg) {
 
             e.stopPropagation();
-            $scope.confirmLoginErrorMsg = errMsg.data.error[0].message;
+            $scope.confirmLoginErrorMsg = errMsg.data.error.message;
         });
     }]);
 

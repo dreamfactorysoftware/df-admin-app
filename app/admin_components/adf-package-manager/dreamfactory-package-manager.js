@@ -499,7 +499,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 module: 'Packages',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject.data.error[0].message
+                                message: reject.data.error.message
                             };
 
                             dfNotify.error(messageOptions);

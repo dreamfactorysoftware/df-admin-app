@@ -277,7 +277,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             function (reject) {
 
                                 // Handle Login error with template error message
-                                scope.errorMsg = reject.data.error[0].message;
+                                scope.errorMsg = reject.data.error.message;
                                 scope.$emit(scope.es.loginError, reject);
 
 
@@ -471,7 +471,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         function (reject) {
 
                             // Message received from server
-                            scope.errorMsg = reject.data.error[0].message;
+                            scope.errorMsg = reject.data.error.message;
 
                         }
                     ).finally(
@@ -503,7 +503,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         function (reject) {
 
                             scope.questionWaiting = false;
-                            scope.errorMsg = reject.data.error[0].message;
+                            scope.errorMsg = reject.data.error.message;
                             scope.$emit(UserEventsService.password.passwordSetError);
                         }
 
@@ -672,7 +672,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             },
                             function (reject) {
 
-                                scope.errorMsg = reject.data.error[0].message;
+                                scope.errorMsg = reject.data.error.message;
                                 scope.$emit(scope.es.passwordSetError);
                                 scope.resetWaiting = false;
                             }
@@ -932,7 +932,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                 function (reject) {
 
                                     // Handle error in module
-                                    scope.errorMsg = reject.data.error[0].message;
+                                    scope.errorMsg = reject.data.error.message;
 
                                     // Throw an error
 //                                    throw {
@@ -1229,7 +1229,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             },
                             function (reject) {
 
-                                scope.errorMsg = reject.data.error[0].message;
+                                scope.errorMsg = reject.data.error.message;
                                 scope.$emit(UserEventsService.confirm.confirmationError);
 
                                 // there was an error
