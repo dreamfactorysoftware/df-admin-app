@@ -323,6 +323,14 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             return dfSystemData.resource(options).post(params, options.data, function (result) {
 
                 // update the application object and session storage.
+                if (result &&
+                    result.record &&
+                    Object.prototype.toString.call(result.record) === '[object Array]' &&
+                    result.record.length > 0) {
+
+                    result = result.record[0];
+                }
+
                 __insertApiData(api, result);
             });
         }
