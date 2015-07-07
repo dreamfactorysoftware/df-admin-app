@@ -25,10 +25,18 @@
                         <dreamfactory-waiting data-show="loginWaiting"></dreamfactory-waiting>
                         <!-- Login Form -->
                         <form name="loginForm" data-ng-submit="login(creds)" >
+                            <div data-ng-if="adldapAvailable">
+                                <div class="form-group">
+                                    <span><i class="fa fa-fw fa-sign-in"></i>Services:</span>
+                                    <select data-ng-change="useAdLdapService(selectedService)" class="form-control" data-ng-model="selectedService" data-ng-options="ldap.name as ldap.label for ldap in adldap">
+                                        <option value="">-- {{systemConfig.platform.host}} --</option>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="form-group">
                                 <div class="input-group" data-ng-class="emailError ? 'has-error' : ''">
-                                    <span class="input-group-addon"><i class="fa fa-fw fa-envelope"></i></span>
-                                    <input type="email" id="df-login-email" name="df-login-email" placeholder="Enter Email"
+                                    <span class="input-group-addon"><i class="fa fa-fw {{userField.icon}}"></i></span>
+                                    <input type="{{userField.type}}" id="df-login-email" name="df-login-email" placeholder="{{userField.text}}"
                                            data-ng-model="creds.email" class="form-control" required>
                                 </div>
                             </div>
@@ -40,11 +48,10 @@
                                                data-ng-model="creds.password" class="form-control" required>
                                     </div>
                                 </div>
-
                                 <div class="form-group">
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" data-ng-checked="rememberMe" data-ng-model="rememberMe" />
+                                            <input type="checkbox" data-ng-checked="rememberMe" data-ng-model="rememberMe" data-ng-change="rememberLogin(rememberMe)" />
                                             Remember Me
                                         </label>
                                     </div>

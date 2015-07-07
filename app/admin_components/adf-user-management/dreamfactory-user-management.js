@@ -59,8 +59,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
     // Directive for Login.  This is does our login work and provides the attachment point for
     // the login portion of our module.
-    .directive('dreamfactoryUserLogin', ['MODUSRMNGR_ASSET_PATH', 'DSP_URL', '$http', '$cookies', '$cookieStore', 'UserEventsService', 'UserDataService', '_dfObjectService',
-        function (MODUSRMNGR_ASSET_PATH, DSP_URL, $http, $cookies, $cookieStore, UserEventsService, UserDataService, _dfObjectService) {
+    .directive('dreamfactoryUserLogin', ['MODUSRMNGR_ASSET_PATH', 'DSP_URL', '$http', '$cookies', '$cookieStore', 'UserEventsService', 'UserDataService', '_dfObjectService', 'SystemConfigDataService',
+        function (MODUSRMNGR_ASSET_PATH, DSP_URL, $http, $cookies, $cookieStore, UserEventsService, UserDataService, _dfObjectService, SystemConfigDataService) {
 
             return {
 
@@ -122,6 +122,51 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     scope.loginForm = {};
 
+                    scope.systemConfig = SystemConfigDataService.getSystemConfig();
+                    scope.adldap = scope.systemConfig.authentication.adldap || [];
+                    scope.adldapAvailable = (scope.adldap.length>0)? true : false;
+                    scope.selectedService = null;
+                    scope.rememberMe = false;
+
+                    scope.userField = {
+                        icon: 'fa-envelope',
+                        text: 'Enter Email',
+                        type: 'email'
+                    };
+
+                    scope.rememberLogin = function(checked){
+                        scope.rememberMe = checked;
+                    }
+
+                    scope.useAdLdapService = function(service){
+                        scope.selectedService = service;
+
+                        if(service){
+                            scope.userField = {
+                                icon: 'fa-user',
+                                text: 'Enter Username',
+                                type: 'text'
+                            }
+
+                            scope.creds = {
+                                username: '',
+                                password: '',
+                                service: service
+                            }
+                        } else {
+                            scope.userField = {
+                                icon: 'fa-envelope',
+                                text: 'Enter Email',
+                                type: 'email'
+                            };
+
+                            scope.creds = {
+                                email: '',
+                                password: ''
+                            }
+                        }
+                    }
+
                     //////////////////////[Arif's changes for OAuth]//////////////////////
                     var queryString = location.search.substring(1);
 
@@ -151,7 +196,11 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                         // check if the user has entered creds or if
                         // they were supplied through a browser mechanism
-                        if (credsDataObj.email === '' || credsDataObj.password === '') {
+                        if(scope.selectedService){
+                            credsDataObj.username = $('#df-login-email').val();
+                            credsDataObj.password = $('#df-login-password').val();
+                            credsDataObj.service = scope.selectedService;
+                        } else if (credsDataObj.email === '' || credsDataObj.password === '') {
 
 
                             // They were either supplied by a browser mechanism or
@@ -161,6 +210,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             credsDataObj.email = $('#df-login-email').val();
                             credsDataObj.password = $('#df-login-password').val();
                         }
+
+                        credsDataObj.remember_me = scope.rememberMe;
 
                         // This calls our complex implementation of login()
                         scope._login(credsDataObj);
