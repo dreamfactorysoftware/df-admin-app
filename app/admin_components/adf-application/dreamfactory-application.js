@@ -246,7 +246,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 api = {
                     api_name: null,
                     params: {}
-                };
+                },
+                defer = $q.defer();
 
             // Load our current user into the application obj
             dfApplicationObj.currentUser = UserDataService.getCurrentUser();
@@ -269,8 +270,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             if (dfApplicationObj.currentUser.is_sys_admin) {
 
-                var promises = [],
-                    defer = $q.defer();
+                var promises = [];
+                    //defer = $q.defer();
 
                 var totalApis = options.length;
 
@@ -293,8 +294,13 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 );
 
 
-                return defer.promise;
+                //return defer.promise;
+            } else {
+                // current user is not admin so just call resolve for defer
+                defer.resolve();
             }
+
+            return defer.promise;
         }
 
         // Resets the dfApplicationObj to initial state

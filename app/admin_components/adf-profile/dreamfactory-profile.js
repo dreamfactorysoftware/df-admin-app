@@ -152,7 +152,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                 scope._updateUsers = function (update) {
 
-                    return dfApplicationData.updateApiData('user', update).$promise;
+                    return dfApplicationData.updateApiData('admin', update).$promise;
                 };
 
                 scope._updateUserPasswordToServer = function (requestDataObj) {
@@ -178,7 +178,6 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                     scope._updateUserToServer(requestDataObj1).then(
                         function (result) {
-
 
                             var messageOptions = {
                                 module: 'Profile',
