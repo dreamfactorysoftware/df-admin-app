@@ -1258,7 +1258,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         }
                     });
 
-                    appGroup.record.apps = tempArr;
+                    appGroup.record.app_by_app_to_app_group = tempArr;
                 };
 
                 scope._checkUnsavedAppGroups = function () {
@@ -1518,9 +1518,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     if (!newValue) return;
 
-                    if (newValue.record.hasOwnProperty('apps') && newValue.record.apps.length > 0) {
+                    if (newValue.record.hasOwnProperty('apps') && newValue.record.app_by_app_to_app_group.length > 0) {
                         angular.forEach(scope.apps, function(managedApp) {
-                            angular.forEach(newValue.record.apps, function (app) {
+                            angular.forEach(newValue.record.app_by_app_to_app_group, function (app) {
                                 if (managedApp.record.id === app.id) {
                                     managedApp.__dfUI.selected = true;
                                 }

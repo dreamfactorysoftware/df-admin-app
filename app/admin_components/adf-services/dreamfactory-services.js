@@ -11,7 +11,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     templateUrl: MOD_SERVICES_ASSET_PATH + 'views/main.html',
                     controller: 'ServicesCtrl',
                     resolve: {
-                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
 
                             if (dfApplicationData.initInProgress) {
 
@@ -54,7 +54,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
     }])
 
-    .service('dfServiceData', [ '$http', '$q', 'DSP_URL', function ($http, $q, DSP_URL) {
+    .service('dfServiceData', ['$http', '$q', 'DSP_URL', function ($http, $q, DSP_URL) {
         var dfServiceData = {};
 
         dfServiceData.getServiceTypes = function () {
@@ -81,7 +81,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
         return dfServiceData;
     }])
 
-    .controller('ServicesCtrl', ['$scope', function($scope) {
+    .controller('ServicesCtrl', ['$scope', function ($scope) {
 
         $scope.$parent.title = 'Services';
 
@@ -103,12 +103,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
         $scope.emptySectionOptions = {
             title: 'You have no Services!',
             text: 'Click the button below to get started building your first Service.  You can always create new services by clicking the "Create" tab located in the section menu to the left.',
-            buttonText: 'Create An App!',
+            buttonText: 'Create A Service!',
             viewLink: $scope.links[1]
         };
 
     }])
-    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfApplicationPrefs', 'dfServiceValues', function(MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, dfApplicationPrefs, dfServiceValues) {
+    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfApplicationPrefs', 'dfServiceValues', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, dfApplicationPrefs, dfServiceValues) {
 
         return {
 
@@ -118,9 +118,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 newService: '=?'
             },
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-details.html',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
-                var Service = function(serviceData) {
+                var Service = function (serviceData) {
 
                     var newService = {
                         "id": null,
@@ -136,16 +136,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             {
                                 content: {
                                     "resourcePath": "/{name}",
-                                        "produces": [
+                                    "produces": [
                                         "application/json",
                                         "application/xml"
                                     ],
-                                        "consumes": [
+                                    "consumes": [
                                         "application/json",
                                         "application/xml"
                                     ],
-                                        "apis": [],
-                                        "models": {}
+                                    "apis": [],
+                                    "models": {}
                                 },
                                 format: 0
                             }
@@ -171,11 +171,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 }
 
 
-
                 // Other Data
 
                 // PUBLIC API
-                scope.saveService = function() {
+                scope.saveService = function () {
 
                     if (scope.newService) {
 
@@ -192,7 +191,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope._deleteService();
                 };
 
-                scope.closeService = function() {
+                scope.closeService = function () {
 
                     scope._closeService();
                 };
@@ -217,14 +216,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope._prepareServiceData = function () {
 
                     scope._prepareServiceInfoData();
-                    scope._prepareServiceParamsData();
-                    scope._prepareServiceHeadersData();
-
-                    // would be better to check group here, i.e service_type.group = "files"
-                    if (scope.service.record.type === 'local_file' || scope.service.record.type === 'aws_s3') {
-
-                        scope._prepareServicePrivateData();
-                    }
+                    scope._prepareServiceConfigData();
 
                     if (scope.service.record.type !== 'rws') {
 
@@ -234,11 +226,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                     else {
                         scope._prepareServiceDefinitionData();
-                    }
-
-                    // would be better to check group here, i.e service_type.group = "database"
-                    if (scope.service.record.type === 'mongo_db') {
-                        scope._prepareServiceNoSQLData();
                     }
                 };
 
@@ -276,7 +263,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
 
 
-
                     // reset tabs
                     angular.element('#info-tab').trigger('click');
 
@@ -290,7 +276,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                     var requestDataObj = {
-                        params:{
+                        params: {
                             fields: '*',
                             related: 'service_doc_by_service_id'
                         },
@@ -300,7 +286,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     requestDataObj = scope._trimRequestDataObj(requestDataObj);
 
                     scope._saveServiceToServer(requestDataObj).then(
-                        function(result) {
+                        function (result) {
 
                             var messageOptions = {
                                 module: 'Services',
@@ -318,7 +304,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             scope._resetServiceDetails();
                         },
 
-                        function(reject) {
+                        function (reject) {
 
                             var messageOptions = {
                                 module: 'Api Error',
@@ -332,7 +318,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         }
                     ).finally(
-                        function() {
+                        function () {
 
                             // console.log('Save Services finally')
                         }
@@ -345,7 +331,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                     var requestDataObj = {
-                        params:{
+                        params: {
                             fields: '*',
                             related: 'service_doc_by_service_id'
                         },
@@ -355,7 +341,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     requestDataObj = scope._trimRequestDataObj(requestDataObj);
 
                     scope._updateServiceToServer(requestDataObj).then(
-                        function(result) {
+                        function (result) {
 
 
                             var messageOptions = {
@@ -373,7 +359,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         },
 
-                        function(reject) {
+                        function (reject) {
 
                             var messageOptions = {
                                 module: 'Api Error',
@@ -387,7 +373,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         }
                     ).finally(
-                        function() {
+                        function () {
 
                             // console.log('Update Service finally')
                         }
@@ -408,7 +394,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                     scope._deleteServiceFromServer(requestDataObj).then(
-                        function(result) {
+                        function (result) {
 
                             // notify success
                             var messageOptions = {
@@ -424,7 +410,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         },
 
-                        function(reject) {
+                        function (reject) {
 
                             var messageOptions = {
                                 module: 'Api Error',
@@ -437,7 +423,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             dfNotify.error(messageOptions);
                         }
                     ).finally(
-                        function() {
+                        function () {
 
                             // console.log('Delete Service Finally')
                         }
@@ -463,7 +449,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                 // WATCHERS
-                var watchData = scope.$watch('serviceData', function(newValue, oldValue) {
+                var watchData = scope.$watch('serviceData', function (newValue, oldValue) {
 
                     // No data.  Return
                     if (!newValue) return false;
@@ -480,7 +466,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                 // MESSAGES
-                scope.$on('$destroy', function(e) {
+                scope.$on('$destroy', function (e) {
                     watchData();
                 });
 
@@ -500,17 +486,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         title: 'Services Overview',
                         text: 'Services are where you set up REST API connections to databases, file storage, email, and remote web services.'
                     },
-                    parameters: {
-                        title: 'Parameters Overview',
-                        text: 'Specify any required parameters below.'
-                    },
-                    headers: {
-                        title: 'Headers Overview',
-                        text: 'Specify any required headers below.'
-                    },
-                    privates: {
-                        title: 'Private Files and Folders Overview',
-                        text: 'Manage private folders and files below.'
+                    config: {
+                        title: 'Config Overview',
+                        text: 'Specify any service-specific configuration below.'
                     },
                     serviceDef: {
                         title: 'Service Definition Overview',
@@ -520,14 +498,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', function(MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache) {
+    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache) {
 
 
         return {
             restrict: 'E',
             scope: false,
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-info.html',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
                 // @TODO: Refactor to factory
                 var ServiceInfo = function (serviceInfoData) {
@@ -563,47 +541,49 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope.customConfig = [
                     {
-                        applicableTo: [ 'aws_dynamodb', 'aws_simpledb', 'aws_s3', 'aws_sns', 'aws_ses' ],
+                        applicableTo: ['aws_dynamodb', 'aws_simpledb', 'aws_s3', 'aws_sns', 'aws_ses'],
                         name: 'region',
                         type: 'dropdown',
                         options: dfServiceValues.awsRegions
                     },
                     {
-                        applicableTo: [ 'local_file', 'ros_file', 'aws_s3', 'azure_blob' ],        
+                        applicableTo: ['local_file', 'ros_file', 'aws_s3', 'azure_blob'],
                         name: 'public_path',
                         type: 'array(string)'
-                    },                        
+                    },
                     {
-                        applicableTo: [ 'mongo_db' ],
+                        applicableTo: ['mongo_db'],
                         name: 'options',
                         type: 'object(string,string)'
                     },
                     {
-                        applicableTo: [ 'mongo_db' ],
+                        applicableTo: ['mongo_db'],
                         name: 'driver_options',
                         type: 'object(string,string)'
                     },
 
                     {
-                        applicableTo: [ 'script' ],
+                        applicableTo: ['script'],
                         name: 'type',
                         type: 'dropdown',
-                        options: dfApplicationObjApis.script_type.record.map(function (item) { return { name: item.name, value: item.name };  })
+                        options: dfApplicationObjApis.script_type.record.map(function (item) {
+                            return {name: item.name, value: item.name};
+                        })
                     },
 
                     {
-                        applicableTo: [ 'script' ],
+                        applicableTo: ['script'],
                         name: 'content',
                         type: 'editor'
                     },
 
                     {
-                        applicableTo: [ 'sql_db' ],
+                        applicableTo: ['sql_db'],
                         name: 'options',
                         type: 'object(string,string)'
                     },
                     {
-                        applicableTo: [ 'sql_db' ],
+                        applicableTo: ['sql_db'],
                         name: 'attributes',
                         type: 'object(string,string)'
                     },
@@ -612,24 +592,28 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         name: 'open_reg_email_service_id',
                         type: 'dropdown',
                         options: dfApplicationObjApis.service.record.filter(function (item) {
-                            return item.type.indexOf('email') > -1; 
-                        }).map(function (item) { return { name: item.name, value: item.id };  })
+                            return item.type.indexOf('email') > -1;
+                        }).map(function (item) {
+                            return {name: item.name, value: item.id};
+                        })
                     },
                     {
                         applicableTo: ['user'],
                         name: 'open_reg_role_id',
                         type: 'dropdown',
-                        options: dfApplicationObjApis.role.record.map(function (item) { return { name: item.name, value: item.id };  })
+                        options: dfApplicationObjApis.role.record.map(function (item) {
+                            return {name: item.name, value: item.id};
+                        })
                     },
 
                 ];
 
                 scope.addKeyValue = function (obj, key) {
-                    if (!obj[key])  {
+                    if (!obj[key]) {
                         obj[key] = [];
                     }
 
-                    
+
                     obj[key].push({
                         key: '',
                         value: ''
@@ -669,7 +653,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.serviceInfo.record.config = {};
                     scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
                         return item.name === scope.serviceInfo.record.type;
-                    })[0]; 
+                    })[0];
 
                     if (scope.selectedSchema) {
                         scope.decorateSchema();
@@ -677,12 +661,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 };
 
-                 scope.tabConfig = {
-                    'rws': [ 'parameters', 'headers', 'serviceDef' ],
-                    'sql_db': [ 'serviceDef' ],
-                    'mongo_db': [ 'serviceDef' ],
-                    'smtp_email': [ 'parameters', 'serviceDef' ],
-                    'local_file': [ 'privates' ]
+                scope.tabConfig = {
+                    'rws': ['parameters', 'headers', 'serviceDef'],
+                    'sql_db': ['serviceDef'],
+                    'mongo_db': ['serviceDef'],
+                    'smtp_email': ['parameters', 'serviceDef'],
+                    'local_file': ['privates']
                 };
 
                 scope.configureTabs = function (selectedSchema) {
@@ -703,7 +687,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     if (scope.newService) {
                         scope.hcv.serviceTypes = scope.hcv.serviceTypes
                             .filter(function (el) {
-                                return el.name !== "sql_db";
+                                return !el.singleton;
                             });
                     }
 
@@ -718,24 +702,20 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 });
 
 
-
                 scope._script = {};
                 scope.serviceInfo = {};
                 scope._storageType = {};
                 scope.tabs = {
-                    parameters: true,
-                    headers: true,
-                    privates: true,
+                    config: true,
                     serviceDef: true
                 };
-
 
 
                 scope.sql_server_host_identifier = null;
                 scope.sql_server_db_identifier = null;
 
 
-                scope._buildFieldSet = function(fieldSetArray, append) {
+                scope._buildFieldSet = function (fieldSetArray, append) {
 
                     var addFields = null;
 
@@ -760,7 +740,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         return;
                     }
 
-                    angular.forEach(fieldSetArray, function(fieldName) {
+                    angular.forEach(fieldSetArray, function (fieldName) {
 
                         if (!append) {
 
@@ -776,9 +756,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._prepareServiceNoSQLData = function () {
 
-                    if ( scope.service.record.storage_type === 'mongodb') {
-                        if ( scope.service.record.config.options_ctrl === true) {
-                            scope.service.record.config.options = {ssl:true};
+                    if (scope.service.record.storage_type === 'mongodb') {
+                        if (scope.service.record.config.options_ctrl === true) {
+                            scope.service.record.config.options = {ssl: true};
                         }
                         else {
                             scope.service.record.config.options = {};
@@ -788,58 +768,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._prepareServiceInfoData = function () {
 
-                    var data = null;
-
-                    switch(scope.serviceInfo.record.type) {
-
-                        case 'local_email':
-                            data = scope._prepareEmailData();
-                            break;
-
-                        case 'aws_s3':
-                        case 'azure_blob':
-                        case 'ros_file':
-                            data = scope._prepareRFS();
-                            break;
-
-                        case 'salesforce_db':
-                            data = scope._prepareSF();
-                            break;
-
-                        case 'mongo_db':
-                        case 'couch_db':
-                        case 'aws_dynamodb':
-                        case 'aws_simpledb':
-                        case 'azure_table':
-                            data = scope._prepareNoSQL();
-                            break;
-
-                        case 'local_file':
-                            data = scope._prepareLFS();
-                            break;
-
-                        case 'sql_db':
-                            data = scope._prepareSQLDB();
-                            break;
-
-                        case 'rws':
-                            data = scope._prepareRWS();
-                            break;
-
-                        case 'aws_sns':
-                            data = scope._preparePS();
-                            break;
-                    }
-
-                    // scope.serviceInfo.record.config = data;//dfObjectService.mergeObjects(scope.serviceInfo.record.config, data);
                     scope.service.record = dfObjectService.mergeObjects(scope.serviceInfo.record, scope.service.record);
                 };
-                
-                scope._prepareRWS = function() {
-                    
+
+                scope._prepareRWS = function () {
+
                     return scope._storageType;
                 };
-                
+
                 scope._prepareEmailData = function () {
 
                     scope._storageType['user'] = scope.serviceInfo.record.config.user;
@@ -850,7 +786,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._prepareRFS = function () {
 
-                    switch ( scope.serviceInfo.record.storage_type ) {
+                    switch (scope.serviceInfo.record.storage_type) {
                         case "aws s3":
                             // nothing to do
                             break;
@@ -872,7 +808,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._prepareNoSQL = function () {
 
-                    switch ( scope.serviceInfo.record.storage_type ) {
+                    switch (scope.serviceInfo.record.storage_type) {
                         case "aws dynamodb":
                         case "aws simpledb":
                         case "azure tables":
@@ -911,7 +847,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     function nth_ocurrence(str, needle, nth) {
 
-                        for (var i=0;i<str.length;i++) {
+                        for (var i = 0; i < str.length; i++) {
                             if (str.charAt(i) == needle) {
                                 if (!--nth) {
                                     return i;
@@ -928,7 +864,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope._storageType['prefix'] = dsn.slice(0, dsn.indexOf(":"));
 
-                    switch(scope._storageType.prefix) {
+                    switch (scope._storageType.prefix) {
 
                         case 'oci':
                             scope.sql_server_host_identifier = "host";
@@ -967,7 +903,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                 scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), nth_ocurrence(dsn, ';', 2)).split("=")[1];
 
                             }
-                            else if (dsn.indexOf('port=') > dsn.indexOf(scope.sql_server_db_identifier)){
+                            else if (dsn.indexOf('port=') > dsn.indexOf(scope.sql_server_db_identifier)) {
                                 scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), dsn.length).split("=")[1];
                             }
 
@@ -977,7 +913,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope._updateDsn = function () {
 
                     var string = '';
-                        
+
 
                     switch (scope._storageType.prefix) {
 
@@ -1034,13 +970,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
 
-
-                scope._setTabs = function (parameters, headers, privates, serviceDef) {
+                scope._setTabs = function (config, serviceDef) {
 
                     scope.tabs = {
-                        parameters: parameters,
-                        headers: headers,
-                        privates: privates,
+                        config: config,
                         serviceDef: serviceDef
                     }
                 };
@@ -1075,7 +1008,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         creds = scope.serviceInfo.record.config;
                     }
 
-                    switch(storageType) {
+                    switch (storageType) {
 
                         case 'aws dynamodb':
                         case 'aws simpledb':
@@ -1193,10 +1126,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._renderServiceFields = function (serviceType) {
 
-                    switch(serviceType) {
+                    switch (serviceType) {
 
                         case 'Remote Web Service':
-                            scope._setTabs(true, true, false, true);
+                            scope._setTabs(true, true);
                             scope._storageType = new dfStorageTypeFactory('remote web service', scope.serviceInfo.record.config);
                             scope._buildFieldSet(
                                 [
@@ -1353,8 +1286,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._renderRegionUrl = function (region, regions) {
 
-                    var regionObj = regions.find(function ( element, index, array ) {
-                        if (element.value === region){
+                    var regionObj = regions.find(function (element, index, array) {
+                        if (element.value === region) {
                             return element;
                         }
                     });
@@ -1380,13 +1313,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope.selectedSchema = scope.hcv.serviceTypes && scope.hcv.serviceTypes.filter(function (item) {
                         return scope.serviceInfo && scope.serviceInfo.record && item.name === scope.serviceInfo.record.type;
-                    })[0]; 
+                    })[0];
 
                     if (scope.selectedSchema) {
                         scope.decorateSchema();
-                        scope.configureTabs(scope.selectedSchema);    
+                        scope.configureTabs(scope.selectedSchema);
                     }
- 
+
                     // We set this to null and then during the _renderServiceFields function
                     // a storage type will be assigned
                     scope._storageType = null;
@@ -1395,7 +1328,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     // we just render the proper type of object based on the selected service type.  This is overly
                     // complicated and verbose. Originally, we didn't want to repeat certain sections of code but...
                     // it may make sense to do so in this case.)
-                    scope._renderServiceFields (scope.serviceInfo.record.type);
+                    scope._renderServiceFields(scope.serviceInfo.record.type);
 
                 });
 
@@ -1412,12 +1345,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         title: 'Service Type ',
                         text: 'Select the type of service you\'re adding.'
                     },
-                    apiName: {
-                        title: 'Api Name ',
-                        text: 'Select a name for making API requests, such as \'db\' in /api/v2/db.'
-                    },
                     name: {
                         title: 'Name ',
+                        text: 'Select a name for making API requests, such as \'db\' in /api/v2/db.'
+                    },
+                    label: {
+                        title: 'Label ',
                         text: 'The display name or label for the service.'
                     },
                     description: {
@@ -1427,8 +1360,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     baseUrl: {
                         title: 'Base Url ',
                         text: 'Specify the base URL for the remote web service. For example, if you named the API \'mydb\'' +
-                            ' and the base URL is http://api.myservice.com/v1/api/, then a REST call to /api/v2/mydb/mytable' +
-                            ' would tell DreamFactory to call http://api.myservice.com/v1/api/mydb/mytable.'
+                        ' and the base URL is http://api.myservice.com/v1/api/, then a REST call to /api/v2/mydb/mytable' +
+                        ' would tell DreamFactory to call http://api.myservice.com/v1/api/mydb/mytable.'
                     },
                     userName: {
                         title: 'Username ',
@@ -1560,338 +1493,978 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceParams', ['MOD_SERVICES_ASSET_PATH', 'dfObjectService', function (MOD_SERVICES_ASSET_PATH, dfObjectService) {
+    .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache) {
 
 
         return {
             restrict: 'E',
             scope: false,
-            templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-params.html',
-            link: function(scope, elem, attrs) {
+            templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-config.html',
+            link: function (scope, elem, attrs) {
 
-
-                // @TODO: refactor to factory
-                var ServiceParam = function(params) {
+                // @TODO: Refactor to factory
+                var ServiceConfig = function (serviceConfigData) {
 
                     var _new = {
-                        name: null,
-                        value: null,
-                        outbound: true,
-                        cache_key: true
+                        "config": {}
                     };
 
-                    params = angular.copy(params) || _new;
-
-                    // Merge old params object with new params object to aquire any
-                    // new properties we may add
-                    params = dfObjectService.mergeObjects(params, _new);
-
-                    return params;
-                };
-
-                // @TODO: refactor to factory
-                var ExcludeParam = function (params) {
+                    var data = angular.copy(serviceConfigData) || _new;
 
 
-                    var _new = {
-                        name: null,
-                        outbound: true,
-                        cache_key: true
-                    }
+                    // Delete props we don't need here
+                    delete data['parameters'];
+                    delete data['headers'];
+                    delete data['components'];
 
-                    return angular.copy(params || _new);
-
-                };
-
-                scope.params = [];
-                scope.excludeParams = [];
-
-
-                // PUBLIC API
-                scope.addParameter = function () {
-
-                    scope._addParameter();
-                };
-
-                scope.deleteParameter = function (paramIdx) {
-
-                    scope._deleteParameter(paramIdx);
-                };
-
-
-                scope.addClientParameter = function () {
-
-                    scope._addClientParameter();
-                };
-
-                scope.deleteClientParameter = function (index) {
-
-                    scope._deleteClientParameter(index);
-                };
-
-
-
-                // PRIVATE API
-                scope._prepareServiceParamsData = function () {
-
-                    scope.service.record.parameters = scope.params;
-
-                    if (scope.service.record.config !== null && scope.service.record.config !== undefined && scope.service.record.config.hasOwnProperty('client_exclusions')) {
-                        scope.service.record.config.client_exclusions.parameters = scope.excludeParams;
-                    }
-                    else {
-                        var _new = {
-                            client_exclusions: {
-                                parameters: scope.excludeParams
-                            }
-                        };
-
-                        scope.service.record.config = dfObjectService.mergeObjects(scope.service.record.config, _new);
+                    return {
+                        __dfUI: {},
+                        record: data,
+                        recordCopy: angular.copy(data)
                     }
                 };
 
-                scope._addParameter = function () {
 
-                    scope.params.push(new ServiceParam())
-                };
+                var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
 
-                scope._deleteParameter = function (paramIdx) {
+                scope.customConfig = [
+                    {
+                        applicableTo: ['aws_dynamodb', 'aws_simpledb', 'aws_s3', 'aws_sns', 'aws_ses'],
+                        name: 'region',
+                        type: 'dropdown',
+                        options: dfServiceValues.awsRegions
+                    },
+                    {
+                        applicableTo: ['local_file', 'ros_file', 'aws_s3', 'azure_blob'],
+                        name: 'public_path',
+                        type: 'array(string)'
+                    },
+                    {
+                        applicableTo: ['mongo_db'],
+                        name: 'options',
+                        type: 'object(string,string)'
+                    },
+                    {
+                        applicableTo: ['mongo_db'],
+                        name: 'driver_options',
+                        type: 'object(string,string)'
+                    },
 
-                    scope.params.splice(paramIdx, 1);
-                };
-
-
-                scope._addClientParameter = function () {
-
-                    scope.excludeParams.push(new ExcludeParam());
-                };
-
-                scope._deleteClientParameter = function (index) {
-
-                    scope.excludeParams.splice(index, 1);
-                }
-
-
-                // WATCHERS
-                var watchService = scope.$watch('service', function(newValue, oldValue) {
-
-                    if (!newValue) return false;
-
-                    if (!newValue.record.hasOwnProperty('config') || newValue.record.config === null) return;
-
-                    scope.params = [];
-                    if (newValue.record.hasOwnProperty('parameters') && newValue.record.parameters.length > 0) {
-
-                        angular.forEach(newValue.record.parameters, function (param) {
-
-                            scope.params.push(new ServiceParam(param));
+                    {
+                        applicableTo: ['script'],
+                        name: 'type',
+                        type: 'dropdown',
+                        options: dfApplicationObjApis.script_type.record.map(function (item) {
+                            return {name: item.name, value: item.name};
                         })
-                    }
+                    },
 
+                    {
+                        applicableTo: ['script'],
+                        name: 'content',
+                        type: 'editor'
+                    },
 
-
-                    scope.excludeParams = [];
-                    if (newValue.record.hasOwnProperty('config') &&
-                        newValue.record.config.hasOwnProperty('client_exclusions') &&
-                        newValue.record.config.client_exclusions.hasOwnProperty('parameters') &&
-                        newValue.record.config.client_exclusions.parameters.length > 0 ) {
-
-                        angular.forEach(newValue.record.config.client_exclusions.parameters, function (param) {
-
-                            scope.excludeParams.push(new ExcludeParam(param));
+                    {
+                        applicableTo: ['sql_db'],
+                        name: 'options',
+                        type: 'object(string,string)'
+                    },
+                    {
+                        applicableTo: ['sql_db'],
+                        name: 'attributes',
+                        type: 'object(string,string)'
+                    },
+                    {
+                        applicableTo: ['user'],
+                        name: 'open_reg_email_service_id',
+                        type: 'dropdown',
+                        options: dfApplicationObjApis.service.record.filter(function (item) {
+                            return item.type.indexOf('email') > -1;
+                        }).map(function (item) {
+                            return {name: item.name, value: item.id};
                         })
-                    }
-                });
-
-
-
-                // MESSAGES
-                scope.$on('$destroy', function (e) {
-
-                    watchService();
-                })
-            }
-        }
-    }])
-    .directive('dfServiceHeaders', ['MOD_SERVICES_ASSET_PATH', function(MOD_SERVICES_ASSET_PATH) {
-
-
-        return {
-            restrict: 'E',
-            scope: false,
-            templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-headers.html',
-            link: function(scope, elem, attrs) {
-
-                var ServiceHeader = function (headerData) {
-
-                    var _new = {
-                        name: null,
-                        value: null,
-                        pass_from_client: false
-                    };
-
-                    headerData = angular.copy(headerData) || _new;
-
-                    return headerData;
-                };
-
-                scope.headers = [];
-
-
-                // PUBLIC API
-                scope.addHeader = function () {
-
-                    scope._addHeader();
-                };
-
-                scope.deleteHeader = function (headerIdx) {
-
-                    scope._deleteHeader(headerIdx);
-                };
-
-
-                // PRIVATE API
-                scope._prepareServiceHeadersData = function () {
-
-                    scope.service.record.headers = scope.headers;
-                };
-
-                scope._addHeader = function () {
-
-                    scope.headers.push(new ServiceHeader())
-                };
-
-                scope._deleteHeader = function (headerIdx) {
-
-                    scope.headers.splice(headerIdx, 1);
-                };
-
-
-                // WATCHERS
-                var watchService = scope.$watch('service', function(newValue, oldValue) {
-
-
-                    if (!newValue) return false;
-
-                    scope.headers = [];
-                    if (newValue.record.hasOwnProperty('headers') && newValue.record.headers.length > 0) {
-
-                        angular.forEach(newValue.record.headers, function (header) {
-
-                            scope.headers.push(new ServiceHeader(header));
+                    },
+                    {
+                        applicableTo: ['user'],
+                        name: 'open_reg_role_id',
+                        type: 'dropdown',
+                        options: dfApplicationObjApis.role.record.map(function (item) {
+                            return {name: item.name, value: item.id};
                         })
-                    }
-                });
+                    },
 
+                ];
 
-                // MESSAGES
-                scope.$on('$destroy', function (e) {
-
-                    watchService();
-                });
-            }
-        }
-    }])
-    .directive('dfServicePrivates', ['MOD_SERVICES_ASSET_PATH', function(MOD_SERVICES_ASSET_PATH) {
-
-        return {
-            restrict: 'E',
-            scope: false,
-            templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-privates.html',
-            link: function(scope, elem, attrs) {
-
-
-                var ServicePrivates = function (privateData) {
-
-                    var _new = {
-                        value: null
-                    };
-
-                    if (privateData) {
-                        _new.value = angular.copy(privateData);
+                scope.addKeyValue = function (obj, key) {
+                    if (!obj[key]) {
+                        obj[key] = [];
                     }
 
-                    return _new;
+
+                    obj[key].push({
+                        key: '',
+                        value: ''
+                    });
                 };
 
-
-                scope.privates = [];
-
-
-                // PUBLIC API
-                scope.addPath = function () {
-
-                    scope._addPath();
+                scope.deleteKeyValue = function (arr, index) {
+                    arr.splice(index, 1);
                 };
 
-                scope.deletePath = function (pathIdx) {
+                scope.addStringInArray = function (configObj, key) {
+                    if (!configObj[key]) {
+                        configObj[key] = [];
+                    }
 
-                    scope._deletePath(pathIdx);
+                    configObj[key].push('');
                 };
 
+                scope.decorateSchema = function () {
+                    var selectedType = scope.serviceInfo.record.type;
+                    var customConfigs = scope.customConfig.filter(function (config) {
+                        return config.applicableTo.some(function (item) {
+                            return item === selectedType;
+                        })
+                    });
 
-                // PRIVATE API
+                    customConfigs.forEach(function (item) {
+                        angular.extend(scope.selectedSchema.config_schema[item.name], item)
+                    });
+                };
 
-                scope._prepareServicePrivateData = function () {
-
-                    if (!scope.privates.length) {
-                        scope.service.record.config.private_paths = [];
+                scope.changeServiceType = function () {
+                    if (!scope.serviceInfo && !scope.serviceInfo.record) {
                         return;
                     }
 
-                    scope.service.record.config.private_paths = [];
-                    angular.forEach(scope.privates, function (path) {
-                        scope.service.record.config.private_paths.push(path.value);
+                    scope.serviceInfo.record.config = {};
+                    scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
+                        return item.name === scope.serviceInfo.record.type;
+                    })[0];
+
+                    if (scope.selectedSchema) {
+                        scope.decorateSchema();
+                        scope.configureTabs(scope.selectedSchema);
+                    }
+                };
+
+                scope.hcv = new dfServiceValues();
+
+                dfServiceData.getServiceTypes().then(function (serviceTypes) {
+                    scope.hcv.serviceTypes = serviceTypes.record;
+                    if (scope.newService) {
+                        scope.hcv.serviceTypes = scope.hcv.serviceTypes
+                            .filter(function (el) {
+                                return !el.singleton;
+                            });
+                    }
+
+                    if (!scope.serviceInfo.record)
+                        return;
+
+                    scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
+                        return item.name === scope.serviceInfo.record.type;
+                    })[0];
+
+                    scope.configureTabs(scope.selectedSchema);
+                });
+
+
+                scope._script = {};
+                scope.serviceInfo = {};
+                scope._storageType = {};
+
+                scope.sql_server_host_identifier = null;
+                scope.sql_server_db_identifier = null;
+
+
+                scope._buildFieldSet = function (fieldSetArray, append) {
+
+                    var addFields = null;
+
+                    if (!append) {
+                        elem.html('');
+                    }
+                    else {
+
+                        addFields = angular.element('#additionalFields');
+
+                        if (addFields.length) {
+
+                            addFields.html('');
+                        } else {
+
+                            elem.append('<div id="additionalFields"></div>');
+                            addFields = angular.element('#additionalFields');
+                        }
+                    }
+
+                    if (!fieldSetArray) {
+                        return;
+                    }
+
+                    angular.forEach(fieldSetArray, function (fieldName) {
+
+                        if (!append) {
+
+                            elem.append($compile($templateCache.get('_service-' + fieldName + '.html'))(scope));
+                        }
+                        else {
+
+                            addFields.append($compile($templateCache.get('_service-' + fieldName + '.html'))(scope));
+                        }
                     });
                 };
 
 
-                // COMPLEX IMPLEMENTATION
-                scope._addPath = function () {
+                scope._prepareServiceNoSQLData = function () {
 
-                    scope.privates.push(new ServicePrivates());
+                    if (scope.service.record.storage_type === 'mongodb') {
+                        if (scope.service.record.config.options_ctrl === true) {
+                            scope.service.record.config.options = {ssl: true};
+                        }
+                        else {
+                            scope.service.record.config.options = {};
+                        }
+                    }
+                }
+
+                scope._prepareServiceConfigData = function () {
+
+                    scope.service.record = dfObjectService.mergeObjects(scope.serviceInfo.record, scope.service.record);
                 };
 
-                scope._deletePath = function (pathIdx) {
+                scope._prepareRWS = function () {
 
-                    scope.privates.splice(pathIdx, 1);
+                    return scope._storageType;
                 };
 
-                // WATCHERS
-                var watchPrivates = scope.$watch('service', function (newValue, oldValue) {
+                scope._prepareEmailData = function () {
+
+                    scope._storageType['user'] = scope.serviceInfo.record.config.user;
+                    scope._storageType['password'] = scope.serviceInfo.record.config.password;
+
+                    return scope._storageType;
+                };
+
+                scope._prepareRFS = function () {
+
+                    switch (scope.serviceInfo.record.storage_type) {
+                        case "aws s3":
+                            // nothing to do
+                            break;
+                        case "azure blob":
+                            delete scope._storageType.PartitionKey
+                            break;
+                        case "rackspace cloudfiles":
+                        case "openstack object storage":
+                            // nothing to do
+                            break;
+                    }
+                    return scope._storageType;
+                };
+
+                scope._prepareSF = function () {
+
+                    return scope._storageType;
+                }
+
+                scope._prepareNoSQL = function () {
+
+                    switch (scope.serviceInfo.record.storage_type) {
+                        case "aws dynamodb":
+                        case "aws simpledb":
+                        case "azure tables":
+                            var temp = angular.copy(scope._storageType);
+                            if (temp.hasOwnProperty('private_paths')) {
+                                delete temp.private_paths
+                            }
+                            return temp;
+                        case "couchdb":
+                        case "mongodb":
+                            return scope._storageType;
+                    }
+                }
+
+                scope._prepareSQLDB = function () {
+
+                    return {
+                        dsn: scope._storageType.dsn,
+                        user: scope._storageType.user,
+                        pwd: scope._storageType.pwd
+                    };
+                };
+
+                scope._prepareLFS = function () {
+
+                    return scope._storageType;
+                }
+
+                scope._preparePS = function () {
+
+                    return scope._storageType;
+                }
+
+                scope._dsnToFields = function (dsn) {
+
+
+                    function nth_ocurrence(str, needle, nth) {
+
+                        for (var i = 0; i < str.length; i++) {
+                            if (str.charAt(i) == needle) {
+                                if (!--nth) {
+                                    return i;
+                                }
+                            }
+                        }
+                        return false;
+                    }
+
+
+                    dsn = dsn || scope._storageType.dsn;
+
+                    if (!dsn) return;
+
+                    scope._storageType['prefix'] = dsn.slice(0, dsn.indexOf(":"));
+
+                    switch (scope._storageType.prefix) {
+
+                        case 'oci':
+                            scope.sql_server_host_identifier = "host";
+                            scope.sql_server_db_identifier = "sid";
+
+
+                            scope._storageType['host'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_host_identifier), nth_ocurrence(dsn, ')', 2)).split("=")[1];
+                            scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), nth_ocurrence(dsn, ')', 6)).split("=")[1];
+                            break;
+
+
+                        case 'ibm':
+                            scope.sql_server_host_identifier = "HOSTNAME";
+                            scope.sql_server_db_identifier = "DATABASE";
+
+                            scope._storageType['host'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_host_identifier), nth_ocurrence(dsn, ';', 3)).split("=")[1];
+                            scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), nth_ocurrence(dsn, ';', 2)).split("=")[1];
+                            break;
+
+                        case 'sqlsrv':
+
+                            // set the host/db identifiers
+                            scope.sql_server_host_identifier = "Server";
+                            scope.sql_server_db_identifier = "Database";
+
+
+                        default:
+
+                            scope.sql_server_host_identifier = "host";
+                            scope.sql_server_db_identifier = "dbname";
+
+                            scope._storageType['host'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_host_identifier), dsn.indexOf(";")).split("=")[1];
+
+
+                            if (dsn.indexOf('port=') > dsn.indexOf(scope.sql_server_db_identifier)) {
+                                scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), nth_ocurrence(dsn, ';', 2)).split("=")[1];
+
+                            }
+                            else if (dsn.indexOf('port=') > dsn.indexOf(scope.sql_server_db_identifier)) {
+                                scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), dsn.length).split("=")[1];
+                            }
+
+                    }
+                };
+
+                scope._updateDsn = function () {
+
+                    var string = '';
+
+
+                    switch (scope._storageType.prefix) {
+
+                        case 'sqlsrv':
+
+                            // set the host/db identifiers
+                            scope.sql_server_host_identifier = "Server";
+                            scope.sql_server_db_identifier = "Database";
+
+                            if (scope._storageType.prefix) string += scope._storageType.prefix + ':';
+
+                            string += scope.sql_server_host_identifier + '=' + scope._storageType.host + ';';
+                            string += scope.sql_server_db_identifier + '=' + scope._storageType.dbname;
+
+                            break;
+
+                        case 'oci':
+                            scope.sql_server_host_identifier = "host";
+                            scope.sql_server_db_identifier = "sid";
+
+                            if (scope._storageType.prefix) string += scope._storageType.prefix + ':';
+
+                            string += "dbname=(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(" + scope.sql_server_host_identifier + '=' + scope._storageType.host + ")(PORT = 1521))) (CONNECT_DATA = (" + scope.sql_server_db_identifier + "=" + scope._storageType.dbname + ")))"
+
+                            break;
+
+                        case 'ibm':
+                            scope.sql_server_host_identifier = "HOSTNAME";
+                            scope.sql_server_db_identifier = "DATABASE";
+
+                            if (scope._storageType.prefix) string += scope._storageType.prefix + ':';
+
+                            string += "DRIVER={IBM DB2 ODBC DRIVER};" + scope.sql_server_db_identifier + "=" + scope._storageType.dbname + ";" + scope.sql_server_host_identifier + "=" + scope._storageType.host + ";PORT=50000;PROTOCOL=TCPIP;";
+
+                            break;
+
+                        default:
+                            scope.sql_server_host_identifier = "host";
+                            scope.sql_server_db_identifier = "dbname";
+
+                            if (scope._storageType.prefix) string += scope._storageType.prefix + ':';
+
+                            string += scope.sql_server_host_identifier + '=' + scope._storageType.host + ';';
+                            string += scope.sql_server_db_identifier + '=' + scope._storageType.dbname;
+                    }
+
+
+                    scope._storageType.dsn = string;
+                };
+
+                scope._fieldsToDsn = function () {
+
+                    return scope._storageType.prefix + ':' + scope.sql_server_host_identifier + '=' + scope._storageType.host + ';' + scope.sql_server_db_identifier + '=' + scope._storageType.dbname
+                };
+
+
+                scope._setTabs = function (config, serviceDef) {
+
+                    scope.tabs = {
+                        config: config,
+                        serviceDef: serviceDef
+                    }
+                };
+
+                scope._renderAdditionalEmailFields = function () {
+
+                    switch (scope._storageType.transport_type) {
+                        case 'command':
+                            scope._buildFieldSet(
+                                [
+                                    'email-command'
+                                ], true);
+                            break;
+                        case 'smtp':
+                            scope._buildFieldSet(
+                                [
+                                    'email-host',
+                                    'email-port',
+                                    'email-security',
+                                    'user-name',
+                                    'password'
+                                ], true);
+                            break;
+                    }
+                };
+
+                scope._renderAdditionalFields = function (storageType) {
+
+                    var creds = {};
+
+                    if (storageType === scope.serviceInfo.recordCopy.storage_type) {
+                        creds = scope.serviceInfo.record.config;
+                    }
+
+                    switch (storageType) {
+
+                        case 'aws dynamodb':
+                        case 'aws simpledb':
+
+                            scope._storageType = new dfStorageTypeFactory('aws', creds);
+                            scope._buildFieldSet(
+                                [
+                                    'aws-access-key',
+                                    'aws-secret-key',
+                                    'aws-region'
+                                ], true);
+                            break;
+
+                        case 'azure tables':
+
+                            scope._storageType = new dfStorageTypeFactory('azure', creds);
+                            scope._buildFieldSet(
+                                [
+                                    'azure-acct-name',
+                                    'azure-acct-key',
+                                    'azure-partition-key'
+                                ], true);
+                            break;
+
+                        case 'couchdb':
+
+                            scope._storageType = new dfStorageTypeFactory('couchdb', creds);
+                            scope._buildFieldSet(
+                                [
+                                    'couch-dsn',
+                                    'couch-user-name',
+                                    'couch-password'
+                                ], true);
+                            break;
+
+                        case 'mongodb':
+
+                            scope._storageType = new dfStorageTypeFactory('mongodb', creds);
+                            scope._buildFieldSet(
+                                [
+                                    'mongo-dsn',
+                                    'mongo-database',
+                                    'mongo-user-name',
+                                    'mongo-password',
+                                    'mongo-options-ssl'
+                                ], true);
+                            break;
+
+                        case 'aws s3':
+
+                            scope._storageType = new dfStorageTypeFactory('aws', creds);
+                            scope._buildFieldSet(
+                                [
+                                    'aws-access-key',
+                                    'aws-secret-key',
+                                    'aws-region'
+                                ], true);
+                            break;
+
+                        case 'azure blob':
+
+                            scope._storageType = new dfStorageTypeFactory('azure', creds);
+                            scope._buildFieldSet(
+                                [
+                                    'azure-acct-name',
+                                    'azure-acct-key'
+                                ], true);
+                            break;
+
+                        case 'rackspace cloudfiles':
+
+                            scope._storageType = new dfStorageTypeFactory('rackspace', creds);
+                            scope._buildFieldSet(
+                                [
+                                    'rs-user-name',
+                                    'rs-api-key',
+                                    'rs-tenet-name',
+                                    'rs-region',
+                                    'rs-endpoint'
+                                ], true);
+                            break;
+
+                        case 'openstack object storage':
+
+                            scope._storageType = new dfStorageTypeFactory('openstack', creds);
+                            scope._buildFieldSet(
+                                [
+                                    'os-user-name',
+                                    'os-password',
+                                    'os-tenet-name',
+                                    'os-region',
+                                    'os-endpoint'
+                                ], true);
+                            break;
+
+                        case 'aws sns':
+
+                            scope._storageType = new dfStorageTypeFactory('aws', creds);
+                            scope._buildFieldSet(
+                                [
+                                    'aws-access-key',
+                                    'aws-secret-key',
+                                    'aws-region'
+                                ], true);
+                            break;
+
+
+                        default:
+                            scope._buildFieldSet(
+                                null, true);
+                            break;
+                    }
+
+                };
+
+                scope._renderServiceFields = function (serviceType) {
+
+                    switch (serviceType) {
+
+                        case 'Remote Web Service':
+                            scope._setTabs(true, true);
+                            scope._storageType = new dfStorageTypeFactory('remote web service', scope.serviceInfo.record.config);
+                            scope._buildFieldSet(
+                                [
+                                    'type',
+                                    'api-name',
+                                    'name',
+                                    'description',
+                                    'base-url',
+                                    'is-active',
+                                    'remote-web-service-cache'
+                                ]);
+
+                            scope.serviceInfo.record.storage_type = null;
+
+                            break;
+
+                        case 'Email Service':
+
+                            scope._setTabs(true, false, false, true);
+                            scope._storageType = new dfStorageTypeFactory('email', scope.serviceInfo.record.config);
+                            scope._buildFieldSet(
+                                [
+                                    'type',
+                                    'api-name',
+                                    'name',
+                                    'description',
+                                    'is-active',
+                                    'email-transport-type'
+                                ]);
+
+                            scope._renderAdditionalEmailFields();
+                            break;
+
+                        case 'Remote SQL DB':
+
+                            scope._setTabs(false, false, false, true);
+                            scope._storageType = new dfStorageTypeFactory('sql', scope.serviceInfo.record.config);
+                            scope._dsnToFields(scope._storageType.dsn);
+
+                            scope._buildFieldSet(
+                                [
+                                    'type',
+                                    'api-name',
+                                    'name',
+                                    'description',
+                                    'is-active',
+                                    'sql-user-name',
+                                    'sql-password',
+                                    'sql-vendor',
+                                    'sql-host',
+                                    'sql-database-name',
+                                    'sql-dsn'
+                                ]);
+
+                            break;
+
+                        case 'Local SQL DB':
+
+                            scope._setTabs(false, false, false, true);
+                            scope._storageType = new dfStorageTypeFactory('local sql db', scope.serviceInfo.record.config);
+                            scope._buildFieldSet(
+                                [
+                                    'type',
+                                    'api-name',
+                                    'name',
+                                    'description',
+                                    'is-active'
+                                ]);
+                            break;
+
+                        case 'Salesforce':
+
+                            scope._setTabs(false, false, false, true);
+                            scope._storageType = new dfStorageTypeFactory('salesforce', scope.serviceInfo.record.config);
+                            scope._buildFieldSet(
+                                [
+                                    'type',
+                                    'api-name',
+                                    'name',
+                                    'description',
+                                    'is-active',
+                                    'sf-user-name',
+                                    'sf-password',
+                                    'sf-security-token',
+                                    'sf-api-version'
+                                ]);
+                            break;
+
+                        case 'NoSQL DB':
+                            scope._setTabs(false, false, false, true);
+                            scope._buildFieldSet(
+                                [
+                                    'type',
+                                    'api-name',
+                                    'name',
+                                    'description',
+                                    'is-active',
+                                    'nosql-type'
+                                ]);
+
+                            scope._renderAdditionalFields(scope.serviceInfo.record.storage_type);
+                            break;
+
+                        case 'Remote File Storage':
+
+                            scope._setTabs(false, false, true, true);
+                            scope._buildFieldSet(
+                                [
+                                    'type',
+                                    'api-name',
+                                    'name',
+                                    'description',
+                                    'is-active',
+                                    'storage-type'
+                                ]);
+
+                            scope._renderAdditionalFields(scope.serviceInfo.record.storage_type);
+
+                            break;
+
+                        case 'Local File Storage':
+
+                            scope._setTabs(false, false, true, true);
+                            scope._storageType = new dfStorageTypeFactory('local file storage', scope.serviceInfo.record.config);
+                            scope._buildFieldSet(
+                                [
+                                    'type',
+                                    'api-name',
+                                    'name',
+                                    'description',
+                                    'is-active'
+                                ]);
+                            break;
+
+                        case 'Push Service':
+                            scope._setTabs(false, false, false, true);
+                            scope._storageType = new dfStorageTypeFactory('push service', scope.serviceInfo.record.config);
+                            scope._buildFieldSet(
+                                [
+                                    'type',
+                                    'api-name',
+                                    'name',
+                                    'description',
+                                    'is-active',
+                                    'push-type'
+                                ]);
+                            scope._renderAdditionalFields(scope.serviceInfo.record.storage_type);
+                            break;
+
+                        default:
+
+                    }
+                };
+
+                scope._renderRegionUrl = function (region, regions) {
+
+                    var regionObj = regions.find(function (element, index, array) {
+                        if (element.value === region) {
+                            return element;
+                        }
+                    });
+
+                    this._storageType.url = regionObj.url;
+                }
+
+                var watchEmailProvider = scope.$watch('_storageType.transport_type', function (newValue, oldValue) {
 
                     if (!newValue) return false;
+                    scope._renderAdditionalEmailFields();
 
-                    if (!newValue.record.hasOwnProperty('config') || newValue.record.config === null) return;
-
-                    scope.privates = [];
-
-                    if (newValue.record.config.hasOwnProperty('private_paths') && newValue.record.config.private_paths.length > 0) {
-
-
-                        angular.forEach(newValue.record.config.private_paths, function (path) {
-
-                            scope.privates.push(new ServicePrivates(path))
-                        })
-                    }
                 });
 
-                // MESSAGES
+                // Watch the service for changes.
+                var watchService = scope.$watch('service', function (newValue, oldValue) {
+
+                    // We don't have a service.  Don't do anything.
+                    if (!newValue) return false;
+
+                    // Create a ServiceConfig object
+                    scope.serviceInfo = new ServiceConfig(newValue.record);
+
+                    scope.selectedSchema = scope.hcv.serviceTypes && scope.hcv.serviceTypes.filter(function (item) {
+                        return scope.serviceInfo && scope.serviceInfo.record && item.name === scope.serviceInfo.record.type;
+                    })[0];
+
+                    if (scope.selectedSchema) {
+                        scope.decorateSchema();
+                        scope.configureTabs(scope.selectedSchema);
+                    }
+
+                    // We set this to null and then during the _renderServiceFields function
+                    // a storage type will be assigned
+                    scope._storageType = null;
+
+                    // Sets fields, tabs, and _storageType (this is confusing,  we should change this so that
+                    // we just render the proper type of object based on the selected service type.  This is overly
+                    // complicated and verbose. Originally, we didn't want to repeat certain sections of code but...
+                    // it may make sense to do so in this case.)
+                    scope._renderServiceFields(scope.serviceInfo.record.type);
+
+                });
+
                 scope.$on('$destroy', function (e) {
 
-                    watchPrivates();
-                })
+                    watchService();
+                    watchEmailProvider();
+                });
+
+                // HELP
+                scope.dfSimpleHelp = {
+
+                    serviceType: {
+                        title: 'Service Type ',
+                        text: 'Select the type of service you\'re adding.'
+                    },
+                    name: {
+                        title: 'Name ',
+                        text: 'Select a name for making API requests, such as \'db\' in /api/v2/db.'
+                    },
+                    label: {
+                        title: 'Label ',
+                        text: 'The display name or label for the service.'
+                    },
+                    description: {
+                        title: 'Description ',
+                        text: 'Write a brief description of the API (optional).'
+                    },
+                    baseUrl: {
+                        title: 'Base Url ',
+                        text: 'Specify the base URL for the remote web service. For example, if you named the API \'mydb\'' +
+                        ' and the base URL is http://api.myservice.com/v1/api/, then a REST call to /api/v2/mydb/mytable' +
+                        ' would tell DreamFactory to call http://api.myservice.com/v1/api/mydb/mytable.'
+                    },
+                    userName: {
+                        title: 'Username ',
+                        text: 'Specify the username for the service you\'re connecting to.'
+                    },
+                    password: {
+                        title: 'Password ',
+                        text: 'Specify the password for the service you\'re connecting to.'
+                    },
+                    connectionString: {
+                        title: 'Connection String ',
+                        text: 'Specify the connection string for the database you\'re connecting to. '
+                    },
+                    sqlVendor: {
+                        title: 'SQL Vendor ',
+                        text: 'Specify the type of database you\'re connecting to.'
+                    },
+                    sqlHost: {
+                        title: 'SQL Host ',
+                        text: 'Specify the database host for the database you\'re connecting to.'
+                    },
+                    sqlDatabaseName: {
+                        title: 'SQL Database Name ',
+                        text: 'Specify the name of the database you\'re connecting to.'
+                    },
+
+                    sfSecurityToken: {
+                        title: 'SalesForce Security Token ',
+                        text: 'Specify the security token for the Salesforce Org you\'re connecting to.'
+                    },
+                    sfApiVersion: {
+                        title: 'SalesForce APi Version ',
+                        text: 'Specify the version of the Salesforce API you\'re using'
+                    },
+                    noSqlType: {
+                        title: 'NoSQL Service Type ',
+                        text: 'Specify the type of database you\'re connecting to.'
+                    },
+                    databaseName: {
+                        title: 'Database Name',
+                        text: 'Specify the name of the database you\'re connecting to.'
+                    },
+                    awsAccessKey: {
+                        title: 'AWS Access Key ',
+                        text: 'Specify the AWS Access Key for the database you\'re connecting to.'
+                    },
+                    awsSecretKey: {
+                        title: 'AWS Secret Key ',
+                        text: 'Specify the AWS Secret Key for the database you\'re connecting to.'
+                    },
+                    awsRegion: {
+                        title: 'AWS Region ',
+                        text: 'Select the AWS Region for the database you\'re connecting to.'
+                    },
+                    azureAcctName: {
+                        title: 'Azure Account Name ',
+                        text: 'Specify the Azure Account Name for the database you\'re connecting to.'
+                    },
+                    azureAcctKey: {
+                        title: 'Azure Account Key ',
+                        text: 'Specify the Azure Account Key for the database you\'re connecting to.'
+                    },
+                    azureDefaultPartitionKey: {
+                        title: 'Azure Partition Key ',
+                        text: 'Specify the Azure Default Partition Key for the database you\'re connecting to.'
+                    },
+                    storageType: {
+                        title: 'Storage Type ',
+                        text: 'Specify the type of storage you\'re connecting to.'
+                    },
+                    rsApiKey: {
+                        title: 'RackSpace Api Key ',
+                        text: 'Specify the API Key for the storage you\'re connecting to.'
+                    },
+                    rsTenantName: {
+                        title: 'RackSpace Tenant Name ',
+                        text: 'Specify the Tenant Name for the storage you\'re connecting to.'
+                    },
+                    rsTenantRegion: {
+                        title: 'RackSpace Tenant Region ',
+                        text: 'Specify the Region for the storage you\'re connecting to.'
+                    },
+                    rsEndpoint: {
+                        title: 'RackSpace Endpoint/URL ',
+                        text: 'Specify the URL Endpoint for the storage you\'re connecting to.'
+                    },
+                    osApiKey: {
+                        title: 'OpenStack Api Key ',
+                        text: 'Specify the API Key for the storage you\'re connecting to.'
+                    },
+                    osTenantName: {
+                        title: 'OpenStack Tenant Name ',
+                        text: 'Specify the Tenant Name for the storage you\'re connecting to.'
+                    },
+                    osRegion: {
+                        title: 'OpenStack Region ',
+                        text: 'Specify the Region for the storage you\'re connecting to.'
+                    },
+                    osEndpoint: {
+                        title: 'OpenStack Endpoint/URL ',
+                        text: 'Specify the URL Endpoint for the storage you\'re connecting to.'
+                    },
+
+                    emailTransportType: {
+                        title: 'Email Provider',
+                        text: 'Specify the type of provider.'
+                    },
+                    emailHost: {
+                        title: 'Email Host ',
+                        text: 'Specify the email host.'
+                    },
+                    emailPort: {
+                        title: 'Email Port ',
+                        text: 'Specify the port number.'
+                    },
+                    emailSecurity: {
+                        title: 'Email Security ',
+                        text: 'Specify the type of security (e.g. TLS).'
+                    },
+                    emailCommand: {
+                        title: 'Email Command ',
+                        text: 'Specify the command path for email.'
+                    },
+                    pushServiceVendor: {
+                        title: 'Push Notification Service Vendor',
+                        text: 'Select a Push Notfication Service Provider'
+                    }
+                }
             }
         }
     }])
-    .directive('dfManageServices', ['MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', function(MOD_SERVICES_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify) {
+    .directive('dfManageServices', ['MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', function (MOD_SERVICES_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify) {
 
 
         return {
             restrict: 'E',
             scope: false,
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-manage-services.html',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
 
                 var ManagedService = function (serviceData) {
@@ -1922,11 +2495,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         label: 'Name',
                         active: true
                     },
-					{
-						name: 'label',
-						label: 'Label',
-						active: true
-					},
+                    {
+                        name: 'label',
+                        label: 'Label',
+                        active: true
+                    },
                     {
                         name: 'description',
                         label: 'Description',
@@ -1943,10 +2516,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         active: true
                     }
                     /*{
-                        name: 'native_format',
-                        label: 'Native Format',
-                        active: true
-                    },*/
+                     name: 'native_format',
+                     label: 'Native Format',
+                     active: true
+                     },*/
                 ];
 
                 scope.order = {
@@ -1959,9 +2532,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.allSelected = false;
 
 
-
                 // PUBLIC API
-                scope.toggleViewMode = function(mode) {
+                scope.toggleViewMode = function (mode) {
 
                     scope._toggleViewMode(mode);
                 };
@@ -1996,7 +2568,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
 
-
                 // PRIVATE API
                 scope._deleteFromServer = function (requestDataObj) {
 
@@ -2021,7 +2592,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
 
-
                 // COMPLEX IMPLEMENTATION
 
                 scope._editService = function (service) {
@@ -2029,7 +2599,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.currentEditService = service;
                 };
 
-                scope._deleteService = function(service) {
+                scope._deleteService = function (service) {
 
                     var requestDataObj = {
                         params: {
@@ -2039,7 +2609,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                     scope._deleteFromServer(requestDataObj).then(
-                        function(result) {
+                        function (result) {
 
                             // notify success
                             var messageOptions = {
@@ -2064,7 +2634,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             scope.$broadcast('toolbar:paginate:service:delete');
                         },
 
-                        function(reject) {
+                        function (reject) {
 
                             var messageOptions = {
                                 module: 'Api Error',
@@ -2077,7 +2647,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         }
                     ).finally(
-                        function() {
+                        function () {
 
                             // console.log('Delete Service Finally')
                         }
@@ -2129,8 +2699,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                     scope._deleteFromServer(requestDataObj).then(
-
-                        function(result) {
+                        function (result) {
 
                             var messageOptions = {
                                 module: 'Services',
@@ -2146,7 +2715,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             scope.$broadcast('toolbar:paginate:service:reset');
                         },
 
-                        function(reject) {
+                        function (reject) {
 
                             var messageOptions = {
                                 module: 'Api Error',
@@ -2160,7 +2729,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         }
                     ).finally(
-                        function() {
+                        function () {
 
                             // console.log('Delete Services Finally');
                         }
@@ -2186,7 +2755,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 });
 
-                var watchApiData = scope.$watchCollection(function() {
+                var watchApiData = scope.$watchCollection(function () {
 
                     return dfApplicationData.getApiData('service');
 
@@ -2234,7 +2803,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.services = _services;
                 });
 
-                scope.$on('$destroy', function(e) {
+                scope.$on('$destroy', function (e) {
                     watchServices();
                     scope.$broadcast('toolbar:paginate:service:reset');
                 })
@@ -2243,7 +2812,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceDefinition', ['MOD_SERVICES_ASSET_PATH', function(MOD_SERVICES_ASSET_PATH) {
+    .directive('dfServiceDefinition', ['MOD_SERVICES_ASSET_PATH', function (MOD_SERVICES_ASSET_PATH) {
 
         return {
             restrict: 'E',
@@ -2256,7 +2825,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.isEditable = true;
                 scope.currentEditor = null;
                 scope.currentFile = null;
-
 
 
                 scope._prepareServiceDefinitionData = function () {
@@ -2274,7 +2842,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         scope.currentFile = newValue.record.service_doc_by_service_id[0].content;
                     }
 
-                    switch(newValue.record.type) {
+                    switch (newValue.record.type) {
 
                         case 'Remote Web Service':
                             scope.isEditable = true;
@@ -2308,10 +2876,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .factory('dfStorageTypeFactory', ['dfObjectService', function(dfObjectService) {
+    .factory('dfStorageTypeFactory', ['dfObjectService', function (dfObjectService) {
 
 
-        return function(storageType, data) {
+        return function (storageType, data) {
 
             // Is this object stringified
             if (Object.prototype.toString.call('data') === '[object String]') {
@@ -2324,7 +2892,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
 
 
-            var AWS = function(data) {
+            var AWS = function (data) {
 
                 var _new = {
                     private_paths: [],
@@ -2341,7 +2909,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 }
             };
 
-            var Azure = function(data) {
+            var Azure = function (data) {
 
                 var _new = {
                     private_paths: [],
@@ -2378,10 +2946,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
             }
 
-            var Openstack = function(data) {
+            var Openstack = function (data) {
 
                 var _new = {
-                    private_paths : [],
+                    private_paths: [],
                     url: null,
                     password: null,
                     username: null,
@@ -2422,7 +2990,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 }
             }
 
-            var CouchDB = function(data) {
+            var CouchDB = function (data) {
 
                 var _new = {
                     dsn: null,
@@ -2476,8 +3044,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             var SQLServer = function (data) {
 
                 /*prefix: null,
-                    host: null,
-                    dbname: null,*/
+                 host: null,
+                 dbname: null,*/
 
                 var _new = {
 
@@ -2533,7 +3101,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             };
 
 
-            switch(storageType) {
+            switch (storageType) {
 
                 case 'aws':
                     return new AWS(data);
@@ -2562,22 +3130,22 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .factory('dfServiceValues', ['SystemConfigDataService', function(SystemConfigDataService) {
+    .factory('dfServiceValues', ['SystemConfigDataService', function (SystemConfigDataService) {
 
 
         return function () {
 
             // Set prefixes for db drivers
-            var sql_placeholder="mysql:Server=my_server;Database=my_database";
+            var sql_placeholder = "mysql:Server=my_server;Database=my_database";
             var microsoft_sql_server_prefix = "sqlsrv";
 
             //if(SystemConfigDataService.getSystemConfig().server_os.indexOf("win") !== -1 && SystemConfigDataService.getSystemConfig().server_os.indexOf("darwin") === -1){
-			//
+            //
             //    sql_placeholder="mysql:Server=my_server;Database=my_database";
             //    microsoft_sql_server_prefix = "sqlsrv"
             //}else{
 
-                microsoft_sql_server_prefix = "dblib"
+            microsoft_sql_server_prefix = "dblib"
             //}
 
             var values = {
@@ -2585,7 +3153,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 emailOptions: [
                     {name: "Server Default", value: 'default'},
                     {name: "Server Command", value: "command"},
-                    {name: "SMTP", value:"smtp"}
+                    {name: "SMTP", value: "smtp"}
                 ],
 
                 securityOptions: [
@@ -2593,11 +3161,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     {name: "TLS", value: "TLS"}
                 ],
                 sqlVendors: [
-                    {name:"MySQL", prefix:"mysql"},
-                    {name:"Microsoft SQL Server", prefix: microsoft_sql_server_prefix},
-                    {name:"PostgreSQL", prefix:"pgsql"},
-                    {name:"Oracle", prefix:"oci"},
-                    {name:"IBM DB2", prefix:"ibm"}
+                    {name: "MySQL", prefix: "mysql"},
+                    {name: "Microsoft SQL Server", prefix: microsoft_sql_server_prefix},
+                    {name: "PostgreSQL", prefix: "pgsql"},
+                    {name: "Oracle", prefix: "oci"},
+                    {name: "IBM DB2", prefix: "ibm"}
 
                 ],
                 NoSQLOptions: [
@@ -2644,19 +3212,27 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 angular.module('dfServiceTemplates', [])
     .run(['$templateCache', function ($templateCache) {
 
+        $templateCache.put('_service-is-active.html',
+            '<div class="form-group">' +
+            '<div class="checkbox">' +
+            '<label>' +
+            '<input data-ng-model="serviceInfo.record.is_active" type="checkbox" /> Active' +
+            '</label>' +
+            '</div>' +
+            '</div>'
+        );
 
         $templateCache.put('_service-type.html',
             '<div class="form-group">' +
-                '<label>Service Type</label><df-simple-help data-options="dfSimpleHelp.serviceType"></df-simple-help>' +
-                '<select class="form-control" data-ng-disabled="!newService" data-ng-change="_renderServiceFields(serviceInfo.record.type)" data-ng-model="serviceInfo.record.type" data-ng-options="option.value as option.label for option in hcv.serviceTypes"></select>' +
+            '<label>Service Type</label><df-simple-help data-options="dfSimpleHelp.serviceType"></df-simple-help>' +
+            '<select class="form-control" data-ng-disabled="!newService" data-ng-change="_renderServiceFields(serviceInfo.record.type)" data-ng-model="serviceInfo.record.type" data-ng-options="option.value as option.label for option in hcv.serviceTypes"></select>' +
             '</div>'
-
         );
 
         $templateCache.put('_service-api-name.html',
             '<div class="form-group">' +
-                '<label>API Name</label><df-simple-help data-options="dfSimpleHelp.apiName"></df-simple-help>' +
-                '<input class="form-control" data-ng-disabled="!newService" data-ng-disabled="serviceInfo.record.deletable" data-ng-model="serviceInfo.record.api_name" type="text" required/>' +
+            '<label>API Name</label><df-simple-help data-options="dfSimpleHelp.apiName"></df-simple-help>' +
+            '<input class="form-control" data-ng-disabled="!newService" data-ng-disabled="serviceInfo.record.deletable" data-ng-model="serviceInfo.record.api_name" type="text" required/>' +
             '</div>'
         );
 
@@ -2664,60 +3240,50 @@ angular.module('dfServiceTemplates', [])
             '<div class="form-group">' +
             '<label>Name</label><df-simple-help data-options="dfSimpleHelp.name"></df-simple-help>' +
             '<input class="form-control" data-ng-model="serviceInfo.record.name" type="text" required/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-description.html',
             '<div class="form-group">' +
             '<label>Description</label><df-simple-help data-options="dfSimpleHelp.description"></df-simple-help>' +
             '<input class="form-control" data-ng-model="serviceInfo.record.description" type="text"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-base-url.html',
             '<div class="form-group">' +
             '<label>Base URL</label>' +
-                '<df-simple-help data-ng-if="!_storageType.transport_type" data-options="dfSimpleHelp.baseUrl"></df-simple-help>' +
+            '<df-simple-help data-ng-if="!_storageType.transport_type" data-options="dfSimpleHelp.baseUrl"></df-simple-help>' +
             '<input class="form-control" data-ng-model="serviceInfo.record.base_url" type="text"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-user-name.html',
             '<div class="form-group">' +
             '<label>Username</label><df-simple-help data-options="dfSimpleHelp.userName"></df-simple-help>' +
-                '<input class="form-control" id="serviceInfo-record-user" name="serviceInfo-record-user" data-ng-model="serviceInfo.record.config.user" type="text"/>' +
-                '</div>'
+            '<input class="form-control" id="serviceInfo-record-user" name="serviceInfo-record-user" data-ng-model="serviceInfo.record.config.user" type="text"/>' +
+            '</div>'
         );
 
         $templateCache.put('_service-password.html',
             '<div class="form-group">' +
             '<label>Password</label><df-simple-help data-options="dfSimpleHelp.password"></df-simple-help>' +
-                '<input class="form-control" id="serviceInfo-record-password" name="serviceInfo-record-password" data-ng-model="serviceInfo.record.config.password" type="password"/>' +
-                '</div>'
-        );
-
-        $templateCache.put('_service-is-active.html',
-            '<div class="form-group">' +
-            '<div class="checkbox">' +
-                '<label>' +
-                    '<input data-ng-model="serviceInfo.record.is_active" type="checkbox" /> Active' +
-                '</label>' +
-            '</div>'+
+            '<input class="form-control" id="serviceInfo-record-password" name="serviceInfo-record-password" data-ng-model="serviceInfo.record.config.password" type="password"/>' +
             '</div>'
         );
 
 
         // Remote Web Service
         $templateCache.put('_service-remote-web-service-cache.html',
-            '<div class="row"><div class="col-xs-12"><hr /></div></div>'+
+            '<div class="row"><div class="col-xs-12"><hr /></div></div>' +
             '<h3>Caching</h3>' +
             '<div class="form-group">' +
-                '<div class="input-group">' +
-                    '<span class="input-group-addon">' +
-                    '<input data-ng-model="_storageType.cache_config.enabled" type="checkbox"/>' +
-                    '</span>' +
-                    '<input class="form-control" data-ng-model="_storageType.cache_config.ttl" type="text" placeholder="Enter cache time to live (seconds)" data-ng-disabled="!_storageType.cache_config.enabled"/>' +
-                '</div>' +
+            '<div class="input-group">' +
+            '<span class="input-group-addon">' +
+            '<input data-ng-model="_storageType.cache_config.enabled" type="checkbox"/>' +
+            '</span>' +
+            '<input class="form-control" data-ng-model="_storageType.cache_config.ttl" type="text" placeholder="Enter cache time to live (seconds)" data-ng-disabled="!_storageType.cache_config.enabled"/>' +
+            '</div>' +
             '</div>'
         );
 
@@ -2728,29 +3294,29 @@ angular.module('dfServiceTemplates', [])
             '<div class="form-group">' +
             '<label>Provider</label><df-simple-help data-options="dfSimpleHelp.emailTransportType"></df-simple-help>' +
             '<select class="form-control" data-ng-model="_storageType.transport_type" data-ng-options="option.value as option.name for option in hcv.emailOptions"></select>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-email-host.html',
             '<div class="form-group">' +
             '<label>Host</label><df-simple-help data-options="dfSimpleHelp.emailHost"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.host" type="text" placeholder="e.g. SMTP.gmail.com"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-email-port.html',
             '<div class="form-group">' +
             '<label>Port</label><df-simple-help data-options="dfSimpleHelp.emailPort"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.port" type="text" placeholder="e.g. 465"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-email-security.html',
             '<div class="form-group">' +
             '<label>Security</label><df-simple-help data-options="dfSimpleHelp.emailSecurity"></df-simple-help>' +
-                '<select class="form-control" data-ng-options="option.value as option.name for option in hcv.securityOptions" data-ng-model="_storageType.security">' +
+            '<select class="form-control" data-ng-options="option.value as option.name for option in hcv.securityOptions" data-ng-model="_storageType.security">' +
             '</select>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-email-command.html',
@@ -2761,29 +3327,28 @@ angular.module('dfServiceTemplates', [])
         );
 
 
-
         // SQL Templates
 
         $templateCache.put('_service-sql-user-name.html',
             '<div class="form-group">' +
             '<label>Username</label><df-simple-help data-options="dfSimpleHelp.userName"></df-simple-help>' +
-                '<input class="form-control" data-ng-model="_storageType.user" type="text"/>' +
+            '<input class="form-control" data-ng-model="_storageType.user" type="text"/>' +
             '</div>'
         );
 
         $templateCache.put('_service-sql-password.html',
             '<div class="form-group">' +
             '<label>Password</label><df-simple-help data-options="dfSimpleHelp.password"></df-simple-help>' +
-                '<input class="form-control" data-ng-model="_storageType.pwd" type="password"/>' +
-                '</div>'
+            '<input class="form-control" data-ng-model="_storageType.pwd" type="password"/>' +
+            '</div>'
         );
 
         $templateCache.put('_service-sql-vendor.html',
             '<div data-ng-hide="!newService" class="form-group">' +
             '<label>SQL Vendor</label><df-simple-help data-options="dfSimpleHelp.sqlVendor"></df-simple-help>' +
             '<select class="form-control" data-ng-model="_storageType.prefix" data-ng-change="_updateDsn()"  data-ng-options="server.prefix as server.name for server in hcv.sqlVendors">' +
-                '<option value="">-- Select Vendor --</option>' +
-                '</select>' +
+            '<option value="">-- Select Vendor --</option>' +
+            '</select>' +
             '</div>'
         );
 
@@ -2791,7 +3356,7 @@ angular.module('dfServiceTemplates', [])
             '<div data-ng-hide="!newService" class="form-group">' +
             '<label>Host</label><df-simple-help data-options="dfSimpleHelp.sqlHost"></df-simple-help>' +
             '<input data-ng-disabled="!_storageType.prefix" class="form-control" data-ng-keyup="_updateDsn()" data-ng-model="_storageType.host"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-sql-database-name.html',
@@ -2808,7 +3373,7 @@ angular.module('dfServiceTemplates', [])
             '<div class="form-group">' +
             '<label>Connection String</label><df-simple-help data-options="dfSimpleHelp.connectionString"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.dsn" type="text" placeholder="{{sql_placeholder}}"/>' +
-                '</div>'
+            '</div>'
         );
 
 
@@ -2818,30 +3383,29 @@ angular.module('dfServiceTemplates', [])
             '<div class="form-group">' +
             '<label>Username</label><df-simple-help data-options="dfSimpleHelp.userName"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.username" type="text"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-sf-password.html',
             '<div class="form-group">' +
             '<label>Password</label><df-simple-help data-options="dfSimpleHelp.password"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.password" type="password"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-sf-security-token.html',
             '<div class="form-group">' +
             '<label>Security Token</label><df-simple-help data-options="dfSimpleHelp.sfSecurityToken"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.security_token" type="text"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-sf-api-version.html',
             '<div class="form-group">' +
             '<label>API Version</label><df-simple-help data-options="dfSimpleHelp.sfApiVersion"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.version" placeholder="v28.0" type="text"/>' +
-                '</div>'
+            '</div>'
         );
-
 
 
         // NoSQL DB
@@ -2850,9 +3414,9 @@ angular.module('dfServiceTemplates', [])
             '<div class="form-group">' +
             '<label>NoSQL Vendor</label><df-simple-help data-options="dfSimpleHelp.noSqlType"></df-simple-help>' +
             '<select class="form-control" data-ng-change="_renderAdditionalFields(serviceInfo.record.storage_type)" data-ng-options="option.value as option.name for option in hcv.NoSQLOptions" data-ng-model="serviceInfo.record.storage_type" data-ng-required="true">' +
-                '<option value="">-- Select Vendor --</option>' +
-                '</select>' +
-                '</div>'
+            '<option value="">-- Select Vendor --</option>' +
+            '</select>' +
+            '</div>'
         );
 
 
@@ -2862,7 +3426,7 @@ angular.module('dfServiceTemplates', [])
             '<div class="form-group">' +
             '<label>Access Key</label><df-simple-help data-options="dfSimpleHelp.awsAccessKey"></df-simple-help>' +
             '<input class="form-control" type="text" data-ng-model="_storageType.access_key"/>' +
-                '</div>'
+            '</div>'
         );
 
 
@@ -2870,14 +3434,14 @@ angular.module('dfServiceTemplates', [])
             '<div class="form-group">' +
             '<label>Secret Key</label><df-simple-help data-options="dfSimpleHelp.awsSecretKey"></df-simple-help>' +
             '<input class="form-control" type="text" data-ng-model="_storageType.secret_key"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-aws-region.html',
             '<div class="form-group">' +
             '<label>Region</label><df-simple-help data-options="dfSimpleHelp.awsRegion"></df-simple-help>' +
             '<select class="form-control" data-ng-options="region.value as region.name for region in hcv.awsRegions" data-ng-model="_storageType.region"></select>' +
-                '</div>'
+            '</div>'
         );
 
 
@@ -2887,14 +3451,14 @@ angular.module('dfServiceTemplates', [])
             '<div class="form-group">' +
             '<label>Account Name</label><df-simple-help data-options="dfSimpleHelp.azureAcctName"></df-simple-help>' +
             '<input class="form-control" type="text" data-ng-model="_storageType.account_name"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-azure-acct-key.html',
             '<div class="form-group">' +
             '<label>Account Key</label><df-simple-help data-options="dfSimpleHelp.azureAcctKey"></df-simple-help>' +
             '<input class="form-control" type="text" data-ng-model="_storageType.account_key"/>' +
-                '</div>'
+            '</div>'
         );
 
         // Need to do something about the partition key here.
@@ -2903,7 +3467,7 @@ angular.module('dfServiceTemplates', [])
             '<div class="form-group">' +
             '<label>Default Partition Key</label><df-simple-help data-options="dfSimpleHelp.azureDefaultPartitionKey"></df-simple-help>' +
             '<input class="form-control" type="text" data-ng-model="_storageType.PartitionKey"/>' +
-                '</div>'
+            '</div>'
         );
 
 
@@ -2920,14 +3484,14 @@ angular.module('dfServiceTemplates', [])
             '<div class="form-group">' +
             '<label>Username</label><df-simple-help data-options="dfSimpleHelp.userName"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.user" type="text"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-couch-password.html',
             '<div class="form-group">' +
             '<label>Password</label><df-simple-help data-options="dfSimpleHelp.password"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.pwd" type="password"/>' +
-                '</div>'
+            '</div>'
         );
 
 
@@ -2937,28 +3501,28 @@ angular.module('dfServiceTemplates', [])
             '<div class="form-group">' +
             '<label>Connection String</label><df-simple-help data-options="dfSimpleHelp.connectionString"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.dsn" type="text"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-mongo-database.html',
             '<div class="form-group">' +
             '<label>Database Name</label><df-simple-help data-options="dfSimpleHelp.databaseName"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.db" type="text"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-mongo-user-name.html',
             '<div class="form-group">' +
             '<label>Username</label><df-simple-help data-options="dfSimpleHelp.userName"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.user" type="text"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-mongo-password.html',
             '<div class="form-group">' +
             '<label>Password</label><df-simple-help data-options="dfSimpleHelp.password"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.pwd" type="password"/>' +
-                '</div>'
+            '</div>'
         );
 
 
@@ -2981,10 +3545,10 @@ angular.module('dfServiceTemplates', [])
             '<div class="form-group">' +
             '<label>Storage Type</label><df-simple-help data-options="dfSimpleHelp.storageType"></df-simple-help>' +
             '<select class="form-control" data-ng-change="_renderAdditionalFields(serviceInfo.record.storage_type)" data-ng-options="option.value as option.name for option in hcv.remoteOptions" data-ng-model="serviceInfo.record.storage_type" type="text">' +
-                '<option value="">-- Select Storage Type --</option>' +
-                '</select>' +
+            '<option value="">-- Select Storage Type --</option>' +
+            '</select>' +
 
-                '</div>'
+            '</div>'
         );
 
 
@@ -2992,22 +3556,22 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-rs-user-name.html',
             '<div class="form-group">' +
             '<label>Username</label><df-simple-help data-options="dfSimpleHelp.userName"></df-simple-help>' +
-                '<input class="form-control" type="text" data-ng-model="_storageType.username"/>' +
-                '</div>'
+            '<input class="form-control" type="text" data-ng-model="_storageType.username"/>' +
+            '</div>'
         );
 
         $templateCache.put('_service-rs-api-key.html',
             '<div class="form-group">' +
             '<label>API Key</label><df-simple-help data-options="dfSimpleHelp.rsApiKey"></df-simple-help>' +
             '<input class="form-control" type="text" data-ng-model="_storageType.api_key"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-rs-tenet-name.html',
             '<div class="form-group">' +
             '<label>Tenant Name</label><df-simple-help data-options="dfSimpleHelp.rsTenantName"></df-simple-help>' +
             '<input class="form-control" type="text" data-ng-model="_storageType.tenant_name"/>' +
-                '</div>'
+            '</div>'
         );
 
         $templateCache.put('_service-rs-region.html',
@@ -3020,8 +3584,8 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-rs-endpoint.html',
             '<div class="form-group">' +
             '<label>URL/Endpoint</label><df-simple-help data-options="dfSimpleHelp.rsEndpoint"></df-simple-help>' +
-                '<input class="form-control" data-ng-disabled="!_storageType.region" type="text" data-ng-model="_storageType.url"/>' +
-                '</div>'
+            '<input class="form-control" data-ng-disabled="!_storageType.region" type="text" data-ng-model="_storageType.url"/>' +
+            '</div>'
         );
 
 
@@ -3030,8 +3594,8 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-os-user-name.html',
             '<div class="form-group">' +
             '<label>Username</label><df-simple-help data-options="dfSimpleHelp.userName"></df-simple-help>' +
-                '<input class="form-control" type="text" data-ng-model="_storageType.username"/>' +
-                '</div>'
+            '<input class="form-control" type="text" data-ng-model="_storageType.username"/>' +
+            '</div>'
         );
 
         $templateCache.put('_service-os-password.html',
@@ -3044,21 +3608,21 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-os-tenet-name.html',
             '<div class="form-group">' +
             '<label>Tenant Name</label><df-simple-help data-options="dfSimpleHelp.osTenantName"></df-simple-help>' +
-                '<input class="form-control" type="text" data-ng-model="_storageType.tenant_name"/>' +
-                '</div>'
+            '<input class="form-control" type="text" data-ng-model="_storageType.tenant_name"/>' +
+            '</div>'
         );
 
         $templateCache.put('_service-os-region.html',
             '<div class="form-group">' +
-                '<label>Region</label><df-simple-help data-options="dfSimpleHelp.osRegion"></df-simple-help>' +
-                '<input class="form-control" type="text" ng-model="_storageType.region"/>' +
+            '<label>Region</label><df-simple-help data-options="dfSimpleHelp.osRegion"></df-simple-help>' +
+            '<input class="form-control" type="text" ng-model="_storageType.region"/>' +
             '</div>'
         );
 
         $templateCache.put('_service-os-endpoint.html',
             '<div class="form-group">' +
             '<label>URL/Endpoint</label><df-simple-help data-options="dfSimpleHelp.osEndpoint"></df-simple-help>' +
-                '<input class="form-control" data-ng-disabled="!_storageType.region" type="text" data-ng-model="_storageType.url"/>' +
+            '<input class="form-control" data-ng-disabled="!_storageType.region" type="text" data-ng-model="_storageType.url"/>' +
             '</div>'
         );
 
@@ -3066,12 +3630,12 @@ angular.module('dfServiceTemplates', [])
         // Push Service
         $templateCache.put('_service-push-type.html',
             '<div class="form-group">' +
-                '<label>Push Notification Service Vendor</label><df-simple-help data-options="dfSimpleHelp.pushServiceVendor"></df-simple-help>' +
-                '<select class="form-control" data-ng-change="_renderAdditionalFields(serviceInfo.record.storage_type)" data-ng-options="option.value as option.name for option in hcv.pushOptions" data-ng-model="serviceInfo.record.storage_type" type="text">' +
-                '<option value="">-- Select Storage Type --</option>' +
-                '</select>' +
+            '<label>Push Notification Service Vendor</label><df-simple-help data-options="dfSimpleHelp.pushServiceVendor"></df-simple-help>' +
+            '<select class="form-control" data-ng-change="_renderAdditionalFields(serviceInfo.record.storage_type)" data-ng-options="option.value as option.name for option in hcv.pushOptions" data-ng-model="serviceInfo.record.storage_type" type="text">' +
+            '<option value="">-- Select Storage Type --</option>' +
+            '</select>' +
 
-                '</div>'
+            '</div>'
         );
 
     }]);
