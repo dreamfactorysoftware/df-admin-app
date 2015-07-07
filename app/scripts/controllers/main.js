@@ -341,7 +341,7 @@ angular.module('dreamfactoryApp')
     // We inject $location because we'll want to update our location on a successful
     // login and the UserEventsService from our DreamFactory User Management Module to be able
     // to respond to events generated from that module
-    .controller('LoginCtrl', ['dfAvailableApis', '$scope', '$location', '$timeout', 'UserDataService', 'UserEventsService', 'dfApplicationData', 'dfApplicationPrefs', 'SystemConfigDataService', 'dfNotify', function(dfAvailableApis, $scope, $location, $timeout, UserDataService, UserEventsService, dfApplicationData, dfApplicationPrefs, SystemConfigDataService, dfNotify) {
+    .controller('LoginCtrl', ['dfAvailableApis', '$scope', '$window', '$location', '$timeout', 'UserDataService', 'UserEventsService', 'dfApplicationData', 'dfApplicationPrefs', 'SystemConfigDataService', 'dfNotify', function(dfAvailableApis, $scope, $window, $location, $timeout, UserDataService, UserEventsService, dfApplicationData, dfApplicationPrefs, SystemConfigDataService, dfNotify) {
 
         // Login options array
         $scope.loginOptions = {
@@ -390,6 +390,9 @@ angular.module('dreamfactoryApp')
                 apis: []
             };
 
+            //Login using OAuth...
+            var queryString = location.search.substring(1);
+
             // Set services on application object
             // are we an admin
             if (userDataObj.is_sys_admin) {
@@ -411,9 +414,15 @@ angular.module('dreamfactoryApp')
                     // Init the app
                     dfApplicationData.init(options.apis).then(
                         function () {
-
                             // Change our app location back to the home page
-                            $location.url('/home');
+                            if(queryString){
+                                // if logging in using oauth then do a full reload
+                                // is needed to remove oauth related info from url.
+                                var uri = $location.absUrl().split('?');
+                                $window.location.href = uri[0]+'#/home';
+                            } else {
+                                $location.url('/home');
+                            }
                         }
                     );
 
@@ -430,7 +439,14 @@ angular.module('dreamfactoryApp')
                 dfApplicationData.init();
 
                 // Send em to launchpad
-                $location.url('/launchpad');
+                if(queryString){
+                    // if logging in using oauth then do a full reload
+                    // is needed to remove oauth related info from url.
+                    var uri = $location.absUrl().split('?');
+                    $window.location.href = uri[0]+'#/launchpad';
+                } else {
+                    $location.url('/launchpad');
+                }
             }
         });
 
