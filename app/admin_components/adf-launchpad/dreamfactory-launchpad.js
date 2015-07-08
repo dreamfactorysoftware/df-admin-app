@@ -18,7 +18,13 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                             var defer = $q.defer();
                             var systemConfig = SystemConfigDataService.getSystemConfig();
 
-                            if(!systemConfig.app_group && !systemConfig.no_group_app && !UserDataService.getCurrentUser()){
+                            var queryString = location.search.substring(1);
+
+                            if(queryString){
+                                //OAuth attempt, go to login page.
+                                $location.url('/login');
+                                return;
+                            } else if(!systemConfig.app_group && !systemConfig.no_group_app && !UserDataService.getCurrentUser()){
                                 $location.url('/login');
                                 return;
                             } else if(!UserDataService.getCurrentUser()){
