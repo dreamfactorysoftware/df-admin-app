@@ -196,7 +196,7 @@ angular.module('dreamfactoryApp')
         $scope.$watch('currentUser', function(newValue, oldValue) {
 
             // There is no currentUser and we allow guest users
-            if (!newValue && SystemConfigDataService.getSystemConfig().allow_guest_user) {
+            if (!newValue && (SystemConfigDataService.getSystemConfig().app_group || SystemConfigDataService.getSystemConfig().no_group_app)) {
 
                 // Do we allow open registration
                 if (SystemConfigDataService.getSystemConfig().allow_open_registration) {
