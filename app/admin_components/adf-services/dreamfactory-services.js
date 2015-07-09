@@ -524,11 +524,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     var data = angular.copy(serviceInfoData) || _new;
 
 
-                    // Delete props we don't need here
-                    delete data['parameters'];
-                    delete data['headers'];
-                    delete data['components'];
-
                     return {
                         __dfUI: {},
                         record: data,
@@ -608,30 +603,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 ];
 
-                scope.addKeyValue = function (obj, key) {
-                    if (!obj[key]) {
-                        obj[key] = [];
-                    }
-
-
-                    obj[key].push({
-                        key: '',
-                        value: ''
-                    });
-                };
-
-                scope.deleteKeyValue = function (arr, index) {
-                    arr.splice(index, 1);
-                };
-
-                scope.addStringInArray = function (configObj, key) {
-                    if (!configObj[key]) {
-                        configObj[key] = [];
-                    }
-
-                    configObj[key].push('');
-                };
-
                 scope.decorateSchema = function () {
                     var selectedType = scope.serviceInfo.record.type;
                     var customConfigs = scope.customConfig.filter(function (config) {
@@ -657,27 +628,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     if (scope.selectedSchema) {
                         scope.decorateSchema();
-                        scope.configureTabs(scope.selectedSchema);
                     }
-                };
-
-                scope.tabConfig = {
-                    'rws': ['parameters', 'headers', 'serviceDef'],
-                    'sql_db': ['serviceDef'],
-                    'mongo_db': ['serviceDef'],
-                    'smtp_email': ['parameters', 'serviceDef'],
-                    'local_file': ['privates']
-                };
-
-                scope.configureTabs = function (selectedSchema) {
-                    var array = scope.tabConfig[selectedSchema.name] || [];
-                    Object.keys(scope.tabs).forEach(function (key) {
-                        var exist = array.filter(function (tabName) {
-                            return tabName === key;
-                        }).length;
-
-                        scope.tabs[key] = !!exist;
-                    });
                 };
 
                 scope.hcv = new dfServiceValues();
@@ -697,20 +648,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
                         return item.name === scope.serviceInfo.record.type;
                     })[0];
-
-                    scope.configureTabs(scope.selectedSchema);
                 });
 
 
                 scope._script = {};
                 scope.serviceInfo = {};
                 scope._storageType = {};
-                scope.tabs = {
-                    config: true,
-                    serviceDef: true
-                };
-
-
                 scope.sql_server_host_identifier = null;
                 scope.sql_server_db_identifier = null;
 
@@ -969,15 +912,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     return scope._storageType.prefix + ':' + scope.sql_server_host_identifier + '=' + scope._storageType.host + ';' + scope.sql_server_db_identifier + '=' + scope._storageType.dbname
                 };
 
-
-                scope._setTabs = function (config, serviceDef) {
-
-                    scope.tabs = {
-                        config: config,
-                        serviceDef: serviceDef
-                    }
-                };
-
                 scope._renderAdditionalEmailFields = function () {
 
                     switch (scope._storageType.transport_type) {
@@ -1129,7 +1063,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     switch (serviceType) {
 
                         case 'Remote Web Service':
-                            scope._setTabs(true, true);
                             scope._storageType = new dfStorageTypeFactory('remote web service', scope.serviceInfo.record.config);
                             scope._buildFieldSet(
                                 [
@@ -1148,7 +1081,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         case 'Email Service':
 
-                            scope._setTabs(true, false, false, true);
                             scope._storageType = new dfStorageTypeFactory('email', scope.serviceInfo.record.config);
                             scope._buildFieldSet(
                                 [
@@ -1165,7 +1097,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         case 'Remote SQL DB':
 
-                            scope._setTabs(false, false, false, true);
                             scope._storageType = new dfStorageTypeFactory('sql', scope.serviceInfo.record.config);
                             scope._dsnToFields(scope._storageType.dsn);
 
@@ -1188,7 +1119,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         case 'Local SQL DB':
 
-                            scope._setTabs(false, false, false, true);
                             scope._storageType = new dfStorageTypeFactory('local sql db', scope.serviceInfo.record.config);
                             scope._buildFieldSet(
                                 [
@@ -1202,7 +1132,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         case 'Salesforce':
 
-                            scope._setTabs(false, false, false, true);
                             scope._storageType = new dfStorageTypeFactory('salesforce', scope.serviceInfo.record.config);
                             scope._buildFieldSet(
                                 [
@@ -1219,7 +1148,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
 
                         case 'NoSQL DB':
-                            scope._setTabs(false, false, false, true);
                             scope._buildFieldSet(
                                 [
                                     'type',
@@ -1235,7 +1163,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         case 'Remote File Storage':
 
-                            scope._setTabs(false, false, true, true);
                             scope._buildFieldSet(
                                 [
                                     'type',
@@ -1252,7 +1179,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         case 'Local File Storage':
 
-                            scope._setTabs(false, false, true, true);
                             scope._storageType = new dfStorageTypeFactory('local file storage', scope.serviceInfo.record.config);
                             scope._buildFieldSet(
                                 [
@@ -1265,7 +1191,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
 
                         case 'Push Service':
-                            scope._setTabs(false, false, false, true);
                             scope._storageType = new dfStorageTypeFactory('push service', scope.serviceInfo.record.config);
                             scope._buildFieldSet(
                                 [
@@ -1317,7 +1242,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     if (scope.selectedSchema) {
                         scope.decorateSchema();
-                        scope.configureTabs(scope.selectedSchema);
                     }
 
                     // We set this to null and then during the _renderServiceFields function
@@ -1511,12 +1435,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     var data = angular.copy(serviceConfigData) || _new;
 
-
-                    // Delete props we don't need here
-                    delete data['parameters'];
-                    delete data['headers'];
-                    delete data['components'];
-
                     return {
                         __dfUI: {},
                         record: data,
@@ -1596,20 +1514,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 ];
 
-                scope.addKeyValue = function (obj, key) {
-                    if (!obj[key]) {
-                        obj[key] = [];
+                scope.addKeyValue = function (field) {
+                    if (!scope.serviceInfo.record.config[field]) {
+                        scope.serviceInfo.record.config[field] = {};
                     }
-
-
-                    obj[key].push({
-                        key: '',
-                        value: ''
-                    });
+                    scope.serviceInfo.record.config[field]["new_key"] = "new_value";
                 };
 
-                scope.deleteKeyValue = function (arr, index) {
-                    arr.splice(index, 1);
+                scope.deleteKeyValue = function (obj, key) {
+                    if (obj[key]) {
+                        delete obj[key];
+                    }
                 };
 
                 scope.addStringInArray = function (configObj, key) {
@@ -1618,6 +1533,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
 
                     configObj[key].push('');
+                };
+
+                scope.deleteStringFromArray = function (arr, index) {
+                    arr.splice(index, 1);
                 };
 
                 scope.decorateSchema = function () {
@@ -1645,7 +1564,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     if (scope.selectedSchema) {
                         scope.decorateSchema();
-                        scope.configureTabs(scope.selectedSchema);
                     }
                 };
 
@@ -1666,8 +1584,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
                         return item.name === scope.serviceInfo.record.type;
                     })[0];
-
-                    scope.configureTabs(scope.selectedSchema);
                 });
 
 
@@ -1934,14 +1850,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
 
-                scope._setTabs = function (config, serviceDef) {
-
-                    scope.tabs = {
-                        config: config,
-                        serviceDef: serviceDef
-                    }
-                };
-
                 scope._renderAdditionalEmailFields = function () {
 
                     switch (scope._storageType.transport_type) {
@@ -2093,7 +2001,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     switch (serviceType) {
 
                         case 'Remote Web Service':
-                            scope._setTabs(true, true);
                             scope._storageType = new dfStorageTypeFactory('remote web service', scope.serviceInfo.record.config);
                             scope._buildFieldSet(
                                 [
@@ -2112,7 +2019,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         case 'Email Service':
 
-                            scope._setTabs(true, false, false, true);
                             scope._storageType = new dfStorageTypeFactory('email', scope.serviceInfo.record.config);
                             scope._buildFieldSet(
                                 [
@@ -2129,7 +2035,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         case 'Remote SQL DB':
 
-                            scope._setTabs(false, false, false, true);
                             scope._storageType = new dfStorageTypeFactory('sql', scope.serviceInfo.record.config);
                             scope._dsnToFields(scope._storageType.dsn);
 
@@ -2152,7 +2057,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         case 'Local SQL DB':
 
-                            scope._setTabs(false, false, false, true);
                             scope._storageType = new dfStorageTypeFactory('local sql db', scope.serviceInfo.record.config);
                             scope._buildFieldSet(
                                 [
@@ -2166,7 +2070,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         case 'Salesforce':
 
-                            scope._setTabs(false, false, false, true);
                             scope._storageType = new dfStorageTypeFactory('salesforce', scope.serviceInfo.record.config);
                             scope._buildFieldSet(
                                 [
@@ -2183,7 +2086,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
 
                         case 'NoSQL DB':
-                            scope._setTabs(false, false, false, true);
                             scope._buildFieldSet(
                                 [
                                     'type',
@@ -2199,7 +2101,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         case 'Remote File Storage':
 
-                            scope._setTabs(false, false, true, true);
                             scope._buildFieldSet(
                                 [
                                     'type',
@@ -2216,7 +2117,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         case 'Local File Storage':
 
-                            scope._setTabs(false, false, true, true);
                             scope._storageType = new dfStorageTypeFactory('local file storage', scope.serviceInfo.record.config);
                             scope._buildFieldSet(
                                 [
@@ -2229,7 +2129,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
 
                         case 'Push Service':
-                            scope._setTabs(false, false, false, true);
                             scope._storageType = new dfStorageTypeFactory('push service', scope.serviceInfo.record.config);
                             scope._buildFieldSet(
                                 [
@@ -2281,14 +2180,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     if (scope.selectedSchema) {
                         scope.decorateSchema();
-                        scope.configureTabs(scope.selectedSchema);
                     }
 
                     // We set this to null and then during the _renderServiceFields function
                     // a storage type will be assigned
                     scope._storageType = null;
 
-                    // Sets fields, tabs, and _storageType (this is confusing,  we should change this so that
+                    // Sets fields, and _storageType (this is confusing,  we should change this so that
                     // we just render the proper type of object based on the selected service type.  This is overly
                     // complicated and verbose. Originally, we didn't want to repeat certain sections of code but...
                     // it may make sense to do so in this case.)

@@ -2,6 +2,7 @@
 
     <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema">
         <label>{{ field.label }}</label>
+        <df-simple-help data-options="field"></df-simple-help>
 
         <div class="panel panel-default" ng-if="field.type === 'array(string)'">
             <table class="table table-hover table-striped field-list">
@@ -31,7 +32,7 @@
                     <td class="no-border">
                         <div class="btn-group pull-left">
                             <button type="button" class="btn btn-sm btn-default"
-                                    data-ng-click="deleteKeyValue(serviceInfo.record.config[field.name], $index)"
+                                    data-ng-click="deleteStringFromArray(serviceInfo.record.config[field.name], $index)"
                                     title="Delete">
                                 <i class="fa fa-trash-o fa-fw"></i>
                             </button>
@@ -53,7 +54,7 @@
                     <th class="no-border">
                         <div class="btn-group pull-left">
                             <button type="button" class="btn btn-default btn-sm"
-                                    data-ng-click="addKeyValue(serviceInfo.record.config, field.name)">
+                                    data-ng-click="addKeyValue(field.name)">
                                 <i class="fa fa-plus fa-fw"></i>
                             </button>
                         </div>
@@ -63,18 +64,18 @@
 
                 <tbody>
 
-                <tr data-ng-repeat="obj in serviceInfo.record.config[field.name] track by $index">
+                <tr data-ng-repeat="(key,value) in serviceInfo.record.config[field.name]">
                     <td>
-                        <input class="form-control" data-ng-model="obj.key" type="text"/>
+                        <input class="form-control" data-ng-model="key" type="text"/>
                     </td>
                     <td>
-                        <input class="form-control" data-ng-model="obj.value" type="text"/>
+                        <input class="form-control" data-ng-model="value" type="text"/>
                     </td>
 
                     <td class="no-border">
                         <div class="btn-group pull-left">
                             <button type="button" class="btn btn-sm btn-default"
-                                    data-ng-click="deleteKeyValue(serviceInfo.record.config[field.name], $index)">
+                                    data-ng-click="deleteKeyValue(serviceInfo.record.config[field.name], key)">
                                 <i class="fa fa-trash-o fa-fw"></i>
                             </button>
                         </div>
@@ -90,15 +91,17 @@
                type="password" ng-required="field.required"/>
         <input class="form-control" ng-if="field.type == 'text'" ng-model="serviceInfo.record.config[field.name]"
                type="text" ng-required="field.required"/>
-        <input class="form-control" ng-if="field.type === 'boolean'" type="checkbox"
-               ng-model="serviceInfo.record.config[field.name]">
-        <input class="form-control" ng-if="field.type === 'integer'" type="number"
-               ng-model="serviceInfo.record.config[field.name]" ng-required="field.required">
+        <input class="form-control" ng-if="field.type == 'boolean'" ng-model="serviceInfo.record.config[field.name]"
+               type="checkbox"/>
+        <input class="form-control" ng-if="field.type == 'integer'" ng-model="serviceInfo.record.config[field.name]"
+               type="number" ng-required="field.required">
 
-        <select class="form-control"
-                ng-if="field.type === 'dropdown'"
-                ng-model="serviceInfo.record.config[field.name]"
-                ng-options="option.value as option.name for option in field.options">
+        <select class="form-control" ng-if="field.type == 'picklist'" ng-model="serviceInfo.record.config[field.name]"
+                ng-options="option.name as option.label for option in field.values" ng-click="updateAffectedFields(serviceInfo.record.config[field.name], field)">
         </select>
+        <!--angular 1.4.0 required-->
+        <!--<select class="form-control" ng-if="field.type == 'picklist'" ng-model="serviceInfo.record.config[field.name]"-->
+                <!--ng-options="option.name as option.label disable when option.disable for option in field.values">-->
+        <!--</select>-->
     </div>
 </div>
