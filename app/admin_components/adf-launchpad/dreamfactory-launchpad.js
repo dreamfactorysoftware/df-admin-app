@@ -15,8 +15,10 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                         loadApps: ['SystemConfigDataService', 'UserDataService', '$location', '$q', '$http', 'DSP_URL', function (SystemConfigDataService, UserDataService, $location, $q, $http, DSP_URL) {
 
 
-                            var defer = $q.defer();
-                            var systemConfig = SystemConfigDataService.getSystemConfig();
+                            var defer = $q.defer(),
+                                systemConfig = SystemConfigDataService.getSystemConfig(),
+                                groupedApp = systemConfig.app_group,
+                                noGroupApp = systemConfig.no_group_app;
 
                             var queryString = location.search.substring(1);
 
@@ -24,7 +26,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                                 //OAuth attempt, go to login page.
                                 $location.url('/login');
                                 return;
-                            } else if(!systemConfig.app_group && !systemConfig.no_group_app && !UserDataService.getCurrentUser()){
+                            } else if(((!groupedApp || groupedApp.length == 0) && (!noGroupApp || noGroupApp.length == 0)) && !UserDataService.getCurrentUser()){
                                 $location.url('/login');
                                 return;
                             } else if(!UserDataService.getCurrentUser()){
