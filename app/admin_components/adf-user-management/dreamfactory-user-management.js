@@ -119,6 +119,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope.errorMsg = scope.inErrorMsg || '';
                     scope.successMsg = '';
                     scope.loginWaiting = false;
+                    scope.showOAuth = true;
 
                     scope.loginForm = {};
 
@@ -171,6 +172,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     var queryString = location.search.substring(1);
 
                     if(queryString){
+                        scope.loginWaiting = true;
+                        scope.showOAuth = false;
                         $http.post(DSP_URL + '/api/v2/user/session?oauth_callback=true&'+queryString).then(
                             // success method
                             function (result) {

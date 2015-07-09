@@ -15,53 +15,26 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                         loadApps: ['SystemConfigDataService', 'UserDataService', '$location', '$q', '$http', 'DSP_URL', function (SystemConfigDataService, UserDataService, $location, $q, $http, DSP_URL) {
 
 
-                            var defer = $q.defer();
+                            var defer = $q.defer(),
+                                systemConfig = SystemConfigDataService.getSystemConfig(),
+                                groupedApp = systemConfig.app_group,
+                                noGroupApp = systemConfig.no_group_app;
 
-                            // Do we allow guest users and if there is no current user.
-                            if (SystemConfigDataService.getSystemConfig().allow_guest_user && !UserDataService.getCurrentUser()) {
+                            var queryString = location.search.substring(1);
 
-                                // We make a call to user session to get guest user apps
-                                $http.get(DSP_URL + '/api/v2/user/session').then(
-                                    function (result) {
-
-                                        // we set the current user to the guest user
-                                        defer.resolve(result.data);
-
-
-                                    },
-                                    function (reject) {
-
-                                        var messageOptions = {
-                                            module: 'DreamFactory Application',
-                                            type: 'error',
-                                            provider: 'dreamfactory',
-                                            message: reject
-
-                                        };
-
-                                        // dfNotify.error(messageOptions);
-
-                                        defer.reject(reject);
-                                    }
-                                )
-
-                                return defer.promise;
-                            }
-
-
-                            // We don't allow guest users and there is no currentUser
-                            if (!SystemConfigDataService.getSystemConfig().allow_guest_user && !UserDataService.getCurrentUser()) {
-
+                            if(queryString){
+                                //OAuth attempt, go to login page.
                                 $location.url('/login');
                                 return;
-                            }
-
-
-                            // We have a current user
-                            if (UserDataService.getCurrentUser()) {
+                            } else if(((!groupedApp || groupedApp.length == 0) && (!noGroupApp || noGroupApp.length == 0)) && !UserDataService.getCurrentUser()){
+                                $location.url('/login');
+                                return;
+                            } else if(!UserDataService.getCurrentUser()){
+                                defer.resolve(systemConfig);
+                            } else if (UserDataService.getCurrentUser()) {
 
                                 // We make a call to user session to get user apps
-                                $http.get(DSP_URL + '/api/v2/user/session').then(
+                                $http.get(DSP_URL + '/api/v2/system/environment').then(
                                     function (result) {
 
                                         // we set the current user
@@ -83,8 +56,10 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                                     }
                                 );
 
-                                return defer.promise;
+                                //return defer.promise;
                             }
+
+                            return defer.promise;
                         }]
                     }
                 });
@@ -106,38 +81,36 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
             return loadApps
         }, function (newValue, oldValue) {
 
-
             if (!newValue) return;
 
             $scope.apps = [];
 
 
-            if (newValue.hasOwnProperty('app_groups')) {
+            if (newValue.hasOwnProperty('app_group')) {
 
-                angular.forEach(newValue.app_groups, function (appGroup) {
+                angular.forEach(newValue.app_group, function (appGroup) {
 
-                    if (appGroup.apps.length) {
+                    if (appGroup.app.length) {
 
-                        angular.forEach(appGroup.apps, function (app, index) {
-                            if (!app.launch_url) {
-                                appGroup.apps.splice(index, 1);
+                        angular.forEach(appGroup.app, function (app, index) {
+                            if (!app.url) {
+                                appGroup.app.splice(index, 1);
                             }
 
                         });
-
                         $scope.apps.push(appGroup)
                     }
                 })
             }
 
-            if (newValue.hasOwnProperty('no_group_apps') && newValue.no_group_apps.length > 0) {
+            if (newValue.hasOwnProperty('no_group_app') && newValue.no_group_app.length > 0) {
 
                 $scope.onlyNoGroupApps = $scope.apps.length === 0;
 
                 var temp = [];
 
-                angular.forEach(newValue.no_group_apps, function (app, index) {
-                    if (app.launch_url) {
+                angular.forEach(newValue.no_group_app, function (app, index) {
+                    if (app.url) {
                         temp.push(app);
                     }
                 });
@@ -147,7 +120,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                     $scope.apps = temp
                 }
                 else if (temp.length > 0) {
-                    $scope.apps.push({name: $scope.noGroupTitle, id: '000', apps: temp});
+                    $scope.apps.push({name: $scope.noGroupTitle, id: '000', app: temp});
                 }
             }
 
@@ -191,7 +164,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 scope._launchApp = function (app) {
 
-                    $window.open(dfReplaceParams(app.launch_url, app.name));
+                    $window.open(dfReplaceParams(app.url, app.name));
                 };
             }
         }
