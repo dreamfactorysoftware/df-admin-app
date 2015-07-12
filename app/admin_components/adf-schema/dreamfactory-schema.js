@@ -71,24 +71,16 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 angular.forEach(array, function (component) {
 
-                    if (component.lastIndexOf('_schema/') != '-1') {
-
-                        // Is the name of this component '*' or ''
-                        if (component.substr(8, component.length -1) != '*' && component.substr(8, component.length -1) != '') {
-
                             // setup object to be pushed onto services
                             var componentObj = {
                                 __dfUI: {
                                     newTable: false
                                 },
-                                name: component.substr(8, component.length -1),
-                                path: component
+                                name: component.name,
+                                label: component.label
                             };
 
                             service.push(componentObj);
-
-                        }
-                    }
                 });
 
                 return service;
@@ -139,10 +131,18 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         $scope.bindTable = null;
 
 
-        $scope.currentService = null;
-        $scope.currentTablePath = null;
+        var tempObj = {};
 
-        $scope.lastTablePath = '';
+        angular.forEach(dfApplicationData.getApiData('service', {type: 'sql_db'}), function (serviceData) {
+
+            tempObj[serviceData.name] = new Service(serviceData);
+        });
+
+        $scope.schemaManagerData = tempObj;
+
+        $scope.currentService = null;
+        $scope.currentTable = null;
+        $scope.lastTable = '';
 
 
         $scope.schemaManagerData = null;
@@ -192,7 +192,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 if (!dfNotify.confirm('You have unsaved changes.  Continue without saving?')) {
 
-                    $scope.currentTablePath = angular.copy($scope.lastTablePath);
+                    $scope.currentTable = angular.copy($scope.lastTable);
                     return;
                 }
             }
@@ -204,18 +204,18 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 if (dfNotify.confirm('You have unsaved changes.  Continue without saving?')) {
 
                     // Yes
-                    $scope.lastTablePath = angular.copy($scope.currentTablePath);
-                    $scope._getTable($scope.currentTablePath);
+                    $scope.lastTable = angular.copy($scope.currentTable);
+                    $scope._getTable($scope.currentTable);
                 }
                 else {
 
-                    $scope.currentTablePath = angular.copy($scope.lastTablePath);
+                    $scope.currentTable = angular.copy($scope.lastTable);
                 }
             }
             else {
 
-                $scope.lastTablePath = angular.copy($scope.currentTablePath);
-                $scope._getTable($scope.currentTablePath);
+                $scope.lastTable = angular.copy($scope.currentTable);
+                $scope._getTable($scope.currentTable);
             }
 
         };
@@ -237,7 +237,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 if (dfNotify.confirm('You have unsaved changes.  Continue without saving?')) {
 
                     // Yes
-                    $scope.lastTablePath = '';
+                    $scope.lastTable = '';
                     $scope.currentEditTable = null;
 
                 }
@@ -265,7 +265,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             return $http({
                 method: 'GET',
-                url: DSP_URL + '/api/v2/'+ $scope.currentService.name + '/' + requestDataObj.componentPath,
+                url: DSP_URL + '/api/v2/'+ $scope.currentService.name + '/_schema/' + requestDataObj.name,
                 params: {
                     refresh: true
                 }
@@ -277,7 +277,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             return $http({
                 method: 'DELETE',
-                url: DSP_URL + '/api/v2/' + $scope.currentService.name + '/' + requestDataObj.tablePath
+                url: DSP_URL + '/api/v2/' + $scope.currentService.name + '/_schema/' + requestDataObj.name
             })
         };
 
@@ -292,7 +292,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
         $scope._refreshServiceFromServer = function () {
 
-            return $http.get(DSP_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {params: {refresh: true, fields: 'name'}});
+            return $http.get(DSP_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {params: {refresh: true, fields: 'name,label'}});
         };
 
 
@@ -302,20 +302,20 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         $scope._addTable = function () {
 
             $scope.currentEditTable = new ManagedTableData(null);
-            $scope.currentTablePath = '';
+            $scope.currentTable = '';
         };
 
-        $scope._getTable = function (tablePath) {
+        $scope._getTable = function (table) {
 
-            if (!tablePath) {
-                $scope.currentTablePath = null;
+            if (!table) {
+                $scope.currentTable = null;
                 $scope.currentEditTable = null;
                 return;
             }
 
 
             var requestDataObj = {
-                componentPath: tablePath
+                name: table
             };
 
 
@@ -345,7 +345,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         $scope._deleteTable = function () {
 
             var requestDataObj = {
-                tablePath: $scope.currentTablePath
+                name: $scope.currentTable
             };
 
 
@@ -365,9 +365,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     while (i < $scope.currentService.components.length) {
 
-                        if ($scope.currentService.components[i].path === $scope.currentTablePath) {
+                        if ($scope.currentService.components[i].name === $scope.currentTable) {
                             $scope.currentService.components.splice(i, 1);
-                            $scope.currentTablePath = '';
+                            $scope.currentTable = '';
                             $scope.currentEditTable = null;
                             break;
                         }
@@ -407,7 +407,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             for (var i = 0; i < $scope.currentService.components.length; i++) {
 
-                if ($scope.currentService.components[i].path === $scope.currentTablePath) {
+                if ($scope.currentService.components[i].name === $scope.currentTable) {
                      tableObj = $scope.currentService.components[i]
                 }
             }
@@ -415,30 +415,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             $scope._refreshServiceFromServer().then(
                 function (result) {
 
-                    // Update application obj directly
-                    // Get the applicationObj
-                    var appObj = dfApplicationData.getApplicationObj(),
-                        tempArr = [];
-
-                    // rebuild components array
-                    angular.forEach(result.data.resource, function (schemaObj) {
-
-                        tempArr.push (schemaObj.name);
-                        tempArr.push('_schema/' + schemaObj.name);
-                    });
-
-                    for (var i = 0; i < appObj.apis.service.record.length; i++) {
-                        if (appObj.apis.service.record[i].name === $scope.currentService.name) {
-                            appObj.apis.service.record[i].components = tempArr;
-                            break;
-                        }
-                    }
-
-                    // set application obj back
-                    dfApplicationData.setApplicationObjOverride(appObj);
-
                     // update service components
-                    $scope.currentService.updateComponents(tempArr);
+                    $scope.currentService.updateComponents(result.data.resource);
 
                     // Build notification
                     var messageOptions = {
@@ -482,20 +460,20 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             var tempObj = {};
 
-            angular.forEach(dfApplicationData.getApiData('service', {type: 'Local SQL DB,Remote SQL DB'}), function (serviceData) {
+            angular.forEach(dfApplicationData.getApiData('service', {type: 'sql_db'}), function (serviceData) {
 
                 tempObj[serviceData.name] = new Service(serviceData);
             });
 
         });
 
-        var watchServiceComponents = $scope.$watchCollection(function() {return dfApplicationData.getApiData('service', {type: 'Local SQL DB,Remote SQL DB'})}, function (newValue, oldValue) {
+        var watchServiceComponents = $scope.$watchCollection(function() {return dfApplicationData.getApiData('service', {type: 'sql_db'})}, function (newValue, oldValue) {
 
             if (!newValue) return;
 
             var tempObj = {};
 
-            angular.forEach(dfApplicationData.getApiData('service', {type: 'Local SQL DB,Remote SQL DB'}), function (serviceData) {
+            angular.forEach(dfApplicationData.getApiData('service', {type: 'sql_db'}), function (serviceData) {
 
                 tempObj[serviceData.name] = new Service(serviceData);
             });
@@ -508,7 +486,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             if (newValue === null) {
 
-                $scope.currentTablePath = '';
+                $scope.currentTable = '';
             }
 
         });
@@ -531,12 +509,12 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     newTable: false
                 },
                 name: dataObj.record.name,
-                path: '_schema/' + dataObj.record.name
+                label: dataObj.record.label
             });
 
             // This doesn't update the field properly
             // @TODO: Make this work.
-            $scope.currentTablePath = $scope.currentService.components[$scope.currentService.components.length - 1].path;
+            $scope.currentTable = $scope.currentService.components[$scope.currentService.components.length - 1].name;
 
 
         });
@@ -548,7 +526,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             manageSchema: {
                 title: 'Schema Manager Overview',
                 text: 'Choose a database service from the list to view or edit the schema. ' +
-                    'You can create a new database service (local or remote) in the Services section of this Admin Console.'
+                    'You can create a new database service in the Services section of this Admin Console.'
             }
         }
     }])
@@ -690,7 +668,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: 'POST',
-                        url: DSP_URL + '/api/v2/' + requestDataObj.path,
+                        url: DSP_URL + '/api/v2/' + requestDataObj.name,
                         data: requestDataObj.data
                     })
                 };
@@ -699,7 +677,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: 'PUT',
-                        url: DSP_URL + '/api/v2/' + requestDataObj.path,
+                        url: DSP_URL + '/api/v2/' + requestDataObj.name,
                         data: requestDataObj.data
                     })
                 };
@@ -708,7 +686,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: 'DELETE',
-                        url: DSP_URL + '/api/v2/' + requestDataObj.path
+                        url: DSP_URL + '/api/v2/' + requestDataObj.name
                     })
 
                 }
@@ -1446,9 +1424,4 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             }
         }
     }]);
-
-
-
-
-
 

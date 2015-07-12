@@ -944,6 +944,158 @@ angular.module('dfUtility', ['dfApplication'])
         }
     ])
 
+    // Displays table select box for dreamfactory database services
+    .directive('dfDbTablePicker', [
+        'MOD_UTILITY_ASSET_PATH', 'DSP_URL', '$http', function (MOD_UTILITY_ASSET_PATH, DSP_URL, $http) {
+
+            return {
+                restrict: 'E',
+                scope: {
+                    services: '=?',
+                    selected: '=?'
+                },
+                templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-db-table-picker.html', link: function (scope, elem, attrs) {
+
+                    scope.resources = [];
+                    scope.activeResource = null;
+                    scope.activeService = null;
+
+                    // PUBLIC API
+                    scope.setServiceAndResource = function () {
+
+                        if (scope._checkForActive()) {
+                            scope._setServiceAndResource();
+                        }
+                    };
+
+                    // PRIVATE API
+                    scope._getResources = function () {
+                        return $http.get(DSP_URL + '/api/v2/' + scope.activeService + '/_table/',  {params: {fields: 'name,label'}});
+                    };
+
+                    // COMPLEX IMPLEMENTATION
+                    scope._setServiceAndResource = function () {
+                        scope.selected = {
+                            service: scope.activeService, resource: scope.activeResource
+                        };
+                    };
+
+                    scope._checkForActive = function () {
+
+                        return !!scope.activeResource && scope.activeService;
+                    };
+
+                    // WATCHERS AND INIT
+                    scope.$watch(
+                        'activeService', function (newValue, oldValue) {
+
+                            if (!newValue) {
+                                scope.resources = [];
+                                scope.activeResource = null;
+                                return false;
+                            }
+
+                            scope.resources = [];
+
+                            scope._getResources().then(
+                                function (result) {
+
+                                    scope.resources = result.data.resource;
+                                },
+
+                                function (reject) {
+                                    throw {
+                                        module: 'DreamFactory Utility Module', type: 'error', provider: 'dreamfactory', exception: reject
+                                    }
+                                }
+                            )
+                        }
+                    );
+
+                    // MESSAGES
+                }
+            }
+        }
+    ])
+
+    // Displays schema table select box for dreamfactory database services
+    .directive('dfDbSchemaPicker', [
+        'MOD_UTILITY_ASSET_PATH', 'DSP_URL', '$http', function (MOD_UTILITY_ASSET_PATH, DSP_URL, $http) {
+
+            return {
+                restrict: 'E',
+                scope: {
+                    services: '=?',
+                    selected: '=?'
+                },
+                templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-db-schema-picker.html', link: function (scope, elem, attrs) {
+
+                    scope.resources = [];
+                    scope.activeResource = null;
+                    scope.activeService = null;
+
+                    // PUBLIC API
+                    scope.setServiceAndResource = function () {
+
+                        if (scope._checkForActive()) {
+                            scope._setServiceAndResource();
+                        }
+                    };
+
+                    // PRIVATE API
+                    scope._getResources = function () {
+                        return $http(
+                            {
+                                method: 'GET', url: DSP_URL + '/api/v2/' + scope.activeService + '/_schema/'
+                            }
+                        )
+                    };
+
+                    // COMPLEX IMPLEMENTATION
+                    scope._setServiceAndResource = function () {
+                        scope.selected = {
+                            service: scope.activeService, resource: scope.activeResource
+                        };
+                    };
+
+                    scope._checkForActive = function () {
+
+                        return !!scope.activeResource && scope.activeService;
+                    };
+
+                    // WATCHERS AND INIT
+                    scope.$watch(
+                        'activeService', function (newValue, oldValue) {
+
+                            if (!newValue) {
+                                scope.resources = [];
+                                scope.activeResource = null;
+                                return false;
+                            }
+
+                            scope.resources = [];
+
+                            scope._getResources().then(
+                                function (result) {
+
+                                    scope.resources = result.data.resource;
+                                },
+
+                                function (reject) {
+                                    throw {
+                                        module: 'DreamFactory Utility Module', type: 'error', provider: 'dreamfactory', exception: reject
+                                    }
+                                }
+                            )
+                        }
+                    );
+
+                    // MESSAGES
+                }
+            }
+        }
+    ])
+
     // Creates an Ace Editor.  Currently specific to scripting and service definition stuff.
     .directive('dfAceEditor', ['DSP_URL', 'MOD_UTILITY_ASSET_PATH', '$http', '$compile', function (DSP_URL, MOD_UTILITY_ASSET_PATH, $http, $compile) {
 

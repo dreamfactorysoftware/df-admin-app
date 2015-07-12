@@ -75,10 +75,9 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
                     }
                 });
         }])
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
 
+    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {}])
 
-    }])
     .controller('DataCtrl', ['$scope', 'DSP_URL', 'dfApplicationData', function($scope, DSP_URL, dfApplicationData) {
 
         $scope.$parent.title = 'Data';
@@ -94,8 +93,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
         ];
 
 
-        $scope.__services__ = dfApplicationData.getApiData('service', {type: "Local SQL DB,Remote SQL DB"});
-        // $scope.__services__.push({api_name:'system', name: 'System'});
+        $scope.__services__ = dfApplicationData.getApiData('service', {type: "sql_db"});
 
         $scope.selected = {
             service: null,
@@ -105,7 +103,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
         $scope.options = {
             service: $scope.selected.service,
             table: $scope.selected.resource,
-            url: DSP_URL + '/api/v2/' + $scope.selected.service + '/' + $scope.selected.resource,
+            url: DSP_URL + '/api/v2/' + $scope.selected.service + '/_table/' + $scope.selected.resource,
             allowChildTable: true,
             childTableAttachPoint: '#child-table-attach'
         };
@@ -115,7 +113,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
             var options = {
                 service: newValue.service,
                 table: newValue.resource,
-                url: DSP_URL + '/api/v2/' + newValue.service + '/' + newValue.resource,
+                url: DSP_URL + '/api/v2/' + newValue.service + '/_table/' + newValue.resource,
                 allowChildTable: true,
                 childTableAttachPoint: '#child-table-attach'
             };
@@ -123,6 +121,4 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
             $scope.options = options;
         });
     }]);
-
-
 

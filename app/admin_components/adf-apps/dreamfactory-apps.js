@@ -560,6 +560,11 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         name: 'description',
                         label: 'Description',
                         active: true
+                    },
+                    {
+                        name: 'is_active',
+                        label: 'Active',
+                        active: true
                     }
                 ];
 

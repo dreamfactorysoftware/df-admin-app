@@ -8,7 +8,7 @@
             <table class="table table-hover table-striped field-list">
                 <thead>
                 <tr>
-                    <th>{{ field.name }}</th>
+                    <th>{{ field.label }}</th>
 
                     <th class="no-border">
                         <div class="btn-group pull-left">
@@ -25,7 +25,7 @@
 
                 <tr data-ng-repeat="str in serviceInfo.record.config[field.name] track by $index">
                     <td>
-                        <input class="form-control" ng-model="serviceInfo.record.config[value.name][$index]"
+                        <input class="form-control" ng-model="serviceInfo.record.config[field.name][$index]"
                                type="text"/>
                     </td>
 

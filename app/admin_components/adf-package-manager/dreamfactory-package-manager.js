@@ -220,11 +220,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     if (newValue == null) {
 
-                        var _dbservices = dfApplicationData.getApiData('service', {type: 'Local SQL DB'});
-                        var _dbservicesRemote = dfApplicationData.getApiData('service', {type: 'Remote SQL DB'});
-
-                        _dbservices = _dbservices.concat(_dbservicesRemote);
-
+                        var _dbservices = dfApplicationData.getApiData('service', {type: 'sql_db'});
                         var _databases = [];
 
                         angular.forEach(_dbservices, function (service) {

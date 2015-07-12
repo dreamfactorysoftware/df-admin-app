@@ -927,7 +927,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 },
                 service: {
                     include_count: true,
-                    include_components: true,
                     limit: 100,
                     related: 'service_doc_by_service_id'
                 },
