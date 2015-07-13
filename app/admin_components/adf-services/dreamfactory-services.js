@@ -2448,6 +2448,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     if (newValue.record.hasOwnProperty('service_doc_by_service_id') && newValue.record.service_doc_by_service_id.length) {
 
                         scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
+                    } else {
+                        scope.currentFile = {
+                            resourcePath: 'newResourcePath'
+                        };
                     }
 
                     switch (newValue.record.type) {
@@ -2464,7 +2468,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                 // Hack way to update text in editor;
-                $('#service-definition-tab').on('click', function () {
+                $('#json-editor-tab').on('click', function () {
                     scope.currentEditor.renderer.updateText();
                     scope.currentEditor.focus();
                     $(window).trigger('resize');
