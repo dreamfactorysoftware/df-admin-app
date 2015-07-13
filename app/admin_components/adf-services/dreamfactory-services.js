@@ -603,44 +603,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 ];
 
-                scope.decorateSchema = function () {
-                    var selectedType = scope.serviceInfo.record.type;
-                    var customConfigs = scope.customConfig.filter(function (config) {
-                        return config.applicableTo.some(function (item) {
-                            return item === selectedType;
-                        })
-                    });
-
-                    customConfigs.forEach(function (item) {
-                        var obj = scope.selectedSchema.config_schema.filter(function (schema) {
-                            return schema.name == item.name;
-                        })[0] || {};
-
-                        angular.extend(obj, item)
-                    });
-                };
-
-                scope.getReferences = function (key, valueField) {
-                    return dfApplicationObjApis[key].record.map(function (item) {
-                        return {name: item.name, value: item[valueField] || item.id };
-                    });
-                };
-
-                scope.changeServiceType = function () {
-                    if (!scope.serviceInfo && !scope.serviceInfo.record) {
-                        return;
-                    }
-
-                    scope.serviceInfo.record.config = {};
-                    scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
-                        return item.name === scope.serviceInfo.record.type;
-                    })[0];
-
-                    if (scope.selectedSchema) {
-                        scope.decorateSchema();
-                    }
-                };
-
                 scope.hcv = new dfServiceValues();
 
                 dfServiceData.getServiceTypes().then(function (serviceTypes) {
@@ -1411,9 +1373,20 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     });
 
                     customConfigs.forEach(function (item) {
-                        angular.extend(scope.selectedSchema.config_schema[item.name], item)
+                        var obj = scope.selectedSchema.config_schema.filter(function (schema) {
+                            return schema.name == item.name;
+                        })[0] || {};
+
+                        angular.extend(obj, item)
                     });
                 };
+
+                scope.getReferences = function (key, valueField) {
+                    return dfApplicationObjApis[key].record.map(function (item) {
+                        return {name: item.name, value: item[valueField] || item.id };
+                    });
+                };
+
 
                 scope.changeServiceType = function () {
                     if (!scope.serviceInfo && !scope.serviceInfo.record) {
