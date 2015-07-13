@@ -99,6 +99,10 @@
         <select class="form-control" ng-if="field.type == 'picklist'" ng-model="serviceInfo.record.config[field.name]"
                 ng-options="option.name as option.label for option in field.values" ng-click="updateAffectedFields(serviceInfo.record.config[field.name], field)">
         </select>
+
+        <select class="form-control" ng-if="field.type == 'reference'" ng-model="serviceInfo.record.config[field.name]"
+                ng-options="option.value as option.name for option in getReferences(field.ref_table, field.ref_fields)" ng-click="updateAffectedFields(serviceInfo.record.config[field.name], field)">
+        </select>
         <!--angular 1.4.0 required-->
         <!--<select class="form-control" ng-if="field.type == 'picklist'" ng-model="serviceInfo.record.config[field.name]"-->
                 <!--ng-options="option.name as option.label disable when option.disable for option in field.values">-->

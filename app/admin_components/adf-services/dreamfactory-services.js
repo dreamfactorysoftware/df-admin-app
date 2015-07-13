@@ -620,6 +620,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     });
                 };
 
+                scope.getReferences = function (key, valueField) {
+                    return dfApplicationObjApis[key].record.map(function (item) {
+                        return {name: item.name, value: item[valueField] || item.id };
+                    });
+                };
+
                 scope.changeServiceType = function () {
                     if (!scope.serviceInfo && !scope.serviceInfo.record) {
                         return;
