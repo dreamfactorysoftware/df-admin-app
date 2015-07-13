@@ -1,7 +1,7 @@
 'use strict';
 
 
-angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfSwaggerEditor'])
+angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfSwaggerEditor', 'swagger-editor'])
     .constant('MOD_SERVICES_ROUTER_PATH', '/services')
     .constant('MOD_SERVICES_ASSET_PATH', 'admin_components/adf-services/')
     .config(['$routeProvider', 'MOD_SERVICES_ROUTER_PATH', 'MOD_SERVICES_ASSET_PATH',
@@ -612,7 +612,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     });
 
                     customConfigs.forEach(function (item) {
-                        angular.extend(scope.selectedSchema.config_schema[item.name], item)
+                        var obj = scope.selectedSchema.config_schema.filter(function (schema) {
+                            return schema.name == item.name;
+                        })[0] || {};
+
+                        angular.extend(obj, item)
                     });
                 };
 
@@ -2443,7 +2447,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     if (newValue.record.hasOwnProperty('service_doc_by_service_id') && newValue.record.service_doc_by_service_id.length) {
 
-                        scope.currentFile = newValue.record.service_doc_by_service_id[0].content;
+                        scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
                     }
 
                     switch (newValue.record.type) {
