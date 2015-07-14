@@ -213,7 +213,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                             // Set our application object system prop
                             dfApplicationObj['apis']['system'] = {};
-                            dfApplicationObj.apis.system['record'] = result.data.resource;
+                            dfApplicationObj.apis.system['resource'] = result.data.resource;
 
                             break;
 
@@ -223,7 +223,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                             dfApplicationObj['apis']['config'] = {};
 
                             // This returns an object so store in an array to mimick other apis
-                            dfApplicationObj.apis.config['record'] = new Array(result.data);
+                            dfApplicationObj.apis.config['resource'] = new Array(result.data);
 
                             break;
 
@@ -323,18 +323,18 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             params['api'] = api;
 
             // add wrapper
-            options.data = {"record": [options.data]};
+            options.data = {"resource": [options.data]};
 
             // return response from server as promise
             return dfSystemData.resource(options).post(params, options.data, function (result) {
 
                 // update the application object and session storage.
                 if (result &&
-                    result.record &&
-                    Object.prototype.toString.call(result.record) === '[object Array]' &&
-                    result.record.length > 0) {
+                    result.resource &&
+                    Object.prototype.toString.call(result.resource) === '[object Array]' &&
+                    result.resource.length > 0) {
 
-                    result = result.record[0];
+                    result = result.resource[0];
                 }
 
                 __insertApiData(api, result);
@@ -428,10 +428,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         function __insertApiData(api, dataObj) {
 
             // Check for existence of api and ensure that it is an array
-            if (dfApplicationObj.apis.hasOwnProperty(api) && Object.prototype.toString.call(dfApplicationObj.apis[api].record) === '[object Array]') {
+            if (dfApplicationObj.apis.hasOwnProperty(api) && Object.prototype.toString.call(dfApplicationObj.apis[api].resource) === '[object Array]') {
 
                 // Everything looks good...let's add the data object to the array
-                dfApplicationObj.apis[api].record.push(dataObj);
+                dfApplicationObj.apis[api].resource.push(dataObj);
             }
 
             // Update record count
@@ -457,23 +457,23 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         function __updateApiData(api, dataObj) {
 
             // Check for existence of api and ensure that it is an array
-            if (dfApplicationObj.apis.hasOwnProperty(api) && Object.prototype.toString.call(dfApplicationObj.apis[api].record) === '[object Array]') {
+            if (dfApplicationObj.apis.hasOwnProperty(api) && Object.prototype.toString.call(dfApplicationObj.apis[api].resource) === '[object Array]') {
 
                 // So counting vars
                 var found = false,
                     i = 0;
 
                 // looking for api record that was just updated
-                while (!found && i <= dfApplicationObj.apis[api].record.length - 1) {
+                while (!found && i <= dfApplicationObj.apis[api].resource.length - 1) {
 
                     // if we find it
-                    if (dataObj.id === dfApplicationObj.apis[api].record[i].id) {
+                    if (dataObj.id === dfApplicationObj.apis[api].resource[i].id) {
 
                         // stop looping
                         found = true;
 
                         // remove it and splice in new one
-                        dfApplicationObj.apis[api].record.splice(i, 1, dataObj);
+                        dfApplicationObj.apis[api].resource.splice(i, 1, dataObj);
                     }
 
                     // duh
@@ -498,16 +498,16 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     i = 0;
 
                 // looking for api record that was just deleted
-                while (!found && i < dfApplicationObj.apis[api].record.length) {
+                while (!found && i < dfApplicationObj.apis[api].resource.length) {
 
                     // if we find it
-                    if (record.id === dfApplicationObj.apis[api].record[i].id) {
+                    if (record.id === dfApplicationObj.apis[api].resource[i].id) {
 
                         // stop looping
                         found = true;
 
                         // remove it
-                        dfApplicationObj.apis[api].record.splice(i, 1);
+                        dfApplicationObj.apis[api].resource.splice(i, 1);
                     }
 
                     // duh
@@ -531,13 +531,13 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
 
             // Sanity check for api.  Let's make sure it exists.
-            if (dfApplicationObj.apis.hasOwnProperty(api) && Object.prototype.toString.call(dfApplicationObj.apis[api].record) === '[object Array]') {
+            if (dfApplicationObj.apis.hasOwnProperty(api) && Object.prototype.toString.call(dfApplicationObj.apis[api].resource) === '[object Array]') {
 
                 // Deleting multiple records
-                if (result.hasOwnProperty('record')) {
+                if (result.hasOwnProperty('resource')) {
 
                     // loop through them
-                    angular.forEach(result.record, function (_record) {
+                    angular.forEach(result.resource, function (_record) {
 
                         // remove from local model
                         removeRecord(_record);
@@ -565,10 +565,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         function __replaceApiData(api, result) {
 
             // Check for existence of api and ensure that it is an array
-            if (dfApplicationObj.apis.hasOwnProperty(api) && Object.prototype.toString.call(dfApplicationObj.apis[api].record) === '[object Array]') {
+            if (dfApplicationObj.apis.hasOwnProperty(api) && Object.prototype.toString.call(dfApplicationObj.apis[api].resource) === '[object Array]') {
 
                 // Everything looks good...let's add the data object to the array
-                dfApplicationObj.apis[api].record = result.record;
+                dfApplicationObj.apis[api].resource = result.resource;
             }
 
             // Lets update our local storage.
@@ -685,7 +685,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                             }
 
                             // Loop through each of the objects in the api we have asked for
-                            angular.forEach(dfApplicationObj.apis[api].record, function (obj) {
+                            angular.forEach(dfApplicationObj.apis[api].resource, function (obj) {
 
                                 // Loop through each value in option prop
                                 angular.forEach(options[key], function (value) {
@@ -706,8 +706,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     else {
 
                         // return if it exists
-                        if (dfApplicationObj.apis[api].record)
-                            return dfApplicationObj.apis[api].record;
+                        if (dfApplicationObj.apis[api].resource)
+                            return dfApplicationObj.apis[api].resource;
                         else
                             return dfApplicationObj.apis[api];
                     }
@@ -1233,7 +1233,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         scope._getDataFromServer(offset).then(
                             function (result) {
 
-                                scope.linkedData = scope.prepFunc({dataArr: result.record});
+                                scope.linkedData = scope.prepFunc({dataArr: result.resource});
                                 scope._previousPage();
                             },
 
@@ -1266,7 +1266,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                         scope._getDataFromServer(offset).then(
                             function (result) {
-                                scope.linkedData = scope.prepFunc({dataArr: result.record});
+                                scope.linkedData = scope.prepFunc({dataArr: result.resource});
                                 scope._nextPage();
                             },
 
@@ -1298,7 +1298,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         scope._getDataFromServer(pageObj.offset).then(
                             function (result) {
 
-                                scope.linkedData = scope.prepFunc({dataArr: result.record});
+                                scope.linkedData = scope.prepFunc({dataArr: result.resource});
                                 scope._setCurrentPage(pageObj);
                             },
 
@@ -1343,7 +1343,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                         scope._getDataFromServer(offset).then(
                             function (result) {
-                                scope.linkedData = scope.prepFunc({dataArr: result.record});
+                                scope.linkedData = scope.prepFunc({dataArr: result.resource});
                                 scope._setCurrentPage(scope.pagesArr[0]);
                             },
 

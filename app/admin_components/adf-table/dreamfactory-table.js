@@ -491,14 +491,14 @@ angular.module('dfTable', ['dfUtility'])
                     // hacky way to check for where our records are
                     // were they passed in from the result of a promise,
                     // or is it actually a promise that needs to be parsed
-                    if (dataObj.hasOwnProperty('record')) {
-                        records = dataObj.record;
+                    if (dataObj.hasOwnProperty('resource')) {
+                        records = dataObj.resource;
                     } else if (dataObj.hasOwnProperty('data')) {
 
-                        if (dataObj.data.hasOwnProperty('record')) {
-                            records = dataObj.data.record
+                        if (dataObj.data.hasOwnProperty('resource')) {
+                            records = dataObj.data.resource
                         } else {
-                            records = dataObj.data.data.record
+                            records = dataObj.data.data.resource
                         }
                     }
 
