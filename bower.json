@@ -12,7 +12,8 @@
         "angular-animate":  "1.2.16",
         "angular-touch":    "1.2.16",
         "angular-route":    "1.2.16",
-        "pnotify":          "2.0.1"
+        "pnotify":          "2.0.1",
+        "angular-swagger-editor": "~0.0.4"
     },
     "devDependencies": {
         "angular-mocks":    "1.2.16",
