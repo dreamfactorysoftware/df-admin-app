@@ -1,3 +1,16 @@
 <div class="col-xs-12" style="padding-bottom: 20px;">
-    <df-ace-editor data-direct-data="currentFile" data-is-editable="isEditable" data-is-clean="isEditorClean" data-current-editor="currentEditor"></df-ace-editor>
+
+	<ul class="nav nav-tabs" data-role="tablist">
+        <li class="active"><a showtab href="#editor" id="editor-tab">Editor</a></li>
+        <li><a showtab href="#jsonEditor" id="json-editor-tab">JSON Editor</a></li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px">
+        <div id="editor" class="tab-pane active">
+        	<swagger-editor doc="currentFile"></swagger-editor>
+        </div>
+        <div id="jsonEditor" class="tab-pane">
+    	    <df-ace-editor data-direct-data="currentFile" data-is-editable="isEditable" data-is-clean="isEditorClean" data-current-editor="currentEditor"></df-ace-editor>
+        </div>
+    </div>
 </div>

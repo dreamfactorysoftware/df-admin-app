@@ -1,7 +1,7 @@
 'use strict';
 
 
-angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfSwaggerEditor'])
+angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfSwaggerEditor', 'swagger-editor'])
     .constant('MOD_SERVICES_ROUTER_PATH', '/services')
     .constant('MOD_SERVICES_ASSET_PATH', 'admin_components/adf-services/')
     .config(['$routeProvider', 'MOD_SERVICES_ROUTER_PATH', 'MOD_SERVICES_ASSET_PATH',
@@ -602,34 +602,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     },
 
                 ];
-
-                scope.decorateSchema = function () {
-                    var selectedType = scope.serviceInfo.record.type;
-                    var customConfigs = scope.customConfig.filter(function (config) {
-                        return config.applicableTo.some(function (item) {
-                            return item === selectedType;
-                        })
-                    });
-
-                    customConfigs.forEach(function (item) {
-                        angular.extend(scope.selectedSchema.config_schema[item.name], item)
-                    });
-                };
-
-                scope.changeServiceType = function () {
-                    if (!scope.serviceInfo && !scope.serviceInfo.record) {
-                        return;
-                    }
-
-                    scope.serviceInfo.record.config = {};
-                    scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
-                        return item.name === scope.serviceInfo.record.type;
-                    })[0];
-
-                    if (scope.selectedSchema) {
-                        scope.decorateSchema();
-                    }
-                };
 
                 scope.hcv = new dfServiceValues();
 
@@ -1401,9 +1373,20 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     });
 
                     customConfigs.forEach(function (item) {
-                        angular.extend(scope.selectedSchema.config_schema[item.name], item)
+                        var obj = scope.selectedSchema.config_schema.filter(function (schema) {
+                            return schema.name == item.name;
+                        })[0] || {};
+
+                        angular.extend(obj, item)
                     });
                 };
+
+                scope.getReferences = function (key, valueField) {
+                    return dfApplicationObjApis[key].record.map(function (item) {
+                        return {name: item.name, value: item[valueField] || item.id };
+                    });
+                };
+
 
                 scope.changeServiceType = function () {
                     if (!scope.serviceInfo && !scope.serviceInfo.record) {
@@ -2443,7 +2426,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     if (newValue.record.hasOwnProperty('service_doc_by_service_id') && newValue.record.service_doc_by_service_id.length) {
 
-                        scope.currentFile = newValue.record.service_doc_by_service_id[0].content;
+                        scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
+                    } else {
+                        scope.currentFile = {
+                            resourcePath: 'newResourcePath'
+                        };
                     }
 
                     switch (newValue.record.type) {
@@ -2460,7 +2447,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                 // Hack way to update text in editor;
-                $('#service-definition-tab').on('click', function () {
+                $('#json-editor-tab').on('click', function () {
                     scope.currentEditor.renderer.updateText();
                     scope.currentEditor.focus();
                     $(window).trigger('resize');
