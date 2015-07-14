@@ -1164,7 +1164,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     var _new = {
                         id: null,
                         name: 'NEW APP GROUP',
-                        apps: []
+                        app_to_app_group_by_group_id: []
                     };
 
 
@@ -1261,15 +1261,39 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     var tempArr = [];
 
-
                     angular.forEach(scope.apps, function (managedApp) {
 
-                        if (managedApp.__dfUI.selected) {
-                            tempArr.push(managedApp.record);
+                        var alreadyAdded = false;
+
+                        if(managedApp.__dfUI.selected ){
+                            angular.forEach(appGroup.record.app_to_app_group_by_group_id, function(app_to_app_group) {
+                                if (app_to_app_group.app_id == managedApp.record.id) {
+                                    alreadyAdded = true;
+                                }
+                            });
+
+                            if(!alreadyAdded){
+                                tempArr.push({'app_id': managedApp.record.id});
+                            }
+                        } else {
+                            var appGroupId = null;
+                            angular.forEach(appGroup.record.app_to_app_group_by_group_id, function(app_to_app_group) {
+                                if(app_to_app_group.app_id == managedApp.record.id){
+                                    alreadyAdded = true;
+                                    appGroupId = app_to_app_group.id
+                                }
+                            });
+
+                            if(alreadyAdded){
+                                tempArr.push({
+                                    'group_id': null,
+                                    'app_id': managedApp.record.id,
+                                    'id': appGroupId
+                                })
+                            }
                         }
                     });
-
-                    appGroup.record.app_by_app_to_app_group = tempArr;
+                    appGroup.record.app_to_app_group_by_group_id = tempArr;
                 };
 
                 scope._checkUnsavedAppGroups = function () {
@@ -1331,7 +1355,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'app_by_app_to_app_group'
+                            related: 'app_to_app_group_by_group_id'
                         },
                         data: scope.selectedAppGroup.record
                     };
@@ -1390,14 +1414,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'app_by_app_to_app_group'
+                            related: 'app_to_app_group_by_group_id'
                         },
                         data: appGroup.record
                     };
 
                     scope._saveAppGroupToServer(requestDataObj).then(
                         function (result) {
-
 
                             var messageOptions = {
                                 module: 'App Groups',
@@ -1417,10 +1440,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             var i = 0;
 
                             while (i < scope.appGroups.length) {
+                                if (scope.appGroups[i].record.name === result.record[0].name) {
 
-                                if (scope.appGroups[i].record.name === result.name) {
-
-                                    var _newAppGroup = new AppGroup(result);
+                                    var _newAppGroup = new AppGroup(result.record[0]);
 
                                     scope.appGroups[i] = _newAppGroup;
                                     scope.selectedAppGroup = _newAppGroup;
@@ -1453,7 +1475,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'app_by_app_to_app_group'
+                            related: 'app_to_app_group_by_group_id'
                         },
                         data: appGroup.record
                     };
@@ -1470,6 +1492,25 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             };
 
                             dfNotify.success(messageOptions);
+
+                            // Reinsert into the matrix.....HA!
+                            // No Seriously
+                            // Find where this group is in the array of app groups and
+                            // replace with the new record sent back from server.
+                            // also replace the selectedTemplate with the new record as well
+                            var i = 0;
+
+                            while (i < scope.appGroups.length) {
+                                if (scope.appGroups[i].record.name === result.name) {
+
+                                    var _newAppGroup = new AppGroup(result);
+
+                                    scope.appGroups[i] = _newAppGroup;
+                                    scope.selectedAppGroup = _newAppGroup;
+                                }
+
+                                i++;
+                            }
 
                         },
                         function (reject) {
@@ -1526,10 +1567,10 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     if (!newValue) return;
 
-                    if (newValue.record.hasOwnProperty('apps') && newValue.record.app_by_app_to_app_group.length > 0) {
+                    if (newValue.record.app_to_app_group_by_group_id.length > 0) {
                         angular.forEach(scope.apps, function (managedApp) {
-                            angular.forEach(newValue.record.app_by_app_to_app_group, function (app) {
-                                if (managedApp.record.id === app.id) {
+                            angular.forEach(newValue.record.app_to_app_group_by_group_id, function (app_to_app_group) {
+                                if (managedApp.record.id === app_to_app_group.app_id) {
                                     managedApp.__dfUI.selected = true;
                                 }
                             })

@@ -908,7 +908,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 app_group: {
                     include_count: true,
                     limit: 100,
-                    related: 'app_by_app_to_app_group'
+                    related: 'app_to_app_group_by_group_id'
                 },
                 role: {
                     include_count: true,
@@ -927,6 +927,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 },
                 service: {
                     include_count: true,
+                    include_components: true,
                     limit: 100,
                     related: 'service_doc_by_service_id'
                 },
