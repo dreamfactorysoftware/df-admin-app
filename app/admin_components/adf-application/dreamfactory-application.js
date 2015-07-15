@@ -1027,6 +1027,49 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
     }])
 
+
+    .factory('httpWrapperInterceptor', [ 'SystemConfigDataService',
+        function (SystemConfigDataService) {
+            return {
+                request: function (config) {
+
+                    if (config.method !== 'POST') {
+                        return config;
+                    }
+
+                    var environment = SystemConfigDataService.getSystemConfig();
+
+                    // dont wrap resources if alway_wrap_resources if false
+                    if (environment && environment.config && !environment.config.always_wrap_resources) {
+                        config.data = config.data.resource[0];
+                    }
+                    return config;
+                },
+
+                response: function (response) {
+                    console.log(response);
+                    if (typeof(response.data) !== 'object') {
+                        return response;
+                    }
+                    
+                    var environment = SystemConfigDataService.getSystemConfig();
+
+                    // wrap the data with the value from resources_wrapper
+                    if (environment && environment.config && environment.config.resources_wrapper) {
+
+                        // Every response data will be wrapped into 'resource' object
+                        response.data.resource = response.data[environment.config.resource_wrapper];
+
+                        // alternatively we can also  bypass wrapping and forward the actual data as it is by doing:
+                        // response.config.data = response.config.data[environment.config.resource_wrapper];
+                    }
+
+                    return response;
+                }
+            }
+        }
+    ])
+
     // Intercepts outgoing http calls.  Checks for valid session.  If 403 or 401 will trigger a pop up login screen.
     .factory('httpValidSession', ['$q', '$rootScope', '$location', function ($q, $rootScope, $location) {
 
