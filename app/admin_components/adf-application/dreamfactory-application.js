@@ -1035,7 +1035,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     var environment = SystemConfigDataService.getSystemConfig() || {};
 
-                    if (!environment.config || config.method !== 'POST') {
+                    if (!environment.config) {
                         return config;
                     }
 
@@ -1058,8 +1058,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     }
                     
 
-                    if (environment.config.always_wrap_resources && response.data[environment.config.resource_wrapper] && response.data[environment.config.resource_wrapper].length === 1) {
-                        response.data = response.data[environment.config.resource_wrapper][0];                      
+                    var keys = Object.keys(response.data);
+
+                    if (environment.config.always_wrap_resources && keys.length === 1 && response.data[keys[0]] instanceof Array && keys[0] === environment.config.resource_wrapper) {
+                        response.data = response.data[environment.config.resource_wrapper];                      
                     }
 
                     return response;
