@@ -1035,7 +1035,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     var environment = SystemConfigDataService.getSystemConfig() || {};
 
-                    if (!enviroment.config || config.method !== 'POST') {
+                    if (!environment.config || config.method !== 'POST') {
                         return config;
                     }
 
@@ -1050,21 +1050,16 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 },
 
                 response: function (response) {
-                    console.log(response);
-                    if (typeof(response.data) !== 'object') {
+
+                    var environment = SystemConfigDataService.getSystemConfig() || {};
+
+                    if (typeof(response.data) !== 'object' || !environment.config) {
                         return response;
                     }
                     
-                    var environment = SystemConfigDataService.getSystemConfig();
 
-                    // wrap the data with the value from resources_wrapper
-                    if (environment && environment.config && environment.config.resources_wrapper) {
-
-                        // Every response data will be wrapped into 'resource' object
-                        response.data.resource = response.data[environment.config.resource_wrapper];
-
-                        // alternatively we can also  bypass wrapping and forward the actual data as it is by doing:
-                        // response.config.data = response.config.data[environment.config.resource_wrapper];
+                    if (environment.config.always_wrap_resources && response.data[environment.config.resource_wrapper] && response.data[environment.config.resource_wrapper].length === 1) {
+                        response.data = response.data[environment.config.resource_wrapper][0];                      
                     }
 
                     return response;
