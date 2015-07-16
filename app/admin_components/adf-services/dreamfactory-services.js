@@ -561,7 +561,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         applicableTo: ['script'],
                         name: 'type',
                         type: 'dropdown',
-                        options: dfApplicationObjApis.script_type.record.map(function (item) {
+                        options: dfApplicationObjApis.script_type.resource.map(function (item) {
                             return {name: item.name, value: item.name};
                         })
                     },
@@ -586,7 +586,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         applicableTo: ['user'],
                         name: 'open_reg_email_service_id',
                         type: 'dropdown',
-                        options: dfApplicationObjApis.service.record.filter(function (item) {
+                        options: dfApplicationObjApis.service.resource.filter(function (item) {
                             return item.type.indexOf('email') > -1;
                         }).map(function (item) {
                             return {name: item.name, value: item.id};
@@ -596,7 +596,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         applicableTo: ['user'],
                         name: 'open_reg_role_id',
                         type: 'dropdown',
-                        options: dfApplicationObjApis.role.record.map(function (item) {
+                        options: dfApplicationObjApis.role.resource.map(function (item) {
                             return {name: item.name, value: item.id};
                         })
                     },
@@ -606,7 +606,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.hcv = new dfServiceValues();
 
                 dfServiceData.getServiceTypes().then(function (serviceTypes) {
-                    scope.hcv.serviceTypes = serviceTypes.record;
+                    scope.hcv.serviceTypes = serviceTypes.resource;
                     if (scope.newService) {
                         scope.hcv.serviceTypes = scope.hcv.serviceTypes
                             .filter(function (el) {
@@ -1062,8 +1062,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.serviceInfo = new ServiceInfo(newValue.record);
 
                     scope.selectedSchema = scope.hcv.serviceTypes && scope.hcv.serviceTypes.filter(function (item) {
-                        return scope.serviceInfo && scope.serviceInfo.record && item.name === scope.serviceInfo.record.type;
-                    })[0];
+                            return scope.serviceInfo && scope.serviceInfo.record && item.name === scope.serviceInfo.record.type;
+                        })[0];
 
                     if (scope.selectedSchema) {
                         scope.decorateSchema();
@@ -1297,7 +1297,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         applicableTo: ['script'],
                         name: 'type',
                         type: 'dropdown',
-                        options: dfApplicationObjApis.script_type.record.map(function (item) {
+                        options: dfApplicationObjApis.script_type.resource.map(function (item) {
                             return {name: item.name, value: item.name};
                         })
                     },
@@ -1322,7 +1322,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         applicableTo: ['user'],
                         name: 'open_reg_email_service_id',
                         type: 'dropdown',
-                        options: dfApplicationObjApis.service.record.filter(function (item) {
+                        options: dfApplicationObjApis.service.resource.filter(function (item) {
                             return item.type.indexOf('email') > -1;
                         }).map(function (item) {
                             return {name: item.name, value: item.id};
@@ -1332,7 +1332,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         applicableTo: ['user'],
                         name: 'open_reg_role_id',
                         type: 'dropdown',
-                        options: dfApplicationObjApis.role.record.map(function (item) {
+                        options: dfApplicationObjApis.role.resource.map(function (item) {
                             return {name: item.name, value: item.id};
                         })
                     },
@@ -1374,8 +1374,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     customConfigs.forEach(function (item) {
                         var obj = scope.selectedSchema.config_schema.filter(function (schema) {
-                            return schema.name == item.name;
-                        })[0] || {};
+                                return schema.name == item.name;
+                            })[0] || {};
 
                         angular.extend(obj, item)
                     });
@@ -1406,7 +1406,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.hcv = new dfServiceValues();
 
                 dfServiceData.getServiceTypes().then(function (serviceTypes) {
-                    scope.hcv.serviceTypes = serviceTypes.record;
+                    scope.hcv.serviceTypes = serviceTypes.resource;
                     if (scope.newService) {
                         scope.hcv.serviceTypes = scope.hcv.serviceTypes
                             .filter(function (el) {
@@ -1864,8 +1864,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.serviceInfo = new ServiceConfig(newValue.record);
 
                     scope.selectedSchema = scope.hcv.serviceTypes && scope.hcv.serviceTypes.filter(function (item) {
-                        return scope.serviceInfo && scope.serviceInfo.record && item.name === scope.serviceInfo.record.type;
-                    })[0];
+                            return scope.serviceInfo && scope.serviceInfo.record && item.name === scope.serviceInfo.record.type;
+                        })[0];
 
                     if (scope.selectedSchema) {
                         scope.decorateSchema();
