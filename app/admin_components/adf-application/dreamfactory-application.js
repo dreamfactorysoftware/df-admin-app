@@ -1033,16 +1033,19 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             return {
                 request: function (config) {
 
-                    if (config.method !== 'POST') {
+                    var environment = SystemConfigDataService.getSystemConfig() || {};
+
+                    if (!enviroment.config || config.method !== 'POST') {
                         return config;
                     }
 
-                    var environment = SystemConfigDataService.getSystemConfig();
-
-                    // dont wrap resources if alway_wrap_resources if false
-                    if (environment && environment.config && !environment.config.always_wrap_resources) {
-                        config.data = config.data.resource[0];
+                    if (config.data instanceof Array && environment.config.alway_wrap_resources) {
+                        // wrap the data with always_wrap_resources
+                        var data = {};
+                        data[environment.config.resource_wrapper] = angular.copy(config.data);
+                        config.data = data;
                     }
+
                     return config;
                 },
 
