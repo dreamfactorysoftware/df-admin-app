@@ -1027,6 +1027,49 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
     }])
 
+
+    .factory('httpWrapperInterceptor', [ 'SystemConfigDataService',
+        function (SystemConfigDataService) {
+            return {
+                request: function (config) {
+
+                    var environment = SystemConfigDataService.getSystemConfig() || {};
+
+                    if (!environment.config) {
+                        return config;
+                    }
+
+                    if (config.data instanceof Array && environment.config.alway_wrap_resources) {
+                        // wrap the data with always_wrap_resources
+                        var data = {};
+                        data[environment.config.resource_wrapper] = angular.copy(config.data);
+                        config.data = data;
+                    }
+
+                    return config;
+                },
+
+                response: function (response) {
+
+                    var environment = SystemConfigDataService.getSystemConfig() || {};
+
+                    if (typeof(response.data) !== 'object' || !environment.config) {
+                        return response;
+                    }
+                    
+
+                    var keys = Object.keys(response.data);
+
+                    if (environment.config.always_wrap_resources && keys.length === 1 && response.data[keys[0]] instanceof Array && keys[0] === environment.config.resource_wrapper) {
+                        response.data = response.data[environment.config.resource_wrapper];                      
+                    }
+
+                    return response;
+                }
+            }
+        }
+    ])
+
     // Intercepts outgoing http calls.  Checks for valid session.  If 403 or 401 will trigger a pop up login screen.
     .factory('httpValidSession', ['$q', '$rootScope', '$location', function ($q, $rootScope, $location) {
 

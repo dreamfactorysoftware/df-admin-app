@@ -218,6 +218,7 @@ angular
             });
 
         // $httpProvider.interceptors.push('httpVerbInterceptor');
+        $httpProvider.interceptors.push('httpWrapperInterceptor');
         $httpProvider.interceptors.push('httpValidSession');
     }])
 
