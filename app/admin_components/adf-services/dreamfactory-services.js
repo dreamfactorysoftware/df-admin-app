@@ -557,14 +557,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         type: 'object(string,string)'
                     },
 
-                    {
-                        applicableTo: ['script'],
-                        name: 'type',
-                        type: 'dropdown',
-                        options: dfApplicationObjApis.script_type.resource.map(function (item) {
-                            return {name: item.name, value: item.name};
-                        })
-                    },
+                    //{
+                    //    applicableTo: ['script'],
+                    //    name: 'type',
+                    //    type: 'dropdown',
+                    //    options: dfApplicationObjApis.script_type.resource.map(function (item) {
+                    //        return {name: item.name, value: item.name};
+                    //    })
+                    //},
 
                     {
                         applicableTo: ['script'],
@@ -582,24 +582,24 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         name: 'attributes',
                         type: 'object(string,string)'
                     },
-                    {
-                        applicableTo: ['user'],
-                        name: 'open_reg_email_service_id',
-                        type: 'dropdown',
-                        options: dfApplicationObjApis.service.resource.filter(function (item) {
-                            return item.type.indexOf('email') > -1;
-                        }).map(function (item) {
-                            return {name: item.name, value: item.id};
-                        })
-                    },
-                    {
-                        applicableTo: ['user'],
-                        name: 'open_reg_role_id',
-                        type: 'dropdown',
-                        options: dfApplicationObjApis.role.resource.map(function (item) {
-                            return {name: item.name, value: item.id};
-                        })
-                    },
+                    //{
+                    //    applicableTo: ['user'],
+                    //    name: 'open_reg_email_service_id',
+                    //    type: 'dropdown',
+                    //    options: dfApplicationObjApis.service.resource.filter(function (item) {
+                    //        return item.type.indexOf('email') > -1;
+                    //    }).map(function (item) {
+                    //        return {name: item.name, value: item.id};
+                    //    })
+                    //},
+                    //{
+                    //    applicableTo: ['user'],
+                    //    name: 'open_reg_role_id',
+                    //    type: 'dropdown',
+                    //    options: dfApplicationObjApis.role.resource.map(function (item) {
+                    //        return {name: item.name, value: item.id};
+                    //    })
+                    //},
 
                 ];
 
@@ -1318,24 +1318,24 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         name: 'attributes',
                         type: 'object(string,string)'
                     },
-                    {
-                        applicableTo: ['user'],
-                        name: 'open_reg_email_service_id',
-                        type: 'dropdown',
-                        options: dfApplicationObjApis.service.resource.filter(function (item) {
-                            return item.type.indexOf('email') > -1;
-                        }).map(function (item) {
-                            return {name: item.name, value: item.id};
-                        })
-                    },
-                    {
-                        applicableTo: ['user'],
-                        name: 'open_reg_role_id',
-                        type: 'dropdown',
-                        options: dfApplicationObjApis.role.resource.map(function (item) {
-                            return {name: item.name, value: item.id};
-                        })
-                    },
+                    //{
+                    //    applicableTo: ['user'],
+                    //    name: 'open_reg_email_service_id',
+                    //    type: 'dropdown',
+                    //    options: dfApplicationObjApis.service.resource.filter(function (item) {
+                    //        return item.type.indexOf('email') > -1;
+                    //    }).map(function (item) {
+                    //        return {name: item.name, value: item.id};
+                    //    })
+                    //},
+                    //{
+                    //    applicableTo: ['user'],
+                    //    name: 'open_reg_role_id',
+                    //    type: 'dropdown',
+                    //    options: dfApplicationObjApis.role.resource.map(function (item) {
+                    //        return {name: item.name, value: item.id};
+                    //    })
+                    //},
 
                 ];
 

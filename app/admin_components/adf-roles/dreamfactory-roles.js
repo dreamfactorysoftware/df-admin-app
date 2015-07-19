@@ -89,29 +89,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             buttonText: 'Create A Role!',
             viewLink: $scope.links[1]
         };
-
-
-
-        // PUBLIC API
-
-
-
-        // PRIVATE API
-
-
-
-        // COMPLEX IMPLEMENTATION
-
-
-
-        // WATCHERS
-
-
-
-        // MESSAGES
-
-
-
     }])
 
     .directive('dfRoleDetails', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfApplicationPrefs', '$q', function(MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, dfApplicationPrefs, $q) {
@@ -140,13 +117,13 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         role_lookup_by_role_id: []
                     };
 
-                    roleData = angular.copy(roleData) || newRole;
+                    roleData = roleData || newRole;
 
                     return {
                         __dfUI: {
                             selected: false
                         },
-                        record: roleData,
+                        record: angular.copy(roleData),
                         recordCopy: angular.copy(roleData)
                     }
                 };

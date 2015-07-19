@@ -1516,7 +1516,6 @@ angular.module('dfUtility', ['dfApplication'])
             templateUrl : MOD_UTILITY_ASSET_PATH + 'views/df-toolbar-paginate.html',
             link: function (scope, elem, attrs) {
 
-
                 scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
                 scope.pagesArr = [];
                 scope.currentPage = {};
