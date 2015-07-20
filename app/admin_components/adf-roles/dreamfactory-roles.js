@@ -11,7 +11,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     templateUrl: MOD_ROLES_ASSET_PATH + 'views/main.html',
                     controller: 'RolesCtrl',
                     resolve: {
-                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
 
                             if (dfApplicationData.initInProgress) {
 
@@ -62,7 +62,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
     }])
 
-    .controller('RolesCtrl', ['$scope', function($scope) {
+    .controller('RolesCtrl', ['$scope', function ($scope) {
 
         $scope.$parent.title = 'Roles';
 
@@ -91,7 +91,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
         };
     }])
 
-    .directive('dfRoleDetails', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfApplicationPrefs', '$q', function(MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, dfApplicationPrefs, $q) {
+    .directive('dfRoleDetails', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfApplicationPrefs', '$q', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, dfApplicationPrefs, $q) {
 
 
         return {
@@ -102,17 +102,17 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 newRole: '=?'
             },
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-role-details.html',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
                 // @TODO: Refactor to factory.
-                var Role = function(roleData) {
+                var Role = function (roleData) {
 
                     var newRole = {
                         name: '',
                         description: '',
                         is_active: false,
                         default_app_id: null,
-                        role_service_access_by_role_id:[],
+                        role_service_access_by_role_id: [],
                         id: null,
                         role_lookup_by_role_id: []
                     };
@@ -142,12 +142,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 scope.services = dfApplicationData.getApiData('service');
 
                 if (scope.services[0].name !== 'All') {
-                    scope.services.unshift({id: null, name: 'All', components: ["","*"]});
+                    scope.services.unshift({id: null, name: 'All', components: ["", "*"]});
                 }
 
 
                 // PUBLIC API
-                scope.saveRole = function() {
+                scope.saveRole = function () {
 
                     if (scope.newRole) {
 
@@ -164,7 +164,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope._deleteRole();
                 };
 
-                scope.closeRole = function() {
+                scope.closeRole = function () {
 
                     scope._closeRole();
                 };
@@ -191,7 +191,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     if (!scope.role.record.name) {
                         scope.basicInfoError = true;
                         return;
-                    }else {
+                    } else {
                         scope.basicInfoError = false;
                     }
 
@@ -229,7 +229,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope._prepareRoleData();
 
                     var requestDataObj = {
-                        params:{
+                        params: {
                             fields: '*',
                             related: 'role_service_access_by_role_id,role_lookup_by_role_id'
                         },
@@ -237,7 +237,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     };
 
                     scope._saveRoleToServer(requestDataObj).then(
-                        function(result) {
+                        function (result) {
 
                             var messageOptions = {
                                 module: 'Roles',
@@ -255,7 +255,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                                 // run the update for users
                                 scope._updateUsersToServer().then(
-                                    function(result) {
+                                    function (result) {
 
                                         var messageOptions = {
                                             module: 'Roles',
@@ -281,10 +281,10 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                                     }
                                 ).finally(
-                                        function() {
-                                            // console.log('Update Role Users finally')
-                                        }
-                                    )
+                                    function () {
+                                        // console.log('Update Role Users finally')
+                                    }
+                                )
 
                             }
 
@@ -293,7 +293,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             if (scope._checkForChangedApps()) {
 
                                 scope._updateAppsToServer().then(
-                                    function(result) {
+                                    function (result) {
 
                                         var messageOptions = {
                                             module: 'Roles',
@@ -307,7 +307,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                                     },
 
-                                    function(reject) {
+                                    function (reject) {
 
                                         var messageOptions = {
                                             module: 'Api Error',
@@ -320,15 +320,13 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                                         dfNotify.error(messageOptions);
 
                                     }
-
                                 ).finally(
-                                        function() {
+                                    function () {
 
-                                            // console.log('Update Role Apps finally.');
-                                        }
-                                    )
+                                        // console.log('Update Role Apps finally.');
+                                    }
+                                )
                             }
-
 
 
                             // clean form
@@ -337,7 +335,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         },
 
-                        function(reject) {
+                        function (reject) {
 
                             var messageOptions = {
                                 module: 'Api Error',
@@ -351,7 +349,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         }
                     ).finally(
-                        function() {
+                        function () {
 
                             // console.log('Save Roles finally')
                         }
@@ -363,7 +361,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope._prepareRoleData();
 
                     var requestDataObj = {
-                        params:{
+                        params: {
                             fields: '*',
                             related: 'role_service_access_by_role_id,role_lookup_by_role_id'
                         },
@@ -372,7 +370,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
 
                     scope._updateRoleToServer(requestDataObj).then(
-                        function(result) {
+                        function (result) {
 
 
                             var messageOptions = {
@@ -388,7 +386,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         },
 
-                        function(reject) {
+                        function (reject) {
 
                             var messageOptions = {
                                 module: 'Api Error',
@@ -401,7 +399,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             dfNotify.error(messageOptions);
                         }
                     ).finally(
-                        function() {
+                        function () {
 
                             // console.log('Update Roles finally')
                         }
@@ -413,7 +411,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         // run the update for users
                         scope._updateUsersToServer().then(
-                            function(result) {
+                            function (result) {
 
                                 var messageOptions = {
                                     module: 'Roles',
@@ -441,7 +439,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                             }
                         ).finally(
-                            function() {
+                            function () {
                                 // console.log('Update Role Users finally')
                             }
                         )
@@ -452,7 +450,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     if (scope._checkForChangedApps()) {
 
                         scope._updateAppsToServer().then(
-                            function(result) {
+                            function (result) {
 
                                 var messageOptions = {
                                     module: 'Roles',
@@ -466,7 +464,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                             },
 
-                            function(reject) {
+                            function (reject) {
 
                                 var messageOptions = {
                                     module: 'Api Error',
@@ -479,9 +477,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                                 dfNotify.error(messageOptions);
 
                             }
-
                         ).finally(
-                            function() {
+                            function () {
 
                                 // console.log('Update Role Apps finally.');
                             }
@@ -503,7 +500,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
 
                     scope._deleteRoleFromServer(requestDataObj).then(
-                        function(result) {
+                        function (result) {
 
                             // notify success
                             var messageOptions = {
@@ -519,7 +516,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         },
 
-                        function(reject) {
+                        function (reject) {
 
                             var messageOptions = {
                                 module: 'Api Error',
@@ -532,9 +529,9 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         }
                     ).finally(
-                        function() {
+                        function () {
 
-                           //  console.log('Delete App Finally')
+                            //  console.log('Delete App Finally')
                         }
                     )
 
@@ -565,7 +562,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
 
                 // WATCHERS
-                var watchData = scope.$watch('roleData', function(newValue, oldValue) {
+                var watchData = scope.$watch('roleData', function (newValue, oldValue) {
 
                     if (!newValue) return false;
                     if (scope.newRole) return false;
@@ -575,7 +572,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
 
                 // MESSAGES
-                scope.$on('$destroy', function(e) {
+                scope.$on('$destroy', function (e) {
                     watchData();
 
                     scope.$broadcast('dfPaginate:reset:records');
@@ -595,14 +592,14 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     basic: {
                         title: 'Roles Overview',
                         text: 'Roles provide a way to grant or deny API access to specific' +
-                            ' services or simply access to specific apps.'
+                        ' services or simply access to specific apps.'
                     },
                     access: {
                         title: 'Access Overview',
                         text: 'This section allows you set set up rules for a role restricting what' +
-                            ' services and components users assigned to the role will have access to.' +
-                            ' Advanced Filters are for implementing additional server side filter logic ' +
-                            'on database transactions.'
+                        ' services and components users assigned to the role will have access to.' +
+                        ' Advanced Filters are for implementing additional server side filter logic ' +
+                        'on database transactions.'
                     },
                     users: {
                         title: 'Users Overview',
@@ -615,25 +612,25 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     lookupkeys: {
                         title: 'Lookup Keys Overview',
                         text: 'The DSP administrator can create any number of "key value" pairs attached to a ' +
-                            'role. The key values are automatically substituted on the server. For example, key ' +
-                            'names can be used in the username and password fields required to hook up a SQL or ' +
-                            'NoSQL database. They can also be used in Email Templates or as parameters for external ' +
-                            'REST services. Any Lookup Key can be marked as private, and in this case the key value ' +
-                            'is securely encrypted on the server and is no longer accessible through the platform ' +
-                            'interface.<span style="color: red;">  Lookup keys for service configuration and credentials must be made private.</span>'
+                        'role. The key values are automatically substituted on the server. For example, key ' +
+                        'names can be used in the username and password fields required to hook up a SQL or ' +
+                        'NoSQL database. They can also be used in Email Templates or as parameters for external ' +
+                        'REST services. Any Lookup Key can be marked as private, and in this case the key value ' +
+                        'is securely encrypted on the server and is no longer accessible through the platform ' +
+                        'interface.<span style="color: red;">  Lookup keys for service configuration and credentials must be made private.</span>'
                     }
                 }
             }
         }
     }])
 
-    .directive('assignServiceAccess', ['MOD_ROLES_ASSET_PATH', 'dfNotify', function(MOD_ROLES_ASSET_PATH, dfNotify) {
+    .directive('assignServiceAccess', ['MOD_ROLES_ASSET_PATH', 'dfNotify', function (MOD_ROLES_ASSET_PATH, dfNotify) {
 
         return {
             restrict: 'E',
             scope: false,
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-assign-service-access.html',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
                 // @TODO: Refactor to factory.
                 var ServiceAccess = function () {
@@ -651,8 +648,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             "service": scope.services[0] || null,
                             "service_id": scope.services[0].id || null,
                             "filters": [],
-                            "filter_op": "AND",
-                            "show_filters": false
+                            "filter_op": "AND"
                         }
                     };
                 };
@@ -660,7 +656,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 // Members
                 scope.roleServiceAccesses = [];
-
 
 
                 // PUBLIC API
@@ -711,7 +706,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.roleServiceAccesses.splice(serviceAccessObjIndex, 1);
                 };
 
-                scope._getService = function(serviceId) {
+                scope._getService = function (serviceId) {
 
                     var i = 0;
 
@@ -738,7 +733,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
 
                 // WATCHERS
-                var watchRole = scope.$watch('role', function(newValue, oldValue) {
+                var watchRole = scope.$watch('role', function (newValue, oldValue) {
 
                     if (!newValue) return false;
 
@@ -795,22 +790,20 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 // MESSAGES
 
-                scope.$on('$destroy', function(newValue, oldValue) {
+                scope.$on('$destroy', function (newValue, oldValue) {
 
                     watchRole();
                 });
 
 
-
                 // HELP
-
 
 
             }
         }
     }])
 
-    .directive('dfServiceAccess', ['MOD_ROLES_ASSET_PATH', 'dfNotify', function (MOD_ROLES_ASSET_PATH, dfNotify) {
+    .directive('dfServiceAccess', ['MOD_ROLES_ASSET_PATH', 'dfNotify', '$http', 'DSP_URL', function (MOD_ROLES_ASSET_PATH, dfNotify, $http, DSP_URL) {
 
         return {
 
@@ -821,19 +814,19 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 index: '='
             },
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-service-access.html',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
                 // @TODO: Refactor to factory.
                 var ServiceAccessFilter = function () {
 
                     return {
-                        "name":     "",
+                        "name": "",
                         "operator": "=",
-                        "value":    ""
+                        "value": ""
                     }
                 };
 
-                scope.filterOperators =  [
+                scope.filterOperators = [
                     "=",
                     "!=",
                     ">",
@@ -866,7 +859,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope._removeServiceAccessFilter(serviceAccessFilterIndex);
                 };
 
-                scope.toggleServiceFilterOp = function() {
+                scope.toggleServiceFilterOp = function () {
 
                     scope._toggleServiceFilterOp();
                 };
@@ -875,7 +868,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 // PRIVATE API
                 scope.allowFilters = function () {
 
-                    switch(scope.serviceAccess.record.service.type) {
+                    switch (scope.serviceAccess.record.service.type) {
 
                         case "sql_db":
                         case "mongo_db":
@@ -890,8 +883,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             scope.serviceAccess.__dfUI.allowFilters = false;
                     }
                 };
-
-
 
 
                 // COMPLEX IMPLEMENTATION
@@ -915,10 +906,15 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.serviceAccess.record.filter_op = scope.serviceAccess.record.filter_op === 'AND' ? 'OR' : 'AND';
                 };
 
+                // PRIVATE API
+                scope._getComponents = function () {
+                        return $http.get(DSP_URL + '/api/v2/' + scope.serviceAccess.record.service.name + '/?as_access_list=true');
+                };
+
                 scope._checkForFailure = function () {
 
                     // Check if service components is a string.  If it is it's an error
-                    if (scope.serviceAccess.record.service.hasOwnProperty('components') && typeof scope.serviceAccess.record.service.components === 'string') {
+                    if (typeof scope.serviceAccess.record.components === 'string') {
 
                         // Set error to true.  This will trigger the ui changes
                         scope.serviceAccess.__dfUI.hasError = true;
@@ -930,7 +926,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             module: 'Roles',
                             type: 'error',
                             provider: 'dreamfactory',
-                            message: scope.serviceAccess.record.service.components
+                            message: scope.serviceAccess.record.components
                         }
 
                         dfNotify.error(messageOptions);
@@ -940,7 +936,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         // set error to false. ditto
                         scope.serviceAccess.__dfUI.hasError = false;
-
 
                     }
                 }
@@ -958,7 +953,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 });
 
-                var watchServiceAccessRecordService = scope.$watch('serviceAccess.record.service', function(newValue, oldValue) {
+                var watchServiceAccessRecordService = scope.$watch('serviceAccess.record.service', function (newValue, oldValue) {
 
                     if (!newValue) return false;
 
@@ -967,6 +962,27 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     // update service_id prop
                     scope.serviceAccess.record.service_id = newValue.id;
+                    scope.serviceAccess.record.service.components = ['', '*'];
+                    if ('All' !== scope.serviceAccess.record.service.name) {
+
+                        scope._getComponents().then(
+                            function (result) {
+
+                                scope.serviceAccess.record.service.components = result.data.resource;
+                            },
+
+                            function (reject) {
+                                throw {
+                                    module: 'DreamFactory Utility Module',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    exception: reject
+                                }
+                            }
+                        )
+                    }
+
+                    scope._getComponents();
                     scope._checkForFailure();
                 });
 
@@ -983,7 +999,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
         }
     }])
 
-    .directive('dfManageRoles', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', function(MOD_ROLES_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify) {
+    .directive('dfManageRoles', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify) {
 
 
         return {
@@ -991,7 +1007,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             restrict: 'E',
             scope: false,
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-manage-roles.html',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
                 // @TODO: Refactor to factory.
                 var ManagedRole = function (roleData) {
@@ -1081,7 +1097,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 };
 
 
-
                 // COMPLEX IMPLEMENTATION
 
                 scope._editRole = function (role) {
@@ -1089,7 +1104,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.currentEditRole = role;
                 };
 
-                scope._deleteRole = function(role) {
+                scope._deleteRole = function (role) {
 
                     var requestDataObj = {
                         params: {},
@@ -1098,7 +1113,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
 
                     scope._deleteFromServer(requestDataObj).then(
-                        function(result) {
+                        function (result) {
 
                             // notify success
                             var messageOptions = {
@@ -1117,12 +1132,13 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                                 // This will remove the role from the selected
                                 // role array
                                 scope.setSelected(role);
-                            };
+                            }
+                            ;
 
                             scope.$broadcast('toolbar:paginate:role:delete');
                         },
 
-                        function(reject) {
+                        function (reject) {
 
                             // notify success
                             var messageOptions = {
@@ -1136,7 +1152,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         }
                     ).finally(
-                        function() {
+                        function () {
 
                             // console.log('Delete Role Finally')
                         }
@@ -1188,8 +1204,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
 
                     scope._deleteFromServer(requestDataObj).then(
-
-                        function(result) {
+                        function (result) {
 
                             var messageOptions = {
                                 module: 'Roles',
@@ -1205,7 +1220,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             scope.$broadcast('toolbar:paginate:role:reset');
                         },
 
-                        function(reject) {
+                        function (reject) {
 
                             var messageOptions = {
                                 module: 'Api Error',
@@ -1217,7 +1232,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             dfNotify.error(messageOptions);
                         }
                     ).finally(
-                        function() {
+                        function () {
 
                             // console.log('Delete Roles Finally');
                         }
@@ -1243,7 +1258,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     }
                 });
 
-                var watchApiData = scope.$watchCollection(function() {
+                var watchApiData = scope.$watchCollection(function () {
 
                     return dfApplicationData.getApiData('role');
 
@@ -1289,8 +1304,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     scope.roles = _roles;
                 });
-                
-                scope.$on('$destroy', function(e) {
+
+                scope.$on('$destroy', function (e) {
                     watchRoles();
                 })
 
@@ -1320,11 +1335,11 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     };
 
 
-                    scope.usersPrepFunc = function(userDataArr) {
+                    scope.usersPrepFunc = function (userDataArr) {
 
                         var newUsersArr = [];
 
-                        angular.forEach(userDataArr, function(userData) {
+                        angular.forEach(userDataArr, function (userData) {
 
                             var newUser = new User(userData);
 
@@ -1464,7 +1479,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         if (scope.newRole) {
 
                             // Add the current role id to the users role_id prop
-                            angular.forEach(scope.addedRoleUsers, function(addedUserObj) {
+                            angular.forEach(scope.addedRoleUsers, function (addedUserObj) {
 
                                 addedUserObj.role_id = scope.role.record.id;
                             })
@@ -1475,7 +1490,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         // set request data and params
                         var requestDataObj = {
-                            params:{
+                            params: {
                                 fields: '*'
                             },
                             data: users
@@ -1486,7 +1501,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     };
 
 
-                    var watchRole = scope.$watch('role', function(newValue, oldValue) {
+                    var watchRole = scope.$watch('role', function (newValue, oldValue) {
 
                         if (!newValue) return false;
 
@@ -1503,14 +1518,14 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             }
         }])
 
-    .directive('dfAssignAppsRole', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', function(MOD_ROLES_ASSET_PATH, dfApplicationData) {
+    .directive('dfAssignAppsRole', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', function (MOD_ROLES_ASSET_PATH, dfApplicationData) {
 
         return {
 
             restrict: 'E',
             scope: false,
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-assign-apps-role.html',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
                 // @TODO: Refactor to factory.
                 var App = function (appData) {
@@ -1535,11 +1550,11 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 };
 
 
-                scope.appsPrepFunc = function(appDataArr) {
+                scope.appsPrepFunc = function (appDataArr) {
 
                     var newAppsArr = [];
 
-                    angular.forEach(appDataArr, function(appData) {
+                    angular.forEach(appDataArr, function (appData) {
 
                         var newApp = new App(appData);
 
@@ -1758,9 +1773,9 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     // the new role to update these users
                     if (scope.newRole) {
 
-                        angular.forEach(scope.addedRoleApps, function(appObj) {
+                        angular.forEach(scope.addedRoleApps, function (appObj) {
 
-                            angular.forEach(appObj.roles, function(roleObj) {
+                            angular.forEach(appObj.roles, function (roleObj) {
 
                                 if (roleObj.id === null) {
                                     roleObj.id = scope.role.record.id;
@@ -1772,7 +1787,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     var apps = scope.addedRoleApps.concat(scope.removedRoleApps);
 
                     var requestDataObj = {
-                        params:{
+                        params: {
                             fields: '*',
                             related: 'role_by_role_id'
                         },
@@ -1802,13 +1817,13 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
         }
     }])
 
-    .directive('dfAssignLookUpKeys', ['MOD_ROLES_ASSET_PATH', function(MOD_ROLES_ASSET_PATH) {
+    .directive('dfAssignLookUpKeys', ['MOD_ROLES_ASSET_PATH', function (MOD_ROLES_ASSET_PATH) {
 
         return {
             restrict: 'E',
             scope: false,
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-assign-lookup-keys.html',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
 
                 // @TODO: Refactor to factory.
                 var LookUpKey = function (lookupKeyData) {
@@ -1838,9 +1853,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 scope.lookupKeysError = false;
 
 
-
                 // PUBLIC API
-                scope.addLookUpKey = function() {
+                scope.addLookUpKey = function () {
 
                     scope._addLookUpKey();
                 };
@@ -1853,7 +1867,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 // PRIVATE API
 
-                scope._prepareRoleLookUpKeysData = function() {
+                scope._prepareRoleLookUpKeysData = function () {
 
                     var tempArr = [];
 
@@ -1870,7 +1884,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     scope.sameKeys = [];
 
-                    angular.forEach(scope.roleLookUpKeys, function(value, index) {
+                    angular.forEach(scope.roleLookUpKeys, function (value, index) {
                         angular.forEach(scope.roleLookUpKeys, function (_value, _index) {
 
                             if (index === _index) return;
@@ -1886,7 +1900,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 // COMPLEX IMPLEMENTATION
 
-                scope._addLookUpKey = function() {
+                scope._addLookUpKey = function () {
 
                     scope.roleLookUpKeys.push(new LookUpKey());
                 };
@@ -1898,7 +1912,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
 
                 // WATCHERS
-                var watchRole = scope.$watch('role', function(newValue, oldValue) {
+                var watchRole = scope.$watch('role', function (newValue, oldValue) {
 
                     if (!newValue) return false;
 
@@ -1911,7 +1925,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     else {
 
                         scope.roleLookUpKeys = [];
-                        angular.forEach(newValue.record.role_lookup_by_role_id, function(lkObj) {
+                        angular.forEach(newValue.record.role_lookup_by_role_id, function (lkObj) {
 
                             scope.roleLookUpKeys.push(new LookUpKey(lkObj));
                         })
@@ -1946,7 +1960,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                                 lk.__dfUI.unique = false;
 
 
-                            }else {
+                            } else {
                                 lk.__dfUI.unique = true;
                             }
                         })
@@ -1968,7 +1982,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 // MESSAGES
 
-                scope.$on('$destroy', function(e) {
+                scope.$on('$destroy', function (e) {
                     watchRole();
                     watchSameKeys();
                     watchLookupKeys();

@@ -5,8 +5,7 @@
         <div class="col-xs-3 form-group">
             <select class="form-control input-sm"
                     data-ng-model="serviceAccess.record.service"
-                    data-ng-options="service as service.name for service in $parent.services"
-                    >
+                    data-ng-options="service as service.name for service in $parent.services">
             </select>
         </div>
 
@@ -33,7 +32,8 @@
 
         <!-- Select Allowed Requestor -->
         <div class="col-xs-2 form-group">
-            <df-requestor-picker data-allowed-requestor-mask="serviceAccess.record.requestor_mask" data-size="sm"></df-requestor-picker>
+            <df-requestor-picker data-allowed-requestor-mask="serviceAccess.record.requestor_mask"
+                                 data-size="sm"></df-requestor-picker>
         </div>
 
         <!-- Set Service Access Filters -->
@@ -49,7 +49,8 @@
 
         <!-- Remove Service -->
         <div class="col-xs-1 form-group input-sm">
-            <button type="button" class="btn btn-default btn-sm" data-ng-click="$parent.removeServiceAccess(index)" title="Remove service access">
+            <button type="button" class="btn btn-default btn-sm" data-ng-click="$parent.removeServiceAccess(index)"
+                    title="Remove service access">
                 <i class="fa fa-trash-o fa-fw"></i>
             </button>
         </div>
@@ -60,7 +61,7 @@
         <div class="col-xs-12">
             <hr/>
             <!--<div class="alert alert-info"
-                 ng-show="serviceAccess.__dfUI.allowFilters && serviceAccess.record.show_filters && service_access.filters.length>0">
+                 ng-show="serviceAccess.__dfUI.allowFilters && serviceAccess.__dfUI.show_filters && service_access.filters.length>0">
                 <i class="fa fa-info-circle fa-fw"></i>
                 String values should be single or double quoted.
             </div>-->
@@ -84,7 +85,8 @@
                     </button>
                 </div>
             </div>
-            <div data-ng-repeat="service_access_filter in serviceAccess.record.filters track by $index" class="row" style="margin-top: 15px;">
+            <div data-ng-repeat="service_access_filter in serviceAccess.record.filters track by $index" class="row"
+                 style="margin-top: 15px;">
                 <div class="col-xs-3 form-group">
                     <input class="form-control" data-ng-model="service_access_filter.name" type="text"/>
                 </div>
@@ -109,7 +111,8 @@
                 </div>
 
                 <div class="col-xs-1 form-group">
-                    <button type="button" class="btn btn-default btn-sm" data-ng-click="removeServiceAccessFilter($index)" title="Remove service access filter">
+                    <button type="button" class="btn btn-default btn-sm"
+                            data-ng-click="removeServiceAccessFilter($index)" title="Remove service access filter">
                         <i class="fa fa-trash-o fa-fw"></i>
                     </button>
 

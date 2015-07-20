@@ -535,72 +535,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
 
                 scope.customConfig = [
-                    {
-                        applicableTo: ['aws_dynamodb', 'aws_simpledb', 'aws_s3', 'aws_sns', 'aws_ses'],
-                        name: 'region',
-                        type: 'dropdown',
-                        options: dfServiceValues.awsRegions
-                    },
-                    {
-                        applicableTo: ['local_file', 'ros_file', 'aws_s3', 'azure_blob'],
-                        name: 'public_path',
-                        type: 'array(string)'
-                    },
-                    {
-                        applicableTo: ['mongo_db'],
-                        name: 'options',
-                        type: 'object(string,string)'
-                    },
-                    {
-                        applicableTo: ['mongo_db'],
-                        name: 'driver_options',
-                        type: 'object(string,string)'
-                    },
-
-                    //{
-                    //    applicableTo: ['script'],
-                    //    name: 'type',
-                    //    type: 'dropdown',
-                    //    options: dfApplicationObjApis.script_type.resource.map(function (item) {
-                    //        return {name: item.name, value: item.name};
-                    //    })
-                    //},
-
-                    {
-                        applicableTo: ['script'],
-                        name: 'content',
-                        type: 'editor'
-                    },
-
-                    {
-                        applicableTo: ['sql_db'],
-                        name: 'options',
-                        type: 'object(string,string)'
-                    },
-                    {
-                        applicableTo: ['sql_db'],
-                        name: 'attributes',
-                        type: 'object(string,string)'
-                    },
-                    //{
-                    //    applicableTo: ['user'],
-                    //    name: 'open_reg_email_service_id',
-                    //    type: 'dropdown',
-                    //    options: dfApplicationObjApis.service.resource.filter(function (item) {
-                    //        return item.type.indexOf('email') > -1;
-                    //    }).map(function (item) {
-                    //        return {name: item.name, value: item.id};
-                    //    })
-                    //},
-                    //{
-                    //    applicableTo: ['user'],
-                    //    name: 'open_reg_role_id',
-                    //    type: 'dropdown',
-                    //    options: dfApplicationObjApis.role.resource.map(function (item) {
-                    //        return {name: item.name, value: item.id};
-                    //    })
-                    //},
-
                 ];
 
                 scope.hcv = new dfServiceValues();
@@ -1270,74 +1204,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
 
-                scope.customConfig = [
-                    {
-                        applicableTo: ['aws_dynamodb', 'aws_simpledb', 'aws_s3', 'aws_sns', 'aws_ses'],
-                        name: 'region',
-                        type: 'dropdown',
-                        options: dfServiceValues.awsRegions
-                    },
-                    {
-                        applicableTo: ['local_file', 'ros_file', 'aws_s3', 'azure_blob'],
-                        name: 'public_path',
-                        type: 'array(string)'
-                    },
-                    {
-                        applicableTo: ['mongo_db'],
-                        name: 'options',
-                        type: 'object(string,string)'
-                    },
-                    {
-                        applicableTo: ['mongo_db'],
-                        name: 'driver_options',
-                        type: 'object(string,string)'
-                    },
-
-                    {
-                        applicableTo: ['script'],
-                        name: 'type',
-                        type: 'dropdown',
-                        options: dfApplicationObjApis.script_type.resource.map(function (item) {
-                            return {name: item.name, value: item.name};
-                        })
-                    },
-
-                    {
-                        applicableTo: ['script'],
-                        name: 'content',
-                        type: 'editor'
-                    },
-
-                    {
-                        applicableTo: ['sql_db'],
-                        name: 'options',
-                        type: 'object(string,string)'
-                    },
-                    {
-                        applicableTo: ['sql_db'],
-                        name: 'attributes',
-                        type: 'object(string,string)'
-                    },
-                    //{
-                    //    applicableTo: ['user'],
-                    //    name: 'open_reg_email_service_id',
-                    //    type: 'dropdown',
-                    //    options: dfApplicationObjApis.service.resource.filter(function (item) {
-                    //        return item.type.indexOf('email') > -1;
-                    //    }).map(function (item) {
-                    //        return {name: item.name, value: item.id};
-                    //    })
-                    //},
-                    //{
-                    //    applicableTo: ['user'],
-                    //    name: 'open_reg_role_id',
-                    //    type: 'dropdown',
-                    //    options: dfApplicationObjApis.role.resource.map(function (item) {
-                    //        return {name: item.name, value: item.id};
-                    //    })
-                    //},
-
-                ];
+                scope.customConfig = [];
 
                 scope.addKeyValue = function (field) {
                     if (!scope.serviceInfo.record.config[field]) {
