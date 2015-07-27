@@ -64,12 +64,12 @@
 
                 <tbody>
 
-                <tr data-ng-repeat="(key,value) in serviceInfo.record.config[field.name]">
+                <tr data-ng-repeat="item in serviceInfo.record.config[field.name]">
                     <td>
-                        <input class="form-control" data-ng-model="key" type="text"/>
+                        <input class="form-control" data-ng-model="item.key" type="text"/>
                     </td>
                     <td>
-                        <input class="form-control" data-ng-model="value" type="text"/>
+                        <input class="form-control" data-ng-model="item.value" type="text"/>
                     </td>
 
                     <td class="no-border">
