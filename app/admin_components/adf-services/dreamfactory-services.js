@@ -2065,12 +2065,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 // COMPLEX IMPLEMENTATION
 
                 scope._editService = function (service) {
+
+                    // Convert object(string, string) from config types to array
                     Object.keys(service.config).forEach(function(key) {
                       if (service.config[key] && typeof service.config[key] === 'object') {
                         var arr = [];
                         Object.keys(service.config[key]).forEach(function (objKey) {
                             arr.push({ key: objKey, value: service.config[key][objKey] })
                         });
+                        service.config[key] = arr;
                       }
                     });
 
