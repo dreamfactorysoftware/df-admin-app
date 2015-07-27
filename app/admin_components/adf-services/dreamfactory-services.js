@@ -274,13 +274,25 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope._prepareServiceData();
 
+                    var data = angular.copy(scope.service.record);
+
+                    // convert key, value pair array to object
+                    scope.selectedSchema.config_schema.forEach(function(item) {
+                      if (item.type === 'object(string,string)' && data.config[item.name] && data.config[item.name].length) {
+                        var arr = data.config[item.name];
+                        data.config[item.name] = {};
+                        arr.forEach(function(arrItem) {
+                          data.config[item.name][arrItem.key] = arrItem.value;
+                        });
+                      }
+                    });
 
                     var requestDataObj = {
                         params: {
                             fields: '*',
                             related: 'service_doc_by_service_id'
                         },
-                        data: scope.service.record
+                        data: data
                     };
 
                     requestDataObj = scope._trimRequestDataObj(requestDataObj);
@@ -1208,15 +1220,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope.addKeyValue = function (field) {
                     if (!scope.serviceInfo.record.config[field]) {
-                        scope.serviceInfo.record.config[field] = {};
+                        scope.serviceInfo.record.config[field] = [];
                     }
-                    scope.serviceInfo.record.config[field]["new_key"] = "new_value";
+                    scope.serviceInfo.record.config[field].push({ key: 'new_key', value: 'new_value' });
                 };
 
-                scope.deleteKeyValue = function (obj, key) {
-                    if (obj[key]) {
-                        delete obj[key];
-                    }
+                scope.deleteKeyValue = function (obj, $index) {
+                    obj.splice($index, 1);
                 };
 
                 scope.addStringInArray = function (configObj, key) {
@@ -1245,6 +1255,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             })[0] || {};
 
                         angular.extend(obj, item)
+                    });
+
+                    // Set default dfServiceValues
+                    scope.selectedSchema.config_schema.forEach(function (schema) {
+                        if (schema.default) {
+                            scope.serviceInfo.record.config[schema.name] = scope.serviceInfo.record.config[schema.name] || schema.default; 
+                        }                        
                     });
                 };
 
@@ -1993,7 +2010,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope.editService = function (service) {
-
                     scope._editService(service);
                 };
 
@@ -2049,6 +2065,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 // COMPLEX IMPLEMENTATION
 
                 scope._editService = function (service) {
+
+                    // Convert object(string, string) from config types to array
+                    Object.keys(service.config).forEach(function(key) {
+                      if (service.config[key] && typeof service.config[key] === 'object') {
+                        var arr = [];
+                        Object.keys(service.config[key]).forEach(function (objKey) {
+                            arr.push({ key: objKey, value: service.config[key][objKey] })
+                        });
+                        service.config[key] = arr;
+                      }
+                    });
 
                     scope.currentEditService = service;
                 };
