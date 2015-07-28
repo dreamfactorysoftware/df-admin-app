@@ -1252,7 +1252,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope._confirmUserToServer = function (requestDataObj) {
 
                         return $http({
-                            url: DSP_URL + '/api/v2/user/register',
+                            url: DSP_URL + '/api/v2/user/password',
                             method: 'POST',
                             params: {
                                 login: false
