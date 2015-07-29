@@ -154,6 +154,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     serviceData = serviceData || newService;
 
+                    if (serviceData && serviceData.config) {
+                        // Convert object(string, string) from config types to array
+                        Object.keys(serviceData.config).forEach(function(key) {
+                          if (serviceData.config[key] && typeof serviceData.config[key] === 'object') {
+                            var arr = [];
+                            Object.keys(serviceData.config[key]).forEach(function (objKey) {
+                                arr.push({ key: objKey, value: serviceData.config[key][objKey] })
+                            });
+                            serviceData.config[key] = arr;
+                          }
+                        });
+                    }
+
                     return {
                         __dfUI: {
                             selected: false
@@ -237,6 +250,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 }
 
                 scope._restoreRequestDataObj = function (requestObj) {
+                    if (requestObj.resource) {
+                        requestObj = requestObj.resource;
+                    }
+
                     if (!requestObj.config.hasOwnProperty('options'))
                         return requestObj;
 
@@ -269,10 +286,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
 
-                // COMPLEX IMPLEMENTATION
-                scope._saveService = function () {
-
-                    scope._prepareServiceData();
+                var normalizeKeyValuePairs = function () {
 
                     var data = angular.copy(scope.service.record);
 
@@ -286,6 +300,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         });
                       }
                     });
+
+                    return data;
+                };
+
+                // COMPLEX IMPLEMENTATION
+                scope._saveService = function () {
+
+                    scope._prepareServiceData();
+
+                    var data = normalizeKeyValuePairs();
 
                     var requestDataObj = {
                         params: {
@@ -341,13 +365,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope._prepareServiceData();
 
+                    var data = normalizeKeyValuePairs();
 
                     var requestDataObj = {
                         params: {
                             fields: '*',
                             related: 'service_doc_by_service_id'
                         },
-                        data: scope.service.record
+                        data: data
                     };
 
                     requestDataObj = scope._trimRequestDataObj(requestDataObj);
@@ -2065,18 +2090,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 // COMPLEX IMPLEMENTATION
 
                 scope._editService = function (service) {
-
-                    // Convert object(string, string) from config types to array
-                    Object.keys(service.config).forEach(function(key) {
-                      if (service.config[key] && typeof service.config[key] === 'object') {
-                        var arr = [];
-                        Object.keys(service.config[key]).forEach(function (objKey) {
-                            arr.push({ key: objKey, value: service.config[key][objKey] })
-                        });
-                        service.config[key] = arr;
-                      }
-                    });
-
                     scope.currentEditService = service;
                 };
 
