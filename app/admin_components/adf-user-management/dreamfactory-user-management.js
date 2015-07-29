@@ -248,10 +248,14 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // section below.
 
                     // POST to the DreamFactory(DF) rest api to login
-                    scope._loginRequest = function (credsDataObj) {
+                    scope._loginRequest = function (credsDataObj, admin) {
 
-                        // Return the posted request data as a promise
-                        return $http.post(DSP_URL + '/api/v2/user/session', credsDataObj);
+                        if(!admin) {
+                            // Return the posted request data as a promise
+                            return $http.post(DSP_URL + '/api/v2/user/session', credsDataObj);
+                        } else {
+                            return $http.post(DSP_URL + '/api/v2/system/admin/session', credsDataObj);
+                        }
                     };
 
 
@@ -301,7 +305,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         scope.loginWaiting = true;
 
                         // call private login request function with a credentials object
-                        scope._loginRequest(credsDataObj).then(
+                        scope._loginRequest(credsDataObj, false).then(
 
                             // success method
                             function (result) {
@@ -329,19 +333,59 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                             // Error method
                             function (reject) {
+                                if((reject.status == '401' || reject.status == '404') && !scope.selectedService){
+                                    scope.loginWaiting = true;
+                                    scope._loginRequest(credsDataObj, true).then(
 
-                                // Handle Login error with template error message
-                                scope.errorMsg = reject.data.error.message;
-                                scope.$emit(scope.es.loginError, reject);
+                                        // success method
+                                        function (result) {
 
+                                            // remove unnecessary apps data
+                                            // this is temporary and cleans up our
+                                            // session obj that is returned by the login function
+                                            // If a user has a large number of apps it can overflow our cookie
+                                            // So we're not going to store this info
+                                            delete result.data.no_group_apps;
+                                            delete result.data.app_groups;
+
+                                            // Set the cookies
+                                            scope._setCookies(result.data);
+
+                                            // Set the DreamFactory session header
+                                            $http.defaults.headers.common['X-DreamFactory-Session-Token'] = $cookies.PHPSESSID;
+
+                                            // Set the current user in the UserDataService service
+                                            UserDataService.setCurrentUser(result.data);
+
+                                            // Emit a success message so we can hook in
+                                            scope.$emit(scope.es.loginSuccess, result.data);
+                                        },
+
+                                        // Error method
+                                        function (reject) {
+                                            // Handle Login error with template error message
+                                            scope.errorMsg = reject.data.error.message;
+                                            scope.$emit(scope.es.loginError, reject);
+                                        }
+                                    ).finally(
+                                        function () {
+                                            // shutdown waiting directive
+                                            scope.loginWaiting = false;
+                                        }
+                                    )
+                                } else {
+                                    // Handle Login error with template error message
+                                    scope.errorMsg = reject.data.error.message;
+                                    scope.$emit(scope.es.loginError, reject);
+                                }
 
                             }
                         ).finally(
-                                function () {
-                                    // shutdown waiting directive
-                                    scope.loginWaiting = false;
-                                }
-                            )
+                            function () {
+                                // shutdown waiting directive
+                                scope.loginWaiting = false;
+                            }
+                        )
                     };
 
                     scope._toggleForms = function () {
@@ -462,16 +506,26 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
 
                 // PRIVATE API
-                scope._resetPasswordRequest = function (requestDataObj) {
+                scope._resetPasswordRequest = function (requestDataObj, admin) {
 
-                    // Post request for password change and return promise
-                    return $http.post(DSP_URL + '/api/v2/user/password?reset=true', requestDataObj);
+                    if(!admin) {
+                        // Post request for password change and return promise
+                        return $http.post(DSP_URL + '/api/v2/user/password?reset=true', requestDataObj);
+                    }
+                    else{
+                        return $http.post(DSP_URL + '/api/v2/system/admin/password?reset=true', requestDataObj);
+                    }
                 };
 
-                scope._resetPasswordSQ = function (requestDataObj) {
+                scope._resetPasswordSQ = function (requestDataObj, admin) {
 
-                    // Post request for password change and return promise
-                    return $http.post(DSP_URL + '/api/v2/user/password?login=false', requestDataObj);
+                    if(!admin) {
+                        // Post request for password change and return promise
+                        return $http.post(DSP_URL + '/api/v2/user/password?login=false', requestDataObj);
+                    }
+                    else{
+                        return $http.post(DSP_URL + '/api/v2/system/admin/password?login=false', requestDataObj);
+                    }
                 };
 
                 // Test if our entered passwords are identical
@@ -498,7 +552,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope.requestWaiting = true;
 
                     // Ask the DSP to resset the password via email confirmation
-                    scope._resetPasswordRequest(requestDataObj).then(
+                    scope._resetPasswordRequest(requestDataObj, false).then(
 
                         // handle successful password reset
                         function (result) {
@@ -523,9 +577,49 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                         // handle error
                         function (reject) {
+                            if(reject.status=='401' || reject.status=='404'){
+                                scope._resetPasswordRequest(requestDataObj, true).then(
 
-                            // Message received from server
-                            scope.errorMsg = reject.data.error.message;
+                                    // handle successful password reset
+                                    function (result) {
+
+
+                                        if (result.data.hasOwnProperty('security_question')) {
+
+                                            scope.emailForm = false;
+                                            scope.securityQuestionForm = true;
+
+                                            scope.sq.email = requestDataObj.email;
+                                            scope.sq.security_question = result.data.security_question
+                                        }
+                                        else {
+
+                                            scope.successMsg = 'A password reset email has been sent to the provided email address.';
+
+                                            // Emit a confirm message indicating that is the next step
+                                            scope.$emit(scope.es.passwordResetRequestSuccess, requestDataObj.email);
+                                        }
+                                    },
+
+                                    // handle error
+                                    function (reject) {
+
+                                        // Message received from server
+                                        scope.errorMsg = reject.data.error.message;
+
+                                    }
+                                ).finally(
+                                    function () {
+
+                                        // turn off waiting directive
+                                        scope.requestWaiting = false;
+                                    }
+                                )
+                            }
+                            else {
+                                // Message received from server
+                                scope.errorMsg = reject.data.error.message;
+                            }
 
                         }
                     ).finally(
@@ -542,7 +636,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     scope.questionWaiting = true;
 
-                    scope._resetPasswordSQ(reset).then(
+                    scope._resetPasswordSQ(reset, false).then(
 
                         function (result) {
 
@@ -555,10 +649,32 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                         },
                         function (reject) {
+                            if(reject.status == '401' || reject.status == '404'){
+                                scope._resetPasswordSQ(reset, true).then(
 
-                            scope.questionWaiting = false;
-                            scope.errorMsg = reject.data.error.message;
-                            scope.$emit(UserEventsService.password.passwordSetError);
+                                    function (result) {
+
+                                        var userCredsObj = {
+                                            email: reset.email,
+                                            password: reset.new_password
+                                        }
+
+                                        scope.$emit(UserEventsService.password.passwordSetSuccess, userCredsObj)
+
+                                    },
+                                    function (reject) {
+
+                                        scope.questionWaiting = false;
+                                        scope.errorMsg = reject.data.error.message;
+                                        scope.$emit(UserEventsService.password.passwordSetError);
+                                    }
+
+                                ).finally(function() {})
+                            } else {
+                                scope.questionWaiting = false;
+                                scope.errorMsg = reject.data.error.message;
+                                scope.$emit(UserEventsService.password.passwordSetError);
+                            }
                         }
 
                     ).finally(function() {})
@@ -674,10 +790,15 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
 
                     // PRIVATE API
-                    scope._setPasswordRequest = function (requestDataObj) {
+                    scope._setPasswordRequest = function (requestDataObj, admin) {
+
+                        var url = DSP_URL + '/api/v2/system/admin/password';
+                        if(!admin){
+                            url = DSP_URL + '/api/v2/user/password';
+                        }
 
                         return $http({
-                            url: DSP_URL + '/api/v2/user/password',
+                            url: url,
                             method: 'POST',
                             params: {
                                 login: scope.options.login
@@ -710,7 +831,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             new_password: credsDataObj.new_password
                         };
 
-                        scope._setPasswordRequest(requestDataObj).then(
+                        scope._setPasswordRequest(requestDataObj, false).then(
                             function (result) {
 
                                 var userCredsObj = {
@@ -725,10 +846,37 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                             },
                             function (reject) {
+                                if(reject.status == '401' || reject.status == '404'){
+                                    scope._setPasswordRequest(requestDataObj, true).then(
+                                        function (result) {
 
-                                scope.errorMsg = reject.data.error.message;
-                                scope.$emit(scope.es.passwordSetError);
-                                scope.resetWaiting = false;
+                                            var userCredsObj = {
+                                                email: credsDataObj.email,
+                                                password: credsDataObj.new_password
+                                            }
+
+                                            scope.$emit(scope.es.passwordSetSuccess, userCredsObj);
+
+                                            scope.showTemplate = false;
+
+
+                                        },
+                                        function (reject) {
+
+                                            scope.errorMsg = reject.data.error.message;
+                                            scope.$emit(scope.es.passwordSetError);
+                                            scope.resetWaiting = false;
+                                        }
+                                    ).finally(
+                                        function() {
+                                            scope.resetWaiting = false;
+                                        }
+                                    )
+                                } else {
+                                    scope.errorMsg = reject.data.error.message;
+                                    scope.$emit(scope.es.passwordSetError);
+                                    scope.resetWaiting = false;
+                                }
                             }
                         ).finally(
                                 function() {
@@ -781,10 +929,15 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // PRIVATE API ** See login directive for more info **
 
                     // DELETE request for logging out user
-                    scope._logoutRequest = function () {
+                    scope._logoutRequest = function (admin) {
 
-                        // return a promise object from the rest call
-                        return $http.delete(DSP_URL + '/api/v2/user/session');
+                        if(!admin) {
+                            // return a promise object from the rest call
+                            return $http.delete(DSP_URL + '/api/v2/user/session');
+                        }
+                        else{
+                            return $http.delete(DSP_URL + '/api/v2/system/admin/session');
+                        }
                     };
 
                     // COMPLEX IMPLEMENTATION ** See login directive for more info **
@@ -792,7 +945,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope._logout = function () {
 
                         // Call to server for logout request
-                        scope._logoutRequest().then(
+                        scope._logoutRequest(false).then(
 
                             // success method
                             function () {
@@ -815,13 +968,48 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                             // Error method
                             function (reject) {
+                                if(reject.status == '401' || reject.status == '404'){
+                                    scope._logoutRequest(true).then(
 
-                                // Throw DreamFactory error object
-                                throw {
-                                    module: 'DreamFactory User Management',
-                                    type: 'error',
-                                    provider: 'dreamfactory',
-                                    exception: reject
+                                        // success method
+                                        function () {
+
+                                            // remove session cookie
+                                            $cookieStore.remove('PHPSESSID');
+
+                                            // remove current user cookie
+                                            $cookieStore.remove('CurrentUserObj');
+
+                                            // remove user from UserDataService
+                                            UserDataService.unsetCurrentUser();
+
+                                            // Unset DreamFactory header
+                                            $http.defaults.headers.common['X-DreamFactory-Session-Token'] = '';
+
+                                            // Emit success message so we can hook in
+                                            scope.$emit(scope.es.logoutSuccess, false);
+                                        },
+
+                                        // Error method
+                                        function (reject) {
+
+                                            // Throw DreamFactory error object
+                                            throw {
+                                                module: 'DreamFactory User Management',
+                                                type: 'error',
+                                                provider: 'dreamfactory',
+                                                exception: reject
+                                            }
+                                        })
+                                }
+                                else {
+                                    // Throw DreamFactory error object
+                                    throw {
+                                        module: 'DreamFactory User Management',
+                                        type: 'error',
+                                        provider: 'dreamfactory',
+                                        exception: reject
+                                    }
                                 }
                             })
                     };

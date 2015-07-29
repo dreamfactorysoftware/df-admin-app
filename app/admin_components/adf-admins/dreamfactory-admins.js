@@ -238,7 +238,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             // This func comes from the SetAdminPassword directive
                             // which is stored in dfutility.
-                            scope._resetAdminPasswordForm();
+                            scope._resetUserPasswordForm();
 
                             scope.admin = new Admin();
 
@@ -295,7 +295,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             // This func comes from the SetAdminPassword directive
                             // which is stored in dfutility.
-                            scope._resetAdminPasswordForm();
+                            scope._resetUserPasswordForm();
 
                             scope.admin = new Admin(result);
 
