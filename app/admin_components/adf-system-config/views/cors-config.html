@@ -33,6 +33,11 @@
         </div>
 
         <div class="form-group">
+            <label>Max Age</label>
+            <input class="form-control" data-ng-model="selectedCorsEntry.record.max_age" placeholder="Enter max age." data-ng-disabled="selectedCorsEntry === null" />
+        </div>
+
+        <div class="form-group">
             <label>Methods</label>
             <df-verb-picker data-allowed-verbs="selectedCorsEntry.record.method"></df-verb-picker>
         </div>
