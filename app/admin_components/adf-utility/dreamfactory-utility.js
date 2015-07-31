@@ -702,6 +702,10 @@ angular.module('dfUtility', ['dfApplication'])
                             return false;
                         }
 
+                        Object.keys(scope.verbs).forEach(function (key) {
+                            scope._setVerbState(key, false);
+                        });
+                        
                         angular.forEach(
                             scope.allowedVerbs, function (_value, _index) {
 
