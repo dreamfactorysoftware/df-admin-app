@@ -33,4 +33,16 @@
         </div>
     </div>
 
+    <div class="form-group ng-scope">
+        <div class="checkbox">
+            <label><input data-ng-model="serviceInfo.record.cache_enabled" type="checkbox">Cache Enabled</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Cache Time To Live</label>
+        <df-simple-help data-options="dfSimpleHelp.cache_ttl"></df-simple-help>
+        <input class="form-control" data-ng-model="serviceInfo.record.cache_ttl" type="number" data-ng-init="serviceInfo.record.cache_ttl=0">
+    </div>
+
 </div>
