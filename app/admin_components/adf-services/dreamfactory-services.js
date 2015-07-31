@@ -155,7 +155,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     serviceData = serviceData || newService;
 
                     if (serviceData && serviceData.config) {
-                        // Convert object(string, string) from config types to array
+                        // Convert object from config types to array
                         Object.keys(serviceData.config).forEach(function(key) {
                           if (serviceData.config[key] && typeof serviceData.config[key] === 'object') {
                             var arr = [];
@@ -292,7 +292,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     // convert key, value pair array to object
                     scope.selectedSchema.config_schema.forEach(function(item) {
-                      if (item.type === 'object(string,string)' && data.config[item.name] && data.config[item.name].length) {
+                      if (item.type === 'object' && data.config[item.name] && data.config[item.name].length) {
                         var arr = data.config[item.name];
                         data.config[item.name] = {};
                         arr.forEach(function(arrItem) {
@@ -1263,6 +1263,18 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope.deleteStringFromArray = function (arr, index) {
+                    arr.splice(index, 1);
+                };
+
+                scope.addObjectInArray = function (configObj, key) {
+                    if (!configObj[key]) {
+                        configObj[key] = [];
+                    }
+
+                    configObj[key].push('');
+                };
+
+                scope.deleteObjectFromArray = function (arr, index) {
                     arr.splice(index, 1);
                 };
 
