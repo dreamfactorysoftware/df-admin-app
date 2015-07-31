@@ -8,8 +8,6 @@
         <ul class="nav nav-tabs" data-role="tablist">
             <li class="active"><a showtab href="#basic" id="basic-tab" data-ng-class="basicInfoError ? 'df-tab-has-error' : ''">Basic</a></li>
             <li><a showtab href="#access" id="access-tab">Access</a></li>
-            <li><a showtab href="#users" id="users-tab">Users</a></li>
-            <li><a showtab href="#apps" id="apps-tab">Apps</a></li>
             <li><a showtab href="#lookupkeys" id="lookupkeys-tab" data-ng-class="lookupKeysError ? 'df-tab-has-error' : ''">Lookup Keys</a></li>
         </ul>
 
@@ -40,14 +38,6 @@
             <div id="access" class="tab-pane">
                 <df-large-help data-options="dfLargeHelp.access"></df-large-help>
                 <assign-service-access></assign-service-access>
-            </div>
-            <div id="users" class="tab-pane">
-                <df-large-help data-options="dfLargeHelp.users"></df-large-help>
-                <df-assign-users-role></df-assign-users-role>
-            </div>
-            <div id="apps" class="tab-pane">
-                <df-large-help data-options="dfLargeHelp.apps"></df-large-help>
-                <df-assign-apps-role></df-assign-apps-role>
             </div>
             <div id="lookupkeys" class="tab-pane">
                 <df-large-help data-options="dfLargeHelp.lookupkeys"></df-large-help>
