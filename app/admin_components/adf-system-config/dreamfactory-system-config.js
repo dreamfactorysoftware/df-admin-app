@@ -377,7 +377,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             id: null,
                             origin: 'NEW',
                             path: null,
-                            methods: [],
+                            method: [],
                             enabled: false
                         };
 
@@ -474,9 +474,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                     // PRIVATE API
                     scope._addCorsEntry = function () {
-
                         scope.corsEntries.push(new CorsEntry());
-
                         scope.selectedCorsEntry = scope.corsEntries[scope.corsEntries.length - 1];
                     };
 
