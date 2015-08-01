@@ -524,7 +524,10 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 scope._removeServiceAccess = function (serviceAccessObjIndex) {
 
-                    scope.roleServiceAccesses.splice(serviceAccessObjIndex, 1);
+                    //scope.roleServiceAccesses.splice(serviceAccessObjIndex, 1);
+                    scope.roleServiceAccesses[serviceAccessObjIndex].record.role_id = null;
+
+                    scope.saveRole();
                 };
 
                 scope._getService = function (serviceId) {
