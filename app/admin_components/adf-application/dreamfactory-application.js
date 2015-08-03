@@ -148,7 +148,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
     }])
 
-    .service('dfApplicationData', ['$q', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
+    .service('dfApplicationData', ['$q', '$http', 'DSP_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, $http, DSP_URL, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
 
 
         var dfApplicationObj = {
@@ -781,6 +781,21 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             getLocation: function () {
                 return _getLocation();
+            },
+
+            getServiceComponents: function (serviceName) {
+                var deferred = $q.defer();
+                var service = this.getApiData('service', { name: serviceName })[0];
+                if (service.components) {
+                    deferred.resolve(service.components);
+                } else {
+                    $http.get(DSP_URL + '/api/v2/' + service.name + '/?as_access_list=true')
+                        .success(function (result) {
+                            service.components = result.resource || result;
+                            deferred.resolve(service.components);
+                        });
+                }
+                return deferred.promise;
             }
 
         }
