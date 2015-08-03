@@ -257,7 +257,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     if (!requestObj.config.hasOwnProperty('options'))
                         return requestObj;
 
-                    if (requestObj.config.options.hasOwnProperty('ssl'))
+                    if (requestObj.config.options && requestObj.config.options.hasOwnProperty('ssl'))
                         requestObj.config.options_ctrl = true;
                     else
                         requestObj.config.options_ctrl = false;

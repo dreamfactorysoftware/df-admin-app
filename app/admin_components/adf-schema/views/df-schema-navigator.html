@@ -4,12 +4,12 @@
 
         <div class="row">
             <div class="col-xs-10">
-                <select class="form-control" data-ng-model="currentService" data-ng-options="value as value.label for (key, value) in schemaManagerData">
+                <select class="form-control" data-ng-model="currentService" data-ng-options="value as value.label for (key, value) in schemaManagerData" data-ng-change="refreshService()">
                     <option value="">-- Select Service --</option>
                 </select>
             </div>
             <div class="col-xs-2">
-                <button class="btn btn-default pull-right" data-ng-click="refreshService()" type="button" data-ng-disabled="!currentService" title="Refresh service">
+                <button class="btn btn-default pull-right" data-ng-click="refreshService(true)" type="button" data-ng-disabled="!currentService" title="Refresh service">
                     <i class="fa fa-refresh fa-fw"></i>
                 </button>
             </div>

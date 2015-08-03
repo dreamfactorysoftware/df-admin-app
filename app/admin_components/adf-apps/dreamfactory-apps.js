@@ -368,7 +368,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                             dfNotify.success(messageOptions);
 
-                            scope.app = new App(result);
+                            scope.app = new App(result.resource);
 
 
                             // clean form
@@ -429,20 +429,14 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                         if (scope.storageServices[i].id === newValue) {
 
-                            $http.get(DSP_URL + '/api/v2/' + scope.storageServices[i].name, {params: {as_access_components: true}}).then(
+                            dfApplicationData.getServiceComponents(scope.storageServices[i].name).then(function (result) {
+                                angular.forEach(result, function (component) {
 
-                                function (result) {
-                                    angular.forEach(result.data.resource, function (component) {
+                                    if (component !== '' && component !== '*') {
 
-                                        if (component !== '' && component !== '*') {
-
-                                            scope.storageContainers.push(component)
-                                        }
-                                    })
-                                },
-
-                                function (reject) {
-
+                                        scope.storageContainers.push(component)
+                                    }
+                                }, function (reject) {
                                     var messageOptions = {
 
                                         module: 'Api Error',
@@ -452,8 +446,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                                     };
 
                                     dfNotify.error(messageOptions);
-                                }
-                            );
+                                });
+                            });
                         }
 
                         i++
@@ -1074,36 +1068,22 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     // No new value....return
                     if (!newValue) return false;
 
-                    // Set som vars
-                    var i = 0,
-                        found = false;
+                    dfApplicationData.getServiceComponents(newValue.name).then(function (components) {
 
-                    scope.containers = [];
+                        scope.containers = [];
 
-                    // loop through scope.storageServices
-                    while (!found && i <= scope.services.length - 1) {
+                        // loop through components.
+                        angular.forEach(components, function (v, i) {
 
-                        // If we find one with the same id as the service we've chosen
-                        // for our app
-                        if (scope.services[i].id === newValue.id) {
+                            // We don't want '*' or empty string to be available
+                            // as options
+                            if (v !== '*' && v !== '') {
+                                scope.containers.push(v);
+                            }
+                        });
 
-                            // set this true to end loop
-                            found = true;
+                    });
 
-                            // loop through options.
-                            angular.forEach(scope.services[i].components, function (v, i) {
-
-                                // We don't want '*' or empty string to be available
-                                // as options
-                                if (v !== '*' && v !== '') {
-                                    scope.containers.push(v);
-                                }
-                            })
-                        }
-
-                        // not found.  increment counter
-                        i++;
-                    }
                 });
 
                 var watchUploadFile = scope.$watch('uploadFile', function (n, o) {

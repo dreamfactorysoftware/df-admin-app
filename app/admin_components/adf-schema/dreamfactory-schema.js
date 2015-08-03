@@ -291,12 +291,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         };
 
         $scope._refreshServiceFromServer = function () {
-
-            return $http.get(DSP_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {params: {refresh: true, fields: 'name,label'}});
+            return dfApplicationData.getServiceComponents($scope.currentService.name, DSP_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {params: {refresh: true, fields: 'name,label'}});
         };
-
-
-
 
         // COMPLEX IMPLEMENTATION
         $scope._addTable = function () {
@@ -401,7 +397,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
         };
 
-        $scope._refreshService = function () {
+        $scope._refreshService = function (forceRefresh) {
 
             var tableObj = null;
 
@@ -412,11 +408,12 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 }
             }
 
-            $scope._refreshServiceFromServer().then(
+
+            dfApplicationData.getServiceComponents($scope.currentService.name, DSP_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {params: {refresh: true, fields: 'name,label'}}, forceRefresh).then(
                 function (result) {
 
                     // update service components
-                    $scope.currentService.updateComponents(result.data.resource);
+                    $scope.currentService.updateComponents(result);
 
                     // Build notification
                     var messageOptions = {
@@ -427,7 +424,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
 
                     // Send notification to user
-                    dfNotify.success(messageOptions);
+                    if (forceRefresh)
+                        dfNotify.success(messageOptions);
 
 
                     // Set the current table back and reload it

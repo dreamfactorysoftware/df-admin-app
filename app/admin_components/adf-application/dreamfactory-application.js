@@ -148,7 +148,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
     }])
 
-    .service('dfApplicationData', ['$q', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
+    .service('dfApplicationData', ['$q', '$http', 'DSP_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, $http, DSP_URL, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
 
 
         var dfApplicationObj = {
@@ -455,6 +455,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
         // Insert data into local model dfApplicationObj
         function __updateApiData(api, dataObj) {
+
+            if (dataObj.resource) {
+                dataObj = dataObj.resource;
+            }
 
             // Check for existence of api and ensure that it is an array
             if (dfApplicationObj.apis.hasOwnProperty(api) && Object.prototype.toString.call(dfApplicationObj.apis[api].resource) === '[object Array]') {
@@ -781,6 +785,23 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             getLocation: function () {
                 return _getLocation();
+            },
+
+            getServiceComponents: function (serviceName, url, params, forceRefresh) {
+                var deferred = $q.defer();
+                var service = this.getApiData('service', { name: serviceName })[0];
+                if (service.components && !forceRefresh) {
+                    deferred.resolve(service.components);
+                } else {
+                    var apiUrl = url || DSP_URL + '/api/v2/' + service.name + '/?as_access_list=true';
+                    $http.get(apiUrl, params || {})
+                        .success(function (result) {
+                            service.components = result.resource || result;
+                            deferred.resolve(service.components);
+                            __updateApiData('service', service);
+                        });
+                }
+                return deferred.promise;
             }
 
         }
