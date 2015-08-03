@@ -798,6 +798,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 };
 
+                scope.updateAffectedFields = function (fieldValue, field) {
+                    if (field.name == 'driver' && field.values) {
+                        var foundValue = field.values.filter(function (item) {
+                            return item.name === fieldValue;
+                        })[0] || {};
+
+                        scope.serviceInfo.record.config.dsn = foundValue.dsn;
+                    }
+                };
+
                 scope._updateDsn = function () {
 
                     var string = '';

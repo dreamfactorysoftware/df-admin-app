@@ -27,13 +27,13 @@
         <select class="form-control" data-ng-if="field.type == 'picklist'"
                 data-ng-model="serviceInfo.record.config[field.name]"
                 data-ng-options="option.name as option.label for option in field.values"
-                data-ng-click="updateAffectedFields(serviceInfo.record.config[field.name], field)">
+                data-ng-change="updateAffectedFields(serviceInfo.record.config[field.name], field)">
         </select>
 
         <select class="form-control" data-ng-if="field.type == 'reference'"
                 data-ng-model="serviceInfo.record.config[field.name]"
                 data-ng-options="option.value as option.name for option in getReferences(field.ref_table, field.ref_fields)"
-                data-ng-click="updateAffectedFields(serviceInfo.record.config[field.name], field)">
+                data-ng-change="updateAffectedFields(serviceInfo.record.config[field.name], field)">
         </select>
         <!--angular 1.4.0 required-->
         <!--<select class="form-control" ng-if="field.type == 'picklist'" ng-model="serviceInfo.record.config[field.name]"-->
