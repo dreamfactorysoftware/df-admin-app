@@ -132,6 +132,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "mutable": true,
                         "deletable": true,
                         "config": {},
+                        "cache_ttl": 0,
+                        "cache_enabled": false,
                         "service_doc_by_service_id": [
                             {
                                 content: {
@@ -1241,6 +1243,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
 
+                scope.isArray = angular.isArray;
+
                 scope.customConfig = [];
 
                 scope.addKeyValue = function (field) {
@@ -1266,13 +1270,27 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     arr.splice(index, 1);
                 };
 
-                scope.addObjectInArray = function (configObj, key) {
+                scope.addObjectInArray = function (configObj, key, items) {
                     if (!configObj[key]) {
                         configObj[key] = [];
                     }
-
-                    configObj[key].push('');
-                };
+                    var newObj = {};
+                    items.forEach(function (item) {
+                        switch (item.type) {
+                            case 'text':
+                            case 'string':
+                                newObj[item.name] = '';
+                                break;
+                            case "boolean":
+                                newObj[item.name] = false;
+                                break;
+                            case "verb_mask":
+                                newObj[item.name] = 31; // allow all verbs
+                                break;
+                        }
+                    });
+                    configObj[key].push(newObj);
+                }
 
                 scope.deleteObjectFromArray = function (arr, index) {
                     arr.splice(index, 1);

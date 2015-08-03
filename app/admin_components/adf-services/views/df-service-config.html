@@ -80,7 +80,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="form-group" data-ng-if="Array.isArray( field.items )">
+            <div class="form-group" data-ng-if="isArray(field.items)">
                 <table class="table table-hover table-striped field-list">
                     <thead>
                     <tr>
@@ -101,33 +101,36 @@
                     <tbody>
 
                     <tr data-ng-repeat="obj in serviceInfo.record.config[field.name] track by $index">
-                        <div class="form-group" data-ng-repeat="part in field.items">
+                        <td data-ng-repeat="part in field.items">
                             <input class="form-control" data-ng-if="part.type == 'string'"
-                                   data-ng-model="serviceInfo.record.config[field.name][$index][part.name]"
+                                   data-ng-model="serviceInfo.record.config[field.name][$parent.$index][part.name]"
                                    type="text" data-ng-required="part.required"/>
                             <input class="form-control" data-ng-if="part.type == 'password'"
-                                   data-ng-model="serviceInfo.record.config[field.name][$index][part.name]"
+                                   data-ng-model="serviceInfo.record.config[field.name][$parent.$index][part.name]"
                                    type="password" data-ng-required="part.required"/>
                             <input class="form-control" data-ng-if="part.type == 'text'"
-                                   data-ng-model="serviceInfo.record.config[field.name][$index][part.name]"
+                                   data-ng-model="serviceInfo.record.config[field.name][$parent.$index][part.name]"
                                    type="text" data-ng-required="part.required"/>
                             <input class="form-control" data-ng-if="part.type == 'boolean'"
-                                   data-ng-model="serviceInfo.record.config[field.name][$index][part.name]"
+                                   data-ng-model="serviceInfo.record.config[field.name][$parent.$index][part.name]"
                                    type="checkbox"/>
                             <input class="form-control" data-ng-if="part.type == 'integer'"
-                                   data-ng-model="serviceInfo.record.config[field.name][$index][part.name]"
+                                   data-ng-model="serviceInfo.record.config[field.name][$parent.$index][part.name]"
                                    type="number" data-ng-required="part.required">
-
                             <select class="form-control" data-ng-if="part.type == 'picklist'"
-                                    data-ng-model="serviceInfo.record.config[field.name][$index][part.name]"
+                                    data-ng-model="serviceInfo.record.config[field.name][$parent.$index][part.name]"
                                     data-ng-options="option.name as option.label for option in part.values"
                                     data-ng-click="updateAffectedFields(serviceInfo.record.config[field.name], field)">
                             </select>
-                        </div>
+                            <df-verb-picker data-ng-if="part.type == 'verb_mask'"
+                                            data-allowed-verb-mask="serviceInfo.record.config[field.name][$parent.$index][part.name]"
+                                            data-size="sm">
+                            </df-verb-picker>
+                        </td>
                         <td class="no-border">
                             <div class="btn-group pull-left">
                                 <button type="button" class="btn btn-sm btn-default"
-                                        data-ng-click="deleteObjectFromArray(serviceInfo.record.config[field.name], $index)"
+                                        data-ng-click="deleteObjectFromArray(serviceInfo.record.config[field.name], $parent.$index)"
                                         title="Delete">
                                     <i class="fa fa-trash-o fa-fw"></i>
                                 </button>
