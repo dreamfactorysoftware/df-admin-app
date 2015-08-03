@@ -54,7 +54,7 @@
                         <!--<df-simple-help data-options="dfHelp.storageAndLaunchpad"></df-simple-help> -->
                         <div class="form-group">
                             <label>Storage Service</label><df-simple-help data-options="dfHelp.storageService"></df-simple-help>
-                            <select class="form-control" data-ng-model="app.record.storage_service_id" data-ng-options="service.id as service.label for service in storageServices"></select>
+                            <select class="form-control" data-ng-model="app.record.storage_service_id" data-ng-options="service.id as service.label for service in storageServices" data-ng-change="changeStorageService()"></select>
                         </div>
 
                         <div class="form-group">
@@ -94,7 +94,7 @@
 
                     <div class="form-group" data-ng-if="app.record.type == 1">
                         <div class="alert alert-info">
-                            <p><i class="fa fa-fw fa-cloud">&nbsp;</i>Your URL will be: {{currentServer}}/files{{storageServices[app.record.storage_service_id].name}}/{{app.record.storage_container}}<span>{{app.record.path}}</span></p>
+                            <p><i class="fa fa-fw fa-cloud">&nbsp;</i>Your URL will be: {{currentServer}}/{{selectedStorageService.name}}/{{app.record.storage_container}}<span>{{app.record.path}}</span></p>
                         </div>
                     </div>
 					<div class="form-group" data-ng-if="app.record.type == 3">

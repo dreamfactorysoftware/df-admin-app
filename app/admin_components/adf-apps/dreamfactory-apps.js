@@ -414,12 +414,21 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     scope._resetAppDetails();
                 };
 
+                scope.changeStorageService = function () {
+                    if (scope.app && scope.app.record) {
+                        scope.selectedStorageService = scope.storageServices.filter(function (item) {
+                            return item.id == scope.app.record.storage_service_id;
+                        })[0];
+                    }
+                    
+                };
 
                 // WATCHERS
 
                 var watchAppStorageService = scope.$watch('app.record.storage_service_id', function (newValue, oldValue) {
 
                     // No new value....return
+                    scope.changeStorageService();
                     if (!newValue) return false;
 
                     var i = 0;
