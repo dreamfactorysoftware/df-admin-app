@@ -294,7 +294,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     // convert key, value pair array to object
                     scope.selectedSchema.config_schema.forEach(function(item) {
-                      if (item.type === 'object' && data.config[item.name] && data.config[item.name].length) {
+                      if (item.type.indexOf('object') > -1 && data.config[item.name] && data.config[item.name].length) {
                         var arr = data.config[item.name];
                         data.config[item.name] = {};
                         arr.forEach(function(arrItem) {
@@ -795,6 +795,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                 scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), dsn.length).split("=")[1];
                             }
 
+                    }
+                };
+
+                scope.updateAffectedFields = function (fieldValue, field) {
+                    if (field.name == 'driver' && field.values) {
+                        var foundValue = field.values.filter(function (item) {
+                            return item.name === fieldValue;
+                        })[0] || {};
+
+                        scope.serviceInfo.record.config.dsn = foundValue.dsn;
                     }
                 };
 
