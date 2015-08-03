@@ -294,7 +294,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     // convert key, value pair array to object
                     scope.selectedSchema.config_schema.forEach(function(item) {
-                      if (item.type === 'object' && data.config[item.name] && data.config[item.name].length) {
+                      if (item.type.indexOf('object') > -1 && data.config[item.name] && data.config[item.name].length) {
                         var arr = data.config[item.name];
                         data.config[item.name] = {};
                         arr.forEach(function(arrItem) {
