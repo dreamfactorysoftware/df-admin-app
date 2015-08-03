@@ -950,7 +950,7 @@ angular.module('dfUtility', ['dfApplication'])
 
     // Displays table select box for dreamfactory database services
     .directive('dfDbTablePicker', [
-        'MOD_UTILITY_ASSET_PATH', 'DSP_URL', '$http', function (MOD_UTILITY_ASSET_PATH, DSP_URL, $http) {
+        'MOD_UTILITY_ASSET_PATH', 'DSP_URL', '$http', 'dfApplicationData', function (MOD_UTILITY_ASSET_PATH, DSP_URL, $http, dfApplicationData) {
 
             return {
                 restrict: 'E',
@@ -974,7 +974,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                     // PRIVATE API
                     scope._getResources = function () {
-                        return $http.get(DSP_URL + '/api/v2/' + scope.activeService + '/_table/',  {params: {fields: 'name,label'}});
+                        return dfApplicationData.getServiceComponents(scope.activeService, DSP_URL + '/api/v2/' + scope.activeService + '/_table/',  {params: {fields: 'name,label'}})
                     };
 
                     // COMPLEX IMPLEMENTATION
@@ -1004,7 +1004,7 @@ angular.module('dfUtility', ['dfApplication'])
                             scope._getResources().then(
                                 function (result) {
 
-                                    scope.resources = result.data.resource;
+                                    scope.resources = result;
                                 },
 
                                 function (reject) {

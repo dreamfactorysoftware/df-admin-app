@@ -430,7 +430,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         if (scope.storageServices[i].id === newValue) {
 
                             dfApplicationData.getServiceComponents(scope.storageServices[i].name).then(function (result) {
-                                angular.forEach(result.resource, function (component) {
+                                angular.forEach(result, function (component) {
 
                                     if (component !== '' && component !== '*') {
 
