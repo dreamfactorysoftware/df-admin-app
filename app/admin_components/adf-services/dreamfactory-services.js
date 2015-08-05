@@ -132,8 +132,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "mutable": true,
                         "deletable": true,
                         "config": {},
-                        "cache_ttl": 0,
-                        "cache_enabled": false,
                         "service_doc_by_service_id": [
                             {
                                 content: {
