@@ -3,13 +3,19 @@
     <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema">
         <div class="form-group ng-scope" data-ng-if="field.type == 'boolean'">
             <div class="checkbox">
-                <label><input data-ng-model="serviceInfo.record.cache_enabled" type="checkbox">Cache Enabled</label>
+                <label>
+                    <input data-ng-model="serviceInfo.record.config[field.name]" type="checkbox">
+                    {{ field.label}}
+                </label>
+                <df-simple-help data-options="field"></df-simple-help>
             </div>
         </div>
 
 
-        <label>{{ field.label }}</label>
-        <df-simple-help data-options="field"></df-simple-help>
+        <div class="form-group ng-scope" data-ng-if="field.type != 'boolean'">
+            <label>{{ field.label }}</label>
+            <df-simple-help data-options="field"></df-simple-help>
+        </div>
 
         <input class="form-control" data-ng-if="field.type == 'string'"
                data-ng-model="serviceInfo.record.config[field.name]"
@@ -117,6 +123,7 @@
                             <input class="form-control" data-ng-if="part.type == 'integer'"
                                    data-ng-model="serviceInfo.record.config[field.name][$parent.$index][part.name]"
                                    type="number" data-ng-required="part.required">
+
                             <select class="form-control" data-ng-if="part.type == 'picklist'"
                                     data-ng-model="serviceInfo.record.config[field.name][$parent.$index][part.name]"
                                     data-ng-options="option.name as option.label for option in part.values"
