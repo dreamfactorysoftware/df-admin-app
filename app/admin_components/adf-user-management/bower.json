@@ -5,7 +5,7 @@
   "authors": [
     "Michael Mandato <michaelmandato@dreamfactory.com>"
   ],
-  "description": "AngularJS module that authenticates and manages a single user for the DreamFactory Services Platform.",
+  "description": "AngularJS module that authenticates and manages a single user for DreamFactory.",
   "main": "dreamfactory-user-management.js",
   "keywords": [
     "AngularJS",

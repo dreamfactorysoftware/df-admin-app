@@ -1,7 +1,7 @@
 ## Angular DreamFactory User Management Module
 ===========================================
 
-AngularJS module that authenticates and manages a single user for the DreamFactory Services Platform.
+AngularJS module that authenticates and manages a single user for DreamFactory.
 
 
 ### Installation
