@@ -967,16 +967,17 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     var _options = {
                         params: {},
-                        data: requestDataObj
+                        data: requestDataObj,
+                        dontWrapData: true
                     };
 
                     if (scope._isAppPathUrl(scope.appPath)) {
                         _options['headers'] = {
-                            "Content-type": 'application/json'
+                            "Content-Type": 'application/json'
                         }
                     }
                     else {
-                        _options['headers'] = {"Content-type": undefined};
+                        _options['headers'] = {"Content-Type": undefined};
                         $http.defaults.transformRequest = angular.identity;
                     }
 
@@ -1021,7 +1022,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                         var fd = new FormData();
 
-                        fd.append('files', scope.uploadFile);
+                        fd.append('file', scope.uploadFile);
                         // fd.append("files", $('input[type=file]')[0].files[0]);
                         // fd.append("text", 'asdfasdsfasdfasdf');
                         requestDataObj = fd

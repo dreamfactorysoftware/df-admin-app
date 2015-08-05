@@ -322,9 +322,11 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             var params = options.params;
             params['api'] = api;
 
-            // add wrapper
-            options.data = {"resource": [options.data]};
-
+            if (!options.dontWrapData) {
+                // add wrapper
+                options.data = {"resource": [options.data]};    
+            }
+            
             // return response from server as promise
             return dfSystemData.resource(options).post(params, options.data, function (result) {
 
