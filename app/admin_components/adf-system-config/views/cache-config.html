@@ -6,7 +6,7 @@
     <button type="button" class="btn btn-primary" data-ng-click="flushSystemCache()">Flush System-Wide Cache</button>
     <br/>
     <br/>
-    <table class="table table-striped">
+    <table class="table table-striped" data-ng-if="servicesData.length > 0">
         <tr>
             <th>Per-Service Caches</th>
             <th></th>
@@ -17,8 +17,19 @@
             </td>
             <td>
                 <button type="button" class="btn btn-default btn-sm" data-ng-click="flushServiceCache($index)"><i
-                        class="fa fa-trash-o fa-fw"></i>
+                        class="fa fa-refresh fa-fw"></i>
                 </button>
+            </td>
+        </tr>
+    </table>
+    <table class="table table-striped" data-ng-if="servicesData.length === 0">
+        <tr>
+            <th>Per-Service Caches</th>
+            <th></th>
+        </tr>
+        <tr>
+            <td>
+                No cache-enabled services found.
             </td>
         </tr>
     </table>

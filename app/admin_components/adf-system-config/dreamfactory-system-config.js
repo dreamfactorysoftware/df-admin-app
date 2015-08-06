@@ -103,7 +103,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.systemEnv = dfApplicationData.getApiData('environment');
             // Config will always be the first in the array so we grab the 0th value
             $scope.systemConfig = new SystemConfig(dfApplicationData.getApiData('config')[0]);
-            $scope.servicesData = dfApplicationData.getApiData('service');
+            $scope.servicesData = dfApplicationData.getApiData('cache');
             $scope.corsEntriesData = dfApplicationData.getApiData('cors');
             $scope.globalLookupsData = dfApplicationData.getApiData('lookup');
             $scope.emailTemplatesData = dfApplicationData.getApiData('email_template');
