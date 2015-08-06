@@ -81,8 +81,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
     }])
 
-    .controller('SystemConfigurationCtrl', ['$scope', 'dfApplicationData', 'SystemConfigEventsService', 'SystemConfigDataService', 'dfObjectService', 'dfNotify',
-        function ($scope, dfApplicationData, SystemConfigEventsService, SystemConfigDataService, dfObjectService, dfNotify) {
+    .controller('SystemConfigurationCtrl', ['$scope', 'dfApplicationData', 'SystemConfigEventsService', 'SystemConfigDataService', 'dfObjectService', 'dfNotify', 'DSP_URL', '$http',
+        function ($scope, dfApplicationData, SystemConfigEventsService, SystemConfigDataService, dfObjectService, dfNotify, DSP_URL, $http) {
 
 
             var SystemConfig = function (systemConfigData) {
@@ -92,6 +92,31 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     recordCopy: angular.copy(systemConfigData)
                 }
             };
+
+            $scope.getCacheEnabledServices = function () {
+
+                $scope.cacheEnabledServices = [];
+
+                $http.get(DSP_URL + '/api/v2/system/cache?fields=*').then(
+
+                    function (result) {
+
+                        $scope.cacheEnabledServices = result.data.resource;
+                    },
+                    function (reject) {
+
+                        var messageOptions = {
+
+                            module: 'Api Error',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: reject
+                        };
+
+                        dfNotify.error(messageOptions);
+                    }
+                );
+            }
 
             $scope.$parent.title = 'Config';
 
@@ -103,7 +128,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.systemEnv = dfApplicationData.getApiData('environment');
             // Config will always be the first in the array so we grab the 0th value
             $scope.systemConfig = new SystemConfig(dfApplicationData.getApiData('config')[0]);
-            $scope.servicesData = dfApplicationData.getApiData('cache');
+            $scope.getCacheEnabledServices();
             $scope.corsEntriesData = dfApplicationData.getApiData('cors');
             $scope.globalLookupsData = dfApplicationData.getApiData('lookup');
             $scope.emailTemplatesData = dfApplicationData.getApiData('email_template');
@@ -329,14 +354,14 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.flushServiceCache = function (index) {
 
-                    $http.delete(DSP_URL + '/api/v2/system/cache/' + scope.servicesData[index].name)
+                    $http.delete(DSP_URL + '/api/v2/system/cache/' + scope.cacheEnabledServices[index].name)
                         .success(function () {
 
                             var messageOptions = {
                                 module: 'Cache',
                                 type: 'success',
                                 provider: 'dreamfactory',
-                                message: scope.servicesData[index].label + ' service cache flushed.'
+                                message: scope.cacheEnabledServices[index].label + ' service cache flushed.'
                             };
 
                             dfNotify.success(messageOptions);
