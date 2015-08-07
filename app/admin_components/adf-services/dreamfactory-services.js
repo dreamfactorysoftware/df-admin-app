@@ -1280,7 +1280,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     if (schema.items instanceof Array) { 
                         scope.serviceInfo.record.config[key].push({ });
-                    }                    
+                    } else if (schema.items === 'string') {
+                        scope.serviceInfo.record.config[key].push('');
+                    }              
                 };
 
                 scope.deleteStringFromArray = function (arr, index) {
