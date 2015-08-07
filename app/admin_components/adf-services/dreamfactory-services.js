@@ -157,7 +157,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     if (serviceData && serviceData.config) {
                         // Convert object from config types to array
                         Object.keys(serviceData.config).forEach(function(key) {
-                          if (serviceData.config[key] && typeof serviceData.config[key] === 'object') {
+                          if (serviceData.config[key] && serviceData.config[key].constructor === Object) {
                             var arr = [];
                             Object.keys(serviceData.config[key]).forEach(function (objKey) {
                                 arr.push({ key: objKey, value: serviceData.config[key][objKey] })
@@ -290,15 +290,18 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     var data = angular.copy(scope.service.record);
 
-                    // convert key, value pair array to object
-                    scope.selectedSchema.config_schema.forEach(function(item) {
-                      if (item.type.indexOf('object') > -1 && data.config[item.name] && data.config[item.name].length) {
+                    var convert = function (item) {
                         var arr = data.config[item.name];
                         data.config[item.name] = {};
                         arr.forEach(function(arrItem) {
                           data.config[item.name][arrItem.key] = arrItem.value;
                         });
-                      }
+                    }
+                    // convert key, value pair array to object
+                    scope.selectedSchema.config_schema.forEach(function(item) {
+                        if (item.type.indexOf('object') > -1 && data.config[item.name] && data.config[item.name].length) {
+                            convert(item);
+                        }
                     });
 
                     return data;
@@ -1266,12 +1269,18 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     obj.splice($index, 1);
                 };
 
-                scope.addStringInArray = function (configObj, key) {
+                scope.appendItemToArray = function (configObj, key) {
                     if (!configObj[key]) {
                         configObj[key] = [];
                     }
 
-                    configObj[key].push('');
+                    var schema = scope.selectedSchema.config_schema.filter(function (item) { 
+                        return item.name == key 
+                    })[0] || {};
+
+                    if (schema.items instanceof Array) { 
+                        scope.serviceInfo.record.config[key].push({ });
+                    }                    
                 };
 
                 scope.deleteStringFromArray = function (arr, index) {
