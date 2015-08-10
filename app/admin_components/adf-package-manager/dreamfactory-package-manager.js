@@ -215,25 +215,26 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     return schemas;
                 };
 
-
                 var watchDatabase = scope.$watch('databases', function(newValue, oldValue) {
 
                     if (newValue == null) {
 
                         var _dbservices = dfApplicationData.getApiData('service', {type: 'sql_db'});
-                        var _databases = [];
+                        scope.databases = [];
 
                         angular.forEach(_dbservices, function (service) {
 
-                            var _tableNames = [];
-                            angular.forEach(service.components, function (table) {
+                            dfApplicationData.getServiceComponents(service.name).then(function (results) {
+                                var _tableNames = [];
+                                angular.forEach(results, function (table) {
+                                    if (table.indexOf('_schema') !== 0 && table !== '*' && table !== "" && Array.isArray(service.components)) {
+                                        _tableNames.push(new DBTable(table));
+                                    }
+                                });
 
-                                if (table.indexOf('_schema') !== 0 && table !== '*' && table !== "" && Array.isArray(service.components)) {
-                                    _tableNames.push(new DBTable(table));
-                                }
+                                scope.databases.push({name: service.name, tables: _tableNames, service_id: service.id})                            
                             });
-                            _databases.push({name: service.name, tables: _tableNames, service_id: service.id});
-                            scope.databases = _databases;
+
                         });
                     }
                 });
