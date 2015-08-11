@@ -114,8 +114,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             method: 'GET',
                             url: DSP_URL + '/api/v2/system/app/' + newValue.id,
                             params: {
-                                fields: '*',
-                                related: 'app_service_relations'
+                                fields: '*'
                             }
                         }).then(
                             function(result) {
@@ -179,40 +178,28 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 };
 
                 scope.databases = null;
-                scope.includeSchema = false;
-
 
                 scope.prepareSchemaData = function () {
 
-                    var schemas = [];
-                    var tempSchema = {};
+                    var result = {};
 
                     angular.forEach(scope.databases, function (schema) {
 
-                        tempSchema = {
-                            component: [],
-                            service_id: schema.service_id
-                        };
+                        result[schema.name] = [];
 
                         angular.forEach(schema.tables, function (comp) {
 
                             if (comp.__dfUI.selected) {
-                                tempSchema.component.push(comp.record);
+                                result[schema.name].push(comp.record);
                             }
                         });
 
-                        if (tempSchema.component.length)
-                            schemas.push(tempSchema);
-
+                        if (result[schema.name].length === 0) {
+                            delete result[schema.name];
+                        }
                     });
 
-                    if (!schemas.length) {
-                        scope.includeSchema = false;
-                        return;
-                    }
-
-                    scope.includeSchema = true;
-                    return schemas;
+                    return JSON.stringify(result);
                 };
 
                 var watchDatabase = scope.$watch('databases', function(newValue, oldValue) {
@@ -226,9 +213,16 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                             dfApplicationData.getServiceComponents(service.name).then(function (results) {
                                 var _tableNames = [];
+                                var prefix = '_schema/';
                                 angular.forEach(results, function (table) {
-                                    if (table.indexOf('_schema') !== 0 && table !== '*' && table !== "" && Array.isArray(service.components)) {
-                                        _tableNames.push(new DBTable(table));
+                                    if (table.indexOf(prefix) === 0) {
+                                        var name = table.slice(prefix.length);
+                                        if (name != '' &&
+                                            name != '*' &&
+                                            Array.isArray(service.components)) {
+
+                                            _tableNames.push(new DBTable(name));
+                                        }
                                     }
                                 });
 
@@ -241,41 +235,13 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                 var watchSelectedAppToSchema = scope.$watch('selectedApp', function (newValue, oldValue) {
 
-                    if (!newValue || !newValue.hasOwnProperty('app_service_relations')) {
-
+                    if (!newValue) {
                         angular.forEach(scope.databases, function(database) {
-                            angular.forEach(database.table, function(table) {
+                            angular.forEach(database.tables, function(table) {
                                 table.__dfUI.selected = false;
                             });
                         });
-
-                        return;
-                    };
-
-
-                    angular.forEach(newValue.app_service_relations, function (relation) {
-
-                        if (!relation.hasOwnProperty('component') || !relation.component) return;
-
-                        angular.forEach(relation.component, function(component) {
-
-                            var i = 0;
-
-                            while(i < scope.databases.length) {
-
-                                if (scope.databases[i].record === component) {
-
-                                    scope.databases[i].__dfUI.selected = true;
-                                    scope.includeSchema = true;
-                                    return;
-                                }
-
-                                i++
-                            }
-
-                        })
-
-                    })
+                    }
                 });
 
                 scope.$on('$destroy', function () {
@@ -307,32 +273,20 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 };
 
                 scope.services = null;
-                scope.includeServices = false;
 
                 scope.prepareServicesData = function () {
 
-                    var tempServicesArr = [];
+                    var result = [];
 
                     angular.forEach(scope.services, function (service) {
 
                         if (service.__dfUI.selected) {
 
-                            var _new = {
-                                service_id: service.record.id,
-                                name: service.record.name
-                            }
-
-                            tempServicesArr.push(_new);
+                            result.push(service.record.name);
                         }
                     });
 
-                    if (!tempServicesArr.length) {
-                        scope.includeServices = false;
-                        return;
-                    }
-
-                    scope.includeServices = true;
-                    return tempServicesArr;
+                    return result.join(',');
                 };
 
                 var watchServices = scope.$watch('services', function(newValue, oldValue) {
@@ -367,35 +321,13 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                 var watchSelectedAppToService = scope.$watch('selectedApp', function (newValue, oldValue) {
 
-                    if (!newValue || !newValue.hasOwnProperty('app_service_relations')) {
+                    if (!newValue) {
 
                         angular.forEach(scope.services, function(service) {
 
                             service.__dfUI.selected = false;
                         });
-
-                        return;
-                    };
-
-
-                    angular.forEach(newValue.app_service_relations, function (relation) {
-
-                        var i = 0;
-
-                        while(i < scope.services.length) {
-
-                            if (scope.services[i].record.id === relation.service_id) {
-
-                                scope.services[i].__dfUI.selected = true;
-                                scope.includeServices = true;
-                                return;
-                            }
-
-                            i++
-
-                        }
-
-                    })
+                    }
                 });
 
                 scope.$on('$destroy', function () {
@@ -408,7 +340,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfExportPackage', ['DSP_URL', '$window', '$http', 'dfNotify', function (DSP_URL, $window, $http, dfNotify) {
+    .directive('dfExportPackage', ['DSP_URL', 'DSP_API_KEY', 'UserDataService', '$window', function (DSP_URL, DSP_API_KEY, UserDataService, $window) {
 
         return {
 
@@ -424,85 +356,17 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     scope._exportPackage();
                 };
 
-
-                // PRIVATE API
-                scope._updateAppsToService = function (requestDataObj) {
-
-                    return $http({
-                        method: "PUT",
-                        url: DSP_URL + '/api/v2/system/app/' + scope.selectedApp.id,
-                        params: requestDataObj.params,
-                        data: requestDataObj.data
-                    })
-                };
-
-
                 // COMPLEX IMPLEMENTATION
                 scope._exportPackage = function () {
 
-                    var _schema = scope.prepareSchemaData(),
-                        _services = scope.prepareServicesData(),
-                        _serviceRelations = [];
-
-                    if (scope.includeSchema) {
-
-                        _serviceRelations = _serviceRelations.concat(_schema)
-
-                    }
-
-                    if (scope.includeServices) {
-
-                        _serviceRelations = _serviceRelations.concat(_services);
-                    }
-
-                    scope.selectedApp['app_service_relations'] = _serviceRelations;
-
-                    var requestDataObj = {
-
-                        params: {
-                            fields: '*',
-                            related: 'app_service_relations'
-                        },
-                        data: scope.selectedApp
-                    }
-
-
-                    scope._updateAppsToService(requestDataObj).then(
-                        function(result) {
-
-                            var exportUrl = DSP_URL + '/api/v2/system/app/' + scope.selectedApp.id + '?app_name=admin&pkg=true';
-
-
-                            if (scope.includeAppFiles) {
-                                exportUrl += '&include_files=true';
-                            }
-
-                            if (scope.includeSchema) {
-
-                                exportUrl += '&include_schema=true';
-                            }
-
-                            if (scope.includeServices) {
-
-                                exportUrl += '&include_services=true';
-                            }
-
-                            $window.location.href = exportUrl;
-
-                        },
-                        function(reject) {
-
-                            var messageOptions = {
-                                module: 'Packages',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject.data.error.message
-                            };
-
-                            dfNotify.error(messageOptions);
-
-                        }
-                    );
+                    var exportUrl = DSP_URL + '/api/v2/system/app/' + scope.selectedApp.id + '?pkg=true' +
+                        '&api_key=' + DSP_API_KEY +
+                        '&session_token=' + UserDataService.getCurrentUser().session_token +
+                        '&include_files=' + scope.includeAppFiles +
+                        '&service=' + scope.prepareServicesData() +
+                        '&schema=' + scope.prepareSchemaData();
+;
+                    $window.location.href = exportUrl;
                 }
             }
         }
