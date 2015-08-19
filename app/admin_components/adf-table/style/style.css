@@ -1,0 +1,68 @@
+.dfUISelected {
+
+    background: #b3d4fc !important;
+
+}
+
+.dfUIUnsaved {
+
+    background: lightgoldenrodyellow !important;
+}
+
+
+.dfUIExport {
+
+    background: lightsteelblue !important;
+}
+
+.df-th-text {
+    white-space: nowrap;
+}
+
+.df-dropdown-height {
+
+    max-height: 160px;
+    overflow-y: scroll
+}
+
+
+.df-table-btn-bar {
+    min-width: 80px;
+}
+
+.df-v-margin {
+
+    margin: 10px auto;
+}
+
+.df-h-margin {
+    margin: auto 10px;
+}
+
+.df-toolbar {
+
+    margin: 20px auto
+}
+
+.df-table-divider {
+    margin: 5px auto
+}
+
+.df-progress-border {
+    /*border-bottom: 1px solid #ddd;*/
+}
+
+.df-progress-margin {
+    margin-bottom: 15px;
+}
+
+.df-progress-border .progress {
+    border-radius: 0;
+    background: none;
+    border: none;
+}
+
+.tab-pane{
+
+    overflow-x:scroll;
+}

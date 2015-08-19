@@ -1,0 +1,7 @@
+<div class="remote-login-providers"> <!--<p data-ng-if="providers.length > 0">Login with a third party account.<i>Not working yet.</i></p>--> <!--<p data-ng-if="oauths.length === 0">No remote login providers available.</p>--> <br> <div class="panel panel-default" data-ng-if="oauths.length !== 0"> <div class="panel-heading">Login With</div> <div class="panel-body"> <span ng-repeat="(key, val) in oauths"> <button type="button" class="btn btn-primary btn-sm" data-ng-click="loginWithProvider(val.path)"><i class="fa {{val.icon_class}} fa-2x"></i></button> </span> </div> </div> <!--
+    <fieldset data-ng-if="oauths.length !== 0">
+        <span ng-repeat="(key, val) in oauths">
+            <button type="button" class="btn btn-sm" data-ng-click="loginWithProvider(val.path)"><i class="fa {{val.icon_class}} fa-2x"></i></button>
+        </span>
+    </fieldset>
+    --> <!-- Google Plus Provider name needs to be worked out on server so I don't have to change it on the client --> <!--<a data-ng-if="provider.is_active && provider.is_login_provider" data-ng-click="loginWithProvider(provider)" data-ng-repeat="provider in providers"><i class="fa fa-fw fa-2x fa-{{provider.api_name}}-square"></i></a>--> </div>

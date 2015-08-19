@@ -1,0 +1,12 @@
+<div>
+    <div class="col-md-2 df-sidebar-nav">
+        <df-sidebar-nav></df-sidebar-nav>
+    </div>
+    <div class="col-md-10 df-section" data-ng-class="activeView.path === 'manage-apps' ? 'df-section-3-round' : 'df-section-all-round'" df-fs-height >
+        <df-manage-apps data-ng-if="activeView.path === 'manage-apps'"></df-manage-apps>
+        <df-app-details data-ng-if="activeView.path === 'create-app'" data-new-app="true"></df-app-details>
+        <df-import-app data-ng-if="activeView.path === 'import-app'"></df-import-app>
+        <df-app-groups data-ng-if="activeView.path === 'app-groups'"></df-app-groups>
+    </div>
+</div>
+

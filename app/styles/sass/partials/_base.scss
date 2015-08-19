@@ -1,0 +1,171 @@
+
+html {
+  height: 100%;
+}
+
+body {
+  height : 100%;
+  padding-top: $navbar-height;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+//.background-blue-steel {
+//
+//  // needs latest Compass, add '@import "compass"' to your scss
+//  background-color: #161f25; // Old browsers
+//  @include filter-gradient(#161f25, #747c7f, #64819e, #434945, horizontal); // IE6-9 fallback on horizontal gradient
+//  @include background-image(linear-gradient(left top,  #161f25 0%, #747c7f 35%, #64819e 76%, #434945 100%));
+//
+//}
+
+
+.full-color-bg {
+  // needs latest Compass, add '@import "compass"' to your scss
+  background-color: #0a0809; // Old browsers
+  @include filter-gradient(#0a0809, #2d2f30, horizontal); // IE6-9 fallback on horizontal gradient
+  @include background-image(linear-gradient(left top,  #0a0809 0%,#2d2f30 100%));
+
+  z-index: -1;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+
+
+.df-section {
+
+  height: 100%;
+//  background : white;
+  overflow: scroll;
+
+  // box-shadow: -8px 7px 15px -5px rgba(0, 0, 0, 0.3);
+
+  padding: 0 20px 20px;
+
+
+  label {
+    // color: #555;
+  }
+
+  @media screen and (max-width: $break-small) {
+
+
+    padding: 0 15px 20px;
+
+  }
+
+}
+
+.df-section-all-round {
+  border-radius: $border-radius-base;
+
+
+  @media screen and (max-width: $break-small) {
+
+    border-radius: $border-radius-small;
+  }
+
+}
+
+.df-section-3-round {
+
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+
+.df-section-header {
+
+  text-align: right;
+  color: white;
+  background: $gray-dark;
+  padding: 10px 15px 11px;
+  margin-bottom: 10px;
+
+  h4 {
+
+    margin: 0;
+    color: $gray-lighter;
+
+  }
+}
+
+.df-empty-section-row {
+  margin-top: 50px;
+}
+
+.df-panel-heading {
+
+}
+
+.df-btn-group {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+
+.df-tab-has-error {
+  color: red !important;
+}
+
+.mask {
+  position: fixed;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background: rgba(0, 0, 0, .7);
+  z-index: 10;
+  display: none;
+
+}
+
+#top-bar-mask {
+  position: fixed;
+  top:0;
+  left:0;
+  right:0;
+  height: $navbar-height;
+  background: rgba(0, 0, 0, .7);
+  z-index: 1031;
+  display: none;
+
+}
+
+#df-copyright-footer {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  right: 0;
+  z-index: 1031;
+  color: $brand-grey-light;
+  background: $brand-grey;
+}
+
+.df-footer-text {
+  padding: 10px;
+  display: inline-block;
+
+  font-size: 12px;
+
+  @media screen and (max-width: $break-small) {
+
+    font-size: 10px;
+  }
+
+}
+
+.table tr {
+  cursor: pointer
+}
+

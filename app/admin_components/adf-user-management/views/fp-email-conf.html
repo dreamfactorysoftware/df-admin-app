@@ -1,0 +1,106 @@
+<div >
+    <!-- Page title -->
+    <!--<h1>Email Password Reset</h1>-->
+
+    <div class="alert alert-danger" role="alert" data-ng-show="errorMsg !== ''">
+        <button type="button" class="close" data-ng-click="dismissError()"><span aria-hidden="true">&times;</span></button>
+        {{errorMsg}}
+    </div>
+
+    <div class="alert alert-success" role="alert" data-ng-show="successMsg !== ''">
+        <button type="button" class="close" data-ng-click="dismissSuccess()"><span aria-hidden="true">&times;</span></button>
+        {{successMsg}}
+    </div>
+
+    <div data-ng-show="emailForm">
+        <div class="panel panel-default">
+            <div class="panel-heading df-panel-heading">
+                <h3 class="panel-title">Password Reset</h3>
+            </div>
+            <div class="panel-body">
+                <dreamfactory-waiting data-show="requestWaiting"></dreamfactory-waiting>
+                <p>Enter your email address to reset your password.</p>
+
+                <!-- Forgot Password Form -->
+                <form name="reset-password-form" data-ng-submit="requestPasswordReset(creds)" autocomplete="off">
+                    <div class="form-group">
+                        <input type="email" id="reset-password-email" name="reset-password-email" placeholder="Enter Email"
+                               data-ng-model="creds.email" class="form-control" required>
+                    </div>
+
+                    <input class="btn btn-primary btn-block" id="submit-reset" type="submit" value="Request Password Reset">
+
+                    <!--<button class="btn btn-default pull-right" id="login-form-active" type="button"
+                            data-ng-click="showLoginForm()">Show Login</button>-->
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <div data-ng-show="securityQuestionForm">
+
+        <div class="panel panel-default">
+            <div class="panel-heading df-panel-heading">
+                <h3 class="panel-title">Security Question</h3>
+            </div>
+            <div class="panel-body">
+                <dreamfactory-waiting data-show="questionWaiting"></dreamfactory-waiting>
+                <p>Answer the security question to reset your password.</p>
+
+                <!-- Forgot Password Form -->
+                <form name="security-question-form" data-ng-submit="securityQuestionSubmit(sq)" autocomplete="off">
+                    <div class="form-group">
+                        <input type="hidden" name="reset-password-email" data-ng-model="sq.email" class="form-control" required readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-fw fa-question"></i></span>
+                            <input type="text" id="reset-question" name="security-question" data-ng-model="sq.security_question" class="form-control" readonly />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-fw fa-lock"></i></span>
+                            <input type="text" id="reset-answer" name="security-answer" data-ng-model="sq.security_answer" class="form-control" placeholder="Enter security answer" />
+                        </div>
+                    </div>
+
+
+                    <div class="form-group" data-ng-class="{'has-error' : identical === false}">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
+                            <input type="password" id="password" name="df-register-password" placeholder="Enter Password"
+                                   data-ng-model="sq.new_password" class="form-control" required
+                                   data-ng-keyup="verifyPassword(sq)" >
+                        </div>
+                    </div>
+
+
+                    <div class="form-group" data-ng-class="{'has-error' : identical === false}">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-fw fa-check"></i></span>
+                            <input type="password" id="verify-password" name="df-register-verify-password" placeholder="Verify Password"
+                                   data-ng-model="sq.verify_password" class="form-control" required
+                                   data-ng-keyup="verifyPassword(sq)" >
+                        </div>
+                    </div>
+
+
+
+                    <input class="btn btn-primary btn-block" id="submit-security-question" type="submit" value="Reset Password">
+
+                    <!--<button class="btn btn-default pull-right" id="login-form-active" type="button"
+                            data-ng-click="showLoginForm()">Show Login</button>-->
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="pull-right">
+        <a id="login-form-active" type="button" data-ng-click="showLoginForm()">Login Form</a>
+    </div>
+</div>

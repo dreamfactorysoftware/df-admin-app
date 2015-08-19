@@ -1,0 +1,123 @@
+<div>
+    <div class="row">
+
+        <!-- Select Service -->
+        <div class="col-xs-3 form-group">
+            <select class="form-control input-sm"
+                    data-ng-model="serviceAccess.record.service"
+                    data-ng-options="service as service.name for service in $parent.services">
+            </select>
+        </div>
+
+        <!-- Select Service Components -->
+        <div class="col-xs-3 form-group" data-ng-class="serviceAccess.__dfUI.hasError ? 'has-error' : ''">
+            <div data-ng-if="!serviceAccess.__dfUI.hasError">
+                <select class="form-control input-sm"
+                        data-ng-model="serviceAccess.record.component"
+                        data-ng-options="component as component for component in serviceAccess.record.service.components">
+                </select>
+            </div>
+
+            <div data-ng-if="serviceAccess.__dfUI.hasError">
+                <input type="text" class="form-control input-sm" value="Service Error" readonly/>
+            </div>
+
+
+        </div>
+
+        <!-- Select Allowed Verbs -->
+        <div class="col-xs-2 form-group">
+            <df-verb-picker data-allowed-verb-mask="serviceAccess.record.verb_mask" data-size="sm"></df-verb-picker>
+        </div>
+
+        <!-- Select Allowed Requestor -->
+        <div class="col-xs-2 form-group">
+            <df-requestor-picker data-allowed-requestor-mask="serviceAccess.record.requestor_mask"
+                                 data-size="sm"></df-requestor-picker>
+        </div>
+
+        <!-- Set Service Access Filters -->
+        <div class="col-xs-1 form-group input-sm">
+            <div class="filter-control">
+                <span data-ng-if="serviceAccess.__dfUI.allowFilters">
+                    {{serviceAccess.record.filters.length}}
+                    <a href="" data-ng-click="toggleServiceAccessFilters()">Show/Hide</a>
+                </span>
+                <span data-ng-if="!serviceAccess.__dfUI.allowFilters">N/A</span>
+            </div>
+        </div>
+
+        <!-- Remove Service -->
+        <div class="col-xs-1 form-group input-sm">
+            <button type="button" class="btn btn-default btn-sm" data-ng-click="$parent.removeServiceAccess(index)"
+                    title="Remove service access">
+                <i class="fa fa-trash-o fa-fw"></i>
+            </button>
+        </div>
+
+
+    </div>
+    <div class="row" data-ng-show="serviceAccess.__dfUI.allowFilters && serviceAccess.__dfUI.show_filters">
+        <div class="col-xs-12">
+            <hr/>
+            <!--<div class="alert alert-info"
+                 ng-show="serviceAccess.__dfUI.allowFilters && serviceAccess.__dfUI.show_filters && service_access.filters.length>0">
+                <i class="fa fa-info-circle fa-fw"></i>
+                String values should be single or double quoted.
+            </div>-->
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>Field</label>
+                </div>
+                <div class="col-xs-3">
+                    <label>Operator</label>
+                </div>
+                <div class="col-xs-3">
+                    <label>Value</label>
+                </div>
+                <div class="col-xs-2">
+
+                </div>
+                <div class="col-xs-1">
+                    <button type="button" class="btn btn-default btn-sm" data-ng-click="addServiceAccessFilter()">
+                        <i class="fa fa-plus fa-fw"></i>
+                    </button>
+                </div>
+            </div>
+            <div data-ng-repeat="service_access_filter in serviceAccess.record.filters track by $index" class="row"
+                 style="margin-top: 15px;">
+                <div class="col-xs-3 form-group">
+                    <input class="form-control" data-ng-model="service_access_filter.name" type="text"/>
+                </div>
+                <div class="col-xs-3 form-group">
+                    <select class="form-control"
+                            data-ng-model="service_access_filter.operator"
+                            data-ng-options="op as op for op in filterOperators">
+                    </select>
+                </div>
+                <div class="col-xs-3 form-group">
+                    <input class="form-control" data-ng-model="service_access_filter.value"
+                           data-ng-disabled="service_access_filter.operator === 'is null' || service_access_filter.operator === 'is not null'"
+                           type="text"/>
+                </div>
+
+                <div class="col-xs-2 form-group">
+                    <a href="" style="font-weight:bold;"
+                       data-ng-click="toggleServiceFilterOp()"
+                       data-ng-show="!$last">
+                        {{serviceAccess.record.filter_op}}
+                    </a>
+                </div>
+
+                <div class="col-xs-1 form-group">
+                    <button type="button" class="btn btn-default btn-sm"
+                            data-ng-click="removeServiceAccessFilter($index)" title="Remove service access filter">
+                        <i class="fa fa-trash-o fa-fw"></i>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

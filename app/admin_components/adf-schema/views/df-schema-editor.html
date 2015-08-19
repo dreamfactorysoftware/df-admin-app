@@ -1,0 +1,35 @@
+<div class="row">
+    <div class="col-xs-12">
+        <div data-ng-show="currentEditTable ">
+            <df-table-details data-table-data="currentEditTable" data-bind-table="bindTable"></df-table-details>
+        </div>
+
+        <div data-ng-if="currentUploadSchema">
+            <df-upload-schema></df-upload-schema>
+        </div>
+
+        <div data-ng-show="!currentEditTable && !currentUploadSchema">
+            <p>No Table selected</p>
+        </div>
+    </div>
+</div>
+
+
+<!--
+<div id="_schema-navigator-resizable-also" df-schema-resizable style=" overflow:hidden; width:auto; padding-left: 20px;">
+
+
+    <div data-ng-show="currentEditTable ">
+        <df-table-details data-table-data="currentEditTable" data-bind-table="bindTable"></df-table-details>
+    </div>
+
+    <div data-ng-if="currentUploadSchema">
+        <df-upload-schema></df-upload-schema>
+    </div>
+
+    <div data-ng-show="!currentEditTable && !currentUploadSchema">
+        <p>No Table selected</p>
+    </div>
+</div>
+-->
+

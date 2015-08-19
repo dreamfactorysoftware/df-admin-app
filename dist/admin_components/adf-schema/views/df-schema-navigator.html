@@ -1,0 +1,36 @@
+<div class="row"> <div class="col-xs-12 form-group"> <label>Service</label> <div class="row"> <div class="col-xs-10"> <select class="form-control" data-ng-model="currentService" data-ng-options="value as value.label for (key, value) in schemaManagerData" data-ng-change="refreshService()"> <option value="">-- Select Service -- </select> </div> <div class="col-xs-2"> <button class="btn btn-default pull-right" data-ng-click="refreshService(true)" type="button" data-ng-disabled="!currentService" title="Refresh service"> <i class="fa fa-refresh fa-fw"></i> </button> </div> </div> </div> <div class="col-xs-12 form-group"> <label>Table</label> <select id="table-select" class="form-control" data-ng-model="currentTable" data-ng-change="getTable()" data-ng-disabled="!currentService" data-ng-options="table.name as table.label for table in currentService.components | orderBy:'name'"> <option value="">-- Select table -- </select> </div> <div class="col-xs-12 form-group"> <div class="well well-sm"> <button class="btn btn-default btn-sm" data-ng-click="addByJson()" type="button" data-ng-disabled="!currentService" title="Upload schema defined as JSON">Upload JSON</button> <button class="btn btn-default btn-sm" data-ng-click="addTable()" type="button" data-ng-disabled="!currentService" title="Create a new table">Create</button> <button class="btn btn-default btn-sm" data-ng-click="deleteTable()" type="button" data-ng-disabled="!currentService" title="Drop selected table">Drop</button> </div> </div> </div> <!--<div>
+    <div id="schema-navigator-resizable" df-schema-resizable df-fs-height style="float:left; width:400px; border-left: 1px solid #eee; border-right:5px solid #ddd;">
+
+        <div>
+            <div class="col-xs-12 form-group">
+                <label>Service</label>
+                <select class="form-control" data-ng-model="currentService" data-ng-options="value as key for (key, value) in schemaManagerData">
+                    <option value="">-- Select Service --</option>
+                </select>
+            </div>
+
+            <div class="col-xs-12 form-group">
+                <label>Table</label>
+                <select id="table-select" class="form-control" data-ng-model="currentTablePath" data-ng-change="getTable()" data-ng-disabled="!currentService">
+                    <option value="">-- Select table --</option>
+                    <option value="{{table.path}}" data-ng-repeat="table in currentService.components | orderBy:'name'">{{table.name}}</option>
+                </select>
+            </div>
+
+            <div class="col-xs-12 form-group">
+                <button class="btn btn-default" data-ng-click="addByJson()" type="button" data-ng-disabled="!currentService">Upload JSON</button>
+
+                <div class="btn btn-group">
+                    <button class="btn btn-default" data-ng-click="addTable()" type="button" data-ng-disabled="!currentService">Create</button>
+                    <button class="btn btn-default" data-ng-click="deleteTable()" type="button" data-ng-disabled="!currentService">Drop</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    &lt;!&ndash; Schema Editor &ndash;&gt;
+    <div style="margin-left: 20px;">
+        <df-schema-editor></df-schema-editor>
+    </div>
+</div>-->

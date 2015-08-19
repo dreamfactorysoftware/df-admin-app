@@ -1,0 +1,182 @@
+<!doctype html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <title>DreamFactory</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+
+      <!-- CDN -->
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+      <!-- build:css({.tmp,app}) styles/styles.css -->
+      <link rel="stylesheet" href="styles/stylesheets/styles.css" />
+      <link rel="stylesheet" href="../bower_components/pnotify/pnotify.core.css" />
+      <link rel="stylesheet" href="../bower_components/pnotify/pnotify.buttons.css" />
+
+      <!-- endbuild -->
+
+  </head>
+  <body ng-app="dreamfactoryApp">
+
+    <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <!-- Add your site or application content here -->
+    <div id="dreamfactoryApp" data-ng-controller="MainCtrl" df-popup-login>
+        <div id="popup-login-container"></div>
+
+        <!-- Top level Nav -->
+        <df-top-level-nav-std data-options="topLevelNavOptions"></df-top-level-nav-std>
+
+
+        <div data-ng-if="showAdminComponentNav" style="margin: 10px auto;">
+            <!-- Component nav and title -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <df-component-title></df-component-title>
+                        <df-component-nav data-options="componentNavOptions"></df-component-nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rendering Context -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="row">
+                        <div data-ng-view=""></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!--<df-main-loading></df-main-loading>-->
+        <div id="mask"></div>
+    </div>
+
+
+    <!-- build:js(.) scripts/oldieshim.js -->
+    <!--[if lt IE 9]>
+    <script src="../bower_components/es5-shim/es5-shim.js"></script>
+    <script src="../bower_components/json3/lib/json3.min.js"></script>
+    <![endif]-->
+    <!-- endbuild -->
+
+    <!-- build:js(.) scripts/vendor.js -->
+        <!-- bower:js -->
+        <script src="../bower_components/jquery/dist/jquery.js"></script>
+        <script src="../bower_components/es5-shim/es5-shim.js"></script>
+        <script src="../bower_components/angular/angular.js"></script>
+        <script src="../bower_components/json3/lib/json3.js"></script>
+        <script src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="../bower_components/angular-resource/angular-resource.js"></script>
+        <script src="../bower_components/angular-cookies/angular-cookies.js"></script>
+        <script src="../bower_components/angular-sanitize/angular-sanitize.js"></script>
+        <script src="../bower_components/angular-animate/angular-animate.js"></script>
+        <script src="../bower_components/angular-touch/angular-touch.js"></script>
+        <script src="../bower_components/angular-route/angular-route.js"></script>
+        <script src="../bower_components/pnotify/pnotify.core.js"></script>
+        <script src="../bower_components/pnotify/pnotify.buttons.js"></script>
+        <script src="../bower_components/pnotify/pnotify.callbacks.js"></script>
+        <script src="../bower_components/pnotify/pnotify.confirm.js"></script>
+        <script src="../bower_components/pnotify/pnotify.desktop.js"></script>
+        <script src="../bower_components/pnotify/pnotify.history.js"></script>
+        <script src="../bower_components/pnotify/pnotify.nonblock.js"></script>
+        <script src="../bower_components/angular-swagger-editor/dist/swagger-editor.js"></script>
+        <!-- endbower -->
+    <!-- endbuild -->
+
+
+
+    <!-- build:js({.tmp,app}) scripts/app.js -->
+    <script src="admin_components/adf-user-management/dreamfactory-user-management.js"></script>
+    <script src="admin_components/adf-utility/dreamfactory-utility.js"></script>
+    <script src="admin_components/adf-system-config/dreamfactory-system-config.js"></script>
+    <script src="admin_components/adf-admins/dreamfactory-admins.js"></script>
+    <script src="admin_components/adf-users/dreamfactory-users.js"></script>
+    <script src="admin_components/adf-apps/dreamfactory-apps.js"></script>
+    <script src="admin_components/adf-data/dreamfactory-data.js"></script>
+    <script src="admin_components/adf-services/dreamfactory-services.js"></script>
+    <script src="admin_components/adf-roles/dreamfactory-roles.js"></script>
+    <script src="admin_components/adf-schema/dreamfactory-schema.js"></script>
+    <script src="admin_components/adf-scripts/dreamfactory-scripts.js"></script>
+    <script src="admin_components/adf-profile/dreamfactory-profile.js"></script>
+    <script src="admin_components/adf-application/dreamfactory-application.js"></script>
+    <script src="admin_components/adf-help/dreamfactory-help.js"></script>
+    <script src="admin_components/adf-launchpad/dreamfactory-launchpad.js"></script>
+    <script src="admin_components/adf-widgets/dreamfactory-widgets.js"></script>
+    <script src="admin_components/adf-swagger-editor/dreamfactory-swagger-editor.js"></script>
+    <script src="admin_components/adf-apidocs/dreamfactory-apidocs.js"></script>
+    <script src="admin_components/adf-file-manager/dreamfactory-file-manager.js"></script>
+    <script src="admin_components/adf-package-manager/dreamfactory-package-manager.js"></script>
+    <script src="admin_components/adf-table/dreamfactory-table.js"></script>
+    <script src="admin_components/adf-home/dreamfactory-home.js"></script>
+
+    <script src="scripts/app.js"></script>
+    <script src="scripts/controllers/main.js"></script>
+    <!-- endbuild -->
+
+
+  <!-- other deps -->
+  <script src="vendor/ace/ace.js"></script>
+  <script src="vendor/ace/mode-javascript.js"></script>
+
+    <!--Begin Comm100 Live Chat Code-->
+    <div id="comm100-button-219"></div>
+    <script type="text/javascript">
+        var Comm100API = Comm100API || new Object;
+        Comm100API.status = "init";
+        Comm100API.showChat = function (bool) {
+            var sel = $("[id*='comm100-']");
+            // only show/hide when absolutely necessary
+            if (bool) {
+                if (Comm100API.status === "init") {
+                    Comm100API.init();
+                } else if (Comm100API.status === "off"){
+                    sel.show();
+                }
+                Comm100API.status = "on";
+            } else {
+                if (Comm100API.status === "on") {
+                    sel.hide();
+                    Comm100API.status = "off";
+                }
+            }
+        };
+        Comm100API.init = function () {
+            Comm100API.chat_buttons = Comm100API.chat_buttons || [];
+            var comm100_chatButton = new Object;
+            comm100_chatButton.code_plan = 219;
+            comm100_chatButton.div_id = 'comm100-button-219';
+            Comm100API.chat_buttons.push(comm100_chatButton);
+            Comm100API.site_id = 210217;
+            Comm100API.main_code_plan = 219;
+            var comm100_lc = document.createElement('script');
+            comm100_lc.type = 'text/javascript';
+            comm100_lc.async = true;
+            comm100_lc.src = 'https://chatserver.comm100.com/livechat.ashx?siteId=' + Comm100API.site_id;
+            var comm100_s = document.getElementsByTagName('script')[0];
+            comm100_s.parentNode.insertBefore(comm100_lc, comm100_s);
+            setTimeout(function () {
+                if (!Comm100API.loaded) {
+                    var lc = document.createElement('script');
+                    lc.type = 'text/javascript';
+                    lc.async = true;
+                    lc.src = 'https://hostedmax.comm100.com/chatserver/livechat.ashx?siteId=' + Comm100API.site_id;
+                    var s = document.getElementsByTagName('script')[0];
+                    s.parentNode.insertBefore(lc, s);
+                }
+            }, 5000)
+        }
+    </script>
+    <!--End Comm100 Live Chat Code-->
+  </body>
+</html>

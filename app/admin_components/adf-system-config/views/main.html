@@ -1,0 +1,25 @@
+<div class="">
+    <div class="col-md-2 df-sidebar-nav">
+        <df-sidebar-nav data-links="links"></df-sidebar-nav>
+    </div>
+
+    <div class="col-md-10 df-section"
+         data-ng-class="activeView.path === 'system-info' ? 'df-section-3-round' : 'df-section-all-round'" df-fs-height>
+
+
+        <!-- Section Header -->
+        <df-section-header data-title="activeView.label"></df-section-header>
+
+        <dreamfactory-system-info data-ng-show="activeView.path === 'system-info'"></dreamfactory-system-info>
+        <dreamfactory-cache-config data-ng-show="activeView.path === 'cache'"></dreamfactory-cache-config>
+        <dreamfactory-cors-config data-ng-show="activeView.path === 'cors'"></dreamfactory-cors-config>
+        <dreamfactory-email-templates
+                data-ng-show="activeView.path === 'email-templates'"></dreamfactory-email-templates>
+        <dreamfactory-global-lookup-keys
+                data-ng-show="activeView.path === 'global-lookup-keys'"></dreamfactory-global-lookup-keys>
+        <df-edit-preferences data-ng-show="activeView.path === 'edit-preferences'"></df-edit-preferences>
+
+    </div>
+</div>
+
+

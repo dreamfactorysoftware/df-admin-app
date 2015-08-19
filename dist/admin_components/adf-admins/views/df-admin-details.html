@@ -1,0 +1,19 @@
+<div> <!-- Form Title --> <df-details-header data-new="newAdmin" data-api-name="'Admin'" data-name="admin.record.display_name"></df-details-header> <!-- Create Admin Form --> <form name="create-admin" data-ng-submit="saveAdmin()" autocomplete="off"> <ul class="nav nav-tabs" data-role="tablist"> <li class="active"><a showtab href="#basic" id="basic-tab">Basic</a></li> <li><a showtab href="#lookupkeys" id="lookupkeys-tab" data-ng-class="lookupKeysError ? 'df-tab-has-error' : ''">Lookup Keys</a></li> </ul> <div class="tab-content" style="margin-top: 20px"> <div id="basic" class="tab-pane active"> <div class="row"> <div class="col-md-6"> <!-- Admin Email --> <div class="form-group"> <label>Email</label> <input type="email" class="form-control" data-ng-model="admin.record.email" placeholder="Enter email address."> </div> <!-- Admin First Name --> <div class="form-group"> <label>First Name</label> <input type="text" class="form-control" data-ng-model="admin.record.first_name" placeholder="Enter first name."> </div> <!-- Admin Last Name --> <div class="form-group"> <label>Last Name</label> <input type="text" class="form-control" data-ng-model="admin.record.last_name" placeholder="Enter last name."> </div> <!-- Admin Display Name --> <div class="form-group"> <label>Display Name</label> <input type="text" class="form-control" data-ng-model="admin.record.name" placeholder="Enter display name."> </div> <!-- Admin Phone --> <div class="form-group"> <label>Phone</label> <input type="text" class="form-control" data-ng-model="admin.record.phone" placeholder="Enter phone number."> </div> </div> <div class="col-md-6"> <!-- Admin Confirmed --> <!--
+                        <div data-ng-show="!newAdmin">
+                            <div class="form-group">
+                                <label>Confirmation</label><df-simple-help data-options="dfHelp.adminConfirmation"></df-simple-help>
+                                <df-confirm-admin></df-confirm-admin>
+                            </div>
+                            <hr />
+                        </div>
+                        --> <!-- AdminSend Invite on create --> <!--
+                        <div data-ng-show="newAdmin">
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" data-ng-model="sendEmailOnCreate" data-ng-checked="sendEmailOnCreate"/>
+                                    Send Email Invitation
+                                </label>
+                            </div>
+                            <hr />
+                        </div>
+                        --> <!-- Admin Active --> <div class="form-group"> <div class="checkbox"> <label> <input type="checkbox" data-ng-model="admin.record.is_active"> Active </label> </div> </div> <!-- Admin Password --> <df-set-admin-password></df-set-admin-password> </div> </div> </div> <div id="lookupkeys" class="tab-pane"> <df-admin-lookup-keys></df-admin-lookup-keys> </div> </div> <div class="row"> <div class="col-xs-12"> <hr> <div class="form-group"> <div data-ng-if="newAdmin"> <input class="btn btn-default btn-primary" type="submit" value="Create"> </div> <div data-ng-if="!newAdmin"> <input class="btn btn-default btn-primary" type="submit" value="Update"> <button type="button" class="btn btn-default" data-ng-click="closeAdmin()">Close</button> </div> </div> </div> </div> </form> </div>

@@ -1,0 +1,15 @@
+<div class="help-container help-right">
+    <i class="fa fa-info-circle df-help-icon" data-ng-click="showHelp()"></i>
+    <div class="help-box">
+       <div class="panel panel-primary">
+           <div class="panel-heading df-panel-heading">
+              {{options.title||options.label}}
+               <button type="button" class="close" data-ng-click="closeHelp($event)"><i class="fa fa-fw fa-times"></i></button>
+           </div>
+
+           <div class="panel-body">
+               <p>{{options.text||options.description}}</p>
+           </div>
+       </div>
+    </div>
+</div>

@@ -1,0 +1,34 @@
+<div class="df-component-navbar">
+    <ul class="nav nav-pills pull-right visible-md visible-lg">
+        <li data-ng-repeat="link in links" data-ng-class="activeLink === link.name ? 'active' : ''">
+            <a href="#{{link.path}}">{{link.label}}</a>
+        </li>
+    </ul>
+
+    <div class="hidden-md hidden-lg pull-right">
+        <button type="button" class="btn btn-default btn-sm" data-ng-click="openMenu()"><i class="fa fa-fw fa-bars"></i></button>
+    </div>
+
+    <!-- Flyout menu -->
+    <div id="component-nav-flyout-menu" class="df-flyout-menu df-flyout-menu-right hidden-lg hidden-md">
+        <div class="panel panel-default" id="component-nav-flyout-panel">
+            <div class="panel-heading">
+                <button class="btn btn-default btn-xs" data-ng-click="closeMenu()">Close</button>
+            </div>
+            <ul class="list-group">
+                <li data-ng-repeat="link in links" class="list-group-item" data-ng-class="activeLink === link.name ? 'active' : ''">
+                    <a href="#{{link.path}}" >{{link.label}}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="component-nav-flyout-mask" class="mask"></div>
+</div>
+
+
+
+
+
+
+

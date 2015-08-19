@@ -1,0 +1,72 @@
+
+.help-container {
+
+  display: inline;
+  position: absolute;
+}
+
+.help-left {
+
+  margin-right: 10px;
+}
+
+.help-right {
+
+  margin-left: 5px;
+}
+
+.help-box {
+
+  display: none;
+  box-shadow: 0 0 20px rgba(0, 0, 0, .3);
+
+  .panel {
+    margin-bottom: 0;
+  }
+
+}
+
+.dfp-left-top {
+
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10001;
+}
+
+
+.dfp-left-bottom {
+
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10001;
+}
+
+
+.dfp-right-top {
+
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 10001;
+}
+
+.dfp-right-bottom {
+
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10001;
+}
+
+.df-help-icon {
+  color: #aaa;
+  cursor: pointer;
+
+}
+
+.df-help-icon:hover {
+  color: #333;
+}
+

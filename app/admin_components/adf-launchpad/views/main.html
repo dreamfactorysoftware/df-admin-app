@@ -1,0 +1,13 @@
+<div id="df-launchpad">
+    <df-app-group data-ng-if="!onlyNoGroupApps" data-ng-repeat="group in apps" data-app-group="group"></df-app-group>
+
+    <div id="only-no-group-apps">
+        <ul data-ng-if="onlyNoGroupApps" class="list-group">
+            <df-app data-app="app" data-ng-repeat="app in apps"></df-app>
+        </ul>
+    </div>
+
+    <div data-ng-if="noAppsMsg" class="alert alert-warning col-xs-10 col-sm-8 col-md-6 col-xs-offset-1 col-sm-offset-2 col-md-offset-3 df-launchpad-no-app-warn">
+        <p>Sorry, it appears you have no active applications. Please contact your system administrator.</p>
+    </div>
+</div>

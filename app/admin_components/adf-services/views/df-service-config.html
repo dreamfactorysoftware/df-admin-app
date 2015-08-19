@@ -1,0 +1,195 @@
+<div>
+
+    <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema">
+        <div class="form-group ng-scope" data-ng-if="field.type == 'boolean'">
+            <div class="checkbox">
+                <label>
+                    <input data-ng-model="serviceInfo.record.config[field.name]" type="checkbox">
+                    {{ field.label}}
+                </label>
+                <df-simple-help data-options="field"></df-simple-help>
+            </div>
+        </div>
+
+
+        <div class="form-group ng-scope" data-ng-if="field.type != 'boolean'">
+            <label>{{ field.label }}</label>
+            <df-simple-help data-options="field"></df-simple-help>
+        </div>
+
+        <input class="form-control" data-ng-if="field.type == 'string'"
+               data-ng-model="serviceInfo.record.config[field.name]"
+               type="text" data-ng-required="field.required"/>
+        <input class="form-control" data-ng-if="field.type == 'password'"
+               data-ng-model="serviceInfo.record.config[field.name]"
+               type="password" data-ng-required="field.required"/>
+        <input class="form-control" data-ng-if="field.type == 'text'"
+               data-ng-model="serviceInfo.record.config[field.name]"
+               type="text" data-ng-required="field.required"/>
+        <input class="form-control" data-ng-if="field.type == 'integer'"
+               data-ng-model="serviceInfo.record.config[field.name]"
+               type="number" data-ng-required="field.required">
+
+        <select class="form-control" data-ng-if="field.type == 'picklist'"
+                data-ng-model="serviceInfo.record.config[field.name]"
+                data-ng-options="option.name as option.label for option in field.values"
+                data-ng-change="updateAffectedFields(serviceInfo.record.config[field.name], field)">
+        </select>
+
+        <select class="form-control" data-ng-if="field.type == 'reference'"
+                data-ng-model="serviceInfo.record.config[field.name]"
+                data-ng-options="option.value as option.name for option in getReferences(field.ref_table, field.ref_fields)"
+                data-ng-change="updateAffectedFields(serviceInfo.record.config[field.name], field)">
+        </select>
+        <!--angular 1.4.0 required-->
+        <!--<select class="form-control" ng-if="field.type == 'picklist'" ng-model="serviceInfo.record.config[field.name]"-->
+        <!--ng-options="option.name as option.label disable when option.disable for option in field.values">-->
+        <!--</select>-->
+
+        <div class="panel panel-default" data-ng-if="field.type.indexOf('array') > -1">
+            <div class="form-group" data-ng-if="!isArray(field.items)">
+                <table class="table table-hover table-striped field-list">
+                    <thead>
+                    <tr>
+                        <th>Values</th>
+
+                        <th class="no-border">
+                            <div class="btn-group pull-left">
+                                <button type="button" class="btn btn-default btn-sm"
+                                        data-ng-click="appendItemToArray(serviceInfo.record.config, field.name)"
+                                        title="Add">
+                                    <i class="fa fa-plus fa-fw"></i>
+                                </button>
+                            </div>
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr data-ng-repeat="str in serviceInfo.record.config[field.name] track by $index">
+                        <td>
+                            <input class="form-control"
+                                   data-ng-model="serviceInfo.record.config[field.name][$index]"
+                                   type="text"/>
+                        </td>
+                        <td class="no-border">
+                            <div class="btn-group pull-left">
+                                <button type="button" class="btn btn-sm btn-default"
+                                        data-ng-click="deleteStringFromArray(serviceInfo.record.config[field.name], $index)"
+                                        title="Delete">
+                                    <i class="fa fa-trash-o fa-fw"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-group" data-ng-if="isArray(field.items)">
+                <table class="table table-hover table-striped field-list">
+                    <thead>
+                    <tr>
+                        <th data-ng-repeat="part in field.items">{{ part.label }}</th>
+
+                        <th class="no-border">
+                            <div class="btn-group pull-left">
+                                <button type="button" class="btn btn-default btn-sm"
+                                        data-ng-click="appendItemToArray(serviceInfo.record.config, field.name)"
+                                        title="Add">
+                                    <i class="fa fa-plus fa-fw"></i>
+                                </button>
+                            </div>
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr data-ng-repeat="obj in serviceInfo.record.config[field.name] track by $index">
+                        <td data-ng-repeat="part in field.items">
+                            <input class="form-control" data-ng-if="part.type == 'string'"
+                                   data-ng-model="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
+                                   type="text" data-ng-required="part.required">
+                            <input class="form-control" data-ng-if="part.type == 'password'"
+                                   data-ng-model="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
+                                   type="password" data-ng-required="part.required">
+                            <input class="form-control" data-ng-if="part.type == 'text'"
+                                   data-ng-model="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
+                                   type="text" data-ng-required="part.required">
+                            <input class="form-control" data-ng-if="part.type == 'boolean'"
+                                   data-ng-model="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
+                                   type="checkbox">
+                            <input class="form-control" data-ng-if="part.type == 'integer'"
+                                   data-ng-model="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
+                                   type="number" data-ng-required="part.required">
+
+                            <select class="form-control" data-ng-if="part.type == 'picklist'"
+                                    data-ng-model="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
+                                    data-ng-options="option.name as option.label for option in part.values"
+                                    data-ng-click="updateAffectedFields(serviceInfo.record.config[field.name], field)">
+                            </select>
+                            <df-verb-picker data-ng-if="part.type == 'verb_mask'"
+                                            data-allowed-verb-mask="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
+                                            data-size="sm">
+                            </df-verb-picker>
+                        </td>
+                        <td class="no-border">
+                            <div class="btn-group pull-left">
+                                <button type="button" class="btn btn-sm btn-default"
+                                        data-ng-click="deleteObjectFromArray(serviceInfo.record.config[field.name], $parent.$parent.$index)"
+                                        title="Delete">
+                                    <i class="fa fa-trash-o fa-fw"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel panel-default" data-ng-if="field.type.indexOf('object') > -1">
+            <table class="table table-hover table-striped field-list">
+                <thead>
+                <tr>
+                    <th>{{ field.object.key.label }}</th>
+                    <th>{{ field.object.value.label }}</th>
+
+
+                    <th class="no-border">
+                        <div class="btn-group pull-left">
+                            <button type="button" class="btn btn-default btn-sm"
+                                    data-ng-click="addKeyValue(field.name)">
+                                <i class="fa fa-plus fa-fw"></i>
+                            </button>
+                        </div>
+                    </th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr data-ng-repeat="item in serviceInfo.record.config[field.name]">
+                    <td>
+                        <input class="form-control" data-ng-model="item.key" type="text"/>
+                    </td>
+                    <td>
+                        <input class="form-control" data-ng-model="item.value" type="text"/>
+                    </td>
+
+                    <td class="no-border">
+                        <div class="btn-group pull-left">
+                            <button type="button" class="btn btn-sm btn-default"
+                                    data-ng-click="deleteKeyValue(serviceInfo.record.config[field.name], key)">
+                                <i class="fa fa-trash-o fa-fw"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>

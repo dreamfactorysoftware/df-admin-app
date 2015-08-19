@@ -1,0 +1,83 @@
+<div>
+    <div data-ng-click="toggleParameter()" class="swagger-heading">
+        <h5>{{parameter.record.name}}</h5>
+    </div>
+
+    <div data-ng-if="parameterVisible" class="swagger-body">
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" data-ng-model="parameter.record.name" class="form-control" placeholder="Enter param name." />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" data-ng-model="parameter.record.description" class="form-control" placeholder="Enter param description." />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" data-ng-model="parameter.record.allowMultiple" />
+                            Allow Multiple
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label>Type</label>
+                    <select data-ng-change="_renderDefaultField()" class="form-control" data-ng-model="parameter.record.type" data-ng-options="type.record.id as type.record.id for type in types">
+                        <option value="">-- None --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label>Parameter Type</label>
+                    <select class="form-control" data-ng-model="parameter.record.paramType" data-ng-options="type as type for type in paramTypes">
+                        <option value="">-- None --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" data-ng-model="parameter.record.allowMultiple" />
+                            Required
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label>Default</label>
+                    <input type="text" data-ng-model="parameter.record.default" class="form-control" placeholder="Enter param default value." />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

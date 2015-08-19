@@ -1,0 +1,1 @@
+<!-- User Role --> <div class="form-group" data-ng-init="init()"> <div data-ng-repeat="app in apps"> <label>{{ app.name }}</label> <select class="form-control" data-ng-change="selectRole()" data-ng-model="roleToAppMap[app.id]" data-ng-options="role.id as role.name for role in roles"> <option value="" selected>-- No Role Selected -- </select> <br> </div> </div>

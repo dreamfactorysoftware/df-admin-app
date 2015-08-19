@@ -1,0 +1,71 @@
+<div class="row">
+    <div class="col-md-6">
+
+        <!-- User Email -->
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" class="form-control" data-ng-model="user.record.email" placeholder="Enter email address."/>
+        </div>
+
+        <!-- User First Name -->
+        <div class="form-group">
+            <label>First Name</label>
+            <input type="text" class="form-control" data-ng-model="user.record.first_name" placeholder="Enter first name." />
+        </div>
+
+        <!-- User Last Name -->
+        <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" class="form-control" data-ng-model="user.record.last_name" placeholder="Enter last name." />
+        </div>
+
+        <!-- User Display Name -->
+        <div class="form-group">
+            <label>Display Name</label>
+            <input type="text" class="form-control" data-ng-model="user.record.name" placeholder="Enter display name."  />
+        </div>
+
+        <!-- User Phone -->
+        <div class="form-group">
+            <label>Phone</label>
+            <input type="text" class="form-control" data-ng-model="user.record.phone" placeholder="Enter phone number."  />
+        </div>
+
+    </div>
+    <div class="col-md-6">
+
+        <!-- User Confirmed -->
+        <div data-ng-show="!newUser">
+            <div class="form-group">
+                <label>Confirmation</label><df-simple-help data-options="dfHelp.userConfirmation"></df-simple-help>
+                <df-confirm-user></df-confirm-user>
+            </div>
+            <hr />
+        </div>
+
+        <!-- UserSend Invite on create -->
+        <div data-ng-show="newUser">
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" data-ng-model="sendEmailOnCreate" data-ng-checked="sendEmailOnCreate"/>
+                    Send Email Invitation
+                </label>
+            </div>
+            <hr />
+        </div>
+
+        <!-- User Active -->
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" data-ng-model="user.record.is_active" />
+                    Active
+                </label>
+            </div>
+        </div>
+
+        <!-- User Password -->
+        <df-set-user-password></df-set-user-password>
+
+    </div>
+</div>

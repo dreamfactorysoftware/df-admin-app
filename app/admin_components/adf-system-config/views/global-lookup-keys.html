@@ -1,0 +1,54 @@
+<div>
+    <df-large-help data-options="dfLargeHelp.globalLookupKeys"></df-large-help>
+
+    <df-section-toolbar>
+
+        <div class="col-sm-4 col-md-3">
+            <select id="select-global-lookup" class="form-control input-sm" data-ng-model="$parent.selectedLookup"
+                    data-ng-options="lookup as lookup.record.name for lookup in globalLookups"
+                    data-ng-change="changeLookup()">
+                <option value="">-- Select Lookup Key --</option>
+            </select>
+        </div>
+
+        <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-default" data-ng-click="addLookup()"><i class="fa fa-fw fa-plus"></i>
+            </button>
+            <button type="button" class="btn btn-default" data-ng-click="deleteLookup()"
+                    data-ng-disabled="!selectedLookup"><i class="fa fa-fw fa-trash"></i></button>
+        </div>
+
+    </df-section-toolbar>
+
+    <div>
+        <div class="form-group">
+            <label>Name
+                <small style="color: grey"> required</small>
+            </label>
+            <input class="form-control" data-ng-model="selectedLookup.record.name" placeholder="Enter name."
+                   data-ng-disabled="selectedLookup === null"/>
+        </div>
+
+        <div class="form-group">
+            <label>Value</label>
+            <textarea class="form-control" rows="10" data-ng-model="selectedLookup.record.value"
+                      data-ng-disabled="selectedLookup === null"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Private</label>
+            <input data-ng-model="selectedLookup.record.private" type="checkbox"
+                   data-ng-disabled="selectedLookup === null"/>
+        </div>
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <button type="button" class="btn btn-primary" data-ng-click="saveLookup()">
+            <span data-ng-if="selectedLookup.__dfUI.newLookup">Save</span>
+            <span data-ng-if="!selectedLookup.__dfUI.newLookup">Update</span>
+        </button>
+    </div>
+</div>

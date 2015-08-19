@@ -1,0 +1,75 @@
+<div>
+
+    <df-section-header data-title="'Import Application'"></df-section-header>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form data-ng-submit="submitApp()" name="uploadForm" class="" >
+                        <div class="row">
+                            <div class="col-lg-6" >
+                                <div class="input-group" >
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" data-ng-click="browseFileSystem()">Browse</button>
+                                    </span>
+                                    <input type="text" class="form-control" data-ng-model="appPath"  placeholder="Click sample app, enter url, or browse for app package.">
+                                </div><!-- /input-group -->
+                            </div><!-- /.col-lg-6 -->
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-lg-6" >
+                                <div class="form-group">
+                                    <select class="form-control" data-ng-model="storageService" data-ng-options="obj as obj.name for obj in services" data-ng-disabled="!appPath || uploadFile != null" >
+                                        <option value="" >-- Select Storage Service --</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-6" >
+                                <div class="form-group">
+                                    <select class="form-control" data-ng-model="storageContainer" data-ng-options="container as container for container in containers" data-ng-disabled="!appPath || uploadFile != null || !containers.length">
+                                        <option value="" >-- Select Storage Container--</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input style="display: none" type="file" id="upload" name="upload" data-ng-model="uploadFile" data-file-model="uploadFile" file-model-2 />
+                        <input type="submit" class="btn btn-default btn-primary" value="Import" />
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-xs-12">
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Sample Applications</div>
+                <div class="panel-body">
+                    <p>Coming soon!</p>
+                </div>
+                <!--<div class="panel-body">-->
+                    <!--<p>Dreamfactory provides sample apps to help you get started.  Click one of the sample apps below and select your storage service.  Click 'Import' to install the sample app.  These and other sample apps can be found at-->
+                        <!--<a target="_blank" href="https://github.com/dreamfactorysoftware">github/dreamfactorysoftware</a>.</p>-->
+                <!--</div>-->
+                <!--<ul class="list-group">-->
+                    <!--<li class="list-group-item" data-ng-repeat="app in sampleApps"><a data-ng-click="loadSampleApp(app)">{{app.name}}</a>-->
+                        <!--- {{app.descr}}</li>-->
+                <!--</ul>-->
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+</div>
