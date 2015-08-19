@@ -3,15 +3,11 @@
     "type":              "dreamfactory-app",
     "description":       "DreamFactory(tm) Admin Console",
     "homepage":          "https://github.com/dreamfactorysoftware/df-admin-app/",
-    "config":            {
-        "discard-changes": true
-    },
     "keywords":          [
         "rest",
-        "framework",
-        "cloud-computing",
+        "api",
         "remote web services",
-        "dsp-core",
+        "dreamfactory",
         "dsp",
         "service bus",
         "esb",
@@ -31,14 +27,12 @@
         "email":  "support@dreamfactory.com",
         "wiki":   "https://wiki.dreamfactory.com"
     },
-    "minimum-stability": "dev",
-    "prefer-stable":     true,
     "require":           {
         "dreamfactory/installer": "*"
     },
     "extra":             {
         "branch-alias":   {
-            "dev-develop": "0.9-dev"
+            "dev-develop": "0.0.x-dev"
         },
         "installer-name": "dreamfactory"
     }
