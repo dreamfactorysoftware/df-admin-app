@@ -1174,7 +1174,13 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                 function (reject) {
 
                                     // Handle error in module
-                                    scope.errorMsg = reject.data.error.message;
+                                    var msg = "Validation failed. ";
+                                    var context = reject.data.error.context;
+
+                                    angular.forEach(context, function(value, key){
+                                        msg = msg+key+': '+value+' ';
+                                    }, msg);
+                                    scope.errorMsg = msg;
 
                                     // Throw an error
 //                                    throw {
@@ -1212,7 +1218,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                     // We emit a 'user:register:confirmation' message.  How you handle these messages is left
                                     // up to you.  We just notify you of the current state and the actions that have been taken as
                                     // a result of your config.
-                                    scope.options.confirmationRequired = systemConfigDataObj.open_reg_email_service_id;
+                                    scope.options.confirmationRequired = systemConfigDataObj.authentication.open_reg_email_service_id;
 
 
                                     // Now that we have all the info we need, lets run the
@@ -1259,13 +1265,13 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                             // We go ask the server to get it.  Everything stops until this guy returns.
                             // SYNCHRONOUS
-                            //scope.options.confirmationRequired = xhrHelper.getSystemConfigFromServer().allow_open_registration;
+                            //scope.options.confirmationRequired = xhrHelper.getSystemConfigFromServer().authentication.allow_open_registration;
 
                             var config = dfXHRHelper.get({
                                 url: 'system/environment'
                             });
 
-                            scope.options.confirmationRequired = config.allow_open_registration && config.open_reg_email_service_id ? true : null;
+                            scope.options.confirmationRequired = config.authentication.allow_open_registration && config.authentication.open_reg_email_service_id ? true : null;
 
                         }
 

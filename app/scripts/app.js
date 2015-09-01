@@ -94,13 +94,13 @@ angular
                             currentUser = dfApplicationData.getCurrentUser();
 
                         // No guest users and no open registration
-                        if (!currentUser && !sysConfig.allow_open_registration) {
+                        if (!currentUser && !sysConfig.authentication.allow_open_registration) {
                             $location.url('/login');
                             return;
                         }
 
                         // User is guest or not an admin and we don't allow open registration
-                        if (currentUser && !currentUser.is_sys_admin && !sysConfig.allow_open_registration) {
+                        if (currentUser && !currentUser.is_sys_admin && !sysConfig.authentication.allow_open_registration) {
                             $location.url('/launchpad');
                             return;
                         }
@@ -125,7 +125,7 @@ angular
                         var sysConfig = SystemConfigDataService.getSystemConfig(),
                             currentUser = dfApplicationData.getCurrentUser();
 
-                        if (!currentUser && !sysConfig.allow_open_registration) {
+                        if (!currentUser && !sysConfig.authentication.allow_open_registration) {
                             $location.url('/login');
                             return;
                         }
@@ -152,7 +152,7 @@ angular
                         var sysConfig = SystemConfigDataService.getSystemConfig(),
                             currentUser = dfApplicationData.getCurrentUser();
 
-                        if (!currentUser && !sysConfig.allow_open_registration) {
+                        if (!currentUser && !sysConfig.authentication.allow_open_registration) {
                             $location.url('/login');
                             return;
                         }
