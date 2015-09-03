@@ -42,7 +42,7 @@
                 <span data-ng-repeat="(verb,eventList) in currentPathObj.verbs | filter: pathFilter">
                     <a
                             data-ng-click="setScript(event)"
-                            data-ng-repeat="(event,scriptExist) in eventList">{{event}}
+                            data-ng-repeat="event in eventList">{{event}}
                         <span data-ng-if="!uppercaseVerbLabels" class="pull-right text-muted"
                               style="font-size: 10px; margin-top: 5px;">{{verb}}</span>
                         <span data-ng-if="uppercaseVerbLabels" class="pull-right text-muted"
@@ -72,7 +72,7 @@
                 <span data-ng-repeat="(verb,eventList) in currentPathObj.verbs | filter: pathFilter">
                     <a
                             data-ng-click="setScript(event)"
-                            data-ng-repeat="(event,scriptExist) in eventList">{{event}}
+                            data-ng-repeat="event in eventList">{{event}}
                         <span data-ng-if="!uppercaseVerbLabels" class="pull-right text-muted"
                               style="font-size: 10px; margin-top: 5px;">{{verb}}</span>
                         <span data-ng-if="uppercaseVerbLabels" class="pull-right text-muted"
