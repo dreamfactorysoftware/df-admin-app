@@ -826,7 +826,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 // Good response.
                 return angular.fromJson(xhr.responseText);
 
-            } else if (xhr.readyState == 4 && (xhr.status === 401 || xhr.status === 403)) {
+            } else if (xhr.readyState == 4 && (xhr.status === 401)) {
 
                 return 'Unauthorized';
             } else {
@@ -1093,7 +1093,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
     ])
 
-    // Intercepts outgoing http calls.  Checks for valid session.  If 403 or 401 will trigger a pop up login screen.
+    // Intercepts outgoing http calls.  Checks for valid session.  If 401 will trigger a pop up login screen.
     .factory('httpValidSession', ['$q', '$rootScope', '$location', function ($q, $rootScope, $location) {
 
 
@@ -1131,7 +1131,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     default:
 
-                        if (reject.status === 401 || reject.status === 403) {
+                        if (reject.status === 401) {
 
                             if ($rootScope.initInProgress === false) {
                                 $rootScope.$$childHead.openLoginWindow(reject);

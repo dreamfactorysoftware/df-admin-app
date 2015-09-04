@@ -278,10 +278,27 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope._setPath = function (name, pathObj) {
 
-                $scope.menuPathArr.push(name);
-                $scope.currentPathObj = { "name": name, "verbs": pathObj };
-                $scope.pathFilter = '';
+                var verbList, newVerbList, newEventName;
 
+                $scope.menuPathArr.push(name);
+                verbList = pathObj.verb;
+                newVerbList = angular.copy(verbList);
+                if (name.indexOf("{") >= 0 && name.indexOf("}") >= 0) {
+                    if (pathObj.parameter) {
+                        angular.forEach(verbList, function(eventArray, verbName) {
+                            angular.forEach(pathObj.parameter, function(paramArray, paramName) {
+                                angular.forEach(paramArray, function(itemName, itemIndex) {
+                                    angular.forEach(eventArray, function(eventName, eventIndex) {
+                                        newEventName = eventName.replace("{" + paramName + "}", itemName);
+                                        newVerbList[verbName].push(newEventName);
+                                    });
+                                });
+                            });
+                        });
+                    }
+                }
+                $scope.currentPathObj = { "name": name, "verbs": newVerbList };
+                $scope.pathFilter = '';
             };
 
             $scope._setScript = function (scriptIdStr) {

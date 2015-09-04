@@ -202,7 +202,7 @@ angular.module('dreamfactoryApp')
             if (!newValue && ((groupedApp && groupedApp.length > 0) || (noGroupApp && noGroupApp.length > 0))) {
 
                 // Do we allow open registration
-                if (SystemConfigDataService.getSystemConfig().allow_open_registration) {
+                if (SystemConfigDataService.getSystemConfig().authentication.allow_open_registration) {
 
                     // yes
                     $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'login', 'register']);
@@ -219,7 +219,7 @@ angular.module('dreamfactoryApp')
             else if (!newValue && !SystemConfigDataService.getSystemConfig().allow_guest_user) {
 
                 // Do we allow open registration
-                if (SystemConfigDataService.getSystemConfig().allow_open_registration) {
+                if (SystemConfigDataService.getSystemConfig().authentication.allow_open_registration) {
 
                     // yes
                     $scope._setActiveLinks($scope.topLevelLinks, ['login', 'register']);
@@ -488,7 +488,7 @@ angular.module('dreamfactoryApp')
         // we require confirmation.  If that value is null...then we do not require
         // confirmation
         $scope.options = {
-            confirmationRequired: SystemConfigDataService.getSystemConfig().open_reg_email_service_id
+            confirmationRequired: SystemConfigDataService.getSystemConfig().authentication.open_reg_email_service_id
         };
 
         // Listen for a register success message
