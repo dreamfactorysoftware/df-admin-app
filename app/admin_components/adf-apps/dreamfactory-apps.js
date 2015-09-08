@@ -1021,8 +1021,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     else {
 
                         var fd = new FormData();
+                        var storageId = (scope.storageService && scope.storageService.id !== undefined)? scope.storageService.id : 0;
+                        var storageContainer = scope.storageContainer;
 
                         fd.append('file', scope.uploadFile);
+                        fd.append('storage_service_id', storageId);
+                        fd.append('storage_container', storageContainer);
+
                         // fd.append("files", $('input[type=file]')[0].files[0]);
                         // fd.append("text", 'asdfasdsfasdfasdf');
                         requestDataObj = fd
