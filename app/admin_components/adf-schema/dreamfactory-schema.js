@@ -1320,16 +1320,31 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope.uploadIsEditable = true;
 
                 scope.uploadSchemaData = {
-                    table: [
+                    "resource": [
                         {
-                            name: null,
-                            label: null,
-                            plural: null,
-                            primary_key: null,
-                            name_field: null,
-                            related: null,
-                            access: [],
-                            field: []
+                            "name": "todo",
+                            "label": "Todo",
+                            "plural": "Todos",
+                            "alias": null,
+                            "field": [
+                                {
+                                    "name": "id",
+                                    "label": "Id",
+                                    "type": "id"
+                                },
+                                {
+                                    "name": "name",
+                                    "label": "Name",
+                                    "type": "string",
+                                    "size": 80,
+                                    "allow_null": false
+                                },
+                                {
+                                    "name": "complete",
+                                    "label": "Complete",
+                                    "type": "boolean"
+                                }
+                            ]
                         }
                     ]
                 };
