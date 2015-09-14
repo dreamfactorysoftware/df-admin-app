@@ -717,9 +717,7 @@ angular.module('dfTable', ['dfUtility'])
                         return defer.promise;
                     }
 
-                    var requestDataObj = {
-                        record: recordsDataArr
-                    };
+                    var requestDataObj = recordsDataArr;
 
                     return $http({
                         method: 'DELETE',
