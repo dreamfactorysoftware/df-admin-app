@@ -513,8 +513,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         text: 'Where to store the files for your app.'
                     },
                     storageContainer: {
-                        title: "Storage Container",
-                        text: 'The container on the selected storage service.'
+                        title: "Storage Folder",
+                        text: 'The folder on the selected storage service.'
                     },
                     defaultPath: {
                         title: "Default Path",
@@ -907,31 +907,18 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                 scope.sampleApps = [
                     {
-                        name: 'Todo List jQuery',
-                        descr: 'Learn how to authenticate and make CRUD calls to your DSP using the JavaScript SDK.',
-                        url: 'https://raw.github.com/dreamfactorysoftware/app-todo-jquery/master/todojquery.dfpkg'
+                        name: 'Address Book for Android',
+                        description: 'An address book app for Android showing user registration, user login, and CRUD.',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/android-sdk/develop/package/add_android.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/android-sdk'
                     },
                     {
-                        name: 'Todo List AngularJS',
-                        descr: 'The Todo List app with AngularJS.',
-                        url: 'https://raw.github.com/dreamfactorysoftware/app-todo-angular/master/todoangular.dfpkg'
-                    },
-                    {
-                        name: 'Todo List Sencha',
-                        descr: 'The Todo List app with Sencha Touch (phone/tablet only).',
-                        url: 'https://raw.github.com/dreamfactorysoftware/app-todo-sencha/master/todosencha.dfpkg'
-                    },
-                    {
-                        name: 'Calendar',
-                        descr: 'Another sample application showing how to perform CRUD operations on your DSP.',
-                        url: 'https://raw.github.com/dreamfactorysoftware/app-calendar/master/calendar.dfpkg'
-                    },
-                    {
-                        name: 'Address Book',
-                        descr: 'An address book for mobile and desktop written by Modus Create. Based on Sencha Touch and Ext JS.',
-                        url: 'https://raw.github.com/dreamfactorysoftware/app-address-book/master/add_min.dfpkg'
+                        name: 'Address Book for iOS',
+                        description: 'An address book app for iOS showing user registration, user login, and CRUD.',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/ios-sdk/develop/example-ios/package/add_ios.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/ios-sdk'
                     }
-                ]
+                ];
 
 
                 // PUBLIC API
@@ -1003,7 +990,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 // COMPLEX IMPLEMENTATION
                 scope._loadSampleApp = function (appObj) {
 
-                    scope.appPath = appObj.url;
+                    scope.appPath = appObj.package_url;
                 };
 
                 scope._submitApp = function () {
@@ -1021,8 +1008,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     else {
 
                         var fd = new FormData();
+                        var storageId = (scope.storageService && scope.storageService.id !== undefined)? scope.storageService.id : 0;
+                        var storageContainer = scope.storageContainer;
 
                         fd.append('file', scope.uploadFile);
+                        fd.append('storage_service_id', storageId);
+                        fd.append('storage_container', storageContainer);
+
                         // fd.append("files", $('input[type=file]')[0].files[0]);
                         // fd.append("text", 'asdfasdsfasdfasdf');
                         requestDataObj = fd

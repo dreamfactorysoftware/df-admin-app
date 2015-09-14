@@ -681,17 +681,11 @@ angular.module('dfTable', ['dfUtility'])
                         return defer.promise;
                     }
 
-
-
-                    var requestDataObj = {
-                        record: recordsDataArr
-                    };
-
                     return $http(
                         {
                             method: 'PATCH',
                             url: scope.options.url,
-                            data: requestDataObj
+                            data: {"resource": recordsDataArr}
                         });
 
                 };
@@ -717,12 +711,10 @@ angular.module('dfTable', ['dfUtility'])
                         return defer.promise;
                     }
 
-                    var requestDataObj = recordsDataArr;
-
                     return $http({
                         method: 'DELETE',
                         url: scope.options.url,
-                        data: requestDataObj
+                        data: {"resource": recordsDataArr}
                     })
 
                 };
@@ -2415,7 +2407,7 @@ angular.module('dfTable', ['dfUtility'])
                     return $http({
                         method: 'POST',
                         url: scope.options.url,
-                        data: [recordDataObj],
+                        data: {"resource": [recordDataObj]},
                         headers: {
                             'X-HTTP-METHOD': 'DELETE'
                         }
@@ -2427,7 +2419,7 @@ angular.module('dfTable', ['dfUtility'])
                     return $http({
                         method: 'PATCH',
                         url: scope.options.url,
-                        data: recordDataObj
+                        data: {"resource": [recordDataObj]}
                     })
                 };
 
@@ -2604,13 +2596,13 @@ angular.module('dfTable', ['dfUtility'])
 
                 scope._saveNewRecordToServer = function () {
 
-                   return $http({
+                    return $http({
                         method: 'POST',
                         url: scope.options.url,
-                        data: scope.newRecord,
-                       params: {
-                           fields: '*'
-                       }
+                        data: {"resource": [scope.newRecord]},
+                        params: {
+                            fields: '*'
+                        }
                     })
                 };
 
@@ -2926,7 +2918,7 @@ angular.module('dfTable', ['dfUtility'])
                             ]
                         }
                         break;
-                    
+
                     case 'reference':
 
                         /*if (scope.field.ref_table === scope.table && scope.field.value) {
