@@ -43,23 +43,21 @@ angular.module('dfTable', ['dfUtility'])
         $templateCache.put('df-input-values-picklist.html',
             '<div class="row">' +
                 '<div class="col-xs-12 col-md-6">' +
-                    '<div class="form-group">' +
-                        '<div class="input-group">' +
-                            '<input type="text" class="form-control" data-ng-model="currentEditRecord[field.name]" placeholder="Enter Value or Choose from list" data-ng-required="field.required">' +
-                            '<div class="input-group-btn">' +
-                                '<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">List <span class="caret"></span></button>' +
-                                '<ul class="dropdown-menu pull-right df-dropdown-height">' +
-                                    '<li data-ng-click="assignValue(item)" data-ng-repeat="item in data"><a>{{item}}</a></li>' +
-                                '</ul>' +
-                            '</div><!-- /btn-group -->' +
-                        '</div><!-- /input-group -->' +
-                    '</div><!-- /.col-lg-6 -->' +
-                '</div>' +
+                    '<div class="input-group">' +
+                        '<input type="text" class="form-control" data-ng-model="currentEditRecord[field.name]" placeholder="Enter Value or Choose from list" data-ng-required="field.required">' +
+                        '<div class="input-group-btn">' +
+                            '<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>' +
+                            '<ul class="dropdown-menu pull-right df-dropdown-height">' +
+                                '<li data-ng-click="assignValue(item)" data-ng-repeat="item in data"><a>{{item}}</a></li>' +
+                            '</ul>' +
+                        '</div><!-- /btn-group -->' +
+                    '</div><!-- /input-group -->' +
+                '</div><!-- /.col-lg-6 -->' +
             '</div>'
         );
         $templateCache.put('df-input-values-only-picklist.html',
             '<div class="form-group">' +
-                '<select class="form-control col-xs-12 col-md-6" data-ng-model="currentEditRecord[field.name]" data-ng-options="item for item in data" data-ng-required="field.required"></select>' +
+                '<select class="form-control" data-ng-model="currentEditRecord[field.name]" data-ng-options="item for item in data" data-ng-required="field.required"></select>' +
             '</div>'
         );
         $templateCache.put('df-input-date-time-picker.html',
@@ -2869,37 +2867,37 @@ angular.module('dfTable', ['dfUtility'])
                     scope.templateData.editable = scope._parseEditable(scope.field);
                 }
 
-
-
                 switch (scope.field.type) {
 
                     case 'string':
 
-                        if (scope.field.hasOwnProperty('validation')){
+                        // example picklist schema
+                        // "picklist": ["work","home","mobile","other"],
+                        // "validation": {"not_empty":{"on_fail":"Information type can not be empty."},"picklist":{"on_fail":"Not a valid information type."}}
 
-                            if (scope.field.validation != null && scope.field.validation.hasOwnProperty('picklist')) {
+                        // scope.field.picklist will always be null or an array
+                        if (scope.field.hasOwnProperty("picklist") &&
+                            scope.field.picklist !== null &&
+                            scope.field.picklist.length > 0) {
 
+                            // scope.field.validation will always be null or a JSON object
+                            if (scope.field.hasOwnProperty('validation') &&
+                                scope.field.validation !== null &&
+                                scope.field.validation.hasOwnProperty('picklist')) {
+
+                                // only allow picklist values
                                 scope.templateData.template = 'df-input-values-only-picklist.html';
-
-                                scope.data = scope.field.validation.picklist;
-
-                                scope.assignValue = function (itemStr) {
-
-                                    scope.currentEditRecord[scope.field.name] = itemStr;
-
-                                }
                             }
-                            else if (scope.field.value.length > 0) {
-
+                            else {
+                                // display picklist values in menu but allow any string
                                 scope.templateData.template = 'df-input-values-picklist.html';
+                            }
 
-                                scope.data = scope.field.value;
+                            scope.data = scope.field.picklist;
 
-                                scope.assignValue = function (itemStr) {
+                            scope.assignValue = function (itemStr) {
 
-                                    scope.currentEditRecord[scope.field.name] = itemStr;
-
-                                }
+                                scope.currentEditRecord[scope.field.name] = itemStr;
                             }
                         }
 
