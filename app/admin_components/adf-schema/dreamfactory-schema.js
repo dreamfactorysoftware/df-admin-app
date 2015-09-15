@@ -666,8 +666,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: 'POST',
-                        url: DSP_URL + '/api/v2/' + requestDataObj.name,
-                        data: requestDataObj.data
+                        url: DSP_URL + '/api/v2/' + requestDataObj.path,
+                        data: {"resource": requestDataObj.data}
                     })
                 };
 
@@ -675,8 +675,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: 'PUT',
-                        url: DSP_URL + '/api/v2/' + requestDataObj.name,
-                        data: requestDataObj.data
+                        url: DSP_URL + '/api/v2/' + requestDataObj.path,
+                        data: {"resource": requestDataObj.data}
                     })
                 };
 
@@ -684,7 +684,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: 'DELETE',
-                        url: DSP_URL + '/api/v2/' + requestDataObj.name
+                        url: DSP_URL + '/api/v2/' + requestDataObj.path
                     })
 
                 }
