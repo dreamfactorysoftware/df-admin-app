@@ -414,7 +414,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         function _saveAdminPrefs(adminPrefs) {
 
             var adminPreferences = {
-                adminPreferences: adminPrefs
+                resource: [{
+                    adminPreferences: adminPrefs
+                }]
             };
 
             return UserDataService.saveUserSetting(adminPreferences);
