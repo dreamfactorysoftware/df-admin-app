@@ -81,8 +81,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
     }])
 
-    .controller('SystemConfigurationCtrl', ['$scope', 'dfApplicationData', 'SystemConfigEventsService', 'SystemConfigDataService', 'dfObjectService', 'dfNotify', 'DSP_URL', '$http',
-        function ($scope, dfApplicationData, SystemConfigEventsService, SystemConfigDataService, dfObjectService, dfNotify, DSP_URL, $http) {
+    .controller('SystemConfigurationCtrl', ['$scope', 'dfApplicationData', 'SystemConfigEventsService', 'SystemConfigDataService', 'dfObjectService', 'dfNotify', 'INSTANCE_URL', '$http',
+        function ($scope, dfApplicationData, SystemConfigEventsService, SystemConfigDataService, dfObjectService, dfNotify, INSTANCE_URL, $http) {
 
 
             var SystemConfig = function (systemConfigData) {
@@ -97,7 +97,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 $scope.cacheEnabledServices = [];
 
-                $http.get(DSP_URL + '/api/v2/system/cache?fields=*').then(
+                $http.get(INSTANCE_URL + '/api/v2/system/cache?fields=*').then(
 
                     function (result) {
 
@@ -298,7 +298,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             }
         }])
 
-    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', 'DSP_URL', 'APP_VERSION', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, DSP_URL, APP_VERSION, $http, dfNotify) {
+    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', 'INSTANCE_URL', 'APP_VERSION', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, INSTANCE_URL, APP_VERSION, $http, dfNotify) {
 
         return {
             restrict: 'E',
@@ -316,7 +316,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
         }
     }])
 
-    .directive('dreamfactoryCacheConfig', ['MODSYSCONFIG_ASSET_PATH', 'DSP_URL', 'APP_VERSION', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, DSP_URL, APP_VERSION, $http, dfNotify) {
+    .directive('dreamfactoryCacheConfig', ['MODSYSCONFIG_ASSET_PATH', 'INSTANCE_URL', 'APP_VERSION', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, INSTANCE_URL, APP_VERSION, $http, dfNotify) {
 
         return {
             restrict: 'E',
@@ -326,7 +326,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.flushSystemCache = function () {
 
-                    $http.delete(DSP_URL + '/api/v2/system/cache')
+                    $http.delete(INSTANCE_URL + '/api/v2/system/cache')
                         .success(function () {
 
                             var messageOptions = {
@@ -354,7 +354,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.flushServiceCache = function (index) {
 
-                    $http.delete(DSP_URL + '/api/v2/system/cache/' + scope.cacheEnabledServices[index].name)
+                    $http.delete(INSTANCE_URL + '/api/v2/system/cache/' + scope.cacheEnabledServices[index].name)
                         .success(function () {
 
                             var messageOptions = {
@@ -1527,7 +1527,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
         }
     }])
 
-    .service('SystemConfigDataService', ['DSP_URL', function (DSP_URL) {
+    .service('SystemConfigDataService', ['INSTANCE_URL', function (INSTANCE_URL) {
 
         var systemConfig = {};
 
@@ -1541,7 +1541,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 xhr = new ActiveXObject("Microsoft.XMLHTTP");
             }
 
-            xhr.open("GET", DSP_URL + '/api/v2/system/environment', false);
+            xhr.open("GET", INSTANCE_URL + '/api/v2/system/environment', false);
             xhr.setRequestHeader("X-DreamFactory-API-Key", "6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d");
             xhr.setRequestHeader("Content-Type", "application/json");
 

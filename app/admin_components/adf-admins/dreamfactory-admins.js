@@ -73,7 +73,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 });
         }])
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
 
 
@@ -373,7 +373,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     },
                     adminLookupKeys: {
                         title: 'Admin Lookup Keys Info',
-                        text: 'The DSP administrator can create any number of "key value" pairs attached to a admin. ' +
+                        text: 'The DreamFactory administrator can create any number of "key value" pairs attached to a admin. ' +
                             'The key values are automatically substituted on the server. For example, key names can ' +
                             'be used in the username and password fields required to hook up a SQL or NoSQL database. ' +
                             'They can also be used in Email Templates or as parameters for external REST services. ' +
@@ -386,7 +386,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     }])
 
-    .directive('dfConfirmAdmin', ['DSP_URL', 'MOD_ADMIN_ASSET_PATH', '$http', 'SystemConfigDataService', 'dfNotify', function(DSP_URL, MOD_ADMIN_ASSET_PATH, $http, SystemConfigDataService, dfNotify) {
+    .directive('dfConfirmAdmin', ['INSTANCE_URL', 'MOD_ADMIN_ASSET_PATH', '$http', 'SystemConfigDataService', 'dfNotify', function(INSTANCE_URL, MOD_ADMIN_ASSET_PATH, $http, SystemConfigDataService, dfNotify) {
 
         return {
             restrict: 'E',
@@ -407,7 +407,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope._sendInvite = function (adminId) {
 
                     return  $http({
-                        url: DSP_URL + '/api/v2/system/admin',
+                        url: INSTANCE_URL + '/api/v2/system/admin',
                         method: 'PATCH',
                         params: {
                             send_invite: true
@@ -659,7 +659,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope.fields = [
                     {
                         name: 'id',
-                        label: 'Id',
+                        label: 'ID',
                         active: true
                     },
                     {
@@ -679,7 +679,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     },
                     {
                         name: 'last_name',
-                        label: 'Last_name',
+                        label: 'Last Name',
                         active: true
                     },
                     {
@@ -964,7 +964,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     }])
 
-    .directive('dfImportAdmins', ['MOD_ADMIN_ASSET_PATH', 'DSP_URL', '$http', 'dfTableEventService', 'dfNotify', function (MOD_ADMIN_ASSET_PATH, DSP_URL, $http, dfTableEventService, dfNotify) {
+    .directive('dfImportAdmins', ['MOD_ADMIN_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfTableEventService', 'dfNotify', function (MOD_ADMIN_ASSET_PATH, INSTANCE_URL, $http, dfTableEventService, dfNotify) {
 
         return {
             restrict: 'A',
@@ -989,7 +989,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     return $http({
                         method: 'POST',
-                        url: DSP_URL + '/api/v2/system/admin',
+                        url: INSTANCE_URL + '/api/v2/system/admin',
                         headers: {
                             "Content-Type" : scope.importType === 'csv' ? 'text/csv' : 'application/' + scope.importType
                         },
@@ -1106,7 +1106,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     }])
 
-    .directive('dfExportAdmins', ['MOD_ADMIN_ASSET_PATH', 'DSP_URL', '$http', '$window', function (MOD_ADMIN_ASSET_PATH, DSP_URL, $http, $window) {
+    .directive('dfExportAdmins', ['MOD_ADMIN_ASSET_PATH', 'INSTANCE_URL', '$http', '$window', function (MOD_ADMIN_ASSET_PATH, INSTANCE_URL, $http, $window) {
 
         return {
 
@@ -1142,7 +1142,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         // Jason's method to make it work.  He doesn't check for bad response.
                         // I'll look into angularJS's $location to fix this.
-                        $window.location.href= DSP_URL + '/api/v2/system/admin?' + params;
+                        $window.location.href= INSTANCE_URL + '/api/v2/system/admin?' + params;
                     }
                 }
             }

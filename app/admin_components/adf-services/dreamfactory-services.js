@@ -49,12 +49,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 });
         }])
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
 
     }])
 
-    .service('dfServiceData', ['$http', '$q', 'DSP_URL', function ($http, $q, DSP_URL) {
+    .service('dfServiceData', ['$http', '$q', 'INSTANCE_URL', function ($http, $q, INSTANCE_URL) {
         var dfServiceData = {};
 
         dfServiceData.getServiceTypes = function () {
@@ -69,7 +69,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             } else {
                 $http({
                     method: 'GET',
-                    url: DSP_URL + '/api/v2/system/service_type'
+                    url: INSTANCE_URL + '/api/v2/system/service_type'
                 }).success(function (data) {
                     dfServiceData.serviceTypes = data;
                     deferred.resolve(dfServiceData.serviceTypes);

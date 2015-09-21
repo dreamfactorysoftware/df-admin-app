@@ -2829,7 +2829,7 @@
             },
             "type": {
                 "type": "string",
-                "description": "The DSP abstract data type for this field."
+                "description": "The abstract data type for this field."
             },
             "db_type": {
                 "type": "string",

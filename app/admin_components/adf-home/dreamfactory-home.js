@@ -73,7 +73,7 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 });
         }])
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
 
 
@@ -169,12 +169,6 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 // We'll need your storage containers because we 'll need to assign
                 // this app to a storage container if it is a 'hosted on this system' app.
                 scope.storageServices = dfApplicationData.getApiData('service', {type: 'local_file'});
-
-                scope.downloadSDK = function() {
-
-                    window.top.location = location.protocol + '//' + location.host + '/api/v2/system/app/' + scope.app.record.id + '?sdk=true&app_name=admin';
-                };
-
 
                 scope.setStep = function (step) {
 

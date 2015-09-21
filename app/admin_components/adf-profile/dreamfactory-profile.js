@@ -64,7 +64,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                     }
                 });
         }])
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
 
     }])
@@ -86,7 +86,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
             }
         ];
     }])
-    .directive('dfEditProfile', ['MOD_PROFILE_ASSET_PATH', 'DSP_URL', 'dfNotify', 'dfApplicationData', 'UserDataService', 'dfObjectService', '$http', function(MOD_APPS_ASSET_PATH, DSP_URL, dfNotify, dfApplicationData, UserDataService, dfObjectService, $http) {
+    .directive('dfEditProfile', ['MOD_PROFILE_ASSET_PATH', 'INSTANCE_URL', 'dfNotify', 'dfApplicationData', 'UserDataService', 'dfObjectService', '$http', function(MOD_APPS_ASSET_PATH, INSTANCE_URL, dfNotify, dfApplicationData, UserDataService, dfObjectService, $http) {
 
         return {
 
@@ -137,7 +137,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                     return $http({
                         method: 'GET',
-                        url: DSP_URL + '/api/v2/user/profile'
+                        url: INSTANCE_URL + '/api/v2/user/profile'
                     })
                 };
 
@@ -145,7 +145,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                     return $http({
                         method: 'POST',
-                        url: DSP_URL + '/api/v2/user/profile',
+                        url: INSTANCE_URL + '/api/v2/user/profile',
                         data: requestDataObj.data
                     })
                 };
@@ -159,7 +159,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                     return $http({
                         method: 'POST',
-                        url: DSP_URL + '/api/v2/user/password',
+                        url: INSTANCE_URL + '/api/v2/user/password',
                         params: requestDataObj.params,
                         data: requestDataObj.data
                     })

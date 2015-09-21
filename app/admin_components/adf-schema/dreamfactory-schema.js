@@ -58,9 +58,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 });
         }])
 
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {}])
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {}])
 
-    .controller('SchemaCtrl', ['DSP_URL', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function(DSP_URL, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {
+    .controller('SchemaCtrl', ['INSTANCE_URL', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function(INSTANCE_URL, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {
 
 
         var Service = function (schemaData) {
@@ -265,7 +265,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             return $http({
                 method: 'GET',
-                url: DSP_URL + '/api/v2/'+ $scope.currentService.name + '/_schema/' + requestDataObj.name,
+                url: INSTANCE_URL + '/api/v2/'+ $scope.currentService.name + '/_schema/' + requestDataObj.name,
                 params: {
                     refresh: true
                 }
@@ -277,7 +277,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             return $http({
                 method: 'DELETE',
-                url: DSP_URL + '/api/v2/' + $scope.currentService.name + '/_schema/' + requestDataObj.name
+                url: INSTANCE_URL + '/api/v2/' + $scope.currentService.name + '/_schema/' + requestDataObj.name
             })
         };
 
@@ -285,13 +285,13 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             return $http({
                 method: 'POST',
-                url: DSP_URL + '/api/v2/' + $scope.currentService.name + '/_schema',
+                url: INSTANCE_URL + '/api/v2/' + $scope.currentService.name + '/_schema',
                 data: requestDataObj.data
             })
         };
 
         $scope._refreshServiceFromServer = function () {
-            return dfApplicationData.getServiceComponents($scope.currentService.name, DSP_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {params: {refresh: true, fields: 'name,label'}});
+            return dfApplicationData.getServiceComponents($scope.currentService.name, INSTANCE_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {params: {refresh: true, fields: 'name,label'}});
         };
 
         // COMPLEX IMPLEMENTATION
@@ -409,7 +409,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             }
 
 
-            dfApplicationData.getServiceComponents($scope.currentService.name, DSP_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {params: {refresh: true, fields: 'name,label'}}, forceRefresh).then(
+            dfApplicationData.getServiceComponents($scope.currentService.name, INSTANCE_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {params: {refresh: true, fields: 'name,label'}}, forceRefresh).then(
                 function (result) {
 
                     // update service components
@@ -529,7 +529,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         }
     }])
 
-    .directive('dfTableDetails', ['MOD_SCHEMA_ASSET_PATH', 'DSP_URL', 'dfNotify', '$http', 'dfObjectService', 'dfApplicationData',  function (MOD_SCHEMA_ASSET_PATH, DSP_URL, dfNotify, $http, dfObjectService, dfApplicationData) {
+    .directive('dfTableDetails', ['MOD_SCHEMA_ASSET_PATH', 'INSTANCE_URL', 'dfNotify', '$http', 'dfObjectService', 'dfApplicationData',  function (MOD_SCHEMA_ASSET_PATH, INSTANCE_URL, dfNotify, $http, dfObjectService, dfApplicationData) {
 
         return {
             restrict: 'E',
@@ -666,7 +666,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: 'POST',
-                        url: DSP_URL + '/api/v2/' + requestDataObj.path,
+                        url: INSTANCE_URL + '/api/v2/' + requestDataObj.path,
                         data: {"resource": requestDataObj.data}
                     })
                 };
@@ -675,7 +675,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: 'PUT',
-                        url: DSP_URL + '/api/v2/' + requestDataObj.path,
+                        url: INSTANCE_URL + '/api/v2/' + requestDataObj.path,
                         data: {"resource": requestDataObj.data}
                     })
                 };
@@ -684,7 +684,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: 'DELETE',
-                        url: DSP_URL + '/api/v2/' + requestDataObj.path
+                        url: INSTANCE_URL + '/api/v2/' + requestDataObj.path
                     })
 
                 }
@@ -983,7 +983,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         }
     }])
 
-    .directive('dfFieldDetails', ['MOD_SCHEMA_ASSET_PATH', 'DSP_URL', '$http', 'dfNotify', 'dfObjectService', function (MOD_SCHEMA_ASSET_PATH, DSP_URL, $http, dfNotify, dfObjectService) {
+    .directive('dfFieldDetails', ['MOD_SCHEMA_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfNotify', 'dfObjectService', function (MOD_SCHEMA_ASSET_PATH, INSTANCE_URL, $http, dfNotify, dfObjectService) {
 
 
         return {
@@ -1083,7 +1083,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 // PRIVATE API
                 scope._loadReferenceTables = function () {
 
-                    $http.get(DSP_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/').then(
+                    $http.get(INSTANCE_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/').then(
 
                         function (result) {
                             scope.field.record.ref_tables = result.data.resource;
@@ -1114,7 +1114,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         return;
                     }
 
-                    $http.get(DSP_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/' + scope.field.record.ref_table).then(
+                    $http.get(INSTANCE_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/' + scope.field.record.ref_table).then(
                         function (result) {
 
                             scope.refFields = result.data.field;
@@ -1145,7 +1145,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         delete recordObj.ref_tables;
 
                     return $http({
-                        url: DSP_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/' + scope.currentTable + '/' + recordObj.name,
+                        url: INSTANCE_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/' + scope.currentTable + '/' + recordObj.name,
                         method: 'PATCH',
                         data: recordObj
                     })
@@ -1213,7 +1213,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
 
 
-                    $http.get(DSP_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/' + scope.field.record.ref_table).then(
+                    $http.get(INSTANCE_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/' + scope.field.record.ref_table).then(
                         function (result) {
 
                             scope.refFields = result.data.field

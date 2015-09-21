@@ -23,7 +23,7 @@
 angular.module('dfSwaggerEditor', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
     .constant('MOD_SWAGGER_EDITOR_ASSET_PATH', 'admin_components/adf-swagger-editor/')
 
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {}])
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {}])
 
     .directive('dfSwaggerEditorMain', ['MOD_SWAGGER_EDITOR_ASSET_PATH', '$timeout', function (MOD_SWAGGER_EDITOR_ASSET_PATH, $timeout) {
 

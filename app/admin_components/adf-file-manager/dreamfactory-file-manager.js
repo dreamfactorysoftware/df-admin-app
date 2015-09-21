@@ -53,11 +53,11 @@ angular.module('dfFileManager', ['ngRoute', 'dfUtility'])
                     }
                 });
         }])
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
 
     }])
-    .controller('FileCtrl', ['$scope', 'DSP_URL', 'dfApplicationData', function($scope, DSP_URL, dfApplicationData) {
+    .controller('FileCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
 
 
 
@@ -74,7 +74,7 @@ angular.module('dfFileManager', ['ngRoute', 'dfUtility'])
         ];
     }])
 
-    .directive('dfFileManager', ['MOD_FILE_MANAGER_ASSET_PATH', 'DSP_URL', function(MOD_FILE_MANAGER_ASSET_PATH, DSP_URL) {
+    .directive('dfFileManager', ['MOD_FILE_MANAGER_ASSET_PATH', 'INSTANCE_URL', function(MOD_FILE_MANAGER_ASSET_PATH, INSTANCE_URL) {
 
 
         return {
@@ -84,7 +84,7 @@ angular.module('dfFileManager', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_FILE_MANAGER_ASSET_PATH + 'views/df-file-manager.html',
             link: function (scope, elem, attrs) {
 
-                $( "#root-file-manager iframe" ).attr( "src", DSP_URL + '/filemanager/?path=/&allowroot=true').show();
+                $( "#root-file-manager iframe" ).attr( "src", INSTANCE_URL + '/filemanager/?path=/&allowroot=true').show();
 
                 scope.$broadcast('filemanager:loaded');
 

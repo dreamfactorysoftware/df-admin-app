@@ -59,8 +59,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
     // Directive for Login.  This is does our login work and provides the attachment point for
     // the login portion of our module.
-    .directive('dreamfactoryUserLogin', ['MODUSRMNGR_ASSET_PATH', 'DSP_URL', '$http', '$cookies', '$cookieStore', 'UserEventsService', 'UserDataService', '_dfObjectService', 'SystemConfigDataService',
-        function (MODUSRMNGR_ASSET_PATH, DSP_URL, $http, $cookies, $cookieStore, UserEventsService, UserDataService, _dfObjectService, SystemConfigDataService) {
+    .directive('dreamfactoryUserLogin', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$cookies', '$cookieStore', 'UserEventsService', 'UserDataService', '_dfObjectService', 'SystemConfigDataService',
+        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $cookies, $cookieStore, UserEventsService, UserDataService, _dfObjectService, SystemConfigDataService) {
 
             return {
 
@@ -174,7 +174,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     if(queryString){
                         scope.loginWaiting = true;
                         scope.showOAuth = false;
-                        $http.post(DSP_URL + '/api/v2/user/session?oauth_callback=true&'+queryString).then(
+                        $http.post(INSTANCE_URL + '/api/v2/user/session?oauth_callback=true&'+queryString).then(
                             // success method
                             function (result) {
 
@@ -252,9 +252,9 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                         if(!admin) {
                             // Return the posted request data as a promise
-                            return $http.post(DSP_URL + '/api/v2/user/session', credsDataObj);
+                            return $http.post(INSTANCE_URL + '/api/v2/user/session', credsDataObj);
                         } else {
-                            return $http.post(DSP_URL + '/api/v2/system/admin/session', credsDataObj);
+                            return $http.post(INSTANCE_URL + '/api/v2/system/admin/session', credsDataObj);
                         }
                     };
 
@@ -430,7 +430,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
 
     // Forgot Password Email Confirmation
-    .directive('dreamfactoryForgotPwordEmail', ['MODUSRMNGR_ASSET_PATH', 'DSP_URL', '$http', '_dfStringService', 'UserEventsService', function (MODUSRMNGR_ASSET_PATH, DSP_URL, $http, _dfStringService, UserEventsService) {
+    .directive('dreamfactoryForgotPwordEmail', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '_dfStringService', 'UserEventsService', function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, _dfStringService, UserEventsService) {
 
 
         return {
@@ -510,10 +510,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     if(!admin) {
                         // Post request for password change and return promise
-                        return $http.post(DSP_URL + '/api/v2/user/password?reset=true', requestDataObj);
+                        return $http.post(INSTANCE_URL + '/api/v2/user/password?reset=true', requestDataObj);
                     }
                     else{
-                        return $http.post(DSP_URL + '/api/v2/system/admin/password?reset=true', requestDataObj);
+                        return $http.post(INSTANCE_URL + '/api/v2/system/admin/password?reset=true', requestDataObj);
                     }
                 };
 
@@ -521,10 +521,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     if(!admin) {
                         // Post request for password change and return promise
-                        return $http.post(DSP_URL + '/api/v2/user/password?login=false', requestDataObj);
+                        return $http.post(INSTANCE_URL + '/api/v2/user/password?login=false', requestDataObj);
                     }
                     else{
-                        return $http.post(DSP_URL + '/api/v2/system/admin/password?login=false', requestDataObj);
+                        return $http.post(INSTANCE_URL + '/api/v2/system/admin/password?login=false', requestDataObj);
                     }
                 };
 
@@ -551,7 +551,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // Turn on waiting directive
                     scope.requestWaiting = true;
 
-                    // Ask the DSP to resset the password via email confirmation
+                    // Ask to reset the password via email confirmation
                     scope._resetPasswordRequest(requestDataObj, false).then(
 
                         // handle successful password reset
@@ -715,8 +715,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
     }])
 
     // Password Reset Directive
-    .directive('dreamfactoryPasswordReset', ['MODUSRMNGR_ASSET_PATH', 'DSP_URL', '$http', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfNotify',
-        function (MODUSRMNGR_ASSET_PATH, DSP_URL, $http, UserEventsService, _dfStringService, _dfObjectService, dfNotify) {
+    .directive('dreamfactoryPasswordReset', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfNotify',
+        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, UserEventsService, _dfStringService, _dfObjectService, dfNotify) {
 
             return {
                 restrict: 'E',
@@ -792,9 +792,9 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // PRIVATE API
                     scope._setPasswordRequest = function (requestDataObj, admin) {
 
-                        var url = DSP_URL + '/api/v2/system/admin/password';
+                        var url = INSTANCE_URL + '/api/v2/system/admin/password';
                         if(!admin){
-                            url = DSP_URL + '/api/v2/user/password';
+                            url = INSTANCE_URL + '/api/v2/user/password';
                         }
 
                         return $http({
@@ -911,8 +911,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
 
     // Logout Directive
-    .directive('dreamfactoryUserLogout', ['DSP_URL', '$http', '$cookieStore', 'UserEventsService', 'UserDataService',
-        function (DSP_URL, $http, $cookieStore, UserEventsService, UserDataService) {
+    .directive('dreamfactoryUserLogout', ['INSTANCE_URL', '$http', '$cookieStore', 'UserEventsService', 'UserDataService',
+        function (INSTANCE_URL, $http, $cookieStore, UserEventsService, UserDataService) {
             return {
 
                 restrict: 'E',
@@ -933,10 +933,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                         if(!admin) {
                             // return a promise object from the rest call
-                            return $http.delete(DSP_URL + '/api/v2/user/session');
+                            return $http.delete(INSTANCE_URL + '/api/v2/user/session');
                         }
                         else{
-                            return $http.delete(DSP_URL + '/api/v2/system/admin/session');
+                            return $http.delete(INSTANCE_URL + '/api/v2/system/admin/session');
                         }
                     };
 
@@ -1035,8 +1035,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
 
     // Register Directive.  Takes care of registering a user for our application
-    .directive('dreamfactoryRegisterUser', ['MODUSRMNGR_ASSET_PATH', 'DSP_URL', '$http', '$rootScope', '$cookieStore', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfXHRHelper',
-        function (MODUSRMNGR_ASSET_PATH, DSP_URL, $http, $rootScope, $cookieStore, UserEventsService, _dfStringService, _dfObjectService, dfXHRHelper) {
+    .directive('dreamfactoryRegisterUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$rootScope', '$cookieStore', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfXHRHelper',
+        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $rootScope, $cookieStore, UserEventsService, _dfStringService, _dfObjectService, dfXHRHelper) {
 
 
             return {
@@ -1055,7 +1055,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // This holds our options object.  If we don't provide an options object
                     // it defaults to showing the template.  It also defines a confirmationRequired attribute
                     // which can be set at the time of instantiation.  If it's not set then it will default
-                    // to the DSP settings.
+                    // to the instance settings.
                     var defaults = {showTemplate: true, login: false};
                     scope.options = _dfObjectService.mergeObjects(scope.options, defaults);
 
@@ -1098,7 +1098,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope._registerRequest = function (registerDataObj) {
 
                         return $http({
-                            url: DSP_URL + '/api/v2/user/register',
+                            url: INSTANCE_URL + '/api/v2/user/register',
                             method: 'POST',
                             params: {
                                 login: scope.options.login
@@ -1110,7 +1110,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // Returns the system configuration object
                     scope._getSystemConfig = function () {
 
-                        return $http.get(DSP_URL + '/api/v2/system/environment');
+                        return $http.get(INSTANCE_URL + '/api/v2/system/environment');
                     };
 
 
@@ -1356,8 +1356,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
     }])
 
     // Enter confirmation code page
-    .directive('dreamfactoryConfirmUser', ['MODUSRMNGR_ASSET_PATH', 'DSP_URL', '$http', '_dfObjectService', '_dfStringService', 'UserDataService', 'UserEventsService', 'SystemConfigDataService',
-        function(MODUSRMNGR_ASSET_PATH, DSP_URL, $http, _dfObjectService, _dfStringService, UserDataService, UserEventsService, SystemConfigDataService) {
+    .directive('dreamfactoryConfirmUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '_dfObjectService', '_dfStringService', 'UserDataService', 'UserEventsService', 'SystemConfigDataService',
+        function(MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, _dfObjectService, _dfStringService, UserDataService, UserEventsService, SystemConfigDataService) {
 
             return {
 
@@ -1446,7 +1446,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope._confirmUserToServer = function (requestDataObj) {
 
                         return $http({
-                            url: DSP_URL + '/api/v2/user/password',
+                            url: INSTANCE_URL + '/api/v2/user/password',
                             method: 'POST',
                             params: {
                                 login: false
@@ -1647,7 +1647,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
     // This service gives us access to the current user.  While it's pretty sparse
     // at the moment it does give us access to critical user/session data.  Inject this
     // service where ever you need to access the current user.
-    .service('UserDataService', ['$http', 'DSP_URL', 'XHRHelper', function ($http, DSP_URL, XHRHelper) {
+    .service('UserDataService', ['$http', 'INSTANCE_URL', 'XHRHelper', function ($http, INSTANCE_URL, XHRHelper) {
 
         // Stored user.
         var currentUser = false;
@@ -1663,7 +1663,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         function _saveUserSetting(userSettings) {
 
             return $http({
-                url: DSP_URL + '/api/v2/user/custom',
+                url: INSTANCE_URL + '/api/v2/user/custom',
                 method: 'POST',
                 data: userSettings
             })
@@ -1685,7 +1685,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
 
             return $http({
-                url: DSP_URL + '/api/v2/user/custom/' + setting,
+                url: INSTANCE_URL + '/api/v2/user/custom/' + setting,
                 method: 'GET'
             })
         }
@@ -1818,7 +1818,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }
 
     }])
-    .service('dfXHRHelper', ['DSP_URL', 'DSP_API_KEY', '$cookies', function (DSP_URL, DSP_API_KEY, $cookies) {
+    .service('dfXHRHelper', ['INSTANCE_URL', 'ADMIN_API_KEY', '$cookies', function (INSTANCE_URL, ADMIN_API_KEY, $cookies) {
 
         function _isEmpty(obj) {
 
@@ -1844,7 +1844,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         function _setHeaders(_xhrObj, _headersDataObj) {
 
             // Setting Dreamfactory Headers
-            _xhrObj.setRequestHeader("X-DreamFactory-API-Key", DSP_API_KEY);
+            _xhrObj.setRequestHeader("X-DreamFactory-API-Key", ADMIN_API_KEY);
             _xhrObj.setRequestHeader("X-DreamFactory-Session-Token", $cookies.PHPSESSID);
 
             // Set additional headers
@@ -1909,7 +1909,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
 
             // Do XHR
-            xhr.open(_method, DSP_URL + '/api/v2/' + _url + params, _async);
+            xhr.open(_method, INSTANCE_URL + '/api/v2/' + _url + params, _async);
 
             // Set headers
             _setHeaders(xhr, _headers);

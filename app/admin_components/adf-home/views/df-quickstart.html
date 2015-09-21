@@ -8,12 +8,11 @@
         <div data-ng-show="step === 1" >
             <form name="form" role="form" novalidate>
                 <div class="form-group has-feedback">
-                    <h3>Choose an Application ID</h3>
+                    <h3>Choose an Application Name</h3>
 
                     <p>
                         Before writing your application, you must specify an application name. This name is used to generate your API key for
-                        making API calls to DreamFactory. Your application name can contain letters A-Z, numbers, underscores,
-                        and dashes. Other characters are not allowed.
+                        making calls to the DreamFactory REST API.
                     </p>
 
                     <div class="col-xs-12 col-sm-6 col-md-4" data-ng-class="!_isAppNameUnique() || form.$invalid ? 'has-error' : ''" style="padding-left: 0;">
@@ -36,7 +35,7 @@
 
                     <p>
                         The next step is to specify the type of application you're building. Web-based applications
-                        usually run in a browser and use HTML and Javascript. Native applications are compiled packages
+                        usually run in a browser and use HTML and JavaScript. Native applications are compiled packages
                         that run natively on mobile devices.
                     </p>
 
@@ -50,7 +49,7 @@
                                    checked="checked" style="margin-top: 5px;">Web-Based
                             &nbsp;<i class="fa fa-html5" title="HTML5"></i>
                             &nbsp;<i class="fa fa-css3" title="CSS3"></i>
-                            &nbsp;<i class="fa fa-file-text" title="Javascript"></i>
+                            &nbsp;<i class="fa fa-file-text" title="JavaScript"></i>
                         </label>
                     </div>
 
@@ -135,10 +134,10 @@
             <!-- Web Apps -->
             <div data-ng-show="app.__dfUI.quickStartAppType === 'web'">
 
-                <!-- Apps NOT stored in DSP local storage -->
+                <!-- Apps NOT stored in local storage -->
                 <div data-ng-show="app.__dfUI.quickStartWebType === 'desktop'">
                     <p>
-                        Your application ID has been created. You'll now see your application in the Apps tab of the Admin
+                        Your application has been created. You'll now see your application in the Apps tab of the Admin
                         Console. Here you can change application properties, preview your application, edit any hosted
                         files, and delete the application. In the file editor you'll see an index.html file with example
                         code for making API calls. There is also a README file with additional information.
@@ -151,16 +150,16 @@
 
                 </div>
 
-                <!-- Apps stored in DSP local storage -->
+                <!-- Apps stored in local storage -->
                 <div ng-show="app.__dfUI.quickStartWebType === 'admin'">
                     <p>Your application has been successfully created. When you select the
-                        Apps tab from the left sidebar, you will see your application in the list. Each DSP
+                        Apps tab from the left sidebar, you will see your application in the list. Each DreamFactory
                         instance comes with example applications to help get you started as well.
                     </p>
 
                     <p>You can return to the Admin Console at any time to explore the other available features
-                        of your DSP. This includes, but is not limited to, managing users, creating and assigning roles, creating
-                        and managing schemata, and wiring up external services!
+                        of your DreamFactory instance. This includes, but is not limited to, managing users, creating
+                        and assigning roles, creating and managing schemata, and wiring up external services!
                     </p>
 
                     <p>
@@ -177,16 +176,8 @@
                 <h3>Download the SDK!</h3>
 
                 <p>
-                    The Javascript SDK is a convenience wrapper for DreamFactory's REST API. The SDK automatically
-                    contains your REST endpoints and application ID (your API key) so you can get coding immediately.
-                    When you add a new service in the Admin Console, the Javascript SDK automatically includes the new
-                    service the next time your application loads.
-                </p>
-
-                <p>
-                    The Javascript df object provides access to the SDK. The df object is a property added to the DOM's
-                    window object. To see this in action using Chrome's Developer Tools, open the console and start typing
-                    window.df.apis. This will display all the methods and properties of the df object.
+                    The JavaScript SDK is a sample address book application showing how to register, login, and make CRUD calls using
+                    the DreamFactory REST API.
                 </p>
 
                 <p>
@@ -208,7 +199,7 @@
                         </p>
                     </div>
 
-                    <button type="button" data-ng-click="downloadSDK()" class="btn btn-primary" title="Download the sdk">Download the SDK</button>
+                    <a href="https://github.com/dreamfactorysoftware/javascript-sdk" target="_blank" class="btn btn-primary">Download the SDK</a>
 
                     <span class="pull-right"><img src="images/local.png" /></span>
 
@@ -222,7 +213,7 @@
 
 
                 <p>
-                    Your application ID has been created. You'll now see your application in the Apps tab of the Admin
+                    Your application has been created. You'll now see your application in the Apps tab of the Admin
                     Console. Here you can change application properties, preview your application, edit any hosted files,
                     and delete the application.
                 </p>

@@ -53,11 +53,11 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     }
                 });
         }])
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
 
     }])
-    .controller('PackageCtrl', ['$scope', 'DSP_URL', 'dfApplicationData', function($scope, DSP_URL, dfApplicationData) {
+    .controller('PackageCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
 
 
 
@@ -89,7 +89,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
         }
 
     }])
-    .directive('dfSelectApp', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'DSP_URL', '$http', 'dfApplicationData', 'dfNotify', function (MOD_PACKAGE_MANAGER_ASSET_PATH, DSP_URL, $http, dfApplicationData, dfNotify) {
+    .directive('dfSelectApp', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfApplicationData', 'dfNotify', function (MOD_PACKAGE_MANAGER_ASSET_PATH, INSTANCE_URL, $http, dfApplicationData, dfNotify) {
 
 
         return {
@@ -112,7 +112,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         $http({
                             method: 'GET',
-                            url: DSP_URL + '/api/v2/system/app/' + newValue.id,
+                            url: INSTANCE_URL + '/api/v2/system/app/' + newValue.id,
                             params: {
                                 fields: '*'
                             }
@@ -340,7 +340,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfExportPackage', ['DSP_URL', 'DSP_API_KEY', 'UserDataService', '$window', function (DSP_URL, DSP_API_KEY, UserDataService, $window) {
+    .directive('dfExportPackage', ['INSTANCE_URL', 'ADMIN_API_KEY', 'UserDataService', '$window', function (INSTANCE_URL, ADMIN_API_KEY, UserDataService, $window) {
 
         return {
 
@@ -359,8 +359,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 // COMPLEX IMPLEMENTATION
                 scope._exportPackage = function () {
 
-                    var exportUrl = DSP_URL + '/api/v2/system/app/' + scope.selectedApp.id + '?pkg=true' +
-                        '&api_key=' + DSP_API_KEY +
+                    var exportUrl = INSTANCE_URL + '/api/v2/system/app/' + scope.selectedApp.id + '?pkg=true' +
+                        '&api_key=' + ADMIN_API_KEY +
                         '&session_token=' + UserDataService.getCurrentUser().session_token +
                         '&include_files=' + scope.includeAppFiles +
                         '&service=' + scope.prepareServicesData() +

@@ -75,11 +75,11 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
                     }
                 });
         }])
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
 
     }])
-    .controller('ApiDocsCtrl', ['$scope', 'DSP_URL', 'dfApplicationData', function($scope, DSP_URL, dfApplicationData) {
+    .controller('ApiDocsCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
 
         $scope.$parent.title = 'API Docs';
 
