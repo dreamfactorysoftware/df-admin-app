@@ -261,7 +261,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 result = angular.fromJson(result.response);
 
                 // were they retrieved successfully
-                if (result !== null) {
+                if (result !== null && result.hasOwnProperty('application') && result.application !== null) {
 
                     // store them for following calls
                     dfApplicationPrefs.setPrefs(result);
