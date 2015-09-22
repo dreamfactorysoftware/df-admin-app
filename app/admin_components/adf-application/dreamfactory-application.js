@@ -261,10 +261,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 result = angular.fromJson(result.response);
 
                 // were they retrieved successfully
-                if (result !== null && result.hasOwnProperty('adminPreferences') && result.adminPreferences !== null) {
+                if (result !== null) {
 
                     // store them for following calls
-                    dfApplicationPrefs.setPrefs(result.adminPreferences);
+                    dfApplicationPrefs.setPrefs(result);
                 }
             }
 
@@ -414,7 +414,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         function _saveAdminPrefs(adminPrefs) {
 
             var adminPreferences = {
-                adminPreferences: adminPrefs
+                resource:[{
+                    name:"adminPreferences",
+                    value:adminPrefs
+                }]
             };
 
             return UserDataService.saveUserSetting(adminPreferences);
