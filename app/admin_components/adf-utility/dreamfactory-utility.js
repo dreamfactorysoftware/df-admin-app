@@ -732,7 +732,7 @@ angular.module('dfUtility', ['dfApplication'])
                     });
 
                     elem.css({
-                        'display': 'inline-block', 'position': 'absolute'
+                        'display': 'inline-block', 'position': 'relative'
                     });
 
                 }

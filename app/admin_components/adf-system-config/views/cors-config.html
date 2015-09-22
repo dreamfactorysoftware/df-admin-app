@@ -43,8 +43,12 @@
         </div>
 
         <div class="form-group">
-            <label>Enabled</label>
-            <input class="form-control" data-ng-model="selectedCorsEntry.record.enabled" type="checkbox" data-ng-disabled="selectedCorsEntry === null" />
+            <div class="checkbox">
+                <label>
+                    <input data-ng-model="selectedCorsEntry.record.enabled" type="checkbox" data-ng-disabled="selectedCorsEntry === null" />
+                    Enabled
+                </label>
+            </div>
         </div>
 
     </div>
