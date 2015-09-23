@@ -175,6 +175,16 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope._setScript(scriptIdStr);
             };
 
+            $scope.setEventList = function (name, verb, events) {
+                $scope._setEventList(name, verb, events);
+            };
+
+            $scope.clearEventList = function() {
+                if($scope.currentPathObj.events) {
+                    $scope.currentPathObj.events = null;
+                }
+            }
+
             $scope.saveScript = function () {
 
                 $scope._saveScript();
@@ -277,7 +287,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             $scope._setPath = function (name, pathObj) {
-
                 var verbList, newVerbList, newEventName;
 
                 $scope.menuPathArr.push(name);
@@ -301,9 +310,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.pathFilter = '';
             };
 
+            $scope._setEventList = function(name, verb, events) {
+                $scope.menuPathArr.push("[" + verb.toUpperCase() + "] " + name);
+                $scope.currentPathObj = { "name": name, "events": events, "verb": verb};
+            }
+
             $scope._setScript = function (scriptIdStr) {
-
-
                 var requestDataObj = {
 
                     name: scriptIdStr,

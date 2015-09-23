@@ -39,14 +39,24 @@
             </div>
 
             <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 3">
-                <span data-ng-repeat="(verb,eventList) in currentPathObj.verbs | filter: pathFilter">
-                    <a
-                            data-ng-click="setScript(event)"
-                            data-ng-repeat="event in eventList">{{event}}
+                <span data-ng-repeat="(verb, eventList) in currentPathObj.verbs | filter: pathFilter">
+                    <a data-ng-if="eventList.length > 1" data-ng-click="setEventList(currentPathObj.name, verb, eventList)">{{currentPathObj.name}}<span class="pull-right text-muted"
+                              style="font-size: 10px; margin-top: 5px; text-transform: uppercase;">{{verb}}</span>
+                    </a>
+                    <a data-ng-if="eventList.length <= 1" data-ng-click="setScript(event)" data-ng-repeat="event in eventList">{{event}}
                         <span data-ng-if="!uppercaseVerbLabels" class="pull-right text-muted"
                               style="font-size: 10px; margin-top: 5px;">{{verb}}</span>
                         <span data-ng-if="uppercaseVerbLabels" class="pull-right text-muted"
                               style="font-size: 10px; margin-top: 5px; text-transform: uppercase;">{{verb}}</span>
+                    </a>
+                    </span>
+                </span>
+            </div>
+
+            <div class="list-group scripting-list-group" data-ng-show="currentPathObj.events">
+                <span data-ng-repeat="event in currentPathObj.events">
+                    <a data-ng-click="setScript(event); clearEventList()">{{event}}<span class="pull-right text-muted"
+                              style="font-size: 10px; margin-top: 5px; text-transform: uppercase;">{{currentPathObj.verb}}</span>
                     </a>
                 </span>
             </div>
@@ -83,7 +93,7 @@
 
         </div>
 
-        <div data-ng-show="menuPathArr.length === 4">
+        <div data-ng-show="(menuPathArr.length === 4 && !currentPathObj.events) || menuPathArr.length > 4">
             <div class="form-group">
                 <label>Script Name</label>
                 <input class="form-control" type="text" data-ng-disabled="true"
