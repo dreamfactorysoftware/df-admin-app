@@ -589,11 +589,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     break;
 
                                 case 5:
-                                    //scope.currentPathObj = { "name": scope.cachePath.name, "verbs": scope.cachePath.verbs };
-                                    //scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs, parameter: null});
                                     scope.currentScriptObj = null;
                                     scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
-                                    //scope.cachePath = null;
                                     scope.menuPathArr.pop();
 
                                     break;
@@ -622,6 +619,35 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                                     scope.menuPathArr.pop();
                                     scope.currentScriptObj = null;
+                                    break;
+
+                                case 3:
+                                    scope.menuPathArr.pop();
+                                    scope.currentPathObj = null;
+                                    scope.pathFilter = '';
+
+                                    break;
+
+                                case 4:
+
+                                    // Two cases for 4-length. Check whether we are
+                                    // at the end of the path, or there's one more 
+                                    // level 
+                                    if(scope.currentPathObj.events) {
+                                        scope.menuPathArr.splice(2,2);
+                                        scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
+                                    } else {
+                                        scope.menuPathArr.pop();
+                                        scope.currentScriptObj = null;
+                                    }
+                                    
+                                    break;
+
+                                case 5:
+                                    scope.currentScriptObj = null;
+                                    scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
+                                    scope.menuPathArr.pop();
+
                                     break;
                             }
                             break;
