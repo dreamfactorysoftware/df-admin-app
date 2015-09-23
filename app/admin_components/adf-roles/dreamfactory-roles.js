@@ -108,8 +108,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 var Role = function (roleData) {
 
                     var newRole = {
-                        name: '',
-                        description: '',
+                        name: null,
+                        description: null,
                         is_active: false,
                         default_app_id: null,
                         role_service_access_by_role_id: [],
