@@ -1312,7 +1312,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 }
 
                 scope.deleteObjectFromArray = function (arr, index) {
-                    arr.splice(index, 1);
+                    arr = arr.splice(index, 1);
                 };
 
                 scope.decorateSchema = function () {
