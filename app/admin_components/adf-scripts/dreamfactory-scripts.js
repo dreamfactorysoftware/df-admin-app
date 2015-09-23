@@ -176,12 +176,22 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             $scope.setEventList = function (name, verb, events) {
+                $scope.cachePath = { // Ugly, but needed for "back" functionality
+                    verbs: $scope.currentPathObj.verbs,
+                    name: $scope.currentPathObj.name
+                }
                 $scope._setEventList(name, verb, events);
             };
 
             $scope.clearEventList = function() {
                 if($scope.currentPathObj.events) {
+                    $scope.cachePath.name = $scope.currentPathObj.name;
+                    $scope.cachePath.verb = $scope.currentPathObj.verb;
+                    $scope.cachePath.events = $scope.currentPathObj.events;
+
                     $scope.currentPathObj.events = null;
+                    $scope.currentPathObj.verb = null;
+                    $scope.currentPathObj.verbs = null;
                 }
             }
 
@@ -311,8 +321,13 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             $scope._setEventList = function(name, verb, events) {
-                $scope.menuPathArr.push("[" + verb.toUpperCase() + "] " + name);
-                $scope.currentPathObj = { "name": name, "events": events, "verb": verb};
+                $scope.currentPathObj.name = name;
+                $scope.currentPathObj.events = events;
+                $scope.currentPathObj.verb = verb;
+                if(name) {
+                    $scope.menuPathArr.push("[" + verb.toUpperCase() + "] " + name);
+                }
+                
             }
 
             $scope._setScript = function (scriptIdStr) {
@@ -552,7 +567,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     break
 
                                 case 3:
-
                                     scope.menuPathArr.pop();
                                     scope.currentPathObj = null;
                                     scope.pathFilter = '';
@@ -561,8 +575,29 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                                 case 4:
 
-                                    scope.menuPathArr.pop();
+                                    // Two cases for 4-length. Check whether we are
+                                    // at the end of the path, or there's one more 
+                                    // level 
+                                    if(scope.currentPathObj.events) {
+                                        scope.menuPathArr.splice(2,2);
+                                        scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
+                                    } else {
+                                        scope.menuPathArr.pop();
+                                        scope.currentScriptObj = null;
+                                    }
+                                    
+                                    break;
+
+                                case 5:
+                                    //scope.currentPathObj = { "name": scope.cachePath.name, "verbs": scope.cachePath.verbs };
+                                    //scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs, parameter: null});
                                     scope.currentScriptObj = null;
+                                    scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
+                                    //scope.cachePath = null;
+                                    scope.menuPathArr.pop();
+
+                                    break;
+
                             }
                             break;
 
