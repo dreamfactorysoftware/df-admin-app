@@ -523,11 +523,11 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 };
 
                 scope._removeServiceAccess = function (serviceAccessObjIndex) {
-
-                    //scope.roleServiceAccesses.splice(serviceAccessObjIndex, 1);
-                    scope.roleServiceAccesses[serviceAccessObjIndex].record.role_id = null;
-
-                    scope.saveRole();
+                    if (!scope.roleServiceAccesses[serviceAccessObjIndex].record.id) {
+                      scope.roleServiceAccesses.splice(serviceAccessObjIndex, 1);  
+                    } else {
+                        scope.roleServiceAccesses[serviceAccessObjIndex].record.role_id = null;
+                    }
                 };
 
                 scope._getService = function (serviceId) {
