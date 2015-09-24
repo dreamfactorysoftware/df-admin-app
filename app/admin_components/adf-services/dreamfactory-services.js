@@ -2391,7 +2391,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     switch (newValue.record.type) {
 
-                        case 'Remote Web Service':
+                        case 'rws':
                             scope.isEditable = true;
                             break;
 
