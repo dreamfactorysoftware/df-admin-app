@@ -175,6 +175,26 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope._setScript(scriptIdStr);
             };
 
+            $scope.setEventList = function (name, verb, events) {
+                $scope.cachePath = { // Ugly, but needed for "back" functionality
+                    verbs: $scope.currentPathObj.verbs,
+                    name: $scope.currentPathObj.name
+                }
+                $scope._setEventList(name, verb, events);
+            };
+
+            $scope.clearEventList = function() {
+                if($scope.currentPathObj.events) {
+                    $scope.cachePath.name = $scope.currentPathObj.name;
+                    $scope.cachePath.verb = $scope.currentPathObj.verb;
+                    $scope.cachePath.events = $scope.currentPathObj.events;
+
+                    $scope.currentPathObj.events = null;
+                    $scope.currentPathObj.verb = null;
+                    $scope.currentPathObj.verbs = null;
+                }
+            }
+
             $scope.saveScript = function () {
 
                 $scope._saveScript();
@@ -277,7 +297,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             $scope._setPath = function (name, pathObj) {
-
                 var verbList, newVerbList, newEventName;
 
                 $scope.menuPathArr.push(name);
@@ -301,9 +320,17 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.pathFilter = '';
             };
 
+            $scope._setEventList = function(name, verb, events) {
+                $scope.currentPathObj.name = name;
+                $scope.currentPathObj.events = events;
+                $scope.currentPathObj.verb = verb;
+                if(name) {
+                    $scope.menuPathArr.push("[" + verb.toUpperCase() + "] " + name);
+                }
+                
+            }
+
             $scope._setScript = function (scriptIdStr) {
-
-
                 var requestDataObj = {
 
                     name: scriptIdStr,
@@ -540,7 +567,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     break
 
                                 case 3:
-
                                     scope.menuPathArr.pop();
                                     scope.currentPathObj = null;
                                     scope.pathFilter = '';
@@ -549,8 +575,26 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                                 case 4:
 
-                                    scope.menuPathArr.pop();
+                                    // Two cases for 4-length. Check whether we are
+                                    // at the end of the path, or there's one more 
+                                    // level 
+                                    if(scope.currentPathObj.events) {
+                                        scope.menuPathArr.splice(2,2);
+                                        scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
+                                    } else {
+                                        scope.menuPathArr.pop();
+                                        scope.currentScriptObj = null;
+                                    }
+                                    
+                                    break;
+
+                                case 5:
                                     scope.currentScriptObj = null;
+                                    scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
+                                    scope.menuPathArr.pop();
+
+                                    break;
+
                             }
                             break;
 
@@ -575,6 +619,35 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                                     scope.menuPathArr.pop();
                                     scope.currentScriptObj = null;
+                                    break;
+
+                                case 3:
+                                    scope.menuPathArr.pop();
+                                    scope.currentPathObj = null;
+                                    scope.pathFilter = '';
+
+                                    break;
+
+                                case 4:
+
+                                    // Two cases for 4-length. Check whether we are
+                                    // at the end of the path, or there's one more 
+                                    // level 
+                                    if(scope.currentPathObj.events) {
+                                        scope.menuPathArr.splice(2,2);
+                                        scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
+                                    } else {
+                                        scope.menuPathArr.pop();
+                                        scope.currentScriptObj = null;
+                                    }
+                                    
+                                    break;
+
+                                case 5:
+                                    scope.currentScriptObj = null;
+                                    scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
+                                    scope.menuPathArr.pop();
+
                                     break;
                             }
                             break;
