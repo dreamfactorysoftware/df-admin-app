@@ -55,7 +55,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 });
         }])
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
 
 
@@ -365,7 +365,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     },
                     userLookupKeys: {
                         title: 'User Lookup Keys Info',
-                        text: 'The DSP administrator can create any number of "key value" pairs attached to a user. ' +
+                        text: 'The DreamFactory administrator can create any number of "key value" pairs attached to a user. ' +
                             'The key values are automatically substituted on the server. For example, key names can ' +
                             'be used in the username and password fields required to hook up a SQL or NoSQL database. ' +
                             'They can also be used in Email Templates or as parameters for external REST services. ' +
@@ -378,7 +378,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     }])
 
-    .directive('dfConfirmUser', ['DSP_URL', 'MOD_USER_ASSET_PATH', '$http', 'SystemConfigDataService', 'dfNotify', function(DSP_URL, MOD_USER_ASSET_PATH, $http, SystemConfigDataService, dfNotify) {
+    .directive('dfConfirmUser', ['INSTANCE_URL', 'MOD_USER_ASSET_PATH', '$http', 'SystemConfigDataService', 'dfNotify', function(INSTANCE_URL, MOD_USER_ASSET_PATH, $http, SystemConfigDataService, dfNotify) {
 
         return {
             restrict: 'E',
@@ -399,7 +399,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope._sendInvite = function (userId) {
 
                     return  $http({
-                        url: DSP_URL + '/api/v2/system/user',
+                        url: INSTANCE_URL + '/api/v2/system/user',
                         method: 'PATCH',
                         params: {
                             send_invite: true
@@ -704,7 +704,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope.fields = [
                     {
                         name: 'id',
-                        label: 'Id',
+                        label: 'ID',
                         active: true
                     },
                     {
@@ -724,7 +724,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     },
                     {
                         name: 'last_name',
-                        label: 'Last_name',
+                        label: 'Last Name',
                         active: true
                     },
                     {
@@ -1022,7 +1022,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     }])
 
-    .directive('dfImportUsers', ['MOD_USER_ASSET_PATH', 'DSP_URL', '$http', 'dfTableEventService', 'dfNotify', function (MOD_USER_ASSET_PATH, DSP_URL, $http, dfTableEventService, dfNotify) {
+    .directive('dfImportUsers', ['MOD_USER_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfTableEventService', 'dfNotify', function (MOD_USER_ASSET_PATH, INSTANCE_URL, $http, dfTableEventService, dfNotify) {
 
         return {
             restrict: 'A',
@@ -1047,7 +1047,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     return $http({
                         method: 'POST',
-                        url: DSP_URL + '/api/v2/system/user',
+                        url: INSTANCE_URL + '/api/v2/system/user',
                         headers: {
                             "Content-Type" : scope.importType === 'csv' ? 'text/csv' : 'application/' + scope.importType
                         },
@@ -1164,7 +1164,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     }])
 
-    .directive('dfExportUsers', ['MOD_USER_ASSET_PATH', 'DSP_URL', '$http', '$window', function (MOD_USER_ASSET_PATH, DSP_URL, $http, $window) {
+    .directive('dfExportUsers', ['MOD_USER_ASSET_PATH', 'INSTANCE_URL', '$http', '$window', function (MOD_USER_ASSET_PATH, INSTANCE_URL, $http, $window) {
 
         return {
 
@@ -1200,7 +1200,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         // Jason's method to make it work.  He doesn't check for bad response.
                         // I'll look into angularJS's $location to fix this.
-                        $window.location.href= DSP_URL + '/api/v2/system/user?' + params;
+                        $window.location.href= INSTANCE_URL + '/api/v2/system/user?' + params;
                     }
                 }
             }

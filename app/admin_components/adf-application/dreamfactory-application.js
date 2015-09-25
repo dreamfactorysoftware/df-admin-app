@@ -148,7 +148,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
     }])
 
-    .service('dfApplicationData', ['$q', '$http', 'DSP_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, $http, DSP_URL, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
+    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
 
 
         var dfApplicationObj = {
@@ -261,10 +261,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 result = angular.fromJson(result.response);
 
                 // were they retrieved successfully
-                if (result !== null && result.hasOwnProperty('adminPreferences') && result.adminPreferences !== null) {
+                if (result !== null && result.hasOwnProperty('application') && result.application !== null) {
 
                     // store them for following calls
-                    dfApplicationPrefs.setPrefs(result.adminPreferences);
+                    dfApplicationPrefs.setPrefs(result);
                 }
             }
 
@@ -414,7 +414,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         function _saveAdminPrefs(adminPrefs) {
 
             var adminPreferences = {
-                adminPreferences: adminPrefs
+                resource:[{
+                    name:"adminPreferences",
+                    value:adminPrefs
+                }]
             };
 
             return UserDataService.saveUserSetting(adminPreferences);
@@ -795,7 +798,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 if (service.components && !forceRefresh) {
                     deferred.resolve(service.components);
                 } else {
-                    var apiUrl = url || DSP_URL + '/api/v2/' + service.name + '/?as_access_list=true';
+                    var apiUrl = url || INSTANCE_URL + '/api/v2/' + service.name + '/?as_access_list=true';
                     $http.get(apiUrl, params || {})
                         .success(function (result) {
                             service.components = result.resource || result;
@@ -809,7 +812,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
     }])
 
-    .service('dfSystemData', ['$http', 'XHRHelper', 'DSP_URL', '$resource', 'dfObjectService', function ($http, XHRHelper, DSP_URL, $resource, dfObjectService) {
+    .service('dfSystemData', ['$http', 'XHRHelper', 'INSTANCE_URL', '$resource', 'dfObjectService', function ($http, XHRHelper, INSTANCE_URL, $resource, dfObjectService) {
 
 
         // Private synchronous function to retrieve services when app is bootstrapped
@@ -852,7 +855,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             getSystemApisFromServer: function (api) {
 
                 return $http({
-                    url: DSP_URL + '/api/v2/system/' + api.api_name,
+                    url: INSTANCE_URL + '/api/v2/system/' + api.api_name,
                     method: 'GET',
                     params: api.params
                 });
@@ -865,7 +868,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     delete: function () {
                         return $http({
-                            url: DSP_URL + '/api/v2/system/' + api,
+                            url: INSTANCE_URL + '/api/v2/system/' + api,
                             method: 'DELETE',
                             data: options.data
                         })
@@ -884,7 +887,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 options = dfObjectService.mergeObjects(options, defaults);
 
                 // Return a resource for our service so we can just call the operation we want.
-                return $resource(DSP_URL + '/api/v2/system/:api/:id', {api: '@api', id: '@id'}, {
+                return $resource(INSTANCE_URL + '/api/v2/system/:api/:id', {api: '@api', id: '@id'}, {
 
                     get: {
                         method: 'GET',
@@ -1146,8 +1149,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
     }])
 
     // paginates tables
-    .directive('dfPaginateTable', ['MOD_UTILITY_ASSET_PATH', 'DSP_URL', '$http', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify',
-        function (MOD_UTILITY_ASSET_PATH, DSP_URL, $http, dfApplicationData, dfApplicationPrefs, dfNotify) {
+    .directive('dfPaginateTable', ['MOD_UTILITY_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify',
+        function (MOD_UTILITY_ASSET_PATH, INSTANCE_URL, $http, dfApplicationData, dfApplicationPrefs, dfNotify) {
 
             return {
 

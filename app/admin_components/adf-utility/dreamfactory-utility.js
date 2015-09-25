@@ -732,7 +732,7 @@ angular.module('dfUtility', ['dfApplication'])
                     });
 
                     elem.css({
-                        'display': 'inline-block', 'position': 'absolute'
+                        'display': 'inline-block', 'position': 'relative'
                     });
 
                 }
@@ -872,7 +872,7 @@ angular.module('dfUtility', ['dfApplication'])
 
     // Displays select box for dreamfactory services
     .directive('dfServicePicker', [
-        'MOD_UTILITY_ASSET_PATH', 'DSP_URL', '$http', function (MOD_UTILITY_ASSET_PATH, DSP_URL, $http) {
+        'MOD_UTILITY_ASSET_PATH', 'INSTANCE_URL', '$http', function (MOD_UTILITY_ASSET_PATH, INSTANCE_URL, $http) {
 
             return {
                 restrict: 'E',
@@ -898,7 +898,7 @@ angular.module('dfUtility', ['dfApplication'])
                     scope._getResources = function () {
                         return $http(
                             {
-                                method: 'GET', url: DSP_URL + '/api/v2/' + scope.activeService
+                                method: 'GET', url: INSTANCE_URL + '/api/v2/' + scope.activeService
                             }
                         )
                     };
@@ -950,7 +950,7 @@ angular.module('dfUtility', ['dfApplication'])
 
     // Displays table select box for dreamfactory database services
     .directive('dfDbTablePicker', [
-        'MOD_UTILITY_ASSET_PATH', 'DSP_URL', '$http', 'dfApplicationData', function (MOD_UTILITY_ASSET_PATH, DSP_URL, $http, dfApplicationData) {
+        'MOD_UTILITY_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfApplicationData', function (MOD_UTILITY_ASSET_PATH, INSTANCE_URL, $http, dfApplicationData) {
 
             return {
                 restrict: 'E',
@@ -974,7 +974,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                     // PRIVATE API
                     scope._getResources = function () {
-                        return dfApplicationData.getServiceComponents(scope.activeService, DSP_URL + '/api/v2/' + scope.activeService + '/_table/',  {params: {fields: 'name,label'}})
+                        return dfApplicationData.getServiceComponents(scope.activeService, INSTANCE_URL + '/api/v2/' + scope.activeService + '/_table/',  {params: {fields: 'name,label'}})
                     };
 
                     // COMPLEX IMPLEMENTATION
@@ -1024,7 +1024,7 @@ angular.module('dfUtility', ['dfApplication'])
 
     // Displays schema table select box for dreamfactory database services
     .directive('dfDbSchemaPicker', [
-        'MOD_UTILITY_ASSET_PATH', 'DSP_URL', '$http', function (MOD_UTILITY_ASSET_PATH, DSP_URL, $http) {
+        'MOD_UTILITY_ASSET_PATH', 'INSTANCE_URL', '$http', function (MOD_UTILITY_ASSET_PATH, INSTANCE_URL, $http) {
 
             return {
                 restrict: 'E',
@@ -1050,7 +1050,7 @@ angular.module('dfUtility', ['dfApplication'])
                     scope._getResources = function () {
                         return $http(
                             {
-                                method: 'GET', url: DSP_URL + '/api/v2/' + scope.activeService + '/_schema/'
+                                method: 'GET', url: INSTANCE_URL + '/api/v2/' + scope.activeService + '/_schema/'
                             }
                         )
                     };
@@ -1101,7 +1101,7 @@ angular.module('dfUtility', ['dfApplication'])
     ])
 
     // Creates an Ace Editor.  Currently specific to scripting and service definition stuff.
-    .directive('dfAceEditor', ['DSP_URL', 'MOD_UTILITY_ASSET_PATH', '$http', '$compile', function (DSP_URL, MOD_UTILITY_ASSET_PATH, $http, $compile) {
+    .directive('dfAceEditor', ['INSTANCE_URL', 'MOD_UTILITY_ASSET_PATH', '$http', '$compile', function (INSTANCE_URL, MOD_UTILITY_ASSET_PATH, $http, $compile) {
 
         return {
             restrict: 'E',
@@ -1135,7 +1135,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                     return $http({
                         method: 'GET',
-                        url: DSP_URL + '/rest' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
+                        url: INSTANCE_URL + '/rest' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
                         cache: false,
                         params: requestDataObj.params
                     })
@@ -1145,7 +1145,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                     return $http({
                         method: 'PUT',
-                        url: DSP_URL + '/rest' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
+                        url: INSTANCE_URL + '/rest' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
                         headers: {
                             'Content-Type': 'text/plain'
                         },
@@ -1160,7 +1160,7 @@ angular.module('dfUtility', ['dfApplication'])
                     return $http({
 
                         method: 'DELETE',
-                        url: DSP_URL + '/rest' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
+                        url: INSTANCE_URL + '/rest' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
                         params: {
                             script_id:requestDataObj.scriptId
                         }
@@ -2073,22 +2073,22 @@ angular.module('dfUtility', ['dfApplication'])
                     },
                     {
                         label: 'AngularJS',
-                        href: 'https://github.com/dreamfactorysoftware/angular-dreamfactory',
+                        href: 'https://github.com/dreamfactorysoftware/angular-sdk',
                         icon: ''
                     },
                     {
-                        label: 'Javascript',
+                        label: 'JavaScript',
                         href: 'https://github.com/dreamfactorysoftware/javascript-sdk',
                         icon: ''
                     },
                     {
                         label: 'Titanium',
-                        href: 'https://github.com/dreamfactorysoftware/titanium-dreamfactory',
+                        href: 'https://github.com/dreamfactorysoftware/titanium-sdk',
                         icon: ''
                     },
                     {
-                        label: 'Windows Phone',
-                        href: 'https://github.com/dreamfactorysoftware/windows-sdk',
+                        label: '.NET',
+                        href: 'https://github.com/dreamfactorysoftware/.net-sdk',
                         icon: ''
                     }
                 ]
@@ -2635,7 +2635,7 @@ angular.module('dfUtility', ['dfApplication'])
 
     // Stores our System Configuration.  May not need to define here as it
     // is contained in the SystemConfigModule
-    .service('SystemConfigDataService', ['DSP_URL', function (DSP_URL) {
+    .service('SystemConfigDataService', ['INSTANCE_URL', function (INSTANCE_URL) {
 
         var systemConfig = {};
 
@@ -2649,7 +2649,7 @@ angular.module('dfUtility', ['dfApplication'])
                 xhr = new ActiveXObject("Microsoft.XMLHTTP");
             }
 
-            xhr.open("GET", DSP_URL + '/api/v2/system/environment', false);
+            xhr.open("GET", INSTANCE_URL + '/api/v2/system/environment', false);
             xhr.setRequestHeader("X-DreamFactory-API-Key", "6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d");
             xhr.setRequestHeader("Content-Type", "application/json");
 
@@ -2701,7 +2701,7 @@ angular.module('dfUtility', ['dfApplication'])
 
     // allows us to make synchronous ajax calls.  Not extensive enough in its
     // functionality to replace $http but helps with loading/bootstrapping data
-    .service('XHRHelper', ['DSP_URL', 'DSP_API_KEY', '$cookies', function (DSP_URL, DSP_API_KEY, $cookies) {
+    .service('XHRHelper', ['INSTANCE_URL', 'ADMIN_API_KEY', '$cookies', function (INSTANCE_URL, ADMIN_API_KEY, $cookies) {
 
         function _isEmpty(obj) {
 
@@ -2727,7 +2727,7 @@ angular.module('dfUtility', ['dfApplication'])
         function _setHeaders(_xhrObj, _headersDataObj) {
 
             // Setting Dreamfactory Headers
-            _xhrObj.setRequestHeader("X-DreamFactory-API-Key", DSP_API_KEY);
+            _xhrObj.setRequestHeader("X-DreamFactory-API-Key", ADMIN_API_KEY);
             _xhrObj.setRequestHeader("X-DreamFactory-Session-Token", $cookies.PHPSESSID);
 
             // Set additional headers
@@ -2792,7 +2792,7 @@ angular.module('dfUtility', ['dfApplication'])
 
 
             // Do XHR
-            xhr.open(_method, DSP_URL + '/api/v2/' + _url + params, _async);
+            xhr.open(_method, INSTANCE_URL + '/api/v2/' + _url + params, _async);
 
             // Set headers
             _setHeaders(xhr, _headers);

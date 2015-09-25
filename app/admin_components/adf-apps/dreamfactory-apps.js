@@ -59,7 +59,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 });
         }])
 
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
 
     }])
@@ -108,7 +108,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         });
     }])
 
-    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', 'DSP_URL', 'UserDataService', '$location', 'dfServerInfoService', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$http', 'dfObjectService', function (MOD_APPS_ASSET_PATH, DSP_URL, UserDataService, $location, dfServerInfoService, dfApplicationData, dfApplicationPrefs, dfNotify, $http, dfObjectService) {
+    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', '$location', 'dfServerInfoService', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$http', 'dfObjectService', function (MOD_APPS_ASSET_PATH, INSTANCE_URL, UserDataService, $location, dfServerInfoService, dfApplicationData, dfApplicationPrefs, dfNotify, $http, dfObjectService) {
 
         return {
 
@@ -504,8 +504,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     },
                     appLocation: {
                         title: "App Location",
-                        text: 'Select File Storage if you want to store your app code on your DSP or some other ' +
-                        'remote file storage. Select Native for native apps or running the app ' +
+                        text: 'Select File Storage if you want to store your app code on your DreamFactory instance ' +
+                        'or some other remote file storage. Select Native for native apps or running the app ' +
                         'from code on your local machine (CORS required). Select URL to specify a URL for your app.'
                     },
                     storageService: {
@@ -909,14 +909,38 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     {
                         name: 'Address Book for Android',
                         description: 'An address book app for Android showing user registration, user login, and CRUD.',
-                        package_url: 'https://raw.github.com/dreamfactorysoftware/android-sdk/master/package/add_android.dfpkg',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/android-sdk/develop/package/add_android.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/android-sdk'
                     },
                     {
                         name: 'Address Book for iOS',
                         description: 'An address book app for iOS showing user registration, user login, and CRUD.',
-                        package_url: 'https://raw.github.com/dreamfactorysoftware/ios-sdk/master/example-ios/package/add_ios.dfpkg',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/ios-sdk/develop/example-ios/package/add_ios.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/ios-sdk'
+                    },
+                    {
+                        name: 'Address Book for AngularJS',
+                        description: 'An address book app for AngularJS showing user registration, user login, and CRUD.',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/angular-sdk/develop/add_angular.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/angular-sdk'
+                    },
+                    {
+                        name: 'Address Book for JavaScript',
+                        description: 'An address book app for JavaScript showing user registration, user login, and CRUD.',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/javascript-sdk/develop/add_javascript.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/javascript-sdk'
+                    },
+                    {
+                        name: 'Address Book for Titanium',
+                        description: 'An address book app for Titanium showing user registration, user login, and CRUD.',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/titanium-sdk/develop/add_titanium.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/titanium-sdk'
+                    },
+                    {
+                        name: 'Address Book for .NET',
+                        description: 'An address book app for .NET showing user registration, user login, and CRUD.',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/.net-sdk/develop/add_dotnet.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/.net-sdk'
                     }
                 ];
 

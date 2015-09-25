@@ -57,7 +57,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 });
         }])
 
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
 
     }])
@@ -108,8 +108,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 var Role = function (roleData) {
 
                     var newRole = {
-                        name: '',
-                        description: '',
+                        name: null,
+                        description: null,
                         is_active: false,
                         default_app_id: null,
                         role_service_access_by_role_id: [],
@@ -412,7 +412,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 scope.dfSimpleHelp = {
                     serviceAccess: {
                         title: 'Role Service Access Information',
-                        text: 'Access rules for DSP services. Use caution when allowing system access.'
+                        text: 'Access rules for DreamFactory services. Use caution when allowing system access.'
                     }
                 };
 
@@ -432,7 +432,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     },
                     lookupkeys: {
                         title: 'Lookup Keys Overview',
-                        text: 'The DSP administrator can create any number of "key value" pairs attached to a ' +
+                        text: 'The DreamFactory administrator can create any number of "key value" pairs attached to a ' +
                         'role. The key values are automatically substituted on the server. For example, key ' +
                         'names can be used in the username and password fields required to hook up a SQL or ' +
                         'NoSQL database. They can also be used in Email Templates or as parameters for external ' +
@@ -523,11 +523,11 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 };
 
                 scope._removeServiceAccess = function (serviceAccessObjIndex) {
-
-                    //scope.roleServiceAccesses.splice(serviceAccessObjIndex, 1);
-                    scope.roleServiceAccesses[serviceAccessObjIndex].record.role_id = null;
-
-                    scope.saveRole();
+                    if (!scope.roleServiceAccesses[serviceAccessObjIndex].record.id) {
+                      scope.roleServiceAccesses.splice(serviceAccessObjIndex, 1);  
+                    } else {
+                        scope.roleServiceAccesses[serviceAccessObjIndex].record.role_id = null;
+                    }
                 };
 
                 scope._getService = function (serviceId) {
@@ -627,7 +627,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
         }
     }])
 
-    .directive('dfServiceAccess', ['MOD_ROLES_ASSET_PATH', 'dfNotify', '$http', 'DSP_URL', function (MOD_ROLES_ASSET_PATH, dfNotify, $http, DSP_URL) {
+    .directive('dfServiceAccess', ['MOD_ROLES_ASSET_PATH', 'dfNotify', '$http', 'INSTANCE_URL', function (MOD_ROLES_ASSET_PATH, dfNotify, $http, INSTANCE_URL) {
 
         return {
 
@@ -732,7 +732,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 // PRIVATE API
                 scope._getComponents = function () {
-                        return $http.get(DSP_URL + '/api/v2/' + scope.serviceAccess.record.service.name + '/?as_access_list=true');
+                        return $http.get(INSTANCE_URL + '/api/v2/' + scope.serviceAccess.record.service.name + '/?as_access_list=true');
                 };
 
                 scope._checkForFailure = function () {

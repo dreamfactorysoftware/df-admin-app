@@ -43,15 +43,15 @@ angular
     .constant('APP_VERSION', '2.0.1')
 
     // Set global url for this application
-    .constant('DSP_URL', '')
+    .constant('INSTANCE_URL', '')
 
-    // Set app name(api key) for this application
-    .constant('DSP_API_KEY', '6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d')
+    // Set API key for this application
+    .constant('ADMIN_API_KEY', '6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d')
 
-    // Set global header for calls made to DSP
-    .config(['$httpProvider', 'DSP_API_KEY', function($httpProvider, DSP_API_KEY) {
+    // Set global header for calls made to DreamFactory instance
+    .config(['$httpProvider', 'ADMIN_API_KEY', function($httpProvider, ADMIN_API_KEY) {
 
-        $httpProvider.defaults.headers.common['X-Dreamfactory-API-Key'] = DSP_API_KEY;
+        $httpProvider.defaults.headers.common['X-Dreamfactory-API-Key'] = ADMIN_API_KEY;
     }])
 
     // Configure main app routing rules

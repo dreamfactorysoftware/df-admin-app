@@ -12,7 +12,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                     controller: 'LaunchpadCtrl',
                     resolve: {
 
-                        loadApps: ['SystemConfigDataService', 'UserDataService', '$location', '$q', '$http', 'DSP_URL', function (SystemConfigDataService, UserDataService, $location, $q, $http, DSP_URL) {
+                        loadApps: ['SystemConfigDataService', 'UserDataService', '$location', '$q', '$http', 'INSTANCE_URL', function (SystemConfigDataService, UserDataService, $location, $q, $http, INSTANCE_URL) {
 
 
                             var defer = $q.defer(),
@@ -34,7 +34,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                             } else if (UserDataService.getCurrentUser()) {
 
                                 // We make a call to user session to get user apps
-                                $http.get(DSP_URL + '/api/v2/system/environment').then(
+                                $http.get(INSTANCE_URL + '/api/v2/system/environment').then(
                                     function (result) {
 
                                         // we set the current user
@@ -64,7 +64,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                     }
                 });
         }])
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
 
     }])

@@ -2667,7 +2667,7 @@ angular.module('dfTable', ['dfUtility'])
             }
         }
     }])
-    .directive('dreamfactoryBuildField', ['$templateCache', '$compile', 'dfObjectService', 'dfStringService', 'DSP_URL', function ($templateCache, $compile, dfObjectService, dfStringService, DSP_URL) {
+    .directive('dreamfactoryBuildField', ['$templateCache', '$compile', 'dfObjectService', 'dfStringService', 'INSTANCE_URL', function ($templateCache, $compile, dfObjectService, dfStringService, INSTANCE_URL) {
 
         return {
             restrict: 'A',
@@ -2942,7 +2942,7 @@ angular.module('dfTable', ['dfUtility'])
 
                         scope._buildURL = function (serviceNameStr, tableNameStr) {
 
-                            return DSP_URL + '/api/v2/' + serviceNameStr + '/_table/' + tableNameStr
+                            return INSTANCE_URL + '/api/v2/' + serviceNameStr + '/_table/' + tableNameStr
                         };
 
                         scope.relatedOptions = {
@@ -3082,7 +3082,7 @@ angular.module('dfTable', ['dfUtility'])
             }
         }
     }])
-    .directive('dfChildTable', ['DF_TABLE_ASSET_PATH', 'DSP_URL', 'dfObjectService', 'dfTableEventService', function (DF_TABLE_ASSET_PATH, DSP_URL, dfObjectService, dfTableEventService) {
+    .directive('dfChildTable', ['DF_TABLE_ASSET_PATH', 'INSTANCE_URL', 'dfObjectService', 'dfTableEventService', function (DF_TABLE_ASSET_PATH, INSTANCE_URL, dfObjectService, dfTableEventService) {
 
         return {
             restrict: 'E',
@@ -3152,7 +3152,7 @@ angular.module('dfTable', ['dfUtility'])
                     var options = {
                         service: scope._setSystemService(newValue.ref_table),
                         table: newValue.ref_table,
-                        url: DSP_URL + '/api/v2/' + scope._setSystemService(newValue.ref_table) + '/_table/' + scope._parseSystemTableName(newValue.ref_table),
+                        url: INSTANCE_URL + '/api/v2/' + scope._setSystemService(newValue.ref_table) + '/_table/' + scope._parseSystemTableName(newValue.ref_table),
                         params: {
                             filter: newValue.ref_field + ' = '  + scope.childTableParentRecord[newValue.field]
                         }

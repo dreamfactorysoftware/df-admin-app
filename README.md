@@ -66,8 +66,8 @@ git push origin master
 git push --tags
 ```
 
-## Administer your DSP from anywhere
-The Admin App 2 can be configured to manage your DSP from another remote server.  Simply open the `app.js` file contained in `app\scripts` directory and add your DSP Host name to the `DSP_URL` constant at the top.  You can now optionally build the app and deploy the `dist` directory.  You must enable CORS in the DSP for the server you will be deploying the app to.
+## Administer your DreamFactory instance from anywhere
+The Admin App 2 can be configured to manage your DreamFactory instance from another remote server.  Simply open the `app.js` file contained in `app\scripts` directory and add your DreamFactory instance host name to the `INSTANCE_URL` constant at the top.  You can now optionally build the app and deploy the `dist` directory.  You must enable CORS in the DreamFactory instance you will be deploying the app to.
 
 
 ## Theme Admin App 
@@ -77,7 +77,7 @@ The Admin App was built using Sass/Scss and compiled with Compass.  This require
 The Admin App 2 was designed to have plugable modules.  Every module contains it's own routes, events, and logic so as to remove one would not stop the app from working.  These modules are stored under `app/admin_components`.  In order to faciliate speed when using Admin App 2 a module was designed as a central repository for data that is used frequently in the app.  Many other modules rely on this module for data to do their job but with a small bit of refactoring it can be removed to produce truly untethered modules.
 
 ### Main Application
-The main application files are located in two directories.  `scripts` and `views` located under the `app` directory.  The `scripts` directory contains your app.js file and a sub directory called `controllers` contains `main.js`.  Corresponding views for controllers defined in `main.js` can be found in the aforementioned `views` directory.  The `app.js` file contains a few constants.  The ones of note are the `DSP_URL` and `DSP_API_KEY`.  The `DSP_URL` allows a host to be set which the application and it's modules will refer to for api calls.  The `DSP_API_KEY` is the app name and is used in a config option defined below the constants that sets the api key for all calls made from the app. `app.js` also defines standard routes for login, logout, registering.  These routes have corresponding controllers defined in `main.js`.
+The main application files are located in two directories.  `scripts` and `views` located under the `app` directory.  The `scripts` directory contains your app.js file and a sub directory called `controllers` contains `main.js`.  Corresponding views for controllers defined in `main.js` can be found in the aforementioned `views` directory.  The `app.js` file contains a few constants.  The ones of note are the `INSTANCE_URL` and `ADMIN_API_KEY`.  The `INSTANCE_URL` allows a host to be set which the application and it's modules will refer to for api calls. `ADMIN_API_KEY` is used in a config option defined below the constants that sets the api key for all calls made from the app. `app.js` also defines standard routes for login, logout, registering.  These routes have corresponding controllers defined in `main.js`.
 
 `main.js` defines app specific controllers.  The MainCtrl acts as a top level scope which other modules can query for app wide data. For example, our top level navigation and component navigation links are stored here in arrays which are passed to directives that render the links and control active link highlighting.  Whenever a module is added/removed it's link will need to be handled here.  But you shouldn't encounter this very often (or at all).
 
@@ -85,7 +85,7 @@ Authentication controllers provide attachment points for authentication/register
 
 ### Data repository and Utility modules
 
-A data repository module called `dfApplicationData` facilitates the loading and management of frequently used application data.  It creates an object called `dfApplicationObj` in the browser session storage.  It contains generic methods to access, modify, and delete data in the application and on the server.  It also provides accessor methods to retrieve and save the actual dfApplicationObj.  While not recommened to interact with this object directly it is sometimes a neccesary evil.  The module also contains init code to check whether it is neccesary to build a new app object or to refresh the screen with local data as well as what apis to load.  
+A data repository module called `dfApplicationData` facilitates the loading and management of frequently used application data.  It creates an object called `dfApplicationObj` in the browser session storage.  It contains generic methods to access, modify, and delete data in the application and on the server.  It also provides accessor methods to retrieve and save the actual dfApplicationObj.  While not recommended to interact with this object directly it is sometimes a necessary evil.  The module also contains init code to check whether it is necessary to build a new app object or to refresh the screen with local data as well as what apis to load.  
 
 The utility module provides services, factories, directives, and filters related to the operation of modules.  Things like our icon service, navs, table filtering/pagination, etc are stored here.  Basically, things that multiple modules may need access to and/or have no other place to go.  
 
@@ -139,7 +139,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 });
         }])
 
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
 
 

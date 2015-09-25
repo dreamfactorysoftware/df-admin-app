@@ -76,9 +76,9 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
                 });
         }])
 
-    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {}])
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {}])
 
-    .controller('DataCtrl', ['$scope', 'DSP_URL', 'dfApplicationData', function($scope, DSP_URL, dfApplicationData) {
+    .controller('DataCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
 
         $scope.$parent.title = 'Data';
 
@@ -103,7 +103,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
         $scope.options = {
             service: $scope.selected.service,
             table: $scope.selected.resource,
-            url: DSP_URL + '/api/v2/' + $scope.selected.service + '/_table/' + $scope.selected.resource,
+            url: INSTANCE_URL + '/api/v2/' + $scope.selected.service + '/_table/' + $scope.selected.resource,
             allowChildTable: true,
             childTableAttachPoint: '#child-table-attach'
         };
@@ -113,7 +113,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
             var options = {
                 service: newValue.service,
                 table: newValue.resource,
-                url: DSP_URL + '/api/v2/' + newValue.service + '/_table/' + newValue.resource,
+                url: INSTANCE_URL + '/api/v2/' + newValue.service + '/_table/' + newValue.resource,
                 allowChildTable: true,
                 childTableAttachPoint: '#child-table-attach'
             };

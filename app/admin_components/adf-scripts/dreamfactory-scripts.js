@@ -74,11 +74,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     }
                 });
         }])
-    .run(['DSP_URL', '$http', function (DSP_URL, $http) {
+    .run(['INSTANCE_URL', '$http', function (INSTANCE_URL, $http) {
 
     }])
-    .controller('ScriptsCtrl', ['DSP_URL', 'SystemConfigDataService', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'MODSCRIPTING_EXAMPLES_PATH',
-        function (DSP_URL, SystemConfigDataService, $scope, $http, dfApplicationData, dfNotify, MODSCRIPTING_EXAMPLES_PATH) {
+    .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'MODSCRIPTING_EXAMPLES_PATH',
+        function (INSTANCE_URL, SystemConfigDataService, $scope, $http, dfApplicationData, dfNotify, MODSCRIPTING_EXAMPLES_PATH) {
 
             $scope.$parent.title = 'Scripts';
 
@@ -222,7 +222,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return $http({
                     method: 'GET',
-                    url: DSP_URL + '/api/v2/' + requestDataObj.eventName,
+                    url: INSTANCE_URL + '/api/v2/' + requestDataObj.eventName,
                     params: requestDataObj.params
                 })
 
@@ -233,7 +233,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return $http({
                     method: 'GET',
-                    url: DSP_URL + '/api/v2/system/event/' + requestDataObj.name,
+                    url: INSTANCE_URL + '/api/v2/system/event/' + requestDataObj.name,
                     params: requestDataObj.params
                 })
             };
@@ -243,7 +243,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return $http({
                     method: 'POST',
-                    url: DSP_URL + '/api/v2/system/event/' + requestDataObj.name,
+                    url: INSTANCE_URL + '/api/v2/system/event/' + requestDataObj.name,
                     params: requestDataObj.params,
                     data: requestDataObj.data
                 })
@@ -254,7 +254,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return $http({
                     method: 'DELETE',
-                    url: DSP_URL + '/api/v2/system/event/' + requestDataObj.name,
+                    url: INSTANCE_URL + '/api/v2/system/event/' + requestDataObj.name,
                     params: requestDataObj.params
                 })
             };
@@ -683,7 +683,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfAceEditorScripting', ['DSP_URL', 'MODSCRIPTING_ASSET_PATH', '$http', function (DSP_URL, MODSCRIPTING_ASSET_PATH, $http) {
+    .directive('dfAceEditorScripting', ['INSTANCE_URL', 'MODSCRIPTING_ASSET_PATH', '$http', function (INSTANCE_URL, MODSCRIPTING_ASSET_PATH, $http) {
 
         return {
             restrict: 'E',

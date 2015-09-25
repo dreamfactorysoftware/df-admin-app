@@ -10,8 +10,8 @@
 angular.module('dreamfactoryApp')
 
     // MainCtrl is the parent controller of everything.  Checks routing and deals with navs
-    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', '$http', 'DSP_URL', 'dfApplicationData', 'dfNotify', 'dfIconService',
-        function ($scope, UserDataService, SystemConfigDataService, $location, $http, DSP_URL, dfApplicationData, dfNotify, dfIconService) {
+    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', '$http', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', 'dfIconService',
+        function ($scope, UserDataService, SystemConfigDataService, $location, $http, INSTANCE_URL, dfApplicationData, dfNotify, dfIconService) {
 
         // So child controllers can set the app section title
         $scope.title = '';
