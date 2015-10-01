@@ -399,15 +399,10 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope._sendInvite = function (userId) {
 
                     return  $http({
-                        url: INSTANCE_URL + '/api/v2/system/user',
+                        url: INSTANCE_URL + '/api/v2/system/user/'+userId,
                         method: 'PATCH',
                         params: {
                             send_invite: true
-                        },
-                        data: {
-                            "resource":[{
-                                id: userId
-                            }]
                         }
                     })
                 };
@@ -435,7 +430,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 module: 'Users',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                exception: reject.data
+                                message: reject.data.error.message
                             }
 
                             dfNotify.error(messageOptions);
