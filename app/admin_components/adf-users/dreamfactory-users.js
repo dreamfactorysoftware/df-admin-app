@@ -405,7 +405,9 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             send_invite: true
                         },
                         data: {
-                            id: userId
+                            "resource":[{
+                                id: userId
+                            }]
                         }
                     })
                 };
