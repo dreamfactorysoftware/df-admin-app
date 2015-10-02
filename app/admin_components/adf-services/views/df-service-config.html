@@ -14,7 +14,7 @@
 
         <div class="form-group ng-scope" data-ng-if="field.type != 'boolean'">
             <label>{{ field.label }}</label>
-            <df-simple-help data-options="field"></df-simple-help>
+            <df-simple-help data-options="field" data-ng-if="field.description"></df-simple-help>
         </div>
 
         <input class="form-control" data-ng-if="field.type == 'string'"

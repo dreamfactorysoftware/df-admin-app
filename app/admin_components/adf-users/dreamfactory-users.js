@@ -399,13 +399,10 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope._sendInvite = function (userId) {
 
                     return  $http({
-                        url: INSTANCE_URL + '/api/v2/system/user',
+                        url: INSTANCE_URL + '/api/v2/system/user/'+userId,
                         method: 'PATCH',
                         params: {
                             send_invite: true
-                        },
-                        data: {
-                            id: userId
                         }
                     })
                 };
@@ -433,7 +430,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 module: 'Users',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                exception: reject.data
+                                message: reject.data.error.message
                             }
 
                             dfNotify.error(messageOptions);
@@ -1164,7 +1161,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     }])
 
-    .directive('dfExportUsers', ['MOD_USER_ASSET_PATH', 'INSTANCE_URL', '$http', '$window', function (MOD_USER_ASSET_PATH, INSTANCE_URL, $http, $window) {
+    .directive('dfExportUsers', ['MOD_USER_ASSET_PATH', 'INSTANCE_URL', '$cookies', '$http', '$window', function (MOD_USER_ASSET_PATH, INSTANCE_URL, $cookies, $http, $window) {
 
         return {
 
@@ -1195,7 +1192,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         scope.fileFormatStr = fileFormatStr;
 
-                        var params = 'app_name=admin&file=user.' + scope.fileFormatStr + '&format=' + fileFormatStr;
+                        var params = 'file=user.' + scope.fileFormatStr +'&session_token='+$cookies.PHPSESSID;
 
 
                         // Jason's method to make it work.  He doesn't check for bad response.

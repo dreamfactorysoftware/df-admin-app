@@ -126,10 +126,10 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 {
                     name: 'process-scripts',
                     label: 'Process Event Scripts'
-                },
-                {
-                    name: 'broadcast-scripts',
-                    label: "Broadcast Event Scripts"
+                //},
+                //{
+                //    name: 'broadcast-scripts',
+                //    label: "Broadcast Event Scripts"
                 }
             ];
 
