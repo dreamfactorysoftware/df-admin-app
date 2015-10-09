@@ -128,7 +128,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "label": '',
                         "description": '',
                         "is_active": true,
-                        "type": "rws",
+                        "type": "sql_db",
                         "mutable": true,
                         "deletable": true,
                         "config": {},
