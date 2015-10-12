@@ -414,6 +414,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     scope._resetAppDetails();
                 };
 
+                scope.getSorageServiceName = function (id) {
+                    var storageService = scope.storageServices.filter(function (item) {
+                        return item.id == id;
+                    })[0] || {};
+
+                    return storageService.name;
+                };
 
                 // WATCHERS
 
@@ -421,6 +428,10 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     // No new value....return
                     if (!newValue) return false;
+
+                    scope.selectedStorageService = scope.storageServices.filter(function (item) {
+                        return item.id == newValue;
+                    })[0] || {};
 
                     var i = 0;
 
@@ -432,13 +443,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             $http.get(DSP_URL + '/api/v2/' + scope.storageServices[i].name, {params: {as_access_components: true}}).then(
 
                                 function (result) {
-                                    angular.forEach(result.data.resource, function (component) {
-
-                                        if (component !== '' && component !== '*') {
-
-                                            scope.storageContainers.push(component)
-                                        }
-                                    })
+                                    scope.storageContainers = result.data.resource.filter(function (item) {
+                                        return item.type === 'folder';
+                                    });
                                 },
 
                                 function (reject) {

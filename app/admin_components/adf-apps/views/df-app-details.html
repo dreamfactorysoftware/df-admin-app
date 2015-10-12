@@ -59,7 +59,7 @@
 
                         <div class="form-group">
                             <label>Storage Folder</label><df-simple-help data-options="dfHelp.storageContainer"></df-simple-help>
-                            <select class="form-control" data-ng-model="app.record.storage_container" data-ng-options="value as value for value in storageContainers"></select>
+                            <select class="form-control" data-ng-model="app.record.storage_container" data-ng-options="value.name as value.name for value in storageContainers"></select>
                         </div>
 
                         <div class="form-group">
@@ -94,7 +94,7 @@
 
                     <div class="form-group" data-ng-if="app.record.type == 1">
                         <div class="alert alert-info">
-                            <p><i class="fa fa-fw fa-cloud">&nbsp;</i>Your URL will be: {{currentServer}}/files{{storageContainers[app.record.storage_service_id].name}}/{{app.record.storage_container}}/{{app.record.name}}<span>{{app.record.url}}</span></p>
+                            <p><i class="fa fa-fw fa-cloud">&nbsp;</i>Your URL will be: {{currentServer}}/{{ selectedStorageService.name }}/{{app.record.storage_container}}{{app.record.path}}</p>
                         </div>
                     </div>
 					<div class="form-group" data-ng-if="app.record.type == 3">
