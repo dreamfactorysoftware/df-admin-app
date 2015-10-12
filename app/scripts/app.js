@@ -66,15 +66,16 @@ angular
 
                         var currentUser = dfApplicationData.getCurrentUser();
 
-                        if (currentUser && currentUser.is_sys_admin && currentUser.session_id) {
-
-                            $location.url('/home');
-                            return;
-                        }
-
-                        if (currentUser && !currentUser.is_sys_admin && currentUser.session_id) {
-                            $location.url('/launchpad');
-                            return;
+                        if (currentUser && currentUser.session_id) {
+                            if (currentUser.is_sys_admin) {
+                                if (currentUser.email === 'user@example.com') {
+                                    $location.url('/profile');
+                                } else {
+                                    $location.url('/home');
+                                }
+                            } else {
+                                $location.url('/launchpad');
+                            }
                         }
                     }]
                 }

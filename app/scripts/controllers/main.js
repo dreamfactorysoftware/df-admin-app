@@ -424,7 +424,11 @@ angular.module('dreamfactoryApp')
                                 var uri = $location.absUrl().split('?');
                                 $window.location.href = uri[0]+'#/home';
                             } else {
-                                $location.url('/home');
+                                if ('user@example.com' === userDataObj.email) {
+                                    $location.url('/profile');
+                                } else {
+                                    $location.url('/home');
+                                }
                             }
                         }
                     );
@@ -677,7 +681,11 @@ angular.module('dreamfactoryApp')
                         function () {
 
                             // Change our app location back to the home page
-                            $location.url('/home');
+                            if ('user@example.com' === userDataObj.email) {
+                                $location.url('/profile');
+                            } else {
+                                $location.url('/home');
+                            }
                         }
                     );
 
