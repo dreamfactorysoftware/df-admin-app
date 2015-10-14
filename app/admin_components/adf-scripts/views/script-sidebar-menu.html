@@ -40,7 +40,7 @@
 
             <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 3">
                 <span data-ng-repeat="(verb, eventList) in currentPathObj.verbs | filter: pathFilter">
-                    <a data-ng-if="eventList.length > 1" data-ng-click="setEventList(currentPathObj.name, verb, eventList)">{{currentPathObj.name}}<span class="pull-right text-muted"
+                    <a data-ng-if="eventList.length > 1"  data-ng-click="setEventList(currentPathObj.name, verb, eventList)">{{currentPathObj.name}}<span class="pull-right text-muted"
                               style="font-size: 10px; margin-top: 5px; text-transform: uppercase;">{{verb}}</span>
                     </a>
                     <a data-ng-if="eventList.length <= 1" data-ng-click="setScript(event)" data-ng-repeat="event in eventList">{{event}}
@@ -55,7 +55,7 @@
 
             <div class="list-group scripting-list-group" data-ng-show="currentPathObj.events">
                 <span data-ng-repeat="event in currentPathObj.events">
-                    <a data-ng-click="setScript(event); clearEventList()">{{event}}<span class="pull-right text-muted"
+                    <a data-ng-click="setScript(event); clearEventList()" ng-class="{ highlighted: isHighlightedItem(event) }">{{event}}<span class="pull-right text-muted"
                               style="font-size: 10px; margin-top: 5px; text-transform: uppercase;">{{currentPathObj.verb}}</span>
                     </a>
                 </span>
@@ -68,7 +68,7 @@
 
             <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 1">
                 <a class="list-group-item" data-ng-repeat="(service,paths) in events.broadcast | filter: pathFilter"
-                   data-ng-click="setService(service, paths)">{{service}}<i
+                   data-ng-click="setService(service, paths)" ng-class="{ highlighted: paths.$$isHighlighted }">{{service}}<i
                         class="fa fa-fw fa-chevron-right pull-right"></i></a>
             </div>
 
@@ -93,7 +93,7 @@
 
             <div class="list-group scripting-list-group" data-ng-show="currentPathObj.events">
                 <span data-ng-repeat="event in currentPathObj.events">
-                    <a data-ng-click="setScript(event); clearEventList()">{{event}}<span class="pull-right text-muted"
+                    <a data-ng-click="setScript(event); clearEventList()" ng-class="{ highlighted: isHighlightedItem(event) }">{{event}}<span class="pull-right text-muted"
                               style="font-size: 10px; margin-top: 5px; text-transform: uppercase;">{{currentPathObj.verb}}</span>
                     </a>
                 </span>
