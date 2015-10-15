@@ -3154,7 +3154,7 @@ angular.module('dfTable', ['dfUtility'])
                         table: newValue.ref_table,
                         url: INSTANCE_URL + '/api/v2/' + scope._setSystemService(newValue.ref_table) + '/_table/' + scope._parseSystemTableName(newValue.ref_table),
                         params: {
-                            filter: newValue.ref_field + ' = '  + scope.childTableParentRecord[newValue.field]
+                            filter: newValue.ref_fields + ' = '  + scope.childTableParentRecord[newValue.field]
                         }
                     };
 
