@@ -253,9 +253,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
         };
 
-        $scope.refreshService = function () {
+        $scope.refreshService = function (forceRefresh) {
 
-            $scope._refreshService();
+            $scope._refreshService(forceRefresh);
         };
 
 
@@ -421,7 +421,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         type: 'success',
                         provider: 'dreamfactory',
                         message: $scope.currentService.name + ' refreshed.'
-                    }
+                    };
 
                     // Send notification to user
                     if (forceRefresh)
@@ -430,7 +430,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     // Set the current table back and reload it
                     if (tableObj) {
-                        $scope.currentTable = tableObj;
+                        $scope.currentTable = tableObj.name;
                         $scope.getTable();
                     }
 
@@ -442,7 +442,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         type: 'error',
                         provider: 'dreamfactory',
                         message: reject
-                    }
+                    };
 
                     dfNotify.error(messageOptions);
                 }
@@ -499,15 +499,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             watchCurrentEditTable();
         });
 
-        $scope.$on('update:components', function (e, dataObj) {
-
+        $scope.$on('update:components', function (e, resource) {
 
             $scope.currentService.components.push({
                 __dfUI: {
                     newTable: false
                 },
-                name: dataObj.record.name,
-                label: dataObj.record.label
+                name: resource.name,
+                label: resource.label
             });
 
             // This doesn't update the field properly
@@ -649,7 +648,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             type: 'error',
                             provider: 'dreamfactory',
                             message: 'Invalid JSON.  Please correct any errors and validate to switch back to table view.'
-                        }
+                        };
 
                         dfNotify.error(messageOptions);
                     }
@@ -666,8 +665,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: 'POST',
-                        url: INSTANCE_URL + '/api/v2/' + requestDataObj.path,
-                        data: {"resource": requestDataObj.data}
+                        url: INSTANCE_URL + '/api/v2/' + requestDataObj.path + '?fields=*',
+                        data: {"resource": [requestDataObj.data]}
                     })
                 };
 
@@ -675,8 +674,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: 'PUT',
-                        url: INSTANCE_URL + '/api/v2/' + requestDataObj.path,
-                        data: {"resource": requestDataObj.data}
+                        url: INSTANCE_URL + '/api/v2/' + requestDataObj.path + '?fields=*',
+                        data: {"resource": [requestDataObj.data]}
                     })
                 };
 
@@ -709,19 +708,17 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 // Had to update the app obj manually via this function.
                 // faster than asking the server for all the services with their
                 // components.  Trust me Kage.  Its the only way.
-                scope._insertNewTableToAppObj = function (tableName) {
-
+                scope._insertNewTableToAppObj = function (resource) {
 
                     var appObj = dfApplicationData.getApplicationObj();
 
-                    if (appObj.apis.hasOwnProperty('service') && appObj.apis.service.hasOwnProperty('record')) {
+                    if (appObj.apis.hasOwnProperty('service') && appObj.apis.service.hasOwnProperty('resource')) {
 
-                        for (var i = 0; i < appObj.apis.service.record.length; i++) {
+                        for (var i = 0; i < appObj.apis.service.resource.length; i++) {
 
-                            if (appObj.apis.service.record[i].name === scope.tableData.currentService.name) {
+                            if (appObj.apis.service.resource[i].name === scope.tableData.currentService.name) {
 
-                                appObj.apis.service.record[i].components.push(tableName);
-                                appObj.apis.service.record[i].components.push('_schema/' + tableName);
+                                appObj.apis.service.resource[i].components.push({'name': resource.name, 'label': resource.label});
                                 break;
                             }
                         }
@@ -770,7 +767,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 type: 'success',
                                 provider: 'dreamfactory',
                                 message: 'Field deleted.'
-                            }
+                            };
 
                             dfNotify.success(messageOptions);
 
@@ -783,7 +780,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 message: reject
-                            }
+                            };
 
                             dfNotify.error(messageOptions);
 
@@ -829,11 +826,13 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 message: 'Table saved successfully.'
                             };
 
-                            scope.$emit('update:components', scope.table);
+                            var newTable = result.data.resource[0];
 
-                            scope._insertNewTableToAppObj(result.data.table[0].name);
+                            scope.$emit('update:components', newTable);
 
-                            scope.table = new Table(scope.table.record);
+                            scope._insertNewTableToAppObj(newTable);
+
+                            scope.table = new Table(newTable);
 
                             dfNotify.success(messageOptions);
 
@@ -876,7 +875,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 message: 'Table updated successfully.'
                             };
 
-                            scope.table = new Table(scope.table.record);
+                            scope.table = new Table(result.data.resource[0]);
 
                             dfNotify.success(messageOptions);
 
@@ -940,7 +939,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             type: 'success',
                             provider: 'dreamfactory',
                             message: 'Valid JSON.'
-                        }
+                        };
 
                         dfNotify.success(messageOptions);
 
@@ -1170,7 +1169,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 type: 'success',
                                 provider: 'dreamfactory',
                                 message: 'Field saved.'
-                            }
+                            };
 
                             dfNotify.success(messageOptions);
 
@@ -1191,7 +1190,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 message: reject
-                            }
+                            };
 
                             dfNotify.error(messageOptions);
 
@@ -1380,7 +1379,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 type: 'success',
                                 provider: 'dreamfactory',
                                 message: 'Tables created successfully.'
-                            }
+                            };
 
 
                             angular.forEach(result.data.table, function (dataObj) {
