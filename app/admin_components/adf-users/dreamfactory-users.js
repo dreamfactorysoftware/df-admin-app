@@ -690,7 +690,9 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 // For file upload on import users;
                 // there is a scope issue where the fileUpload directive
                 // accesses import users parent scope.  It's not as bad as it sounds
-                scope.uploadFile = null;
+                scope.uploadFile = {
+                    path: ''
+                };
 
                 scope.currentViewMode = dfApplicationPrefs.getPrefs().sections.user.manageViewMode;
 
@@ -1078,15 +1080,15 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     return value;
                 };
 
-                scope.$watch('uploadFile', function (newValue, oldValue) {
+                scope.$watch('uploadFile.path', function (newValue, oldValue) {
 
                     if (!newValue) return false;
 
-                    newValue = scope.uploadFile;
+                    newValue = scope.uploadFile.path;
 
                     if (!scope._checkFileType(newValue)) {
 
-                        scope.uploadFile = null;
+                        scope.uploadFile.path = '';
 
 
                         var messageOptions = {
@@ -1108,7 +1110,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         function (result) {
 
                             scope.importType = null;
-                            scope.uploadFile = null;
+                            scope.uploadFile.path = '';
 
                             $('#upload').val('');
 
@@ -1127,7 +1129,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         function (reject) {
 
                             scope.importType = null;
-                            scope.uploadFile = null;
+                            scope.uploadFile.path = '';
 
                             $('#upload').val('');
 
