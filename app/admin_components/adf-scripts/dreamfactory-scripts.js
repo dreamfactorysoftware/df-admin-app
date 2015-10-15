@@ -103,8 +103,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         only_scripted: true
                     }
                 }).then(function (result) {
-                    $scope.highlightedEvents = result.data.resource || [];
-                    $scope.highlightedEvents.forEach(function (item) {
+                    $scope.highlightedEvents = angular.copy(result.data.resource) || [];
+                    result.data.resource.forEach(function (item) {
                         $scope._highlightRecursively(item, $scope.events);
                     });
                 })
@@ -114,13 +114,15 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 for (var evt in events) {
                     if (events[evt] === item && Array.isArray(events)) {
                         console.log('item found ', item, events[evt])
-                        events.$$isHighlighted = true;
                         return true;
                     } 
                     
                     else if (events[evt] && typeof(events[evt]) === 'object') {
-                        events[evt].$$isHighlighted = events[evt].$$isHighlighted || $scope._highlightRecursively(item, events[evt]);
-                        if (events[evt].$$isHighlighted) events.$$isHighlighted = true;
+                        var highlighted = $scope._highlightRecursively(item, events[evt]);
+                        if (highlighted) {
+                            $scope.highlightedEvents.push(evt);
+                            return true;
+                        }
                     }
                 }
 

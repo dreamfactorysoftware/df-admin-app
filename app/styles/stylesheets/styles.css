@@ -9000,6 +9000,14 @@ body {
   background: white;
 }
 
+.scripting-list-group > a.highlighted {
+  background: #fcf8e3;
+}
+
+.scripting-list-group > span:first-child > a.highlighted {
+    background: #fcf8e3;
+}
+
 /* line 47, ../sass/partials/_df-scripting.scss */
 .scripting-list-group > span > a:hover {
   background: #eeeeee;
