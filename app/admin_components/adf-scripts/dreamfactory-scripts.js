@@ -94,6 +94,47 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             };
 
+
+            $scope.highlightScript = function () {
+                $http({
+                    method: 'GET',
+                    url: INSTANCE_URL + '/api/v2/system/event',
+                    params: {
+                        only_scripted: true
+                    }
+                }).then(function (result) {
+                    $scope.highlightedEvents = angular.copy(result.data.resource) || [];
+                    result.data.resource.forEach(function (item) {
+                        $scope._highlightRecursively(item, $scope.events);
+                    });
+                })
+            };
+
+            $scope._highlightRecursively = function (item, events) {
+                for (var evt in events) {
+                    if (events[evt] === item && Array.isArray(events)) {
+                        console.log('item found ', item, events[evt])
+                        return true;
+                    } 
+                    
+                    else if (events[evt] && typeof(events[evt]) === 'object') {
+                        var highlighted = $scope._highlightRecursively(item, events[evt]);
+                        if (highlighted) {
+                            $scope.highlightedEvents.push(evt);
+                            return true;
+                        }
+                    }
+                }
+
+                return events.$$isHighlighted;
+            };
+
+            $scope.isHighlightedItem = function (item) {
+                return $scope.highlightedEvents.some(function (evt) {
+                    return evt === item;
+                });
+            };
+
             $scope.__getDataFromHttpResponse = function (httpResponseObj) {
 
                 if (!httpResponseObj) return [];
@@ -138,10 +179,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             // $scope.sampleScripts = new ScriptObj('sample-scripts', 'v8js', getSampleScripts.data);
 
             // All these vars pertain to building of events dynamically on the client
-            $scope.events = dfApplicationData.getApiData('event');
+            $scope.events = angular.copy(dfApplicationData.getApiData('event'));
             $scope.scriptTypes = dfApplicationData.getApiData('script_type');
             $scope.uppercaseVerbLabels = true;
             $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete']
+            $scope.highlightScript();
 
             // Keep track of what's going on in the module
             $scope.currentEventTypeObj = null;

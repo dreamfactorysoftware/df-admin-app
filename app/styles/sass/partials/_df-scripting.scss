@@ -23,6 +23,10 @@
   padding-top:5px;
 }
 
+.scripting-list-group > a.highlighted {
+  background: #fcf8e3;
+}
+
 .scripting-list-group > a:hover {
 
   // background:white !important;
@@ -54,7 +58,10 @@
 
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
+}
 
+.scripting-list-group > span:first-child > a.highlighted {
+    background: #fcf8e3;
 }
 
 
