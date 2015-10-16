@@ -930,12 +930,12 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         package_url: 'https://raw.github.com/dreamfactorysoftware/javascript-sdk/master/add_javascript.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/javascript-sdk'
                     },
-                    //{
-                    //    name: 'Address Book for Titanium',
-                    //    description: 'An address book app for Titanium showing user registration, user login, and CRUD.',
-                    //    package_url: 'https://raw.github.com/dreamfactorysoftware/titanium-sdk/master/add_titanium.dfpkg',
-                    //    repo_url: 'https://github.com/dreamfactorysoftware/titanium-sdk'
-                    //},
+                    {
+                        name: 'Address Book for Titanium',
+                        description: 'An address book app for Titanium showing user registration, user login, and CRUD.',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/titanium-sdk/master/add_titanium.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/titanium-sdk'
+                    },
                     {
                         name: 'Address Book for .NET',
                         description: 'An address book app for .NET showing user registration, user login, and CRUD.',

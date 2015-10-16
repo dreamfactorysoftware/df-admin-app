@@ -2081,11 +2081,11 @@ angular.module('dfUtility', ['dfApplication'])
                         href: 'https://github.com/dreamfactorysoftware/javascript-sdk',
                         icon: ''
                     },
-                    //{
-                    //    label: 'Titanium',
-                    //    href: 'https://github.com/dreamfactorysoftware/titanium-sdk',
-                    //    icon: ''
-                    //},
+                    {
+                        label: 'Titanium',
+                        href: 'https://github.com/dreamfactorysoftware/titanium-sdk',
+                        icon: ''
+                    },
                     {
                         label: '.NET',
                         href: 'https://github.com/dreamfactorysoftware/.net-sdk',
