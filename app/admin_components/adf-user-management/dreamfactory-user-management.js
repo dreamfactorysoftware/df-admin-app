@@ -329,6 +329,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                                 // Emit a success message so we can hook in
                                 scope.$emit(scope.es.loginSuccess, result.data);
+                                scope.$root.$emit(scope.es.loginSuccess, result.data)
                             },
 
                             // Error method
@@ -359,6 +360,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                                             // Emit a success message so we can hook in
                                             scope.$emit(scope.es.loginSuccess, result.data);
+                                            scope.$root.$emit(scope.es.loginSuccess, result.data)
                                         },
 
                                         // Error method
