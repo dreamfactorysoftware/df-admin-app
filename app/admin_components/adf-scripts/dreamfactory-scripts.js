@@ -103,7 +103,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         only_scripted: true
                     }
                 }).then(function (result) {
-                    $scope.highlightedEvents = [];
+                    $scope.highlightedEvents = angular.copy(result.data.resource) || [];
                     result.data && result.data.resource && result.data.resource.forEach(function (item) {
                         $scope._highlightRecursively(item, $scope.events);
                     });
