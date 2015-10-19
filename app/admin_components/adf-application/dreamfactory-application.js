@@ -1097,8 +1097,51 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
     ])
 
     // Intercepts outgoing http calls.  Checks for valid session.  If 401 will trigger a pop up login screen.
-    .factory('httpValidSession', ['$q', '$rootScope', '$location', function ($q, $rootScope, $location) {
+    .factory('httpValidSession', ['$q', '$rootScope', '$location', 'INSTANCE_URL', '$injector', function ($q, $rootScope, $location, INSTANCE_URL, $injector) {
 
+
+        var putSession = function (reject) {
+            var $http = $injector.get('$http');
+            var UserDataService = $injector.get('UserDataService');
+            var user = UserDataService.getCurrentUser();
+            var deferred = $injector.get('$q').defer();
+
+            var url = user.is_sys_admin ? '/api/v2/system/admin/session' : '/api/v2/user/session';
+
+            $http({
+                method: 'PUT',
+                url: INSTANCE_URL + url
+            }).then(function (result) {
+                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.data.session_token;
+                UserDataService.setCurrentUser(result.data);
+                retry(reject.config, deferred);
+            }, function () {
+                refreshSession(reject, deferred)
+            });
+
+            return deferred.promise;
+        };  
+
+        var retry = function (config, deferred) {
+            var $http = $injector.get('$http');
+            $http({
+                method: config.method,
+                url: config.url
+            }).then(deferred.resolve, deferred.reject);
+            return deferred.promise; 
+        };
+
+        var refreshSession = function (reject, deferred) {
+            var UserEventsService = $injector.get('UserEventsService');
+            var deferred = deferred || $injector.get('$q').defer();
+
+            $rootScope.$$childHead.openLoginWindow(reject);
+            $rootScope.$on('user:login:success', function () {
+                retry(reject.config, deferred);
+            });
+
+            return deferred.promise
+        };
 
         return {
 
@@ -1134,10 +1177,13 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     default:
 
-                        if (reject.status === 401) {
-
-                            if ($rootScope.initInProgress === false) {
-                                $rootScope.$$childHead.openLoginWindow(reject);
+                        if (reject.status === 401 && reject.config.url.indexOf('/session') === -1 && $rootScope.initInProgress === false) {
+                            if (reject.data.error.message === 'Token has expired') {
+                                //  put session
+                                return putSession(reject);
+                            } else {
+                                // refresh session
+                                return refreshSession(reject);
                             }
                         }
                 }
