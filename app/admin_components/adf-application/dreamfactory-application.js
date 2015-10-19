@@ -1180,21 +1180,12 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         if (reject.status === 401 && reject.config.url.indexOf('/session') === -1 && $rootScope.initInProgress === false) {
                             if (reject.data.error.message === 'Token has expired') {
                                 //  put session
-                                console.log('put session');
                                 return putSession(reject);
                             } else {
                                 // refresh session
-                                console.log('refresh session')
                                 return refreshSession(reject);
                             }
                         }
-
-                        // if (reject.status === 401) {
-
-                        //     if ($rootScope.initInProgress === false) {
-                        //         $rootScope.$$childHead.openLoginWindow(reject);
-                        //     }
-                        // }
                 }
 
 
