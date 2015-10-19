@@ -20,7 +20,11 @@
         <div class="list-group scripting-list-group"
              data-ng-show="menuPathArr.length === 0 || currentScriptObj.name === 'sample-scripts' ">
             <a class="list-group-item" data-ng-repeat="type in eventTypes | filter: pathFilter"
-               data-ng-click="setEventType(type)">{{type.label}}<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
+               data-ng-click="setEventType(type)"
+               ng-class="{ highlighted: isHighlightedItem('process') || isHighlightedItem('broadcast') }">
+               {{type.label}}
+               <i class="fa fa-fw fa-chevron-right pull-right"></i>
+           </a>
         </div>
 
 
