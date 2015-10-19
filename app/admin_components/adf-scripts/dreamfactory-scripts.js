@@ -130,7 +130,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             $scope.isHighlightedItem = function (item) {
-                return $scope.highlightedEvents.some(function (evt) {
+                return $scope.highlightedEvents && $scope.highlightedEvents.some(function (evt) {
                     return evt === item;
                 });
             };
@@ -166,11 +166,13 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 {
                     name: 'process-scripts',
-                    label: 'Process Event Scripts'
+                    label: 'Process Event Scripts',
+                    item_name: 'process'
                 //},
                 //{
                 //    name: 'broadcast-scripts',
-                //    label: "Broadcast Event Scripts"
+                //    label: "Broadcast Event Scripts",
+                //    item_name: 'broadcast'
                 }
             ];
 
@@ -288,7 +290,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     url: INSTANCE_URL + '/api/v2/system/event/' + requestDataObj.name,
                     params: requestDataObj.params,
                     data: requestDataObj.data
-                })
+                }).then($scope.highlightScript);
             };
 
             // Delete a script from the server
@@ -298,7 +300,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     method: 'DELETE',
                     url: INSTANCE_URL + '/api/v2/system/event/' + requestDataObj.name,
                     params: requestDataObj.params
-                })
+                }).then($scope.highlightScript);
             };
 
             // Check for event paths with {variable} in their path property
