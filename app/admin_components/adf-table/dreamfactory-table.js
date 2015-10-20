@@ -664,17 +664,7 @@ angular.module('dfTable', ['dfUtility'])
                     if (recordsDataArr.length == 0) {
 
                         var defer = $q.defer();
-                        var error = {
-
-                            data: {
-                                error: [
-                                    {
-                                        message: 'No records selected for save.'
-                                    }
-                                ]
-                            }
-                        };
-
+                        var error = 'No records selected for save.';
                         defer.reject(error);
                         return defer.promise;
                     }
@@ -694,17 +684,7 @@ angular.module('dfTable', ['dfUtility'])
                     if (recordsDataArr.length == 0) {
 
                         var defer = $q.defer();
-                        var error = {
-
-                            data: {
-                                error: [
-                                    {
-                                        message: 'No records selected for delete.'
-                                    }
-                                ]
-                            }
-                        };
-
+                        var error = 'No records selected for delete.';
                         defer.reject(error);
                         return defer.promise;
                     }
@@ -1500,7 +1480,7 @@ angular.module('dfTable', ['dfUtility'])
                         function (reject) {
 
                             throw {
-                                module: 'DreamFactory Table Module',
+                                module: 'xxDreamFactory Table Module',
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 exception: reject
@@ -3154,7 +3134,7 @@ angular.module('dfTable', ['dfUtility'])
                         table: newValue.ref_table,
                         url: INSTANCE_URL + '/api/v2/' + scope._setSystemService(newValue.ref_table) + '/_table/' + scope._parseSystemTableName(newValue.ref_table),
                         params: {
-                            filter: newValue.ref_field + ' = '  + scope.childTableParentRecord[newValue.field]
+                            filter: newValue.ref_fields + ' = '  + scope.childTableParentRecord[newValue.field]
                         }
                     };
 
