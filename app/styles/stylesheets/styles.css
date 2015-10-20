@@ -9004,7 +9004,7 @@ body {
   background: #fcf8e3;
 }
 
-.scripting-list-group > span:first-child > a.highlighted {
+.scripting-list-group > span > a.highlighted {
     background: #fcf8e3;
 }
 
