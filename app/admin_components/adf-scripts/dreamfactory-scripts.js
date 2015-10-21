@@ -103,36 +103,10 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         only_scripted: true
                     }
                 }).then(function (result) {
-                    $scope.highlightedEvents = angular.copy(result.data.resource) || [];
-                    result.data && result.data.resource && result.data.resource.forEach(function (item) {
-                        $scope._highlightRecursively(item, $scope.events);
-                    });
+                    $scope.highlightedEvents = result.data.resource
+                    $scope.events.process.$$isHighlighted = $scope.highlightEvent($scope.events.process);
+                    $scope.events.broadcast.$$isHighlighted = $scope.highlightEvent($scope.events.broadcast);
                 })
-            };
-
-            $scope._highlightRecursively = function (item, events) {
-                for (var evt in events) {
-                    if (events[evt] === item && Array.isArray(events)) {
-                        console.log('item found ', item, events[evt])
-                        return true;
-                    } 
-                    
-                    else if (events[evt] && typeof(events[evt]) === 'object') {
-                        var highlighted = $scope._highlightRecursively(item, events[evt]);
-                        if (highlighted) {
-                            $scope.highlightedEvents.push(evt);
-                            return true;
-                        }
-                    }
-                }
-
-                return events.$$isHighlighted;
-            };
-
-            $scope.isHighlightedItem = function (item) {
-                return $scope.highlightedEvents && $scope.highlightedEvents.some(function (evt) {
-                    return evt === item;
-                });
             };
 
             $scope.__getDataFromHttpResponse = function (httpResponseObj) {
@@ -186,7 +160,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.uppercaseVerbLabels = true;
             $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete']
             $scope.highlightScript();
-
+            
             // Keep track of what's going on in the module
             $scope.currentEventTypeObj = null;
             $scope.currentServiceObj = null;
@@ -329,6 +303,29 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.menuPathArr.push(typeObj.label);
                 $scope.currentEventTypeObj = typeObj;
                 $scope.pathFilter = '';
+
+                var evt = null;
+                if (typeObj.item_name === 'process') {
+                    $scope.events.process.$$isHighlighted = $scope.highlightEvent($scope.events.process);
+                } else {
+                    $scope.events.broadcast.$$isHighlighted = $scope.highlightEvent($scope.events.broadcast);
+                }
+            };
+
+            $scope.highlightEvent = function (evt) {
+                var flag = false;
+                for (var item in evt) {
+                    if (typeof(evt[item]) == 'boolean') continue;
+
+                    evt[item].$$isHighlighted = $scope.highlightCurrentServiceObj({
+                        paths: evt[item]
+                    });
+
+                    if (evt[item].$$isHighlighted) {
+                        flag = true;
+                    }
+                }
+                return flag;
             };
 
             $scope._setService = function (name, eventObj) {
@@ -337,7 +334,26 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.currentServiceObj = { "name": name, "paths": eventObj };
                 $scope.pathFilter = '';
 
+                $scope.highlightCurrentServiceObj($scope.currentServiceObj);
                 return false;
+            };
+
+            $scope.highlightCurrentServiceObj = function (currentServiceObj) {
+                var flag = false;
+
+                for (var item in currentServiceObj.paths) {
+                    if (typeof(currentServiceObj.paths[item]) == 'boolean') continue;
+
+                    currentServiceObj.paths[item].$$isHighlighted = $scope.highlightCurrentPathObj({
+                        verbs: currentServiceObj.paths[item].verb
+                    });
+
+                    if (currentServiceObj.paths[item].$$isHighlighted) {
+                        flag = true;
+                    }
+                }
+
+                return flag;
             };
 
             $scope._setPath = function (name, pathObj) {
@@ -362,6 +378,27 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
                 $scope.currentPathObj = { "name": name, "verbs": newVerbList };
                 $scope.pathFilter = '';
+                $scope.highlightCurrentPathObj($scope.currentPathObj);
+            };
+
+            $scope.highlightCurrentPathObj = function (currentPathObj) {
+                var flag = false;
+                for (var verb in currentPathObj.verbs) {
+                    if (typeof(currentPathObj.verbs[verb]) == 'boolean') continue; 
+
+                    var exists = currentPathObj.verbs[verb].filter(function (item) {
+                        return $scope.highlightedEvents.some(function (evt) {
+                            return evt === item
+                        });
+                    }).length;
+
+                    if (exists) {
+                        flag = true;
+                        currentPathObj.verbs[verb].$$isHighlighted = true;
+                    }
+                }
+
+                return flag;
             };
 
             $scope._setEventList = function(name, verb, events) {
@@ -372,7 +409,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     $scope.menuPathArr.push("[" + verb.toUpperCase() + "] " + name);
                 }
                 
-            }
+            };
+
+
+            $scope.isHighlightedItem = function (evt) {
+                return $scope.highlightedEvents && $scope.highlightedEvents.filter(function (item) {
+                    return item === evt;
+                }).length;
+            };
 
             $scope._setScript = function (scriptIdStr) {
                 var requestDataObj = {
@@ -599,7 +643,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     scope.menuPathArr.pop();
                                     scope.currentEventTypeObj = null;
                                     scope.pathFilter = '';
-
                                     break;
 
                                 case 2:
@@ -607,13 +650,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     scope.menuPathArr.pop();
                                     scope.currentServiceObj = null;
                                     scope.pathFilter = '';
-
+                                    scope.highlightEvent(scope.events.process);
                                     break
 
                                 case 3:
                                     scope.menuPathArr.pop();
                                     scope.currentPathObj = null;
                                     scope.pathFilter = '';
+                                    scope.highlightCurrentServiceObj(scope.currentServiceObj);
 
                                     break;
 
@@ -656,19 +700,20 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     scope.menuPathArr.pop();
                                     scope.currentEventTypeObj = null;
                                     scope.pathFilter = '';
-
                                     break;
 
                                 case 2:
 
                                     scope.menuPathArr.pop();
                                     scope.currentScriptObj = null;
+                                    scope.highlightEvent(scope.events.broadcast);
                                     break;
 
                                 case 3:
                                     scope.menuPathArr.pop();
                                     scope.currentPathObj = null;
                                     scope.pathFilter = '';
+                                    scope.highlightCurrentServiceObj(scope.currentServiceObj);
 
                                     break;
 
