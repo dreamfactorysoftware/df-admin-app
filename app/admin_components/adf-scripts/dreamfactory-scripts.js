@@ -104,6 +104,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     }
                 }).then(function (result) {
                     $scope.highlightedEvents = result.data.resource
+                    $scope.events.process.$$isHighlighted = $scope.highlightEvent($scope.events.process);
+                    $scope.events.broadcast.$$isHighlighted = $scope.highlightEvent($scope.events.broadcast);
                 })
             };
 
@@ -158,7 +160,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.uppercaseVerbLabels = true;
             $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete']
             $scope.highlightScript();
-
+            
             // Keep track of what's going on in the module
             $scope.currentEventTypeObj = null;
             $scope.currentServiceObj = null;
@@ -641,7 +643,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     scope.menuPathArr.pop();
                                     scope.currentEventTypeObj = null;
                                     scope.pathFilter = '';
-
                                     break;
 
                                 case 2:
@@ -649,13 +650,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     scope.menuPathArr.pop();
                                     scope.currentServiceObj = null;
                                     scope.pathFilter = '';
-
+                                    scope.highlightEvent(scope.events.process);
                                     break
 
                                 case 3:
                                     scope.menuPathArr.pop();
                                     scope.currentPathObj = null;
                                     scope.pathFilter = '';
+                                    scope.highlightCurrentServiceObj(scope.currentServiceObj);
 
                                     break;
 
@@ -698,19 +700,20 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     scope.menuPathArr.pop();
                                     scope.currentEventTypeObj = null;
                                     scope.pathFilter = '';
-
                                     break;
 
                                 case 2:
 
                                     scope.menuPathArr.pop();
                                     scope.currentScriptObj = null;
+                                    scope.highlightEvent(scope.events.broadcast);
                                     break;
 
                                 case 3:
                                     scope.menuPathArr.pop();
                                     scope.currentPathObj = null;
                                     scope.pathFilter = '';
+                                    scope.highlightCurrentServiceObj(scope.currentServiceObj);
 
                                     break;
 
