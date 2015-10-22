@@ -594,7 +594,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope._removeKey = function (index) {
 
-                    scope.lookupKeys.splice(index, 1);
+                    scope.lookupKeys[index].record.user_id = null;
                 };
 
 
