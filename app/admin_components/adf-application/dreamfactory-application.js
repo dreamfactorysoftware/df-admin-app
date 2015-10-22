@@ -1097,7 +1097,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
     ])
 
     // Intercepts outgoing http calls.  Checks for valid session.  If 401 will trigger a pop up login screen.
-    .factory('httpValidSession', ['$q', '$rootScope', '$location', 'INSTANCE_URL', '$injector', function ($q, $rootScope, $location, INSTANCE_URL, $injector) {
+    .factory('httpValidSession', ['$q', '$rootScope', '$location', 'INSTANCE_URL', '$injector', '$cookies', function ($q, $rootScope, $location, INSTANCE_URL, $injector, $cookies) {
 
 
         var putSession = function (reject) {
@@ -1113,6 +1113,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 url: INSTANCE_URL + url
             }).then(function (result) {
                 $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.data.session_token;
+                $cookies.PHPSESSID = $cookies.PHPSESSID === result.data.session_token ? $cookies.PHPSESSID : result.data.session_token
                 UserDataService.setCurrentUser(result.data);
                 retry(reject.config, deferred);
             }, function () {
