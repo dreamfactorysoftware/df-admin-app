@@ -345,7 +345,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     if (typeof(currentServiceObj.paths[item]) == 'boolean') continue;
 
                     currentServiceObj.paths[item].$$isHighlighted = $scope.highlightCurrentPathObj({
-                        verbs: currentServiceObj.paths[item].verb
+                        verbs: constructPaths(item, currentServiceObj.paths[item].verb, currentServiceObj.paths[item].parameter)
                     });
 
                     if (currentServiceObj.paths[item].$$isHighlighted) {
@@ -356,16 +356,13 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 return flag;
             };
 
-            $scope._setPath = function (name, pathObj) {
-                var verbList, newVerbList, newEventName;
-
-                $scope.menuPathArr.push(name);
-                verbList = pathObj.verb;
-                newVerbList = angular.copy(verbList);
+            var constructPaths = function (name, verbList, parameter) {
+                var newEventName;
+                var newVerbList = angular.copy(verbList);
                 if (name.indexOf("{") >= 0 && name.indexOf("}") >= 0) {
-                    if (pathObj.parameter) {
+                    if (parameter) {
                         angular.forEach(verbList, function(eventArray, verbName) {
-                            angular.forEach(pathObj.parameter, function(paramArray, paramName) {
+                            angular.forEach(parameter, function(paramArray, paramName) {
                                 angular.forEach(paramArray, function(itemName, itemIndex) {
                                     angular.forEach(eventArray, function(eventName, eventIndex) {
                                         newEventName = eventName.replace("{" + paramName + "}", itemName);
@@ -376,10 +373,22 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         });
                     }
                 }
+
+                return newVerbList;
+            };
+
+
+            $scope._setPath = function (name, pathObj) {
+                var verbList, newEventName;
+
+                $scope.menuPathArr.push(name);
+                var newVerbList = constructPaths(name, pathObj.verb, pathObj.parameter);
+
                 $scope.currentPathObj = { "name": name, "verbs": newVerbList };
                 $scope.pathFilter = '';
                 $scope.highlightCurrentPathObj($scope.currentPathObj);
             };
+
 
             $scope.highlightCurrentPathObj = function (currentPathObj) {
                 var flag = false;
