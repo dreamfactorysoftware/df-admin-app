@@ -290,6 +290,10 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 scope.closeUser();
                             }
 
+                            scope.lookupKeys = scope.lookupKeys.filter(function (key) {
+                                return key.record.user_id !== null;
+                            });
+
                         },
                         function (reject) {
 
@@ -593,8 +597,10 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
                 scope._removeKey = function (index) {
-
-                    scope.lookupKeys[index].record.user_id = null;
+                    if (scope.lookupKeys[index].record.user_id !== undefined) 
+                        scope.lookupKeys[index].record.user_id = null;
+                    else 
+                        scope.lookupKeys.splice(index, 1);
                 };
 
 
