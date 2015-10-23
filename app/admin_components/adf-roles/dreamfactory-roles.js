@@ -1226,8 +1226,10 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 };
 
                 scope._deleteLookUpKey = function (keyObjIndex) {
-
-                    scope.roleLookUpKeys.splice(keyObjIndex, 1);
+                    if (scope.roleLookUpKeys[keyObjIndex].record.role_id !== undefined) 
+                        scope.roleLookUpKeys[keyObjIndex].record.role_id = null;
+                    else 
+                        scope.roleLookUpKeys.splice(keyObjIndex, 1);
                 };
 
 
