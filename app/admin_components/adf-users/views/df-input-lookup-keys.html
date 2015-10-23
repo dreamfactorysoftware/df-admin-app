@@ -22,7 +22,7 @@
 
         <tbody>
 
-        <tr data-ng-repeat="key in lookupKeys track by $index">
+        <tr data-ng-repeat="key in lookupKeys track by $index" ng-show="key.record.user_id !== null">
             <td class="form-group" data-ng-class="key.__dfUI.unique ? '' : 'has-error'">
                 <input class="form-control" data-ng-model="key.record.name" data-ng-keyup="_isUniqueKey()" type="text" data-ng-required="true"/>
             </td>
