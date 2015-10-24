@@ -141,8 +141,8 @@
     <!--<button data-ng-if="!field.__dfUI.isNewField" type="button" class="btn btn-primary" data-ng-click="updateField()">Update</button>-->
     <div class="row df-btn-row" style="padding-bottom: 20px">
         <div class="col-xs-12">
-            <button type="button" class="btn btn-primary" data-ng-click="saveField()">Save</button>
-            <button type="button" class="btn btn-default" data-ng-click="closeField()">Close</button>
+            <button type="button" class="btn btn-primary" data-ng-click="saveField()" ng-hide="$parent.table.__dfUI.newTable">Save</button>
+            <button type="button" class="btn btn-default" data-ng-click="closeField($parent.table.__dfUI.newTable)">Close</button>
         </div>
     </div>
 
