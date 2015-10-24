@@ -847,7 +847,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                             scope._insertNewTableToAppObj(newTable);
 
+                            var service = scope.table.currentService;
                             scope.table = new Table(newTable);
+                            scope.table.currentService = service;
 
                             dfNotify.success(messageOptions);
 
@@ -890,7 +892,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 message: 'Table updated successfully.'
                             };
 
-                            scope.table = new Table(result.data.resource[0]);
+                            var newTable = result.data.resource[0];
+
+                            var service = scope.table.currentService;
+                            scope.table = new Table(newTable);
+                            scope.table.currentService = service;
 
                             dfNotify.success(messageOptions);
 
