@@ -304,6 +304,10 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 scope.closeAdmin();
                             }
 
+                            scope.lookupKeys = scope.lookupKeys.filter(function (key) {
+                                return key.record.user_id !== null;
+                            });
+
                         },
                         function (reject) {
 
@@ -551,8 +555,10 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
                 scope._removeKey = function (index) {
-
-                    scope.lookupKeys.splice(index, 1);
+                    if (scope.lookupKeys[index].record.user_id !== undefined) 
+                        scope.lookupKeys[index].record.user_id = null;
+                    else 
+                        scope.lookupKeys.splice(index, 1);
                 };
 
 

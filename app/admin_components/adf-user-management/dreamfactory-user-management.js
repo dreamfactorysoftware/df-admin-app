@@ -451,6 +451,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 scope.emailError = false;
                 scope.securityQuestionForm = false;
                 scope.hidePasswordField = false;
+                scope.allowForeverSessions = scope.systemConfig.authentication.allow_forever_sessions;
 
                 scope.sq = {
                     email: null,

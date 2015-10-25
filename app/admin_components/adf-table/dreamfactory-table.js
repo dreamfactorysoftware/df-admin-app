@@ -2607,8 +2607,8 @@ angular.module('dfTable', ['dfUtility'])
                             }
                             else if (scope.record.length < scope.options.params.limit) {
 
-                                scope._addStateProps(result.data)
-                                scope.record.push(result.data);
+                                scope._addStateProps(result.data.resource[0])
+                                scope.record.push(result.data.resource[0]);
 
                             }
                             // check if we need to update our pagination due to record creation
@@ -2885,16 +2885,19 @@ angular.module('dfTable', ['dfUtility'])
 
                     case 'boolean':
 
+                        scope.templateData.template = 'df-input-bool-picklist.html';
+
+                        scope.__dfBools = [
+
+                            {value:true, name:'TRUE'},
+                            {value:false, name:'FALSE'}
+                        ];
+
                         if (scope.field.allow_null) {
 
-                            scope.templateData.template = 'df-input-bool-picklist.html';
-
-                            scope.__dfBools = [
-                                {value: '', name:'NULL'},
-                                {value:true, name:'TRUE'},
-                                {value:false, name:'FALSE'}
-                            ]
+                            scope.__dfBools.unshift({value: '', name: 'NULL'});
                         }
+
                         break;
 
                     case 'reference':

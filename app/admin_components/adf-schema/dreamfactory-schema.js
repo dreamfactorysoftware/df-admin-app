@@ -741,6 +741,21 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope._deleteField = function (field) {
 
+                    if (scope.table.__dfUI.newTable) {
+                        var i = 0;
+                        while(i < scope.table.record.field.length) {
+
+                            if (scope.table.record.field[i].name === field.name) {
+                                scope.table.record.field.splice(i, 1);
+                                break;
+                            }
+
+                            i++;
+                        }
+                        scope.table.recordCopy = angular.copy(scope.table.record);
+                        return;
+                    };
+
                     var requestDataObj = {
 
                         path: scope.tableData.currentService.name + '/_schema/' + scope.table.record.name + '/' + field.name
@@ -832,7 +847,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                             scope._insertNewTableToAppObj(newTable);
 
+                            var service = scope.table.currentService;
                             scope.table = new Table(newTable);
+                            scope.table.currentService = service;
 
                             dfNotify.success(messageOptions);
 
@@ -875,7 +892,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 message: 'Table updated successfully.'
                             };
 
-                            scope.table = new Table(result.data.resource[0]);
+                            var newTable = result.data.resource[0];
+
+                            var service = scope.table.currentService;
+                            scope.table = new Table(newTable);
+                            scope.table.currentService = service;
 
                             dfNotify.success(messageOptions);
 
@@ -1058,11 +1079,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope.refFields = null;
 
                 // PUBLIC API
-                scope.closeField = function () {
+                scope.closeField = function (noConfirm) {
 
                     if (!dfObjectService.compareObjectsAsJson(scope.field.record, scope.field.recordCopy)) {
 
-                        if (!dfNotify.confirmNoSave()) {
+                        if (!noConfirm && !dfNotify.confirmNoSave()) {
                             return false;
                         }
 
