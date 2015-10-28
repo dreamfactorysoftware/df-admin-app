@@ -933,14 +933,9 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     // DELETE request for logging out user
                     scope._logoutRequest = function (admin) {
-
-                        if(!admin) {
-                            // return a promise object from the rest call
-                            return $http.delete(INSTANCE_URL + '/api/v2/user/session');
-                        }
-                        else{
-                            return $http.delete(INSTANCE_URL + '/api/v2/system/admin/session');
-                        }
+                        var user = UserDataService.getCurrentUser();
+                        var url = user.is_sys_admin ? '/api/v2/system/admin/session' : '/api/v2/user/session';
+                        return $http.delete(INSTANCE_URL + url);
                     };
 
                     // COMPLEX IMPLEMENTATION ** See login directive for more info **
@@ -971,39 +966,21 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                             // Error method
                             function (reject) {
-                                if(reject.status == '401' || reject.status == '404'){
-                                    scope._logoutRequest(true).then(
+                                if(reject.status == '401' || reject.data.error.code == '401'){
+                                    // remove session cookie
+                                    $cookieStore.remove('PHPSESSID');
 
-                                        // success method
-                                        function () {
+                                    // remove current user cookie
+                                    $cookieStore.remove('CurrentUserObj');
 
-                                            // remove session cookie
-                                            $cookieStore.remove('PHPSESSID');
+                                    // remove user from UserDataService
+                                    UserDataService.unsetCurrentUser();
 
-                                            // remove current user cookie
-                                            $cookieStore.remove('CurrentUserObj');
+                                    // Unset DreamFactory header
+                                    $http.defaults.headers.common['X-DreamFactory-Session-Token'] = '';
 
-                                            // remove user from UserDataService
-                                            UserDataService.unsetCurrentUser();
-
-                                            // Unset DreamFactory header
-                                            $http.defaults.headers.common['X-DreamFactory-Session-Token'] = '';
-
-                                            // Emit success message so we can hook in
-                                            scope.$emit(scope.es.logoutSuccess, false);
-                                        },
-
-                                        // Error method
-                                        function (reject) {
-
-                                            // Throw DreamFactory error object
-                                            throw {
-                                                module: 'DreamFactory User Management',
-                                                type: 'error',
-                                                provider: 'dreamfactory',
-                                                exception: reject
-                                            }
-                                        })
+                                    // Emit success message so we can hook in
+                                    scope.$emit(scope.es.logoutSuccess, false);
                                 }
                                 else {
                                     // Throw DreamFactory error object
