@@ -1133,6 +1133,17 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         };
 
         var refreshSession = function (reject, deferred) {
+            //Clear cookies.
+            $cookies.PHPSESSID = '';
+
+            //Clear current header.
+            var $http = $injector.get('$http');
+            $http.defaults.headers.common['X-DreamFactory-Session-Token'] = '';
+
+            //Clear current user.
+            var UserDataService = $injector.get('UserDataService');
+            UserDataService.unsetCurrentUser();
+
             var UserEventsService = $injector.get('UserEventsService');
             var deferred = deferred || $injector.get('$q').defer();
 
@@ -1177,9 +1188,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         break;
 
                     default:
-
-                        if (reject.status === 401 && reject.config.url.indexOf('/session') === -1 && $rootScope.initInProgress === false) {
-                            if (reject.data.error.message === 'Token has expired') {
+                        if ((reject.status === 401 || reject.data.error.code === 401)  && reject.config.url.indexOf('/session') === -1 && $rootScope.initInProgress === false) {
+                            if (reject.data.error.message === 'Token has expired' || reject.config.url.indexOf('/profile') !== -1) {
                                 //  put session
                                 return putSession(reject);
                             } else {
