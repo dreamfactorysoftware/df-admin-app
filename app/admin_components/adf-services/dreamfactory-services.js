@@ -2371,8 +2371,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                 scope._prepareServiceDefinitionData = function () {
-
-                    scope.service.record.service_doc_by_service_id[0].content = scope.currentEditor.session.getValue().split('/n').join('');
+                    if (scope.service.record.service_doc_by_service_id && scope.service.record.service_doc_by_service_id[0]) {
+                        scope.service.record.service_doc_by_service_id[0].content = scope.currentEditor.session.getValue().split('/n').join('');    
+                    }
                 }
 
 
