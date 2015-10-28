@@ -8891,6 +8891,10 @@ body {
   resize: vertical;
 }
 
+.swagger-editor .panel, .swagger-editor .table {
+    margin-top: 15px;
+}
+
 /* line 2, ../sass/partials/_df-help.scss */
 .help-container {
   display: inline;
