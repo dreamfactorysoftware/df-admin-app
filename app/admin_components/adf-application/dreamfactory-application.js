@@ -807,6 +807,11 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         });
                 }
                 return deferred.promise;
+            },
+
+            updateServiceComponentsLocal: function (service) {
+                var dfServiceData = this.getApiData('service', { name: service.name })[0];
+                dfServiceData.components = service.components;
             }
 
         }
