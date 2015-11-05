@@ -287,11 +287,13 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             // the checks.
             $scope._resetAll = function () {
 
-                if ($scope.menuPathArr.length === 0) return false;
+                if ($scope.menuPathArr.length === 0 || !$scope.menuBack()) return false;
 
                 while ($scope.menuPathArr.length !== 0) {
-                    $scope.menuBack();
+                    $scope._menuBack();
                 }
+
+                return true;
             };
 
             // COMPLEX IMPLEMENTATION
@@ -551,7 +553,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope._loadSamples = function () {
 
-                $scope._resetAll();
+                if (!$scope._resetAll()) return;
 
                 $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.js').then(
                     function (result) {
@@ -614,6 +616,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     }
 
                     scope._menuBack();
+                    return true;
                 };
 
                 scope.jumpTo = function (index) {
