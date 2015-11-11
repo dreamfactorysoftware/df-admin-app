@@ -2393,6 +2393,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     switch (newValue.record.type) {
 
                         case 'rws':
+                        case 'script':
                             scope.isEditable = true;
                             break;
 
