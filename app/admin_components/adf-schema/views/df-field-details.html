@@ -89,10 +89,15 @@
     </div>
 
     <div class="checkbox">
-
         <label>
             <input type="checkbox" data-ng-model="field.record.auto_increment"/>
             Auto Increment</label>
+    </div>
+
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" data-ng-disabled=true data-ng-model="field.record.required"/>
+            Required</label>
     </div>
 
     <label>Default Value</label>
@@ -121,13 +126,24 @@
     </select> <br/>
 
 
-    <label>Required</label>
-    <input class="form-control" type="text" data-ng-disabled=true data-ng-model="field.record.required"/>
-    <br/>
-
     <label>Validation</label>
     <textarea json-edit="field.record.validation" rows="5" cols="10" class="form-control"></textarea>
     <br />
+
+    <label>DB Function</label>
+    <input class="form-control" type="text" data-ng-model="field.record.db_function.function"/>
+    <br/>
+    <label>DB Function Return Type</label>
+    <select data-ng-options="type.value as type.name for type in returnTypeOptions" class="form-control"
+            data-ng-model="field.record.db_function.type"></select>
+    <br/>
+    <div class="checkbox">
+
+        <label>
+            <input type="checkbox" data-ng-model="field.record.db_function.aggregate"/>
+            Aggregate DB Function?</label>
+    </div>
+    <br/>
 
     <div data-ng-show="field.record.type === 'string' || field.record.type === 'integer'">
         <label>Picklist</label>

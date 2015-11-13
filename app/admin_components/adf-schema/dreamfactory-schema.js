@@ -1038,6 +1038,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         supports_multibyte: false,
                         type: null,
                         validation: null,
+                        db_function:null,
                         value: []
                     };
 
@@ -1073,8 +1074,18 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     {name: "user_id_on_update",value: "user_id_on_update"},
                     {name: "timestamp",value: "timestamp"},
                     {name: "timestamp_on_create",value: "timestamp_on_create"},
-                    {name: "timestamp_on_update",value: "timestamp_on_update"}
+                    {name: "timestamp_on_update",value: "timestamp_on_update"},
+                    {name: "virtual",value: "virtual"}
+                ];
 
+                scope.returnTypeOptions = [
+                    {name : "string", value: "string"},
+                    {name: "integer",value: "integer"},
+                    {name: "boolean", value: "boolean"},
+                    {name: "binary", value: "binary"},
+                    {name: "float", value: "float"},
+                    {name: "double", value: "double"},
+                    {name: "decimal", value: "decimal"}
                 ];
                 scope.refFields = null;
 
