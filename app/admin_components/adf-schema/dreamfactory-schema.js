@@ -1267,6 +1267,13 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     )
                 });
 
+                scope.helpText = {
+                    db_function: {
+                        title: 'DB Function',
+                        text: 'Enter a db function like max(fieldname) or concat(field1, \'.\', field2)'
+                    }
+                };
+
 
                 // MESSAGES
                 scope.$on('$destroy', function (e) {
