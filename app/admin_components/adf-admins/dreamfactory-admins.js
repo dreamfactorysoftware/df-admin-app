@@ -158,8 +158,24 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope.sendEmailOnCreate = false;
 
 
+                scope._validateData = function () {
+                    if (scope.setPassword && scope.verifyPassword !== scope.admin.record.password) {
+                        dfNotify.error({
+                            module: 'Admins',
+                            type: 'error',
+                            message: 'Passwords not same.'
+                        });
+                        return false;
+                    }
+                    return true;
+                };
+
                 // PUBLIC API
                 scope.saveAdmin = function () {
+
+                    if (!scope._validateData()) {
+                        return
+                    }
 
                     if (scope.newAdmin) {
 

@@ -371,6 +371,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         i++
                     }
 
+                    dfApplicationData.updateServiceComponentsLocal($scope.currentService)
                     dfNotify.success(messageOptions);
 
 
@@ -851,6 +852,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             scope.table = new Table(newTable);
                             scope.table.currentService = service;
 
+                            dfApplicationData.updateServiceComponentsLocal(service);
                             dfNotify.success(messageOptions);
 
                         },
@@ -1264,6 +1266,13 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         }
                     )
                 });
+
+                scope.helpText = {
+                    db_function: {
+                        title: 'DB Function',
+                        text: 'Enter a db function like max(fieldname) or concat(field1, \'.\', field2)'
+                    }
+                };
 
 
                 // MESSAGES

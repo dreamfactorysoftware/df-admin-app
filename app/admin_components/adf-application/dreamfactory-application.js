@@ -648,7 +648,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             },
 
             // gets bootstrapped api data by name
-            getApiData: function (api, options) {
+            getApiData: function (api, options, forceRefresh) {
 
                 options = options || null;
 
@@ -658,6 +658,11 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     }
                     // dfNotify
                 }
+
+                if (forceRefresh) {
+                    return _fetchFromApi(api);
+                }
+
 
                 // check for data
                 if (dfApplicationObj.apis.hasOwnProperty(api)) {
@@ -807,6 +812,11 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         });
                 }
                 return deferred.promise;
+            },
+
+            updateServiceComponentsLocal: function (service) {
+                var dfServiceData = this.getApiData('service', { name: service.name })[0];
+                dfServiceData.components = service.components;
             }
 
         }

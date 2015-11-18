@@ -155,12 +155,16 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             // $scope.sampleScripts = new ScriptObj('sample-scripts', 'v8js', getSampleScripts.data);
 
             // All these vars pertain to building of events dynamically on the client
-            $scope.events = angular.copy(dfApplicationData.getApiData('event'));
+            dfApplicationData.getApiData('event', null, true).then(function (result) {
+                $scope.events = dfApplicationData.getApiData('event');
+                $scope.highlightScript();
+            });
+
+            
             $scope.scriptTypes = dfApplicationData.getApiData('script_type');
             $scope.uppercaseVerbLabels = true;
             $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete']
-            $scope.highlightScript();
-            
+
             // Keep track of what's going on in the module
             $scope.currentEventTypeObj = null;
             $scope.currentServiceObj = null;
@@ -287,11 +291,13 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             // the checks.
             $scope._resetAll = function () {
 
-                if ($scope.menuPathArr.length === 0) return false;
+                if ($scope.menuPathArr.length === 0 || !$scope.menuBack()) return false;
 
                 while ($scope.menuPathArr.length !== 0) {
-                    $scope.menuBack();
+                    $scope._menuBack();
                 }
+
+                return true;
             };
 
             // COMPLEX IMPLEMENTATION
@@ -551,7 +557,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope._loadSamples = function () {
 
-                $scope._resetAll();
+                if (!$scope._resetAll()) return;
 
                 $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.js').then(
                     function (result) {
@@ -614,6 +620,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     }
 
                     scope._menuBack();
+                    return true;
                 };
 
                 scope.jumpTo = function (index) {
