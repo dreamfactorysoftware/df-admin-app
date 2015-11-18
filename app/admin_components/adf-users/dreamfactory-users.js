@@ -147,6 +147,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 // PUBLIC API
                 scope.saveUser = function () {
 
+                    // validate 
+                    if (!scope._validateData()) {
+                        return;
+                    }
+
                     if (scope.newUser) {
 
                         scope._saveUser();
@@ -191,8 +196,19 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     scope._prepareLookupKeyData();
 
-                }
+                };
 
+                scope._validateData = function () {
+                    if (scope.setPassword && scope.verifyPassword !== scope.user.record.password) {
+                        dfNotify.error({
+                            module: 'Users',
+                            type: 'error',
+                            message: 'Passwords not same.'
+                        });
+                        return false;
+                    }
+                    return true;
+                };
 
                 // COMPLEX IMPLEMENTATION
                 scope._saveUser = function () {
