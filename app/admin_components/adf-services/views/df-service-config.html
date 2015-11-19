@@ -21,11 +21,11 @@
                data-ng-model="serviceInfo.record.config[field.name]"
                type="text" data-ng-required="field.required"/>
 
-        <input class="form-control" data-ng-if="field.type == 'password'"
+        <input class="form-control" data-ng-if="field.type == 'password' || field.name == 'password'"
                data-ng-model="serviceInfo.record.config[field.name]"
                type="password" data-ng-required="field.required"/>
 
-        <input class="form-control" data-ng-if="field.type == 'text' && field.name !== 'content'"
+        <input class="form-control" data-ng-if="field.type == 'text' && field.name !== 'content' && field.name !== 'password'"
                data-ng-model="serviceInfo.record.config[field.name]"
                type="text" data-ng-required="field.required"/>
 
