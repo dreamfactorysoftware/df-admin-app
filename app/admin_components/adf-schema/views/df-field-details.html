@@ -60,6 +60,34 @@
 
     <div class="checkbox">
         <label>
+            <input type="checkbox" data-ng-model="field.record.allow_null"/>
+            Allow Null</label>
+    </div>
+
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" data-ng-model="field.record.auto_increment"/>
+            Auto Increment</label>
+    </div>
+
+    <label>Default Value</label>
+    <input class="form-control" type="text" data-ng-model="field.record.default"/>
+    <br/>
+
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" data-ng-model="field.record.is_index"/>
+            Indexed</label>
+    </div>
+
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" data-ng-model="field.record.is_unique"/>
+            Unique</label>
+    </div>
+
+    <div class="checkbox">
+        <label>
             <input type="checkbox" data-ng-model="field.record.is_primary_key" data-ng-disabled="true"/>
             Primary Key</label>
     </div>
@@ -72,37 +100,9 @@
 
     <div class="checkbox">
         <label>
-            <input type="checkbox" data-ng-model="field.record.is_unique"/>
-            Unique</label>
+            <input type="checkbox" data-ng-model="field.record.virtual_foreign_key"/>
+            Virtual Foreign Key</label>
     </div>
-
-    <div class="checkbox">
-        <label>
-            <input type="checkbox" data-ng-model="field.record.is_index"/>
-            Indexed</label>
-    </div>
-
-    <div class="checkbox">
-        <label>
-            <input type="checkbox" data-ng-model="field.record.allow_null"/>
-            Allow Null</label>
-    </div>
-
-    <div class="checkbox">
-        <label>
-            <input type="checkbox" data-ng-model="field.record.auto_increment"/>
-            Auto Increment</label>
-    </div>
-
-    <div class="checkbox">
-        <label>
-            <input type="checkbox" data-ng-disabled=true data-ng-model="field.record.required"/>
-            Required</label>
-    </div>
-
-    <label>Default Value</label>
-    <input class="form-control" type="text" data-ng-model="field.record.default"/>
-    <br/>
 
     <span data-ng-if="field.record.is_foreign_key || field.record.type === 'reference'"
           data-ng-init="_loadReferenceTables()"></span>

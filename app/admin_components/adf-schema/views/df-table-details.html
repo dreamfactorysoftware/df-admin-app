@@ -46,6 +46,7 @@
                 <th></th>
                 <th>Name</th>
                 <th>Type</th>
+                <th>Required</th>
 
                 <tr data-ng-repeat="field in table.record.field | orderBy:'name'  track by $index ">
                     <td>
@@ -58,6 +59,7 @@
                     </td>
                     <td data-ng-click="editField(field)">{{field.name}}</td>
                     <td data-ng-click="editField(field)">{{field.type}}</td>
+                    <td data-ng-click="editField(field)">{{field.required}}</td>
                 </tr>
             </table>
         </div>
