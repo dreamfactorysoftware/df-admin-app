@@ -104,21 +104,32 @@
             Virtual Foreign Key</label>
     </div>
 
-    <span data-ng-if="field.record.is_foreign_key || field.record.type === 'reference'"
+    <span data-ng-if="(field.record.type === 'reference') || field.record.is_foreign_key || field.record.virtual_foreign_key"
+          data-ng-init="_loadReferenceServices()"></span>
+
+    <label>Reference Service</label>
+    <select data-ng-disabled="field.record.type !== 'reference' && !field.record.is_foreign_key && !field.record.virtual_foreign_key"
+            class="form-control"
+            data-ng-change="_loadReferenceTables()"
+            data-ng-model="field.record.ref_service_id"
+            data-ng-options="o.id as o.name for o in refServices">
+        <option value="">-- Select Reference Service --</option>
+    </select> <br/>
+
+    <span data-ng-if="field.record.ref_service_id && ((field.record.type === 'reference') || field.record.is_foreign_key || field.record.virtual_foreign_key)"
           data-ng-init="_loadReferenceTables()"></span>
 
     <label>Reference Table</label>
-    <select data-ng-disabled="field.record.type !== 'reference' && !field.record.is_foreign_key || (field.record.type === 'user_id' || field.record.type === 'user_id_on_create' || field.record.type === 'user_id_on_update')  "
+    <select data-ng-disabled="(field.record.type !== 'reference' && !field.record.is_foreign_key && !field.record.virtual_foreign_key) || !field.record.ref_service_id"
             class="form-control"
             data-ng-change="_loadReferenceFields()"
             data-ng-model="field.record.ref_table"
-            data-ng-options="o.name as o.name for o in field.record.ref_tables">
+            data-ng-options="o.name as o.name for o in refTables">
         <option value="">-- Select Reference Table --</option>
     </select> <br/>
 
     <label>Reference Field</label>
-    <select
-            data-ng-disabled="(!field.record.is_foreign_key && !field.record.type === 'reference') || !field.record.ref_table || (field.record.type === 'user_id' || field.record.type === 'user_id_on_create' || field.record.type === 'user_id_on_update') "
+    <select data-ng-disabled="(field.record.type !== 'reference' && !field.record.is_foreign_key && !field.record.virtual_foreign_key) || !field.record.ref_table"
             class="form-control"
             data-ng-model="field.record.ref_fields"
             data-ng-options="o.name as o.name for o in refFields">
