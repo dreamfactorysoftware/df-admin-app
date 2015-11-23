@@ -361,7 +361,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             }
 
             // return response from server as promise
-            return dfSystemData.resource().put(params, options.data, function (result) {
+            return dfSystemData.resource({ url: options.url }).put(params, options.data, function (result) {
 
                 // update the application object and session storage.
                 __updateApiData(api, result);
@@ -895,9 +895,12 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 };
 
                 options = dfObjectService.mergeObjects(options, defaults);
+                var url = options.url || INSTANCE_URL + '/api/v2/system/:api/:id';
+                var queryParams = options.queryParams || { api: '@api', id: '@id' };
+
 
                 // Return a resource for our service so we can just call the operation we want.
-                return $resource(INSTANCE_URL + '/api/v2/system/:api/:id', {api: '@api', id: '@id'}, {
+                return $resource(url, queryParams, {
 
                     get: {
                         method: 'GET',

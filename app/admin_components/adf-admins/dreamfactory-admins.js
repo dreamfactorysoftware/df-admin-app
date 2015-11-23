@@ -108,7 +108,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             };
         }])
 
-    .directive('dfAdminDetails', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', function(MOD_ADMIN_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService) {
+    .directive('dfAdminDetails', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', function(MOD_ADMIN_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies) {
 
         return {
 
@@ -202,7 +202,8 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
                 scope._updateAdminToServer = function (requestDataObj) {
-
+                    requestDataObj.url = INSTANCE_URL + '/system/:api/profile/:id';
+                    requestDataObj.queryParams = { id: '@id', api: '@api' }
                     return dfApplicationData.updateApiData('admin', requestDataObj).$promise;
                 };
 
@@ -299,6 +300,12 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     scope._updateAdminToServer(requestDataObj).then(
                         function (result) {
+
+                            // update token if email was changed
+                            if (result.data.session_token) {
+                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.data.session_token;
+                                $cookies.PHPSESSID = result.data.session_token;
+                            }
 
                             var messageOptions = {
                                 module: 'Admins',
