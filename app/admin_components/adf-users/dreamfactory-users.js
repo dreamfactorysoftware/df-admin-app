@@ -284,7 +284,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     requestDataObj.url = INSTANCE_URL + '/api/v2/:api/profile';
                     requestDataObj.queryParams = { api: '@api' };
-                    requestDataObj.method = 'patch';
 
                     scope._updateUserToServer(requestDataObj).then(
                         function (result) {
