@@ -90,7 +90,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             };
         }])
 
-    .directive('dfUserDetails', ['MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', function(MOD_USER_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies) {
+    .directive('dfUserDetails', ['MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', function(MOD_USER_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore) {
 
         return {
 
@@ -282,15 +282,22 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         data: scope.user.record
                     };
 
-                    requestDataObj.url = INSTANCE_URL + '/:api/profile/:id';
-                    requestDataObj.queryParams = { id: '@id', api: '@api' }
+                    requestDataObj.url = INSTANCE_URL + '/api/v2/:api/profile';
+                    requestDataObj.queryParams = { api: '@api' };
+                    requestDataObj.method = 'patch';
+
                     scope._updateUserToServer(requestDataObj).then(
                         function (result) {
 
                             // update token if email was changed
-                            if (result.data.session_token) {
-                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.data.session_token;
-                                $cookies.PHPSESSID = result.data.session_token;
+                            if (result.session_token) {
+                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.session_token;
+                                $cookies.PHPSESSID = result.session_token;
+                                
+                                var existingUser = UserDataService.getCurrentUser();
+                                existingUser.session_token = result.session_token;
+                                existingUser.session_id = result.session_token;
+                                $cookieStore.put('CurrentUserObj', existingUser);
                             }
 
                             var messageOptions = {
