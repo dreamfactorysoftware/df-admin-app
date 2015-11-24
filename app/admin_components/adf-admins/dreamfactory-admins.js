@@ -204,7 +204,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope._updateAdminToServer = function (requestDataObj) {
                     requestDataObj.url = INSTANCE_URL + '/api/v2/system/:api/profile';
                     requestDataObj.queryParams = { api: '@api' }
-                    requestDataObj.method = 'patch';
                     return dfApplicationData.updateApiData('admin', requestDataObj).$promise;
                 };
 
