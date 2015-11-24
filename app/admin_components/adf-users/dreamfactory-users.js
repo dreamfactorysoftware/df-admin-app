@@ -90,7 +90,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             };
         }])
 
-    .directive('dfUserDetails', ['MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', function(MOD_USER_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies) {
+    .directive('dfUserDetails', ['MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', function(MOD_USER_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore) {
 
         return {
 
@@ -293,6 +293,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             if (result.session_token) {
                                 $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.session_token;
                                 $cookies.PHPSESSID = result.session_token;
+                                
+                                var existingUser = UserDataService.getCurrentUser();
+                                existingUser.session_token = result.session_token;
+                                existingUser.session_id = result.session_token;
+                                $cookieStore.put('CurrentUserObj', existingUser);
                             }
 
                             var messageOptions = {
