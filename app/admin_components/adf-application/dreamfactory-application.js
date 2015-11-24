@@ -361,7 +361,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             }
 
             // return response from server as promise
-            return dfSystemData.resource({ url: options.url }).put(params, options.data, function (result) {
+            return dfSystemData.resource({ url: options.url })[options.method || 'put'](params, options.data, function (result) {
 
                 // update the application object and session storage.
                 __updateApiData(api, result);
@@ -1002,7 +1002,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }
             }
         }
-
+        
         return {
 
 

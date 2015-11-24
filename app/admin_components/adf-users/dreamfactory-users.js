@@ -282,15 +282,17 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         data: scope.user.record
                     };
 
-                    requestDataObj.url = INSTANCE_URL + '/:api/profile/:id';
-                    requestDataObj.queryParams = { id: '@id', api: '@api' }
+                    requestDataObj.url = INSTANCE_URL + '/api/v2/:api/profile';
+                    requestDataObj.queryParams = { api: '@api' };
+                    requestDataObj.method = 'patch';
+
                     scope._updateUserToServer(requestDataObj).then(
                         function (result) {
 
                             // update token if email was changed
-                            if (result.data.session_token) {
-                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.data.session_token;
-                                $cookies.PHPSESSID = result.data.session_token;
+                            if (result.session_token) {
+                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.session_token;
+                                $cookies.PHPSESSID = result.session_token;
                             }
 
                             var messageOptions = {
