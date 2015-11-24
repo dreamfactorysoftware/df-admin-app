@@ -282,8 +282,10 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         data: scope.user.record
                     };
 
-                    requestDataObj.url = INSTANCE_URL + '/api/v2/:api/profile';
-                    requestDataObj.queryParams = { api: '@api' };
+                    if (UserDataService.getCurrentUser().id === requestDataObj.data.id) {
+                        requestDataObj.url = INSTANCE_URL + '/api/v2/system/:api/profile';
+                        requestDataObj.queryParams = { api: '@api' };    
+                    }
 
                     scope._updateUserToServer(requestDataObj).then(
                         function (result) {

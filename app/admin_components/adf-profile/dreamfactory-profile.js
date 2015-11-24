@@ -86,7 +86,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
             }
         ];
     }])
-    .directive('dfEditProfile', ['MOD_PROFILE_ASSET_PATH', 'INSTANCE_URL', 'dfNotify', 'dfApplicationData', 'UserDataService', 'dfObjectService', '$http', function (MOD_APPS_ASSET_PATH, INSTANCE_URL, dfNotify, dfApplicationData, UserDataService, dfObjectService, $http) {
+    .directive('dfEditProfile', ['MOD_PROFILE_ASSET_PATH', 'INSTANCE_URL', 'dfNotify', 'dfApplicationData', 'UserDataService', 'dfObjectService', '$http', '$cookies', '$cookieStore', function (MOD_APPS_ASSET_PATH, INSTANCE_URL, dfNotify, dfApplicationData, UserDataService, dfObjectService, $http, $cookies, $cookieStore) {
 
         return {
 
@@ -141,7 +141,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                 scope._updateUserToServer = function (requestDataObj) {
 
                     return $http({
-                        method: 'POST',
+                        method: 'PUT',
                         url: INSTANCE_URL + '/api/v2/user/profile',
                         data: requestDataObj.data
                     })
@@ -149,6 +149,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                 scope._updateUsers = function (update) {
 
+                    update.url = INSTANCE_URL + '/api/v2/system/admin/profile';
                     return dfApplicationData.updateApiData('admin', update).$promise;
                 };
 
@@ -190,8 +191,20 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                             data: admindata
                         };
 
+
                         scope._updateUsers(update).then(
                             function (result) {
+
+                                // update token if email was changed
+                                if (result.session_token) {
+                                    $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.session_token;
+                                    $cookies.PHPSESSID = result.session_token;
+                                    
+                                    var existingUser = UserDataService.getCurrentUser();
+                                    existingUser.session_token = result.session_token;
+                                    existingUser.session_id = result.session_token;
+                                    $cookieStore.put('CurrentUserObj', existingUser);
+                                }
 
                                 var messageOptions = {
                                     module: 'Profile',
@@ -291,6 +304,17 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                         scope._updateUserToServer(requestDataObj1).then(
                             function (result) {
 
+                                // update token if email was changed
+                                if (result.session_token) {
+                                    $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.session_token;
+                                    $cookies.PHPSESSID = result.session_token;
+                                    
+                                    var existingUser = UserDataService.getCurrentUser();
+                                    existingUser.session_token = result.session_token;
+                                    existingUser.session_id = result.session_token;
+                                    $cookieStore.put('CurrentUserObj', existingUser);
+                                }
+                                
                                 var messageOptions = {
                                     module: 'Profile',
                                     type: 'success',
