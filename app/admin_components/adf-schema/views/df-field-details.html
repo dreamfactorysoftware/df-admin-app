@@ -94,21 +94,30 @@
 
     <div class="checkbox">
         <label>
-            <input type="checkbox" data-ng-model="field.record.is_foreign_key"/>
+            <input type="checkbox" data-ng-change="changeForeignKey()" data-ng-model="field.record.is_foreign_key"/>
             Foreign Key</label>
     </div>
 
     <div class="checkbox">
         <label>
-            <input type="checkbox" data-ng-model="field.record.virtual_foreign_key"/>
+            <input type="checkbox" data-ng-disabled="(field.record.type != 'reference') && !field.record.is_foreign_key"
+                   data-ng-model="field.record.is_virtual_foreign_key"/>
             Virtual Foreign Key</label>
     </div>
 
-    <span data-ng-if="(field.record.type === 'reference') || field.record.is_foreign_key || field.record.virtual_foreign_key"
-          data-ng-init="_loadReferenceServices()"></span>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox"
+                   data-ng-disabled="((field.record.type != 'reference') && !field.record.is_foreign_key) || !field.record.is_virtual_foreign_key"
+                   data-ng-change="changeForeignReferenceService()"
+                   data-ng-model="field.record.is_foreign_ref_service"/>
+            Foreign Reference Service</label>
+    </div>
+
+    <span data-ng-if="field.record.is_foreign_ref_service" data-ng-init="_loadReferenceServices()"></span>
 
     <label>Reference Service</label>
-    <select data-ng-disabled="field.record.type !== 'reference' && !field.record.is_foreign_key && !field.record.virtual_foreign_key"
+    <select data-ng-disabled="((field.record.type != 'reference') && !field.record.is_foreign_key) || !field.record.is_virtual_foreign_key || !field.record.is_foreign_ref_service"
             class="form-control"
             data-ng-change="_loadReferenceTables()"
             data-ng-model="field.record.ref_service_id"
@@ -116,11 +125,11 @@
         <option value="">-- Select Reference Service --</option>
     </select> <br/>
 
-    <span data-ng-if="field.record.ref_service_id && ((field.record.type === 'reference') || field.record.is_foreign_key || field.record.virtual_foreign_key)"
+    <span data-ng-if="(field.record.type === 'reference') || field.record.is_foreign_key"
           data-ng-init="_loadReferenceTables()"></span>
 
     <label>Reference Table</label>
-    <select data-ng-disabled="(field.record.type !== 'reference' && !field.record.is_foreign_key && !field.record.virtual_foreign_key) || !field.record.ref_service_id"
+    <select data-ng-disabled="(field.record.type !== 'reference') && !field.record.is_foreign_key"
             class="form-control"
             data-ng-change="_loadReferenceFields()"
             data-ng-model="field.record.ref_table"
@@ -129,7 +138,7 @@
     </select> <br/>
 
     <label>Reference Field</label>
-    <select data-ng-disabled="(field.record.type !== 'reference' && !field.record.is_foreign_key && !field.record.virtual_foreign_key) || !field.record.ref_table"
+    <select data-ng-disabled="((field.record.type !== 'reference') && !field.record.is_foreign_key) || !field.record.ref_table"
             class="form-control"
             data-ng-model="field.record.ref_fields"
             data-ng-options="o.name as o.name for o in refFields">
@@ -139,7 +148,7 @@
 
     <label>Validation</label>
     <textarea json-edit="field.record.validation" rows="5" cols="10" class="form-control"></textarea>
-    <br />
+    <br/>
 
     <label>DB Function</label>
     <df-simple-help data-options="helpText.db_function"></df-simple-help>
@@ -150,6 +159,7 @@
     <select data-ng-options="type.value as type.name for type in returnTypeOptions" class="form-control"
             data-ng-model="field.record.db_function.type"></select>
     <br/>
+
     <div class="checkbox">
 
         <label>
@@ -170,8 +180,12 @@
     <!--<button data-ng-if="!field.__dfUI.isNewField" type="button" class="btn btn-primary" data-ng-click="updateField()">Update</button>-->
     <div class="row df-btn-row" style="padding-bottom: 20px">
         <div class="col-xs-12">
-            <button type="button" class="btn btn-primary" data-ng-click="saveField()" ng-hide="$parent.table.__dfUI.newTable">Save</button>
-            <button type="button" class="btn btn-default" data-ng-click="closeField($parent.table.__dfUI.newTable)">Close</button>
+            <button type="button" class="btn btn-primary" data-ng-click="saveField()"
+                    ng-hide="$parent.table.__dfUI.newTable">Save
+            </button>
+            <button type="button" class="btn btn-default" data-ng-click="closeField($parent.table.__dfUI.newTable)">
+                Close
+            </button>
         </div>
     </div>
 
