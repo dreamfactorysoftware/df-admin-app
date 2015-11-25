@@ -196,13 +196,14 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                             function (result) {
 
                                 // update token if email was changed
-                                if (result.session_token) {
-                                    $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.session_token;
-                                    $cookies.PHPSESSID = result.session_token;
+                                var session_token = result.session_token || result.data.session_token;
+                                if (session_token) {
+                                    $http.defaults.headers.common['X-DreamFactory-Session-Token'] = session_token;
+                                    $cookies.PHPSESSID = session_token;
                                     
                                     var existingUser = UserDataService.getCurrentUser();
-                                    existingUser.session_token = result.session_token;
-                                    existingUser.session_id = result.session_token;
+                                    existingUser.session_token = session_token;
+                                    existingUser.session_id = session_token;
                                     $cookieStore.put('CurrentUserObj', existingUser);
                                 }
 
@@ -305,13 +306,14 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                             function (result) {
 
                                 // update token if email was changed
-                                if (result.session_token) {
-                                    $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.session_token;
-                                    $cookies.PHPSESSID = result.session_token;
+                                var session_token = result.session_token || result.data.session_token;
+                                if (session_token) {
+                                    $http.defaults.headers.common['X-DreamFactory-Session-Token'] = session_token;
+                                    $cookies.PHPSESSID = session_token;
                                     
                                     var existingUser = UserDataService.getCurrentUser();
-                                    existingUser.session_token = result.session_token;
-                                    existingUser.session_id = result.session_token;
+                                    existingUser.session_token = session_token;
+                                    existingUser.session_id = session_token;
                                     $cookieStore.put('CurrentUserObj', existingUser);
                                 }
                                 
