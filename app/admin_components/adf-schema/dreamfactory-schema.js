@@ -144,15 +144,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         $scope.currentTable = null;
         $scope.lastTable = '';
 
-
-        $scope.schemaManagerData = null;
         $scope.activeComponent = null;
-
 
         $scope.currentEditTable = null;
         $scope.currentUploadSchema = null;
-
-
 
 
         // PUBLIC API
@@ -371,6 +366,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         i++
                     }
 
+                    dfApplicationData.updateServiceComponentsLocal($scope.currentService)
                     dfNotify.success(messageOptions);
 
 
@@ -851,6 +847,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             scope.table = new Table(newTable);
                             scope.table.currentService = service;
 
+                            dfApplicationData.updateServiceComponentsLocal(service);
                             dfNotify.success(messageOptions);
 
                         },
@@ -1021,24 +1018,27 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     var _new = {
                         allow_null: false,
                         auto_increment: false,
+                        db_function:null,
                         db_type: null,
                         default: null,
                         fixed_length: false,
                         is_foreign_key: false,
+                        is_foreign_ref_service: false,
                         is_primary_key: false,
                         is_unique: false,
+                        is_virtual_foreign_key: false,
                         label: null,
                         length: null,
                         name: null,
                         precision: null,
                         ref_fields: '',
+                        ref_service_id: null,
                         ref_table: '',
                         required: false,
                         scale: 0,
                         supports_multibyte: false,
                         type: null,
                         validation: null,
-                        db_function:null,
                         value: []
                     };
 
@@ -1087,6 +1087,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     {name: "double", value: "double"},
                     {name: "decimal", value: "decimal"}
                 ];
+
+                scope.refServices = null;
+                scope.refTables = null;
                 scope.refFields = null;
 
                 // PUBLIC API
@@ -1110,14 +1113,77 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope._saveField();
                 }
 
+                scope.changeForeignKey = function () {
+                    if (!scope.field.record.is_foreign_key) {
+                        scope.field.record.is_virtual_foreign_key = false;
+                        scope.field.record.is_foreign_ref_service = false;
+                        scope.field.record.ref_service_id = null;
+                        scope.field.record.ref_table = null;
+                        scope.field.record.ref_fields = null;
+                        scope.refServices = null;
+                        scope.refTables = null;
+                        scope.refFields = null;
+                    } else {
+                        scope._loadReferenceTables();
+                        scope._loadReferenceFields();
+                    }
+                };
+
+                scope.changeForeignReferenceService = function () {
+                    if (!scope.field.record.is_foreign_ref_service) {
+                        scope.field.record.ref_service_id = null;
+                        scope.refServices = null;
+                    } else {
+
+                    }
+                    scope.field.record.ref_table = null;
+                    scope.field.record.ref_fields = null;
+                    scope._loadReferenceTables();
+                    scope._loadReferenceFields();
+                };
+
+                // PRIVATE API
+                scope._loadReferenceServices = function () {
+
+                        $http.get(INSTANCE_URL + "/api/v2/system/service/?filter=type%3D%27sql_db%27&fields=id,name,label").then(
+                            function (result) {
+                                scope.refServices = result.data.resource;
+                            },
+
+                            function (reject) {
+
+                                var messageOptions = {
+
+                                    module: 'Api Error',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+                                };
+
+                                dfNotify.error(messageOptions);
+                            }
+                        );
+                };
 
                 // PRIVATE API
                 scope._loadReferenceTables = function () {
 
-                    $http.get(INSTANCE_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/').then(
+                    var ref_service_name = scope.fieldData.currentService.name;
+                    if (scope.refServices) {
+                        for (var i = 0; i < scope.refServices.length; i++) {
+
+                            if (scope.refServices[i].id === scope.field.record.ref_service_id) {
+
+                                ref_service_name = scope.refServices[i].name;
+                                break;
+                            }
+                        }
+                    }
+
+                    $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/').then(
 
                         function (result) {
-                            scope.field.record.ref_tables = result.data.resource;
+                            scope.refTables = result.data.resource;
                         },
 
                         function (reject) {
@@ -1136,20 +1202,29 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 };
 
 
-
                 scope._loadReferenceFields = function () {
-
 
                     if (!scope.field.record.ref_table) {
                         scope.refFields = null;
                         return;
                     }
 
-                    $http.get(INSTANCE_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/' + scope.field.record.ref_table).then(
+                    var ref_service_name =  scope.fieldData.currentService.name;
+                    if (scope.refServices) {
+                        for (var i = 0; i < scope.refServices.length; i++) {
+
+                            if (scope.refServices[i].id === scope.field.record.ref_service_id) {
+
+                                ref_service_name = scope.refServices[i].name;
+                                break;
+                            }
+                        }
+                    }
+
+                    $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/' + scope.field.record.ref_table).then(
                         function (result) {
 
                             scope.refFields = result.data.field;
-                            scope.field.record.ref_fields = null;
                         },
                         function (reject) {
 
@@ -1171,9 +1246,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope._saveFieldToServer = function () {
 
                     var recordObj = angular.copy(scope.field.record);
-
-                    if (recordObj.hasOwnProperty('ref_tables'))
-                        delete recordObj.ref_tables;
 
                     return $http({
                         url: INSTANCE_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/' + scope.currentTable + '/' + recordObj.name,
@@ -1233,37 +1305,21 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 // WATCHERS
                 var watchFieldData = scope.$watch('fieldData', function(newValue, oldValue) {
 
-
                     if (!newValue) return;
 
                     scope.field = newValue.__dfUI.newField ? new Field() : new Field(newValue.record);
 
                     if (!newValue.record.ref_table) {
                         scope.refFields = null;
-                        return;
                     }
-
-
-                    $http.get(INSTANCE_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/' + scope.field.record.ref_table).then(
-                        function (result) {
-
-                            scope.refFields = result.data.field
-                        },
-                        function (reject) {
-
-                            var messageOptions = {
-
-                                module: 'Api Error',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            };
-
-                            dfNotify.error(messageOptions);
-
-                        }
-                    )
                 });
+
+                scope.helpText = {
+                    db_function: {
+                        title: 'DB Function',
+                        text: 'Enter a db function like max(fieldname) or concat(field1, \'.\', field2)'
+                    }
+                };
 
 
                 // MESSAGES
@@ -1283,11 +1339,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             scope: false,
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-schema-navigator.html',
             link: function (scope, elem, attrs) {
-
-               
-
-                
-                
             }
         }
     }])
@@ -1299,20 +1350,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             scope: false,
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-schema-editor.html',
             link: function (scope, elem, attrs) {
-
-
-
-
-
-
-
-                
-
-
-
-               
-
-
             }
         }
     }])

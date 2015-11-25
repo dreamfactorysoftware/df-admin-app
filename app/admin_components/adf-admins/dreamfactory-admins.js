@@ -108,7 +108,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             };
         }])
 
-    .directive('dfAdminDetails', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', function(MOD_ADMIN_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService) {
+    .directive('dfAdminDetails', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', function(MOD_ADMIN_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore) {
 
         return {
 
@@ -158,8 +158,24 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope.sendEmailOnCreate = false;
 
 
+                scope._validateData = function () {
+                    if (scope.setPassword && scope.verifyPassword !== scope.admin.record.password) {
+                        dfNotify.error({
+                            module: 'Admins',
+                            type: 'error',
+                            message: 'Passwords not same.'
+                        });
+                        return false;
+                    }
+                    return true;
+                };
+
                 // PUBLIC API
                 scope.saveAdmin = function () {
+
+                    if (!scope._validateData()) {
+                        return
+                    }
 
                     if (scope.newAdmin) {
 
@@ -186,7 +202,11 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
                 scope._updateAdminToServer = function (requestDataObj) {
-
+                    if (UserDataService.getCurrentUser().id === requestDataObj.data.id) {
+                        requestDataObj.url = INSTANCE_URL + '/api/v2/system/:api/profile';
+                        requestDataObj.queryParams = { api: '@api' }
+                    }
+                    
                     return dfApplicationData.updateApiData('admin', requestDataObj).$promise;
                 };
 
@@ -284,6 +304,18 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     scope._updateAdminToServer(requestDataObj).then(
                         function (result) {
 
+                            // update token if email was changed
+                            if (result.session_token) {
+                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.session_token;
+                                $cookies.PHPSESSID = result.session_token;
+                                
+                                var existingUser = UserDataService.getCurrentUser();
+                                existingUser.session_token = result.session_token;
+                                existingUser.session_id = result.session_token;
+                                $cookieStore.put('CurrentUserObj', existingUser);
+                            }
+
+                            
                             var messageOptions = {
                                 module: 'Admins',
                                 provider: 'dreamfactory',
