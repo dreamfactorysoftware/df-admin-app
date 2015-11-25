@@ -2139,6 +2139,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 // COMPLEX IMPLEMENTATION
 
                 scope._editService = function (service) {
+                    if (service.config && service.config instanceof Array) {
+                        service.config = {};
+                    }
+                    
                     scope.currentEditService = service;
                 };
 
