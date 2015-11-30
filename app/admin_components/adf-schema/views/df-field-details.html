@@ -137,6 +137,9 @@
         <option value="">-- Select Reference Table --</option>
     </select> <br/>
 
+    <span data-ng-if="(field.record.type === 'reference') || field.record.is_foreign_key"
+          data-ng-init="_loadReferenceFields()"></span>
+
     <label>Reference Field</label>
     <select data-ng-disabled="((field.record.type !== 'reference') && !field.record.is_foreign_key) || !field.record.ref_table"
             class="form-control"
