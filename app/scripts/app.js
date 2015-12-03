@@ -62,13 +62,14 @@ angular
                 templateUrl: 'views/login.html',
                 resolve: {
 
-                    checkLoginRoute: ['dfApplicationData', '$location', function (dfApplicationData, $location) {
+                    checkLoginRoute: ['dfApplicationData', '$location', 'SystemConfigDataService', function (dfApplicationData, $location, SystemConfigDataService) {
 
+                        var systemConfig = SystemConfigDataService.getSystemConfig();
                         var currentUser = dfApplicationData.getCurrentUser();
 
                         if (currentUser && currentUser.session_id) {
                             if (currentUser.is_sys_admin) {
-                                if (currentUser.email === 'user@example.com') {
+                                if (currentUser.email === 'user@example.com' && !systemConfig.platform.bitnami_demo) {
                                     $location.url('/profile');
                                 } else {
                                     $location.url('/home');

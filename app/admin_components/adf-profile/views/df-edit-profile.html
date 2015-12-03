@@ -13,7 +13,7 @@
             </div>
         </df-section-toolbar>-->
 
-        <div data-ng-if="'user@example.com' === user.record.email" class="alert alert-danger">
+        <div data-ng-if="('user@example.com' === user.record.email && !bitnami_demo)" class="alert alert-danger">
             <p>To simplify installation, this DreamFactory instance came with a default system administrator account.
                 Please secure this instance by updating the email and password for this profile.</p>
         </div>
