@@ -424,7 +424,7 @@ angular.module('dreamfactoryApp')
                                 var uri = $location.absUrl().split('?');
                                 $window.location.href = uri[0]+'#/home';
                             } else {
-                                if ('user@example.com' === userDataObj.email) {
+                                if ('user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
                                     $location.url('/profile');
                                 } else {
                                     $location.url('/home');
@@ -681,7 +681,7 @@ angular.module('dreamfactoryApp')
                         function () {
 
                             // Change our app location back to the home page
-                            if ('user@example.com' === userDataObj.email) {
+                            if ('user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
                                 $location.url('/profile');
                             } else {
                                 $location.url('/home');
