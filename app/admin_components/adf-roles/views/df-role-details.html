@@ -24,6 +24,12 @@
                         <label>Description</label>
                         <input class="form-control" data-ng-model="role.record.description" type="text"/>
                     </div>
+                    <div class="form-group">
+                        <div data-ng-if="adldap">
+                            <label>DN (Distinguished Name)</label>
+                            <input class="form-control" data-ng-model="role.record.dn" type="text"/>
+                        </div>
+                    </div>
 
                     <div class="form-group">
                         <div class="checkbox">

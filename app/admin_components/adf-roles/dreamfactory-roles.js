@@ -91,7 +91,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
         };
     }])
 
-    .directive('dfRoleDetails', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfApplicationPrefs', '$q', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, dfApplicationPrefs, $q) {
+    .directive('dfRoleDetails', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfApplicationPrefs', '$q', 'SystemConfigDataService', 'dfSystemData', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, dfApplicationPrefs, $q, SystemConfigDataService, dfSystemData) {
 
 
         return {
@@ -132,11 +132,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 scope.role = null;
 
+                scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
+
                 // Is this going to be a new Role
                 if (scope.newRole) {
                     scope.role = new Role();
                 }
-
 
                 // Other Data
                 scope.services = dfApplicationData.getApiData('service');
@@ -193,6 +194,11 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         return;
                     } else {
                         scope.basicInfoError = false;
+                    }
+
+                    if(scope.adldap && scope.role.record.dn){
+                        scope.role.record.role_adldap_by_role_id = (scope.role.record.id)? [{'role_id':scope.role.record.id, 'dn':scope.role.record.dn}] : [{'dn':scope.role.record.dn}];
+                        delete scope.role.record.dn;
                     }
 
                     scope._prepareServiceAccessData();
@@ -289,7 +295,26 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     scope._updateRoleToServer(requestDataObj).then(
                         function (result) {
-
+                            if(scope.adldap) {
+                                dfSystemData.resource({
+                                    params: {
+                                        fields: '*',
+                                        related: 'role_adldap_by_role_id'
+                                    }
+                                }).get({'api': 'role', 'id': result.id, 'related': 'role_adldap_by_role_id'}).$promise.then(
+                                    function (adResult) {
+                                        if (adResult.role_adldap_by_role_id && adResult.role_adldap_by_role_id.length > 0) {
+                                            result.dn = adResult.role_adldap_by_role_id[0].dn;
+                                        }
+                                        scope.role = new Role(result);
+                                    },
+                                    function (reject) {
+                                        scope.role = new Role(result);
+                                    }
+                                );
+                            } else {
+                                scope.role = new Role(result);
+                            }
 
                             var messageOptions = {
                                 module: 'Roles',
@@ -300,12 +325,13 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             };
 
                             dfNotify.success(messageOptions);
-                            scope.role = new Role(result);
 
                         },
 
                         function (reject) {
-
+                            if (scope.role.record.role_adldap_by_role_id && scope.role.record.role_adldap_by_role_id.length > 0) {
+                                scope.role.record.dn = scope.role.record.role_adldap_by_role_id[0].dn;
+                            }
                             var messageOptions = {
                                 module: 'Api Error',
                                 type: 'error',
@@ -823,7 +849,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
         }
     }])
 
-    .directive('dfManageRoles', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify) {
+    .directive('dfManageRoles', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfSystemData', 'SystemConfigDataService', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfSystemData, SystemConfigDataService) {
 
 
         return {
@@ -844,6 +870,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     }
                 };
 
+                scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
 
                 scope.currentViewMode = dfApplicationPrefs.getPrefs().sections.role.manageViewMode;
 
@@ -885,8 +912,26 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 // PUBLIC API
 
                 scope.editRole = function (role) {
-
-                    scope._editRole(role);
+                    if(scope.adldap) {
+                        dfSystemData.resource({
+                            params: {
+                                fields: '*',
+                                related: 'role_adldap_by_role_id'
+                            }
+                        }).get({'api': 'role', 'id': role.id, 'related': 'role_adldap_by_role_id'}).$promise.then(
+                            function (result) {
+                                if (result.role_adldap_by_role_id && result.role_adldap_by_role_id.length > 0) {
+                                    role.dn = result.role_adldap_by_role_id[0].dn;
+                                }
+                                scope._editRole(role);
+                            },
+                            function (reject) {
+                                scope._editRole(role);
+                            }
+                        );
+                    } else {
+                        scope._editRole(role);
+                    }
                 };
 
                 scope.deleteRole = function (role) {
@@ -924,7 +969,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 // COMPLEX IMPLEMENTATION
 
                 scope._editRole = function (role) {
-
                     scope.currentEditRole = role;
                 };
 
