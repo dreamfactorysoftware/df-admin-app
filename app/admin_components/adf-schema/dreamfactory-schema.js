@@ -1000,7 +1000,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         }
     }])
 
-    .directive('dfFieldDetails', ['MOD_SCHEMA_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfNotify', 'dfObjectService', function (MOD_SCHEMA_ASSET_PATH, INSTANCE_URL, $http, dfNotify, dfObjectService) {
+    .directive('dfFieldDetails', ['MOD_SCHEMA_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfNotify', 'dfObjectService', 'dfApplicationData', function (MOD_SCHEMA_ASSET_PATH, INSTANCE_URL, $http, dfNotify, dfObjectService, dfApplicationData) {
 
 
         return {
@@ -1011,7 +1011,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             },
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-field-details.html',
             link: function (scope, elem, attrs) {
-
 
                 var Field = function (fieldData) {
 
@@ -1032,7 +1031,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         name: null,
                         precision: null,
                         ref_fields: '',
-                        ref_service_id: null,
+                        ref_service: null,
                         ref_table: '',
                         required: false,
                         scale: 0,
@@ -1088,7 +1087,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     {name: "decimal", value: "decimal"}
                 ];
 
-                scope.refServices = null;
+                scope.refServices = dfApplicationData.getApiData('service', {type: 'sql_db'});
                 scope.refTables = null;
                 scope.refFields = null;
 
@@ -1117,10 +1116,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     if (!scope.field.record.is_foreign_key) {
                         scope.field.record.is_virtual_foreign_key = false;
                         scope.field.record.is_foreign_ref_service = false;
-                        scope.field.record.ref_service_id = null;
+                        scope.field.record.ref_service = null;
                         scope.field.record.ref_table = null;
                         scope.field.record.ref_fields = null;
-                        scope.refServices = null;
                         scope.refTables = null;
                         scope.refFields = null;
                     } else {
@@ -1131,8 +1129,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.changeForeignReferenceService = function () {
                     if (!scope.field.record.is_foreign_ref_service) {
-                        scope.field.record.ref_service_id = null;
-                        scope.refServices = null;
+                        scope.field.record.ref_service = null;
                     } else {
 
                     }
@@ -1143,41 +1140,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 };
 
                 // PRIVATE API
-                scope._loadReferenceServices = function () {
-
-                        $http.get(INSTANCE_URL + "/api/v2/system/service/?filter=type%3D%27sql_db%27&fields=id,name,label").then(
-                            function (result) {
-                                scope.refServices = result.data.resource;
-                            },
-
-                            function (reject) {
-
-                                var messageOptions = {
-
-                                    module: 'Api Error',
-                                    type: 'error',
-                                    provider: 'dreamfactory',
-                                    message: reject
-                                };
-
-                                dfNotify.error(messageOptions);
-                            }
-                        );
-                };
-
-                // PRIVATE API
                 scope._loadReferenceTables = function () {
 
                     var ref_service_name = scope.fieldData.currentService.name;
-                    if (scope.refServices) {
-                        for (var i = 0; i < scope.refServices.length; i++) {
-
-                            if (scope.refServices[i].id === scope.field.record.ref_service_id) {
-
-                                ref_service_name = scope.refServices[i].name;
-                                break;
-                            }
-                        }
+                    if (scope.field.record.ref_service) {
+                        ref_service_name = scope.field.record.ref_service;
                     }
 
                     $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/').then(
@@ -1210,15 +1177,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
 
                     var ref_service_name =  scope.fieldData.currentService.name;
-                    if (scope.refServices) {
-                        for (var i = 0; i < scope.refServices.length; i++) {
-
-                            if (scope.refServices[i].id === scope.field.record.ref_service_id) {
-
-                                ref_service_name = scope.refServices[i].name;
-                                break;
-                            }
-                        }
+                    if (scope.field.record.ref_service) {
+                        ref_service_name = scope.field.record.ref_service;
                     }
 
                     $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/' + scope.field.record.ref_table).then(

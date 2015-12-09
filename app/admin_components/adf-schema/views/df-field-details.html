@@ -114,14 +114,12 @@
             Foreign Reference Service</label>
     </div>
 
-    <span data-ng-if="field.record.is_foreign_ref_service" data-ng-init="_loadReferenceServices()"></span>
-
     <label>Reference Service</label>
     <select data-ng-disabled="((field.record.type != 'reference') && !field.record.is_foreign_key) || !field.record.is_virtual_foreign_key || !field.record.is_foreign_ref_service"
             class="form-control"
             data-ng-change="_loadReferenceTables()"
-            data-ng-model="field.record.ref_service_id"
-            data-ng-options="o.id as o.name for o in refServices">
+            data-ng-model="field.record.ref_service"
+            data-ng-options="o.name as o.label for o in refServices">
         <option value="">-- Select Reference Service --</option>
     </select> <br/>
 
