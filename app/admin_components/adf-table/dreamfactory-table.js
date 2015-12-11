@@ -1932,6 +1932,7 @@ angular.module('dfTable', ['dfUtility'])
                     } else {
 
                         if (!newValue.data) {
+                            scope.options.params.offset = newValue.table !== oldValue.table ? 0 : scope.options.params.offset;
                             scope._getRecordsFromServer().then(
                                 function (_result) {
 
