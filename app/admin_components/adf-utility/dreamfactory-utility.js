@@ -1212,6 +1212,9 @@ angular.module('dfUtility', ['dfApplication'])
                     scope.editor.on('input', function() {
                         scope.$apply(function() {
                             scope.isClean = scope.editor.session.getUndoManager().isClean();
+                            try {
+                                scope.directData = JSON.parse(scope.editor.getValue());
+                            } catch (e) {}
                         });
                     });
                 };

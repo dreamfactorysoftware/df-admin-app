@@ -231,7 +231,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope._prepareServiceInfoData();
                     scope._prepareServiceConfigData();
 
-                    if (scope.service.record.type !== 'rws') {
+                    if (scope.service.record.type !== 'rws' && scope.service.record.type !== 'script') {
 
                         delete scope.service.record.service_doc_by_service_id;
                         delete scope.service.recordCopy.service_doc_by_service_id;
@@ -2371,7 +2371,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                 scope._prepareServiceDefinitionData = function () {
-                    if (scope.service.record.service_doc_by_service_id && scope.service.record.service_doc_by_service_id[0]) {
+                    if (scope.service.record.service_doc_by_service_id) {
+                        scope.service.record.service_doc_by_service_id[0] = scope.service.record.service_doc_by_service_id[0] || {};
                         scope.service.record.service_doc_by_service_id[0].content = scope.currentEditor.session.getValue().split('/n').join('');    
                     }
                 }
