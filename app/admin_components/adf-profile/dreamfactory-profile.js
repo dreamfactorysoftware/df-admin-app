@@ -197,7 +197,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                             function (result) {
 
                                 // update token if email was changed
-                                var session_token = result.session_token || result.data.session_token;
+                                var session_token = result.session_token || (result.data && result.data.session_token);
                                 if (session_token) {
                                     $http.defaults.headers.common['X-DreamFactory-Session-Token'] = session_token;
                                     $cookies.PHPSESSID = session_token;
