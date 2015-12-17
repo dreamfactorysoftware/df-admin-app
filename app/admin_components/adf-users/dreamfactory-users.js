@@ -516,14 +516,18 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
                 scope._removeRoleApp = function (appId) {
-                    scope.user.record.user_to_app_to_role_by_user_id = scope.user.record.user_to_app_to_role_by_user_id.filter(function (item) {
-                        return item.app_id != appId;
-                    });
+                    var existing = scope.user.record.user_to_app_to_role_by_user_id.filter(function (item) {
+                        return item.app_id == appId;
+                    })[0];
+
+                    if (existing) {
+                        existing.user_id = null;
+                    }
                 };
 
                 scope._updateRoleApp = function (appId, roleId) {
                     var existing = scope.user.record.user_to_app_to_role_by_user_id.filter(function (item) {
-                        return item.app_id == appId && item.role_id == roleId;
+                        return item.app_id == appId;
                     })[0];
 
                     if (existing) {
