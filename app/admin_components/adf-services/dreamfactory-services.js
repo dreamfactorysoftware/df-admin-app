@@ -2365,7 +2365,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                 scope.isEditorClean = true;
-                scope.isEditable = true;
+                scope.isEditable = false;
                 scope.currentEditor = null;
                 scope.currentFile = null;
 
@@ -2399,7 +2399,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
 
                         default:
-                            scope.isEditable = false;
+                            scope.isEditable = true;
                     }
 
                 })
