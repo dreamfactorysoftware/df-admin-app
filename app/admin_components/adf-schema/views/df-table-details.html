@@ -1,5 +1,5 @@
 <div>
-    <div data-ng-show="currentEditField === null">
+    <div data-ng-show="(currentEditField === null) && (currentEditRelation === null)">
 
         <div data-ng-show="!table.__dfUI.newTable" class="form-group well well-sm">
             <button type="button" class="btn btn-default btn-sm" data-ng-click="toggleViewMode()"
@@ -37,6 +37,7 @@
             </div>
 
             <div class="form-group well well-sm">
+                <label>Fields</label>
                 <button type="button" class="btn btn-default btn-sm" data-ng-click="addField()" title="Add new field"
                         data-ng-disabled="viewMode === 'json'">Add Field
                 </button>
@@ -45,10 +46,11 @@
             <table class="table table-condensed table-hover table-striped table-bordered">
                 <th></th>
                 <th>Name</th>
+                <th>Alias</th>
                 <th>Type</th>
                 <th>Required</th>
 
-                <tr data-ng-repeat="field in table.record.field | orderBy:'name'  track by $index ">
+                <tr data-ng-repeat="field in table.record.field | orderBy:'name' track by $index ">
                     <td>
                         <button type="button" class="btn btn-default btn-xs" data-ng-click="deleteField(field)"
                                 title="Delete field"><i class="fa fa-fw fa-trash"></i></button>
@@ -58,8 +60,33 @@
                                 class="fa fa-fw fa-key"></i></button>
                     </td>
                     <td data-ng-click="editField(field)">{{field.name}}</td>
+                    <td data-ng-click="editField(field)">{{field.alias}}</td>
                     <td data-ng-click="editField(field)">{{field.type}}</td>
                     <td data-ng-click="editField(field)">{{field.required}}</td>
+                </tr>
+            </table>
+
+            <div class="form-group well well-sm">
+                <label>Relationships</label>
+            </div>
+
+            <table class="table table-condensed table-hover table-striped table-bordered">
+                <th>Name</th>
+                <th>Alias</th>
+                <th>Type</th>
+                <th>Service</th>
+                <th>Table</th>
+                <th>Field</th>
+                <th>Virtual</th>
+
+                <tr data-ng-repeat="relation in table.record.related | orderBy:'name' track by $index ">
+                    <td data-ng-click="editRelation(relation)">{{relation.name}}</td>
+                    <td data-ng-click="editRelation(relation)">{{relation.alias}}</td>
+                    <td data-ng-click="editRelation(relation)">{{relation.type}}</td>
+                    <td data-ng-click="editRelation(relation)">{{relation.ref_service}}</td>
+                    <td data-ng-click="editRelation(relation)">{{relation.ref_table}}</td>
+                    <td data-ng-click="editRelation(relation)">{{relation.ref_fields}}</td>
+                    <td data-ng-click="editRelation(relation)">{{relation.is_virtual}}</td>
                 </tr>
             </table>
         </div>
@@ -93,5 +120,10 @@
     <div data-ng-show="currentEditField !== null">
         <df-field-details data-field-data="currentEditField" data-current-table="table.record.name"
                           data-current-service="table.currentService"></df-field-details>
+    </div>
+
+    <div data-ng-show="currentEditRelation !== null">
+        <df-relation-details data-relation-data="currentEditRelation" data-current-table="table.record.name"
+                          data-current-service="table.currentService"></df-relation-details>
     </div>
 </div>
