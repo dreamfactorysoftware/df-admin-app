@@ -71,7 +71,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     method: 'GET',
                     url: INSTANCE_URL + '/api/v2/system/service_type'
                 }).success(function (data) {
-                    dfServiceData.serviceTypes = data;
+                    dfServiceData.serviceTypes = data.resource;
                     deferred.resolve(dfServiceData.serviceTypes);
                 });
             }
@@ -580,7 +580,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.hcv = new dfServiceValues();
 
                 dfServiceData.getServiceTypes().then(function (serviceTypes) {
-                    scope.hcv.serviceTypes = serviceTypes.resource;
+                    scope.hcv.serviceTypes = serviceTypes;
                     if (scope.newService) {
                         scope.hcv.serviceTypes = scope.hcv.serviceTypes
                             .filter(function (el) {
@@ -1364,7 +1364,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.hcv = new dfServiceValues();
 
                 dfServiceData.getServiceTypes().then(function (serviceTypes) {
-                    scope.hcv.serviceTypes = serviceTypes.resource;
+                    scope.hcv.serviceTypes = serviceTypes;
                     if (scope.newService) {
                         scope.hcv.serviceTypes = scope.hcv.serviceTypes
                             .filter(function (el) {
