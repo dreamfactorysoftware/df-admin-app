@@ -202,10 +202,10 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
                 scope._updateAdminToServer = function (requestDataObj) {
-                    if (UserDataService.getCurrentUser().id === requestDataObj.data.id) {
-                        requestDataObj.url = INSTANCE_URL + '/api/v2/system/:api/profile';
-                        requestDataObj.queryParams = { api: '@api' }
-                    }
+                    //if (UserDataService.getCurrentUser().id === requestDataObj.data.id) {
+                    //    requestDataObj.url = INSTANCE_URL + '/api/v2/system/:api/profile';
+                    //    requestDataObj.queryParams = { api: '@api' }
+                    //}
                     
                     return dfApplicationData.updateApiData('admin', requestDataObj).$promise;
                 };

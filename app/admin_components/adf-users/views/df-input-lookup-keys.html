@@ -10,7 +10,9 @@
             <th>Name</th>
             <th>Value</th>
             <th>Private</th>
+            <!-- Todo: implement this after implementing an UI for non-admin users to update lookups
             <th>Allow User Update</th>
+            -->
             <th>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-sm" data-ng-click="newKey()" title="Add lookup key"><i class="fa fa-plus fa-fw"></i></button>
@@ -32,9 +34,11 @@
             <td>
                 <input data-ng-model="key.record.private" type="checkbox" />
             </td>
+            <!-- Todo: implement this after implementing an UI for non-admin users to update lookups
             <td>
                 <input data-ng-model="key.record.allow_user_update" type="checkbox" />
             </td>
+            -->
             <td>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-sm" data-ng-click="removeKey($index)" title="Delete lookup key"><i class="fa fa-trash-o fa-fw"></i></button>
