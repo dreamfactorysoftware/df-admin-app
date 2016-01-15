@@ -705,7 +705,7 @@ angular.module('dfUtility', ['dfApplication'])
                         Object.keys(scope.verbs).forEach(function (key) {
                             scope._setVerbState(key, false);
                         });
-                        
+
                         angular.forEach(
                             scope.allowedVerbs, function (_value, _index) {
 
@@ -1441,7 +1441,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // section tool bar for views
-    .directive('dfSectionToolbar', ['MOD_UTILITY_ASSET_PATH', '$compile', function (MOD_UTILITY_ASSET_PATH, $compile) {
+    .directive('dfSectionToolbar', ['MOD_UTILITY_ASSET_PATH', '$compile', 'dfApplicationData', function (MOD_UTILITY_ASSET_PATH, $compile, dfApplicationData) {
 
 
         return {
@@ -1451,7 +1451,39 @@ angular.module('dfUtility', ['dfApplication'])
             templateUrl : MOD_UTILITY_ASSET_PATH + 'views/df-toolbar.html',
             link: function (scope, elem, attrs) {
 
+                scope.filterText = '';
 
+
+                scope.changeFilter = function (newVal) {
+                    var arr = [ "first_name", "last_name", "name", "email" ];
+
+                    var filter = arr.map(function(item) {
+                        return item + ' like "%' + newVal + '%"'
+                    }).join(' or ');
+
+                    if (!!newVal) {
+                        var _admins = [];
+                        var options = {
+                            filter: filter
+                        };
+
+                        var ManagedAdmin = function (adminData) {
+
+                            return {
+                                __dfUI: {
+                                    selected: false
+                                },
+                                record: adminData
+                            }
+                        };
+
+                        angular.forEach(dfApplicationData.getApiData('admin', options, true), function (admin) {
+                            _admins.push(new ManagedAdmin(admin));
+                        });
+                        scope.admins = _admins;
+                        return;
+                    }
+                };
 
 
             }
@@ -1572,13 +1604,16 @@ angular.module('dfUtility', ['dfApplication'])
                 // PRIVATE API
 
                 // Data
-                scope._getDataFromServer = function(offset) {
-
-                    return dfApplicationData.getDataSetFromServer(scope.api, {
-                        params: {
+                scope._getDataFromServer = function(offset, type, value) {
+                    var params = {
                             offset: offset,
                             include_count: true
                         }
+                    if(type) {
+                        params.type = value
+                    }
+                    return dfApplicationData.getDataSetFromServer(scope.api, {
+                        params: params
                     }).$promise
                 };
 
