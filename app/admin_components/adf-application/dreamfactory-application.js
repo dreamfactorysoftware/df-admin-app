@@ -659,8 +659,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }
 
                 if (forceRefresh) {
-                    if(options) {
-                        var temp = {data: {'admin': options}}
+                    if(options && options.filter) {
+                        var temp = dfApplicationPrefs.getPrefs();
+                        angular.extend(temp['data'].admin, options);
                         dfApplicationPrefs.setPrefs(temp);
                     }
                     return _fetchFromApi(api);

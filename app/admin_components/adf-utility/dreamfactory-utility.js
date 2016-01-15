@@ -1461,28 +1461,30 @@ angular.module('dfUtility', ['dfApplication'])
                         return item + ' like "%' + newVal + '%"'
                     }).join(' or ');
 
-                    if (!!newVal) {
-                        var _admins = [];
-                        var options = {
-                            filter: filter
-                        };
+                    var options = {};
+                    var _admins = [];
 
-                        var ManagedAdmin = function (adminData) {
 
-                            return {
-                                __dfUI: {
-                                    selected: false
-                                },
-                                record: adminData
-                            }
-                        };
+                    options = {
+                        filter: filter
+                    };
 
-                        angular.forEach(dfApplicationData.getApiData('admin', options, true), function (admin) {
-                            _admins.push(new ManagedAdmin(admin));
-                        });
-                        scope.admins = _admins;
-                        return;
-                    }
+
+                    var ManagedAdmin = function (adminData) {
+
+                        return {
+                            __dfUI: {
+                                selected: false
+                            },
+                            record: adminData
+                        }
+                    };
+
+                    angular.forEach(dfApplicationData.getApiData('admin', options, true), function (admin) {
+                        _admins.push(new ManagedAdmin(admin));
+                    });
+                    scope.admins = _admins;
+                    return;
                 };
 
 
