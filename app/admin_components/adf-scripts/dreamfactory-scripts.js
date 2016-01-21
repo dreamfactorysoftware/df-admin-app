@@ -865,6 +865,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             scope.isClean = scope.editor.session.getUndoManager().isClean();
                         });
                     });
+
+                    scope.editor.on('blur', function () {
+                        scope.$apply(function () {
+                            try {
+                                scope.currentEditObj = scope.editor.getValue();
+                            } catch (e) {}
+                        });
+                    });
                 };
 
                 // WATCHERS AND INIT
