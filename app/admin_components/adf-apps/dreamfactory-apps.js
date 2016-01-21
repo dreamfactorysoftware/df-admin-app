@@ -914,9 +914,15 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     },
                     {
                         name: 'Address Book for iOS',
-                        description: 'An address book app for iOS showing user registration, user login, and CRUD.',
+                        description: 'An address book app for iOS Objective-C showing user registration, user login, and CRUD.',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/ios-sdk/master/example-ios/package/add_ios.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/ios-sdk'
+                    },
+                    {
+                        name: 'Address Book for iOS Swift',
+                        description: 'An address book app for iOS Swift showing user registration, user login, and CRUD.',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/ios-swift-sdk/master/SampleAppSwift/package/add_ios_swift.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/ios-swift-sdk'
                     },
                     {
                         name: 'Address Book for AngularJS',
