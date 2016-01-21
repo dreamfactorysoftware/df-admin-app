@@ -165,6 +165,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             serviceData.config[key] = arr;
                           }
                         });
+
+
                     }
 
                     return {
@@ -1335,6 +1337,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.selectedSchema.config_schema.forEach(function (schema) {
                         if (schema.default) {
                             scope.serviceInfo.record.config[schema.name] = scope.serviceInfo.record.config[schema.name] || schema.default;
+
+                        } else if(schema.name === "content" && scope.selectedSchema.group === "Custom") {
+                            scope.serviceInfo.record.config["content"] = scope.serviceInfo.record.config["content"] || "";
                         }
                     });
                 };
