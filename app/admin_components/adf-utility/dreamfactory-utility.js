@@ -2068,15 +2068,20 @@ angular.module('dfUtility', ['dfApplication'])
 
 
 
-                scope.sdkLinks = [
+                scope.sampleAppLinks = [
                     {
                         label: 'Android',
                         href: 'https://github.com/dreamfactorysoftware/android-sdk',
                         icon: ''
                     },
                     {
-                        label: 'iOS',
+                        label: 'iOS Objective-C',
                         href: 'https://github.com/dreamfactorysoftware/ios-sdk',
+                        icon: ''
+                    },
+                    {
+                        label: 'iOS Swift',
+                        href: 'https://github.com/dreamfactorysoftware/ios-swift-sdk',
                         icon: ''
                     },
                     {

@@ -813,7 +813,9 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     // update service_id prop
                     scope.serviceAccess.record.service_id = newValue.id;
                     scope.serviceAccess.record.service.components = ['', '*'];
-                    if ('All' !== scope.serviceAccess.record.service.name) {
+                    if ('All' !== scope.serviceAccess.record.service.name &&
+                        'rws' !== scope.serviceAccess.record.service.type &&
+                        'script' !== scope.serviceAccess.record.service.type) {
 
                         scope._getComponents().then(
                             function (result) {
@@ -831,8 +833,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             }
                         )
                     }
-
-                    scope._getComponents();
+                    scope._checkForFailure();
                     scope._checkForFailure();
                 });
 
