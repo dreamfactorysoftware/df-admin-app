@@ -1441,7 +1441,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // section tool bar for views
-    .directive('dfSectionToolbar', ['MOD_UTILITY_ASSET_PATH', '$compile', 'dfApplicationData', function (MOD_UTILITY_ASSET_PATH, $compile, dfApplicationData) {
+    .directive('dfSectionToolbar', ['MOD_UTILITY_ASSET_PATH', '$compile', 'dfApplicationData', '$location', function (MOD_UTILITY_ASSET_PATH, $compile, dfApplicationData, $location) {
 
 
         return {
@@ -1451,43 +1451,20 @@ angular.module('dfUtility', ['dfApplication'])
             templateUrl : MOD_UTILITY_ASSET_PATH + 'views/df-toolbar.html',
             link: function (scope, elem, attrs) {
 
-                scope.filterText = '';
-
+                scope.filterText = ($location.search() && $location.search().filter) ? $location.search().filter : '';
 
                 scope.changeFilter = function (newVal) {
-                    var arr = [ "first_name", "last_name", "name", "email" ];
-
-                    var filter = arr.map(function(item) {
-                        return item + ' like "%' + newVal + '%"'
-                    }).join(' or ');
-
-                    var options = {};
-                    var _admins = [];
-
-
-                    options = {
-                        filter: filter
-                    };
-
-
-                    var ManagedAdmin = function (adminData) {
-
-                        return {
-                            __dfUI: {
-                                selected: false
-                            },
-                            record: adminData
-                        }
-                    };
-
-                    angular.forEach(dfApplicationData.getApiData('admin', options, true), function (admin) {
-                        _admins.push(new ManagedAdmin(admin));
-                    });
-                    scope.admins = _admins;
+                    $location.search('filter', newVal);
                     return;
                 };
 
+                if(scope.filterText) {
+                    scope.changeFilter(scope.filterText);
+                }
 
+                if(elem.find('input')[0]) {
+                    elem.find('input')[0].focus();
+                }
             }
         }
     }])
@@ -1612,8 +1589,14 @@ angular.module('dfUtility', ['dfApplication'])
                             include_count: true
                         }
                     if(type) {
-                        params.type = value
+                        if(type == 'filter') {
+                            params.filter = value
+                        } else {
+                            params.type = value
+                        }
                     }
+
+
                     return dfApplicationData.getDataSetFromServer(scope.api, {
                         params: params
                     }).$promise
@@ -1697,6 +1680,19 @@ angular.module('dfUtility', ['dfApplication'])
                     scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationPrefs.getPrefs().data[newValue].limit));
                 };
 
+                //local function for filter detection
+                var detectFilter = function() {
+                    // Checking if we have filters applied
+                    var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : undefined;
+                    if(!filterText) return false;
+
+                    var arr = [ "first_name", "last_name", "name", "email" ];
+
+                    return arr.map(function(item) {
+                        return item + ' like "%' + filterText + '%"'
+                    }).join(' or ');
+
+                }
 
                 // COMPLEX IMPLEMENTATION
                 scope._getPrevious = function () {
@@ -1707,7 +1703,10 @@ angular.module('dfUtility', ['dfApplication'])
 
                     var offset = scope.pagesArr[scope.currentPage.value - 1].offset
 
-                    scope._getDataFromServer(offset).then(
+                    var filter = detectFilter();
+                    var filterFunction = filter ? scope._getDataFromServer(offset, 'filter', filter) : scope._getDataFromServer(offset);
+
+                    filterFunction.then(
 
                         function(result) {
 
@@ -1743,7 +1742,10 @@ angular.module('dfUtility', ['dfApplication'])
 
                     var offset = scope.pagesArr[scope.currentPage.value + 1].offset
 
-                    scope._getDataFromServer(offset).then(
+                    var filter = detectFilter();
+                    var filterFunction = filter ? scope._getDataFromServer(offset, 'filter', filter) : scope._getDataFromServer(offset);
+
+                    filterFunction.then(
 
                         function(result) {
                             scope.linkedData = scope.prepFunc({dataArr: result.record});
@@ -1775,7 +1777,10 @@ angular.module('dfUtility', ['dfApplication'])
 
                     scope.isInProgress = true;
 
-                    scope._getDataFromServer(pageObj.offset).then(
+                    var filter = detectFilter();
+                    var filterFunction = filter ? scope._getDataFromServer(pageObj.offset, 'filter', filter) : scope._getDataFromServer(pageObj.offset);
+
+                    filterFunction.then(
 
                         function(result) {
 
@@ -1831,8 +1836,12 @@ angular.module('dfUtility', ['dfApplication'])
                     // Block any more calls until we are done.
                     scope.isInProgress = true;
 
+
+                    var filter = detectFilter();
+                    var filterFunction = filter ? scope._getDataFromServer(0, 'filter', filter) : scope._getDataFromServer(0);
+
                     // We just want to reset back to the first page.
-                    scope._getDataFromServer(0).then(
+                    filterFunction.then(
                         function(result) {
 
                             // reset everything.
