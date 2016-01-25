@@ -119,6 +119,8 @@
                         data-ng-model="currentScriptObj.type"
                         data-ng-options="scriptType.name as scriptType.label for scriptType in scriptTypes">
                 </select>
+                <label>Upload a script file</label>
+                <input type="file" id="input" onchange="angular.element(this).scope().handleFiles(this.files)">
             </div>
 
             <div class="form-inline">
