@@ -1366,7 +1366,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 dfServiceData.getServiceTypes().then(function (serviceTypes) {
 
                     scope.hcv.serviceTypes = serviceTypes;
+
                     scope.handleFiles = function (files) {
+                        if(!files) return;
                         var file = files && files[0];
                         if (file) {
                             var reader = new FileReader();
