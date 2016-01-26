@@ -10,7 +10,7 @@
         <!-- ToolBar -->
         <df-section-toolbar>
             <df-toolbar-view-modes></df-toolbar-view-modes>
-            <input type="text" data-ng-model="filterText" data-ng-change="changeFilter(filterText)" class="df-search-box" placeholder="Search">
+            <input type="text" data-ng-model="$parent.filterText" data-ng-change="changeFilter($parent.filterText)" class="df-search-box" placeholder="Search">
             <div class="btn-group btn-group-sm pull-right df-btn-group">
                 <button df-import-admins
                         type="button"

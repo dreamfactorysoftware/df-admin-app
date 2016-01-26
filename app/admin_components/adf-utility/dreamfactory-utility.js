@@ -1441,7 +1441,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // section tool bar for views
-    .directive('dfSectionToolbar', ['MOD_UTILITY_ASSET_PATH', '$compile', 'dfApplicationData', '$location', function (MOD_UTILITY_ASSET_PATH, $compile, dfApplicationData, $location) {
+    .directive('dfSectionToolbar', ['MOD_UTILITY_ASSET_PATH', '$compile', 'dfApplicationData', '$location', '$timeout', function (MOD_UTILITY_ASSET_PATH, $compile, dfApplicationData, $location, $timeout) {
 
 
         return {
@@ -1453,14 +1453,19 @@ angular.module('dfUtility', ['dfApplication'])
 
                 scope.filterText = ($location.search() && $location.search().filter) ? $location.search().filter : '';
 
-                scope.changeFilter = function (newVal) {
-                    $location.search('filter', newVal);
-                    return;
-                };
+                scope.changeFilter = function (searchStr) {
+                    $timeout(function() {
 
-                if(scope.filterText) {
-                    scope.changeFilter(scope.filterText);
-                }
+                        // if searchStr is still the same..
+                        // go ahead and retrieve the data
+                        if (searchStr === scope.filterText) {
+                            $location.search('filter', searchStr);
+                            scope.$emit('toolbar:paginate:admin:update');
+                            return;
+                        }
+                    }, 1000);
+
+                };
 
                 if(elem.find('input')[0]) {
                     elem.find('input')[0].focus();
