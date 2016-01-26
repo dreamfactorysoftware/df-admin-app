@@ -1,6 +1,11 @@
 <div class="panel panel-default">
     <div class="panel-heading">
-        Select Services to Export
+        <div class="checkbox" style="margin-left: -9px;">
+            <label>
+                <input type="checkbox" data-ng-checked="selectAll" data-ng-model="selectAll" data-ng-disabled="!selectedApp"/>
+                Select Services to Export
+            </label>
+        </div>
     </div>
 
     <div style="height: 300px; overflow-x:scroll" class="package-export-table">
