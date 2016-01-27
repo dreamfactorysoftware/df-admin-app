@@ -88,6 +88,12 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 buttonText: 'Create A User!',
                 viewLink: $scope.links[1]
             };
+
+            // Set empty search result message
+            $scope.emptySearchResult = {
+                title: 'You have no Users that match your search criteria!',
+                text: '',
+            };
         }])
 
     .directive('dfUserDetails', ['MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', function(MOD_USER_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore) {
@@ -147,7 +153,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 // PUBLIC API
                 scope.saveUser = function () {
 
-                    // validate 
+                    // validate
                     if (!scope._validateData()) {
                         return;
                     }
@@ -284,7 +290,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     if (UserDataService.getCurrentUser().id === requestDataObj.data.id) {
                         requestDataObj.url = INSTANCE_URL + '/api/v2/system/:api/profile';
-                        requestDataObj.queryParams = { api: '@api' };    
+                        requestDataObj.queryParams = { api: '@api' };
                     }
 
                     scope._updateUserToServer(requestDataObj).then(
@@ -294,7 +300,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             if (result.session_token) {
                                 $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.session_token;
                                 $cookies.PHPSESSID = result.session_token;
-                                
+
                                 var existingUser = UserDataService.getCurrentUser();
                                 existingUser.session_token = result.session_token;
                                 existingUser.session_id = result.session_token;
@@ -632,9 +638,9 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
                 scope._removeKey = function (index) {
-                    if (scope.lookupKeys[index].record.user_id !== undefined) 
+                    if (scope.lookupKeys[index].record.user_id !== undefined)
                         scope.lookupKeys[index].record.user_id = null;
-                    else 
+                    else
                         scope.lookupKeys.splice(index, 1);
                 };
 

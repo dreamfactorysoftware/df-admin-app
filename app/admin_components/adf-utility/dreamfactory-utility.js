@@ -1441,7 +1441,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // section tool bar for views
-    .directive('dfSectionToolbar', ['MOD_UTILITY_ASSET_PATH', '$compile', 'dfApplicationData', '$location', '$timeout', function (MOD_UTILITY_ASSET_PATH, $compile, dfApplicationData, $location, $timeout) {
+    .directive('dfSectionToolbar', ['MOD_UTILITY_ASSET_PATH', '$compile', 'dfApplicationData', '$location', '$timeout', '$route', function (MOD_UTILITY_ASSET_PATH, $compile, dfApplicationData, $location, $timeout, $route) {
 
 
         return {
@@ -1451,21 +1451,22 @@ angular.module('dfUtility', ['dfApplication'])
             templateUrl : MOD_UTILITY_ASSET_PATH + 'views/df-toolbar.html',
             link: function (scope, elem, attrs) {
 
-                scope.filterText = ($location.search() && $location.search().filter) ? $location.search().filter : '';
-
                 scope.changeFilter = function (searchStr) {
+
                     $timeout(function() {
 
                         // if searchStr is still the same..
                         // go ahead and retrieve the data
-                        if (searchStr === scope.filterText) {
-                            $location.search('filter', searchStr);
-                            scope.$emit('toolbar:paginate:admin:update');
+                        if (searchStr === scope.filterText || !scope.filterText) {
+                            scope.filterText = scope.filterText || null;
+                            $location.search('filter', scope.filterText);
                             return;
                         }
                     }, 1000);
 
                 };
+
+                scope.filterText = ($location.search() && $location.search().filter) ? $location.search().filter : '';
 
                 if(elem.find('input')[0]) {
                     elem.find('input')[0].focus();
@@ -2169,6 +2170,19 @@ angular.module('dfUtility', ['dfApplication'])
             restrict: 'E',
             scope: false,
             templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-empty-section.html'
+        }
+    }])
+
+    .directive('dfEmptySearchResult', ['MOD_UTILITY_ASSET_PATH', '$location', function (MOD_UTILITY_ASSET_PATH, $location) {
+        return {
+            restrict: 'E',
+            scope: false,
+            templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-empty-search-result.html',
+            link: function (scope, elem, attrs) {
+                if($location.search() && $location.search().filter) {
+                    scope.$parent.filterText = ($location.search() && $location.search().filter) ? $location.search().filter : null;
+                }
+            }
         }
     }])
 

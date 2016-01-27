@@ -46,8 +46,12 @@
             <div style="clear: both"></div>
         </df-section-toolbar>
 
-        <div data-ng-show="users.length === 0">
+        <div data-ng-show="users.length === 0 && !filterText">
             <df-empty-section></df-empty-section>
+        </div>
+
+        <div data-ng-show="users.length === 0 && filterText">
+            <df-empty-search-result></df-empty-search-result>
         </div>
 
         <div data-ng-show="users.length > 0">

@@ -659,11 +659,19 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }
 
                 if (forceRefresh) {
+
                     if(options && options.filter) {
+
                         var temp = dfApplicationPrefs.getPrefs();
                         angular.extend(temp['data'].admin, options);
                         dfApplicationPrefs.setPrefs(temp);
+                    } else {
+
+                        var temp = dfApplicationPrefs.getPrefs();
+                        if(temp['data'].admin && temp['data'].admin.filter) delete temp['data'].admin.filter;
+                        dfApplicationPrefs.setPrefs(temp);
                     }
+
                     return _fetchFromApi(api);
                 }
 
