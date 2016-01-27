@@ -35,10 +35,12 @@
                data-ng-model="serviceInfo.record.config[field.name]"
                type="text" data-ng-required="field.required"/>
 
-        <textarea class="form-control" rows="6" data-ng-if="field.type == 'text' && field.name == 'content'"
+        <!-- <textarea class="form-control" rows="6" data-ng-if="field.type == 'text' && field.name == 'content'"
                data-ng-model="serviceInfo.record.config[field.name]"
                data-ng-required="field.required">
-        </textarea>
+        </textarea> -->
+
+        <df-ace-editor-scripting data-current-edit-obj="serviceInfo.record.config[field.name]" data-is-clean="isEditorClean" data-editor="editor" data-ng-if="field.type == 'text' && field.name == 'content'"></df-ace-editor-scripting>
 
         <input class="form-control" data-ng-if="field.type == 'integer'"
                data-ng-model="serviceInfo.record.config[field.name]"
