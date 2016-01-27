@@ -110,6 +110,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             $scope.handleFiles = function (files) {
+                if(!files)return;
                 var file = files && files[0];
                 if (file) {
                     var reader = new FileReader();
