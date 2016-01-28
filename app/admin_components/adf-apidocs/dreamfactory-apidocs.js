@@ -104,10 +104,10 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
                 scope.server = $location.protocol() + '://' + $location.host();
 
                 if ($location.port()) {
-                    scope.server += ':' + $location.port() + '/swagger-ui/dist/index.html'
+                    scope.server += ':' + $location.port() + '/df-swagger-ui/dist/index.html'
                 }
                 else {
-                    scope.server += '/swagger-ui/dist/index.html'
+                    scope.server += '/df-swagger-ui/dist/index.html'
                 }
 
                 scope.$broadcast('apidocs:loaded');
