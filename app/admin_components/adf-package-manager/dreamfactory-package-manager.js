@@ -104,6 +104,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 scope.selectedApp = '';
                 scope.includeAppFiles = false;
 
+                scope.selectAll = false;
+
                 var watchSelectedApp = scope.$watch('selectedApp', function (newValue, oldValue) {
 
                     if (!newValue) return;
@@ -150,6 +152,13 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 });
 
 
+
+                scope.$watch('selectAll', function(newValue, oldValue) {
+                    if(!scope.services) return;
+                    scope.services.forEach(function(service) {
+                        service.__dfUI.selected = newValue;
+                    });
+                });
 
                 scope.$on('$destroy', function (e) {
                     watchSelectedApp();
@@ -226,7 +235,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                     }
                                 });
 
-                                scope.databases.push({name: service.name, tables: _tableNames, service_id: service.id})                            
+                                scope.databases.push({name: service.name, tables: _tableNames, service_id: service.id})
                             });
 
                         });
