@@ -108,7 +108,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
         };
 
     }])
-    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfApplicationPrefs', 'dfServiceValues', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, dfApplicationPrefs, dfServiceValues) {
+    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfApplicationPrefs', 'dfServiceValues', '$http', 'INSTANCE_URL', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, dfApplicationPrefs, dfServiceValues, $http, INSTANCE_URL) {
 
         return {
 
@@ -209,6 +209,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.closeService = function () {
 
                     scope._closeService();
+                };
+
+                scope.testSetting = function () {
+                    scope._testSetting();
                 };
 
 
@@ -390,7 +394,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                 module: 'Services',
                                 type: 'success',
                                 provider: 'dreamfactory',
-                                message: 'Service updated successfully.'
+                                message: 'Service updated successfully'
 
                             };
 
@@ -487,6 +491,26 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                     scope._resetServiceDetails();
+                };
+
+                scope._testSetting = function () {
+                    $http.get(INSTANCE_URL + '/api/v2/' + scope.service.record.name).then(function (response) {
+                        var messageOptions = {
+                            module: 'Services',
+                            type: 'success',
+                            provider: 'dreamfactory',
+                            message: 'Test was successful!'
+                        };
+                        dfNotify.success(messageOptions);
+                    }, function (response) {
+                        var messageOptions = {
+                            module: 'Services',
+                            type: 'Api Error',
+                            provider: 'dreamfactory',
+                            message: response.data.error.message
+                        };
+                        dfNotify.error(messageOptions);
+                    });
                 };
 
 
