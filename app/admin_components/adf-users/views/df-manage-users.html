@@ -40,7 +40,7 @@
 
 
             <df-toolbar-paginate data-api="'user'" ></df-toolbar-paginate>
-            <div class="btn-group btn-group-sm hidden-xs df-btn-group"  data-ng-if="currentViewMode === 'table'">
+            <div class="btn-group btn-group-sm hidden-xs df-btn-group"  data-ng-if="currentViewMode === 'table'" ng-show="users.length">
                 <button class="btn btn-default" data-ng-click="deleteSelectedUsers()" data-ng-disabled="selectedUsers.length === 0" title="Delete selected users"><i class="fa fa-fw fa-trash"></i></button>
             </div>
             <div style="clear: both"></div>
