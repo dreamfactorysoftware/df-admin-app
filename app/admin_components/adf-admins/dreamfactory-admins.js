@@ -106,6 +106,12 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 buttonText: 'Create An Admin!',
                 viewLink: $scope.links[1]
             };
+
+            // Set empty search result message
+            $scope.emptySearchResult = {
+                title: 'You have no Admins that match your search criteria!',
+                text: '',
+            };
         }])
 
     .directive('dfAdminDetails', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', function(MOD_ADMIN_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore) {
@@ -937,18 +943,18 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : undefined;
 
                         var req = null;
+                        var filters = null;
 
                         if(filterText) {
                             var arr = [ "first_name", "last_name", "name", "email" ];
 
-                            var filters = arr.map(function(item) {
+                            filters = arr.map(function(item) {
                                 return item + ' like "%' + filterText + '%"'
                             }).join(' or ');
 
-                            req = dfApplicationData.getApiData('admin', {filter: filters}, true);
-                        } else {
-                            req = dfApplicationData.getApiData('admin');
                         }
+
+                        req = dfApplicationData.getApiData('admin', {filter: filters}, true);
 
                         angular.forEach(req, function (admin) {
 
