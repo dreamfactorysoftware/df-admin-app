@@ -135,17 +135,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "service_doc_by_service_id": [
                             {
                                 content: {
-                                    "resourcePath": "/{name}",
-                                    "produces": [
-                                        "application/json",
-                                        "application/xml"
-                                    ],
-                                    "consumes": [
-                                        "application/json",
-                                        "application/xml"
-                                    ],
-                                    "apis": [],
-                                    "models": {}
+                                    "paths": {},
+                                    "definitions": {}
                                 },
                                 format: 0
                             }
@@ -558,7 +549,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     },
                     serviceDef: {
                         title: 'Service Definition Overview',
-                        text: 'Specify the definition of the service below. Refer to the <a target="_blank" href="https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md" title="Link to Swagger">Swagger docs</a> for examples.'
+                        text: 'Specify the definition of the service below. Refer to the <a target="_blank" href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md" title="Link to Swagger">OpenAPI docs</a> for details, or build and export your own from <a target="_blank" href="http://editor.swagger.io/#/" title="Link to Swagger Editor">here</a>.'
                     }
                 }
             }
@@ -2433,9 +2424,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
                     } else {
-                        scope.currentFile = {
-                            resourcePath: 'newResourcePath'
-                        };
+                        scope.currentFile = { paths: {}, definitions: {} };
                     }
 
                     switch (newValue.record.type) {
