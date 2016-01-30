@@ -10,6 +10,7 @@
         <!-- ToolBar -->
         <df-section-toolbar>
             <df-toolbar-view-modes></df-toolbar-view-modes>
+            <input type="text" data-ng-model="$parent.filterText" data-ng-change="changeFilter($parent.filterText)" class="df-search-box" placeholder="Search">
             <div class="btn-group btn-group-sm pull-right df-btn-group">
                 <button df-import-users
                         type="button"
@@ -39,14 +40,18 @@
 
 
             <df-toolbar-paginate data-api="'user'" ></df-toolbar-paginate>
-            <div class="btn-group btn-group-sm hidden-xs df-btn-group"  data-ng-if="currentViewMode === 'table'">
+            <div class="btn-group btn-group-sm hidden-xs df-btn-group"  data-ng-if="currentViewMode === 'table'" ng-show="users.length">
                 <button class="btn btn-default" data-ng-click="deleteSelectedUsers()" data-ng-disabled="selectedUsers.length === 0" title="Delete selected users"><i class="fa fa-fw fa-trash"></i></button>
             </div>
             <div style="clear: both"></div>
         </df-section-toolbar>
 
-        <div data-ng-show="users.length === 0">
+        <div data-ng-show="users.length === 0 && !filterText">
             <df-empty-section></df-empty-section>
+        </div>
+
+        <div data-ng-show="users.length === 0 && filterText">
+            <df-empty-search-result></df-empty-search-result>
         </div>
 
         <div data-ng-show="users.length > 0">

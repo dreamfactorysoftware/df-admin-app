@@ -106,7 +106,7 @@
             </div>
         </div>
 
-        <div data-ng-show="currentScriptObj">
+        <div data-ng-show="currentScriptObj && currentScriptObj.name">
             <div class="form-group">
                 <label>Script Name</label>
                 <input class="form-control" type="text" data-ng-disabled="true"
@@ -119,6 +119,10 @@
                         data-ng-model="currentScriptObj.type"
                         data-ng-options="scriptType.name as scriptType.label for scriptType in scriptTypes">
                 </select>
+
+                <label>Upload a script file</label>
+                <input type="file" id="input" onclick="this.value = null;" onchange="angular.element(this).scope().handleFiles(this.files)" ng-model="filename">
+
             </div>
 
             <div class="form-inline">

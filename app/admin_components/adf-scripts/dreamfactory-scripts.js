@@ -109,6 +109,22 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 })
             };
 
+            $scope.handleFiles = function (files) {
+                if(!files)return;
+                var file = files && files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.readAsText(file, "UTF-8");
+                    reader.onload = function (evt) {
+                        $scope.currentScriptObj.content = evt.target.result;
+                        $scope.$apply();
+                    }
+                    reader.onerror = function (evt) {
+                        console.log('error')
+                    }
+                }
+            };
+
             $scope.__getDataFromHttpResponse = function (httpResponseObj) {
 
                 if (!httpResponseObj) return [];
@@ -160,7 +176,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.highlightScript();
             });
 
-            
+
             $scope.scriptTypes = dfApplicationData.getApiData('script_type');
             $scope.uppercaseVerbLabels = true;
             $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete']
@@ -399,7 +415,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.highlightCurrentPathObj = function (currentPathObj) {
                 var flag = false;
                 for (var verb in currentPathObj.verbs) {
-                    if (typeof(currentPathObj.verbs[verb]) == 'boolean') continue; 
+                    if (typeof(currentPathObj.verbs[verb]) == 'boolean') continue;
 
                     var exists = currentPathObj.verbs[verb].filter(function (item) {
                         return $scope.highlightedEvents.some(function (evt) {
@@ -423,7 +439,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 if(name) {
                     $scope.menuPathArr.push("[" + verb.toUpperCase() + "] " + name);
                 }
-                
+
             };
 
 
@@ -680,8 +696,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                 case 4:
 
                                     // Two cases for 4-length. Check whether we are
-                                    // at the end of the path, or there's one more 
-                                    // level 
+                                    // at the end of the path, or there's one more
+                                    // level
                                     if(scope.currentPathObj.events) {
                                         scope.menuPathArr.splice(2,2);
                                         scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
@@ -689,7 +705,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                         scope.menuPathArr.pop();
                                         scope.currentScriptObj = null;
                                     }
-                                    
+
                                     break;
 
                                 case 5:
@@ -736,8 +752,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                 case 4:
 
                                     // Two cases for 4-length. Check whether we are
-                                    // at the end of the path, or there's one more 
-                                    // level 
+                                    // at the end of the path, or there's one more
+                                    // level
                                     if(scope.currentPathObj.events) {
                                         scope.menuPathArr.splice(2,2);
                                         scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
@@ -745,7 +761,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                         scope.menuPathArr.pop();
                                         scope.currentScriptObj = null;
                                     }
-                                    
+
                                     break;
 
                                 case 5:
@@ -848,6 +864,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     scope.editor.on('input', function () {
                         scope.$apply(function () {
                             scope.isClean = scope.editor.session.getUndoManager().isClean();
+                        });
+                    });
+
+                    scope.editor.on('blur', function () {
+                        scope.$apply(function () {
+                            try {
+                                scope.currentEditObj = scope.editor.getValue();
+                            } catch (e) {}
                         });
                     });
                 };

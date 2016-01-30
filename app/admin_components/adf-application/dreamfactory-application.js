@@ -188,7 +188,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 api_name: apiName,
                 params: {}
             };
-
             api.params = dfApplicationPrefs.getPrefs().data[apiName];
 
 
@@ -324,9 +323,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             if (!options.dontWrapData) {
                 // add wrapper
-                options.data = {"resource": [options.data]};    
+                options.data = {"resource": [options.data]};
             }
-            
+
             // return response from server as promise
             return dfSystemData.resource(options).post(params, options.data, function (result) {
 
@@ -660,6 +659,19 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }
 
                 if (forceRefresh) {
+
+                    if(options && options.filter) {
+
+                        var temp = dfApplicationPrefs.getPrefs();
+                        angular.extend(temp['data'].admin, options);
+                        dfApplicationPrefs.setPrefs(temp);
+                    } else {
+
+                        var temp = dfApplicationPrefs.getPrefs();
+                        if(temp['data'].admin && temp['data'].admin.filter) delete temp['data'].admin.filter;
+                        dfApplicationPrefs.setPrefs(temp);
+                    }
+
                     return _fetchFromApi(api);
                 }
 
@@ -669,7 +681,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     // Do we have any options
                     if (options) {
-
                         // we do make a temp var to hold results
                         var result = [];
 
@@ -1002,7 +1013,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }
             }
         }
-        
+
         return {
 
 
@@ -1095,12 +1106,12 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     if (typeof(response.data) !== 'object' || !environment.config) {
                         return response;
                     }
-                    
+
 
                     var keys = Object.keys(response.data);
 
                     if (environment.config.always_wrap_resources && keys.length === 1 && response.data[keys[0]] instanceof Array && keys[0] === environment.config.resource_wrapper) {
-                        response.data = response.data[environment.config.resource_wrapper];                      
+                        response.data = response.data[environment.config.resource_wrapper];
                     }
 
                     return response;
@@ -1134,7 +1145,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             });
 
             return deferred.promise;
-        };  
+        };
 
         var retry = function (config, deferred) {
             var $http = $injector.get('$http');
@@ -1142,7 +1153,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 method: config.method,
                 url: config.url
             }).then(deferred.resolve, deferred.reject);
-            return deferred.promise; 
+            return deferred.promise;
         };
 
         var refreshSession = function (reject, deferred) {

@@ -106,6 +106,12 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 buttonText: 'Create An Admin!',
                 viewLink: $scope.links[1]
             };
+
+            // Set empty search result message
+            $scope.emptySearchResult = {
+                title: 'You have no Admins that match your search criteria!',
+                text: '',
+            };
         }])
 
     .directive('dfAdminDetails', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', function(MOD_ADMIN_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore) {
@@ -206,7 +212,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     //    requestDataObj.url = INSTANCE_URL + '/api/v2/system/:api/profile';
                     //    requestDataObj.queryParams = { api: '@api' }
                     //}
-                    
+
                     return dfApplicationData.updateApiData('admin', requestDataObj).$promise;
                 };
 
@@ -308,14 +314,14 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             if (result.session_token) {
                                 $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.session_token;
                                 $cookies.PHPSESSID = result.session_token;
-                                
+
                                 var existingUser = UserDataService.getCurrentUser();
                                 existingUser.session_token = result.session_token;
                                 existingUser.session_id = result.session_token;
                                 $cookieStore.put('CurrentUserObj', existingUser);
                             }
 
-                            
+
                             var messageOptions = {
                                 module: 'Admins',
                                 provider: 'dreamfactory',
@@ -587,9 +593,9 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
                 scope._removeKey = function (index) {
-                    if (scope.lookupKeys[index].record.user_id !== undefined) 
+                    if (scope.lookupKeys[index].record.user_id !== undefined)
                         scope.lookupKeys[index].record.user_id = null;
-                    else 
+                    else
                         scope.lookupKeys.splice(index, 1);
                 };
 
@@ -664,7 +670,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     }])
 
-    .directive('dfManageAdmins', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', function (MOD_ADMIN_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify) {
+    .directive('dfManageAdmins', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$location', function (MOD_ADMIN_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $location) {
 
         return {
             restrict: 'E',
@@ -934,7 +940,23 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         var _admins = [];
 
-                        angular.forEach(dfApplicationData.getApiData('admin'), function (admin) {
+                        var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : undefined;
+
+                        var req = null;
+                        var filters = null;
+
+                        if(filterText) {
+                            var arr = [ "first_name", "last_name", "name", "email" ];
+
+                            filters = arr.map(function(item) {
+                                return item + ' like "%' + filterText + '%"'
+                            }).join(' or ');
+
+                        }
+
+                        req = dfApplicationData.getApiData('admin', {filter: filters}, true);
+
+                        angular.forEach(req, function (admin) {
 
                             _admins.push(new ManagedAdmin(admin));
                         });
