@@ -91,10 +91,10 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             $scope.apps = dfApplicationData.getApiData('app');
 
             var statsQueryParams = [
-                'total_users=' + dfApplicationData.getApiData('user').length,
-                'total_admins=' + dfApplicationData.getApiData('admin').length,
-                'total_services=' +  dfApplicationData.getApiData('service').length,
-                'total_apps=' + dfApplicationData.getApiData('app').length
+                'total_users=' + dfApplicationData.getApiData('user', 'meta').count,
+                'total_admins=' + dfApplicationData.getApiData('admin', 'meta').count,
+                'total_services=' +  dfApplicationData.getApiData('service', 'meta').count,
+                'total_apps=' + dfApplicationData.getApiData('app', 'meta').count
             ].join('&');
 
             // Set module links
