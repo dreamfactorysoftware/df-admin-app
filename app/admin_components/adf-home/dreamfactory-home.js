@@ -88,12 +88,21 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
             $scope.$parent.title = 'Home';
 
+            $scope.apps = dfApplicationData.getApiData('app');
+
+            var statsQueryParams = [
+                'total_users=' + dfApplicationData.getApiData('user').length,
+                'total_admins=' + dfApplicationData.getApiData('admin').length,
+                'total_services=' +  dfApplicationData.getApiData('service').length,
+                'total_apps=' + dfApplicationData.getApiData('app').length
+            ].join('&');
+
             // Set module links
             $scope.links = angular.copy(SystemConfigDataService.getSystemConfig().home_links) || [
                 {
                     name: 'welcome-home',
                     label: 'Welcome',
-                    href: "//www.dreamfactory.com/in_product_v2/welcome.html",
+                    href: "//www.dreamfactory.com/in_product_v2/welcome.html?" + statsQueryParams,
                     attributes: []
                 },
                 {
