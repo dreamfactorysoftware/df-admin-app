@@ -460,7 +460,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     function (result) {
 
                         $scope.currentScriptObj = $scope.__getDataFromHttpResponse(result);
-                        console.log($scope.currentScriptObj);
                         $scope.menuPathArr.push(scriptIdStr);
                     },
 
@@ -842,6 +841,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 scope._loadEditor = function (contents, mode, inactive) {
 
                     inactive = inactive || false;
+                    scope.editor && scope.editor.destroy();
 
                     scope.editor = ace.edit('ide');
 
@@ -874,6 +874,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             } catch (e) {}
                         });
                     });
+
                 };
 
                 // WATCHERS AND INIT
@@ -892,6 +893,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 scope.$on('$destroy', function (e) {
 
                     watchCurrentEditObj();
+                    scope.editor.destroy();
                 });
 
             }
