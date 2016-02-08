@@ -1174,6 +1174,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         },
                         function (reject) {
+                            var detailError = '';
+                            if(reject.data && reject.data.error && reject.data.error.context){
+                                var errorNum = reject.data.error.context.errors[0];
+                                detailError = reject.data.error.message +' Detail: '+ reject.data.error.context.resource[errorNum];
+                            }
 
                             scope.importType = null;
                             scope.uploadFile.path = '';
@@ -1184,7 +1189,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject
+                                message: (detailError != '')? detailError : reject
                             }
 
                             dfNotify.error(messageOptions);

@@ -450,7 +450,7 @@ angular.module('dfTable', ['dfUtility'])
 
                     if (scope.options.hasOwnProperty('params')) {
                         params = scope.options.params
-                    }else {
+                    } else {
                         params = scope.defaults.params
                     }
 
@@ -620,7 +620,7 @@ angular.module('dfTable', ['dfUtility'])
                             }
 
 
-                            if ((dataObj1[key] instanceof Array) && (dataObj2[key] instanceof Array) && dataObj1[key].length == dataObj2[key].length){
+                            if ((dataObj1[key] instanceof Array) && (dataObj2[key] instanceof Array) && dataObj1[key].length == dataObj2[key].length) {
 
                                 return false;
                             }
@@ -717,7 +717,7 @@ angular.module('dfTable', ['dfUtility'])
 
                             //console.log('Model property \'' + _obj.name + '\' excluded.')
 
-                        }else {
+                        } else {
                             newRecord[_obj.name] = _obj.default;
                         }
                     });
@@ -756,7 +756,7 @@ angular.module('dfTable', ['dfUtility'])
                         if (scope.excludedFields.hasOwnProperty(_obj.name) && scope.excludedFields[_obj.name].fields[formNameStr]) {
 
                             //console.log('Schema property \'' + _obj.name + '\' excluded from ' + form + ' form')
-                        }else {
+                        } else {
                             scope.filteredSchema.push(_obj);
                         }
                     });
@@ -775,7 +775,7 @@ angular.module('dfTable', ['dfUtility'])
                         group['fields'] = [];
                         group['dividers'] = fobj.dividers;
 
-                        angular.forEach(_schema, function(item) {
+                        angular.forEach(_schema, function (item) {
                             angular.forEach(fobj.fields, function (field, index) {
                                 if (item.name === field) {
 
@@ -929,7 +929,7 @@ angular.module('dfTable', ['dfUtility'])
                                 if (_obj.active == false) {
 
                                     // Check for type to set active
-                                    switch(_obj.type) {
+                                    switch (_obj.type) {
 
                                         case 'date':
                                         case 'time':
@@ -1101,7 +1101,7 @@ angular.module('dfTable', ['dfUtility'])
                         scope.schema = scope._normalizeSchema(scope.schema, scope.record);
                     }
 
-                    angular.forEach(scope.extendedSchema, function(_obj) {
+                    angular.forEach(scope.extendedSchema, function (_obj) {
 
                         scope.schema.field.push(_obj);
                     });
@@ -1193,7 +1193,6 @@ angular.module('dfTable', ['dfUtility'])
                         scope.excludedFields[_obj.name]['fields'] = _obj.fields;
                     });
                 };
-
 
 
                 // Pagination
@@ -1389,7 +1388,6 @@ angular.module('dfTable', ['dfUtility'])
 
                     angular.element(scope.options.childTableAttachPoint).append($compile('<df-child-table data-child-options="childTableOptions" data-parent-schema="schema" data-child-table-parent-record="childTableParentRecord"></df-child-table>')(scope))
                 };
-
 
 
                 // COMPLEX IMPLEMENTATION
@@ -1798,7 +1796,7 @@ angular.module('dfTable', ['dfUtility'])
                         if (!scope.relatedExpand) {
                             scope._setCurrentEditRecord(dataObj);
                             scope._toggleExpandEditor();
-                        }else if (scope.relatedExpand && !scope.currentEditRecord) {
+                        } else if (scope.relatedExpand && !scope.currentEditRecord) {
                             scope._setCurrentEditRecord(dataObj);
                         }
                     }
@@ -1813,7 +1811,7 @@ angular.module('dfTable', ['dfUtility'])
 
                     scope.tableFieldsAll = !scope.tableFieldsAll;
 
-                    angular.forEach(scope.tableFields, function(_obj) {
+                    angular.forEach(scope.tableFields, function (_obj) {
                         if ((Object.prototype.toString.call(_obj) === '[object Object]') && (_obj.hasOwnProperty('active'))) {
                             _obj.active = scope.tableFieldsAll;
                         }
@@ -1855,7 +1853,7 @@ angular.module('dfTable', ['dfUtility'])
 
                 // WATCHERS / INIT
 
-                var watchUserOptions = scope.$watchCollection('userOptions', function(newValue, oldValue) {
+                var watchUserOptions = scope.$watchCollection('userOptions', function (newValue, oldValue) {
 
                     if (!newValue) return false;
 
@@ -2085,7 +2083,10 @@ angular.module('dfTable', ['dfUtility'])
 
                         var requestDataObj = {};
 
-                        requestDataObj['params'] = {filter: scope.exportField.ref_fields + ' = ' + newValue[scope.exportField.name], offset: 0};
+                        requestDataObj['params'] = {
+                            filter: scope.exportField.ref_fields + ' = ' + newValue[scope.exportField.name],
+                            offset: 0
+                        };
 
                         scope._getRecordsFromServer(requestDataObj).then(
                             function (result) {
@@ -2292,7 +2293,6 @@ angular.module('dfTable', ['dfUtility'])
                 });
 
 
-
                 // MESSAGES
 
                 scope.$on(scope.es.refreshTable, function (e) {
@@ -2314,7 +2314,7 @@ angular.module('dfTable', ['dfUtility'])
                     scope._setChildTableActive(false);
                 });
 
-                scope.$on('$destroy', function(e) {
+                scope.$on('$destroy', function (e) {
 
                     watchUserOptions();
                     watchOptions();
@@ -2594,7 +2594,28 @@ angular.module('dfTable', ['dfUtility'])
 
                 scope._saveNewRecord = function () {
 
-                   scope._setInProgress(true);
+                    // fix for throwing out a null value and letting it auto increment
+                    var dataField, schemaField;
+                    for (dataField in scope.newRecord) {
+                        if (scope.newRecord.hasOwnProperty(dataField)) {
+                            if (null === scope.newRecord[dataField]) {
+                                for (schemaField in scope.tableFields) {
+                                    if (scope.tableFields.hasOwnProperty(schemaField)) {
+                                        if (dataField === schemaField) {
+                                            if (scope.tableFields[schemaField].hasOwnProperty('allow_null') &&
+                                                !scope.tableFields[schemaField]['allow_null'] &&
+                                                scope.tableFields[schemaField].hasOwnProperty('auto_increment') &&
+                                                scope.tableFields[schemaField]['auto_increment']) {
+                                                delete scope.newRecord[dataField];
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    scope._setInProgress(true);
                     dfTableCallbacksService.run('onCreate', 'pre', scope.newRecord);
                     scope._saveNewRecordToServer().then(
                         function (result) {
@@ -2664,15 +2685,10 @@ angular.module('dfTable', ['dfUtility'])
             link: function (scope, elem, attrs) {
 
 
-
                 scope._parseEditable = function (fieldObj) {
 
                     if (fieldObj && fieldObj.hasOwnProperty('validation') && fieldObj.validation != null) {
                         return !fieldObj.validation.hasOwnProperty('api_read_only');
-                    }
-
-                    if (fieldObj && fieldObj.hasOwnProperty('auto_increment')) {
-                        return !fieldObj.auto_increment;
                     }
 
                     return true;
@@ -2692,12 +2708,12 @@ angular.module('dfTable', ['dfUtility'])
                         type: 'text',
                         editable: true
                     },
-					text: {
-						template: 'df-input-textarea.html',
-						placeholder: '',
-						type: 'textarea',
-						editable: true
-					},
+                    text: {
+                        template: 'df-input-textarea.html',
+                        placeholder: '',
+                        type: 'textarea',
+                        editable: true
+                    },
                     integer: {
                         template: 'df-input-int.html',
                         placeholder: 'Enter Integer Value',
@@ -2722,12 +2738,12 @@ angular.module('dfTable', ['dfUtility'])
                         type: 'number',
                         editable: true
                     },
-					double: {
-						template: 'df-input-number.html',
-						placeholder: 'Enter Double Value',
-						type: 'number',
-						editable: true
-					},
+                    double: {
+                        template: 'df-input-number.html',
+                        placeholder: 'Enter Double Value',
+                        type: 'number',
+                        editable: true
+                    },
                     decimal: {
                         template: 'df-input-number.html',
                         placeholder: 'Enter Decimal Value',
@@ -2890,8 +2906,8 @@ angular.module('dfTable', ['dfUtility'])
 
                         scope.__dfBools = [
 
-                            {value:true, name:'TRUE'},
-                            {value:false, name:'FALSE'}
+                            {value: true, name: 'TRUE'},
+                            {value: false, name: 'FALSE'}
                         ];
 
                         if (scope.field.allow_null) {
@@ -3094,7 +3110,6 @@ angular.module('dfTable', ['dfUtility'])
                 };
 
 
-
                 // PRIVATE API
                 scope._parseSystemTableName = function (tableNameStr) {
 
@@ -3113,11 +3128,10 @@ angular.module('dfTable', ['dfUtility'])
                     if (tableNameStr.substr(0, systemTablePrefix.length) === systemTablePrefix) {
 
                         return 'system'
-                    }else {
+                    } else {
                         return scope.service
                     }
                 };
-
 
 
                 // COMPLEX IMPLEMENTATION
@@ -3138,7 +3152,7 @@ angular.module('dfTable', ['dfUtility'])
                         table: newValue.ref_table,
                         url: INSTANCE_URL + '/api/v2/' + scope._setSystemService(newValue.ref_table) + '/_table/' + scope._parseSystemTableName(newValue.ref_table),
                         params: {
-                            filter: newValue.ref_fields + ' = '  + scope.childTableParentRecord[newValue.field]
+                            filter: newValue.ref_fields + ' = ' + scope.childTableParentRecord[newValue.field]
                         }
                     };
 
