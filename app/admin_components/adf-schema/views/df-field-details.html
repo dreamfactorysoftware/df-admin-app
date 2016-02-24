@@ -16,7 +16,7 @@
     <br/>
 
     <label>Type&nbsp;&nbsp;</label>
-    <span class="text-muted">This is a simplified DreamFactory Type.</span>
+    <span class="text-muted">This is a simplified DreamFactory type.</span>
     <select data-ng-options="type.value as type.name for type in typeOptions" class="form-control"
             data-ng-model="field.record.type"></select> <br/>
 
@@ -165,7 +165,7 @@
 
         <label>
             <input type="checkbox" data-ng-model="field.record.db_function.aggregate"/>
-            Aggregate DB Function?</label>
+            <strong>Aggregate DB Function?</strong></label>
     </div>
     <br/>
 
@@ -185,7 +185,7 @@
                     ng-hide="$parent.table.__dfUI.newTable">Save
             </button>
             <button type="button" class="btn btn-default" data-ng-click="closeField($parent.table.__dfUI.newTable)">
-                Close
+                Cancel
             </button>
         </div>
     </div>
