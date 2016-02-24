@@ -45,7 +45,7 @@
                     <div style="color:red" data-ng-if="systemEnv.platform.packages.error">
                         Error: {{systemEnv.platform.packages.error}}
                     </div>
-                    <div data-ng-if="systemEnv.platform.packages.length>0 && systemEnv.platform.packages[0].name">
+                    <div style="height: 300px; overflow-y: auto" data-ng-if="systemEnv.platform.packages.length>0 && systemEnv.platform.packages[0].name">
                         <table width="100%" cellpadding="5px">
                             <thead>
                                 <tr><th style="border-bottom: solid 2px">Name</th>
@@ -54,8 +54,8 @@
                             </thead>
                             <tbody>
                                 <tr data-ng-repeat="pkg in systemEnv.platform.packages">
-                                    <td style="width: 50%; border-bottom: dotted 1px">{{pkg.name}}</td>
-                                    <td style="width: 50%; border-bottom: dotted 1px">{{pkg.version}}</td>
+                                    <td style="width: 65%; border-bottom: dotted 1px">{{pkg.name}}</td>
+                                    <td style="width: 35%; border-bottom: dotted 1px">{{pkg.version}}</td>
                                 </tr>
                             </tbody>
                         </table>
