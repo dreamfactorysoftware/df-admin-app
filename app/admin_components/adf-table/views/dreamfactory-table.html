@@ -87,9 +87,9 @@
                             </button>
                             <button type="button" data-ng-click="saveRecords()" class="btn btn-default btn-sm" data-ng-disabled="disableTableBtns">Save
                             </button>
-                            <button type="button" data-ng-click="revertRecords()" class="btn btn-default btn-sm" data-ng-disabled="disableTableBtns">
+                            <!-- <button type="button" data-ng-click="revertRecords()" class="btn btn-default btn-sm" data-ng-disabled="disableTableBtns">
                                 Revert
-                            </button>
+                            </button> -->
                             <button type="button" data-ng-click="deleteRecords()" class="btn btn-default btn-sm" data-ng-disabled="disableTableBtns">
                                 Delete
                             </button>
@@ -155,7 +155,7 @@
                     </div>
                 </div>
 
-
+                <!--
                 <hr class="df-table-divider" />
 
 
@@ -176,11 +176,12 @@
                         <input type="checkbox" id="order-by-reverse" data-ng-model="order.orderByReverse">
                     </div>
                 </div>
+                -->
             </div>
         </div>
 
 
-        <hr class="df-table-divider" data-ng-if="filterOn" />
+        <!-- <hr class="df-table-divider" data-ng-if="filterOn" />
 
 
 
@@ -192,7 +193,7 @@
                                           style="margin-right: 20px">Filter On</span>Page {{currentPage.number}} of
                     {{pagesArr.length}}
             </div>
-        </div>
+        </div> -->
 
 
         <div class="row">
@@ -224,7 +225,8 @@
                             </th>
                         </tr>
 
-                        <tr data-ng-hide="obj.__dfUI.hide" data-ng-repeat="obj in record | dfFilterBy:{'field':filter.prop, 'value':filter.value, 'on':tableFilterOn} | orderObjectBy:order.orderBy:order.orderByReverse">
+                        <!-- <tr data-ng-hide="obj.__dfUI.hide" data-ng-repeat="obj in record | dfFilterBy:{'field':filter.prop, 'value':filter.value, 'on':tableFilterOn} | orderObjectBy:order.orderBy:order.orderByReverse"> -->
+                        <tr data-ng-hide="obj.__dfUI.hide" data-ng-repeat="obj in record">
                             <td style="width: 100px;" data-ng-class="obj.__dfUI.selected ? 'bg-danger' : '' || obj.__dfUI.unsaved ? 'bg-warning' : '' || obj.__dfUI.export ? 'bg-info' : ''">
                                 <div class="btn-toolbar df-table-btn-bar" >
                                     <div class="btn-group" >
@@ -280,7 +282,7 @@
                         <h3 style="display: inline">Visible Fields</h3>
                         <div class="btn-group pull-right">
                             <button type="button" data-ng-click="toggleAllFields()" class="btn btn-default btn-sm">Toggle All</button>
-                            <button data-ng-disabled="!options.defaultFields" type="button" data-ng-click="resetAllFields()" class="btn btn-default btn-sm">Reset</button>
+                            <!-- <button data-ng-disabled="!options.defaultFields" type="button" data-ng-click="resetAllFields()" class="btn btn-default btn-sm">Reset</button> -->
                         </div>
                     </div>
                 </div>
