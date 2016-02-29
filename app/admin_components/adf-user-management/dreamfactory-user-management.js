@@ -59,8 +59,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
     // Directive for Login.  This is does our login work and provides the attachment point for
     // the login portion of our module.
-    .directive('dreamfactoryUserLogin', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$cookies', '$cookieStore', 'UserEventsService', 'UserDataService', '_dfObjectService', 'SystemConfigDataService',
-        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $cookies, $cookieStore, UserEventsService, UserDataService, _dfObjectService, SystemConfigDataService) {
+    .directive('dreamfactoryUserLogin', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$location', '$cookies', '$cookieStore', 'UserEventsService', 'UserDataService', '_dfObjectService', 'SystemConfigDataService',
+        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $location, $cookies, $cookieStore, UserEventsService, UserDataService, _dfObjectService, SystemConfigDataService) {
 
             return {
 
@@ -168,13 +168,44 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         }
                     }
 
-                    //////////////////////[Arif's changes for OAuth]//////////////////////
+                    //////////////////////[Arif's changes for OAuth and Auto-Login using URL param]//////////////////////
                     var queryString = location.search.substring(1);
+                    var uri = $location.absUrl().split('?');
+                    var params = uri[1];
+                    var token = "";
+                    if(params.indexOf('session_token') !== -1){
+                        token = params.substring(14);
+                    }
 
-                    if(queryString){
+                    if(token !== ""){
                         scope.loginWaiting = true;
                         scope.showOAuth = false;
-                        $http.post(INSTANCE_URL + '/api/v2/user/session?oauth_callback=true&'+queryString).then(
+                        $http.get(INSTANCE_URL + '/api/v2/user/session?session_token=' + token).then(
+                            // success method
+                            function (result) {
+
+                                // Set the cookies
+                                scope._setCookies(result.data);
+
+                                // Set the DreamFactory session header
+                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = $cookies.PHPSESSID;
+
+                                // Set the current user in the UserDataService service
+                                UserDataService.setCurrentUser(result.data);
+
+                                // Emit a success message so we can hook in
+                                scope.$emit(scope.es.loginSuccess, result.data);
+                            },
+                            // failure method
+                            function (result){
+                                // Reload the admin app to remove session_token param from url and show the login prompt.
+                                window.location.href = uri[0]+'#/login';
+                            }
+                        );
+                    } else if(queryString){
+                        scope.loginWaiting = true;
+                        scope.showOAuth = false;
+                        $http.post(INSTANCE_URL + '/api/v2/user/session?oauth_callback=true&' + queryString).then(
                             // success method
                             function (result) {
 
