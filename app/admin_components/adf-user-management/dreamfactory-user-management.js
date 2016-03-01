@@ -173,7 +173,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     var uri = $location.absUrl().split('?');
                     var params = uri[1];
                     var token = "";
-                    if(params.indexOf('session_token') !== -1){
+                    if(params && params.indexOf('session_token') !== -1){
                         token = params.substring(14);
                     }
 
