@@ -925,22 +925,34 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         repo_url: 'https://github.com/dreamfactorysoftware/ios-swift-sdk'
                     },
                     {
-                        name: 'Address Book for AngularJS',
-                        description: 'An address book app for AngularJS showing user registration, user login, and CRUD.',
-                        package_url: 'https://raw.github.com/dreamfactorysoftware/angular-sdk/master/add_angular.dfpkg',
-                        repo_url: 'https://github.com/dreamfactorysoftware/angular-sdk'
-                    },
-                    {
                         name: 'Address Book for JavaScript',
                         description: 'An address book app for JavaScript showing user registration, user login, and CRUD.',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/javascript-sdk/master/add_javascript.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/javascript-sdk'
                     },
                     {
+                        name: 'Address Book for AngularJS',
+                        description: 'An address book app for AngularJS showing user registration, user login, and CRUD.',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/angular-sdk/master/add_angular.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/angular-sdk'
+                    },
+                    {
+                        name: 'Address Book for Angular 2',
+                        description: 'An address book app for Angular 2 showing user registration, user login, and CRUD.',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/angular2-sdk/master/add_angular2.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/angular2-sdk'
+                    },
+                    {
                         name: 'Address Book for Titanium',
                         description: 'An address book app for Titanium showing user registration, user login, and CRUD.',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/titanium-sdk/master/add_titanium.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/titanium-sdk'
+                    },
+                    {
+                        name: 'Address Book for ReactJS',
+                        description: 'An address book app for ReactJS showing user registration, user login, and CRUD.',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/reactjs-sdk/master/add_reactjs.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/reactjs-sdk'
                     },
                     {
                         name: 'Address Book for .NET',
