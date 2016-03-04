@@ -638,6 +638,16 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     return true;
                 };
 
+                scope.updateEditor = function(scriptType){
+                    var mode = 'text';
+                    if(['nodejs', 'v8js'].indexOf(scriptType) !== -1){
+                        mode = 'javascript';
+                    } else if(scriptType){
+                        mode = scriptType;
+                    }
+                    ace.edit('ide').session.setMode('ace/mode/'+mode);
+                }
+
                 scope.jumpTo = function (index) {
 
                     scope._jumpTo(index);
@@ -810,7 +820,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             scope: {
                 currentEditObj: '=?',
                 isClean: '=?',
-                editor: '=?'
+                editor: '=?',
+                scriptType: '=?'
             },
             templateUrl: MODSCRIPTING_ASSET_PATH + 'views/df-ace-editor.html',
             link: function (scope, elem, attrs) {
@@ -847,11 +858,17 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                     //scope.editor.setTheme("ace/theme/twilight");
 
-                    if (mode) {
-                        scope.editor.session.setMode("ace/mode/json");
+                    if(mode === true){
+                        mode = 'json';
+                    } else if(scope.scriptType && ['nodejs', 'v8js'].indexOf(scope.scriptType) !== -1){
+                        mode = 'javascript';
+                    } else if(scope.scriptType){
+                        mode = scope.scriptType;
                     } else {
-                        scope.editor.session.setMode("ace/mode/javascript");
+                        mode = 'text';
                     }
+
+                    scope.editor.session.setMode("ace/mode/"+mode);
 
                     scope.backupDoc = angular.copy(contents);
 
