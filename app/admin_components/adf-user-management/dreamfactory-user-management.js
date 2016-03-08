@@ -180,6 +180,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     if(token !== ""){
                         scope.loginWaiting = true;
                         scope.showOAuth = false;
+                        scope.loginDirect = true;
                         $http.get(INSTANCE_URL + '/api/v2/user/session?session_token=' + token).then(
                             // success method
                             function (result) {
@@ -195,11 +196,14 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                                 // Emit a success message so we can hook in
                                 scope.$emit(scope.es.loginSuccess, result.data);
+
+                                scope.loginDirect = false;
                             },
                             // failure method
                             function (result){
                                 // Reload the admin app to remove session_token param from url and show the login prompt.
                                 window.location.href = uri[0]+'#/login';
+                                scope.loginDirect = false;
                             }
                         );
                     } else if(queryString){
