@@ -824,6 +824,18 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         scope.serviceInfo.record.config.dsn = foundValue.dsn;
                     }
+
+                    if(field.label === 'Scripting Engine Type'){
+                        var mode = 'text';
+                        if(fieldValue === 'nodejs' || fieldValue === 'v8js'){
+                            mode = 'javascript';
+                        } else if(fieldValue) {
+                            mode = fieldValue;
+                        }
+
+                        var ide = ace.edit('ide');
+                        ide.session.setMode('ace/mode/'+mode);
+                    }
                 };
 
                 scope._updateDsn = function () {
