@@ -97,7 +97,10 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
 
                 var User = function (userData) {
-
+                    if(userData.adldap || userData.oauth_provider) {
+                        angular.element('#set-password-section').hide();
+                        angular.element('#set-security-question-section').hide();
+                    }
                     return {
                         __dfUI: {},
                         record: angular.copy(userData),

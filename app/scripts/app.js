@@ -40,7 +40,7 @@ angular
     ])
 
     // Set application version number
-    .constant('APP_VERSION', '2.1.3')
+    .constant('APP_VERSION', '2.1.4')
 
     // Set global url for this application
     .constant('INSTANCE_URL', '')
@@ -216,7 +216,23 @@ angular
                 }
             })
             .otherwise({
-                redirectTo: '/launchpad'
+                controller: 'LoginCtrl',
+                templateUrl: 'views/login.html',
+                resolve: {
+
+                    checkLoginRoute: ['dfApplicationData', '$location', 'SystemConfigDataService', function (dfApplicationData, $location, SystemConfigDataService) {
+
+                        var currentUser = dfApplicationData.getCurrentUser();
+
+                        if (currentUser && currentUser.session_id) {
+                            if (currentUser.is_sys_admin) {
+                                $location.url('/home');
+                            } else {
+                                $location.url('/launchpad');
+                            }
+                        }
+                    }]
+                }
             });
 
         // $httpProvider.interceptors.push('httpVerbInterceptor');

@@ -227,9 +227,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                     if (table.indexOf(prefix) === 0) {
                                         var name = table.slice(prefix.length);
                                         if (name != '' &&
-                                            name != '*' &&
+                                            name.indexOf('*', name.length - 1) === -1 &&
                                             Array.isArray(service.components)) {
-
+                                            name = name.slice(0, -1);
                                             _tableNames.push(new DBTable(name));
                                         }
                                     }

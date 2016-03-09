@@ -2137,18 +2137,28 @@ angular.module('dfUtility', ['dfApplication'])
                         icon: ''
                     },
                     {
-                        label: 'AngularJS',
-                        href: 'https://github.com/dreamfactorysoftware/angular-sdk',
-                        icon: ''
-                    },
-                    {
                         label: 'JavaScript',
                         href: 'https://github.com/dreamfactorysoftware/javascript-sdk',
                         icon: ''
                     },
                     {
+                        label: 'AngularJS',
+                        href: 'https://github.com/dreamfactorysoftware/angular-sdk',
+                        icon: ''
+                    },
+                    {
+                        label: 'Angular 2',
+                        href: 'https://github.com/dreamfactorysoftware/angular2-sdk',
+                        icon: ''
+                    },
+                    {
                         label: 'Titanium',
                         href: 'https://github.com/dreamfactorysoftware/titanium-sdk',
+                        icon: ''
+                    },
+                    {
+                        label: 'ReactJS',
+                        href: 'https://github.com/dreamfactorysoftware/reactjs-sdk',
                         icon: ''
                     },
                     {
