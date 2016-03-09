@@ -216,7 +216,23 @@ angular
                 }
             })
             .otherwise({
-                redirectTo: '/launchpad'
+                controller: 'LoginCtrl',
+                templateUrl: 'views/login.html',
+                resolve: {
+
+                    checkLoginRoute: ['dfApplicationData', '$location', 'SystemConfigDataService', function (dfApplicationData, $location, SystemConfigDataService) {
+
+                        var currentUser = dfApplicationData.getCurrentUser();
+
+                        if (currentUser && currentUser.session_id) {
+                            if (currentUser.is_sys_admin) {
+                                $location.url('/home');
+                            } else {
+                                $location.url('/launchpad');
+                            }
+                        }
+                    }]
+                }
             });
 
         // $httpProvider.interceptors.push('httpVerbInterceptor');
