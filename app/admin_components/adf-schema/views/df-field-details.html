@@ -148,6 +148,7 @@
 
 
     <label>Validation</label>
+    <df-simple-help data-options="helpText.validation"></df-simple-help>
     <textarea json-edit="field.record.validation" rows="5" cols="10" class="form-control"></textarea>
     <br/>
 
@@ -165,7 +166,9 @@
 
         <label>
             <input type="checkbox" data-ng-model="field.record.db_function.aggregate"/>
-            <strong>Aggregate DB Function?</strong></label>
+            <strong>Aggregate DB Function?</strong>
+        </label>
+        <df-simple-help data-options="helpText.aggregate_db_unction"></df-simple-help>
     </div>
     <br/>
 
