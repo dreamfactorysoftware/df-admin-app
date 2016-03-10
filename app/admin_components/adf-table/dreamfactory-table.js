@@ -248,7 +248,7 @@ angular.module('dfTable', ['dfUtility'])
 
                 scope.deleteRecords = function () {
 
-                    scope._confirmAction('You are about to mass delete records.  Continue?', scope._deleteRecords);
+                    scope._confirmAction('You are about to delete records. Continue?', scope._deleteRecords);
 
                     /*if (scope._checkForUnsavedRecords(scope.record)) {
                         scope._confirmAction('You have Unsaved records.  Continue without saving?', scope._deleteRecords)

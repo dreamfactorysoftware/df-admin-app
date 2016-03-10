@@ -87,9 +87,6 @@
                             </button>
                             <button type="button" data-ng-click="saveRecords()" class="btn btn-default btn-sm" data-ng-disabled="disableTableBtns">Save
                             </button>
-                            <button type="button" data-ng-click="revertRecords()" class="btn btn-default btn-sm" data-ng-disabled="disableTableBtns">
-                                Revert
-                            </button>
                             <button type="button" data-ng-click="deleteRecords()" class="btn btn-default btn-sm" data-ng-disabled="disableTableBtns">
                                 Delete
                             </button>
@@ -110,17 +107,6 @@
 
         <div class="row" data-ng-if="filterOn">
             <div class="col-xs-12">
-                    <!--
-                    <div data-ng-hide="filterViewBy === '' ? true : false"
-                         class="form-group col-xs-12 col-sm-4">
-                        <label style="display:block" for="df-{{schema.name}}-table-view-by">
-                            <small>View By</small>
-                        </label>
-                        <select class="form-control" id="df-{{schema.name}}-table-view-by" data-ng-model="filter.viewBy"
-                                data-ng-options="field.name as field.label for field in schema.field">
-                        </select>
-                    </div>
-                   -->
 
                 <div class="row">
                     <div style="display: inline;" class="form-group col-xs-12 col-md-3">
@@ -154,43 +140,6 @@
                         </div>
                     </div>
                 </div>
-
-
-                <hr class="df-table-divider" />
-
-
-                <div class="row">
-                    <div class="form-group col-xs-8 col-md-3">
-                        <label style="display:block" for="order-by">
-                            <small>Order by</small>
-                        </label>
-                        <select class="form-control input-sm" id="order-by" data-ng-model="order.orderBy"
-                                data-ng-options="field.name as field.label for field in schema.field"></select>
-                    </div>
-
-
-                    <div class="form-group col-xs-4 col-md-1">
-                        <label style="display:block" for="order-by-reverse">
-                            <small>Reverse</small>
-                        </label>
-                        <input type="checkbox" id="order-by-reverse" data-ng-model="order.orderByReverse">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <hr class="df-table-divider" data-ng-if="filterOn" />
-
-
-
-        <div class="row">
-            <div class="col-xs-12">
-                <p><span data-ng-if="orderedRecords" class="label label-warning"
-                         style="margin-right: 20px">Order On</span>
-                                    <span data-ng-if="filteredRecords" class="label label-info"
-                                          style="margin-right: 20px">Filter On</span>Page {{currentPage.number}} of
-                    {{pagesArr.length}}
             </div>
         </div>
 
@@ -224,7 +173,8 @@
                             </th>
                         </tr>
 
-                        <tr data-ng-hide="obj.__dfUI.hide" data-ng-repeat="obj in record | dfFilterBy:{'field':filter.prop, 'value':filter.value, 'on':tableFilterOn} | orderObjectBy:order.orderBy:order.orderByReverse">
+                        <!-- <tr data-ng-hide="obj.__dfUI.hide" data-ng-repeat="obj in record | dfFilterBy:{'field':filter.prop, 'value':filter.value, 'on':tableFilterOn} | orderObjectBy:order.orderBy:order.orderByReverse"> -->
+                        <tr data-ng-hide="obj.__dfUI.hide" data-ng-repeat="obj in record">
                             <td style="width: 100px;" data-ng-class="obj.__dfUI.selected ? 'bg-danger' : '' || obj.__dfUI.unsaved ? 'bg-warning' : '' || obj.__dfUI.export ? 'bg-info' : ''">
                                 <div class="btn-toolbar df-table-btn-bar" >
                                     <div class="btn-group" >
@@ -280,7 +230,6 @@
                         <h3 style="display: inline">Visible Fields</h3>
                         <div class="btn-group pull-right">
                             <button type="button" data-ng-click="toggleAllFields()" class="btn btn-default btn-sm">Toggle All</button>
-                            <button data-ng-disabled="!options.defaultFields" type="button" data-ng-click="resetAllFields()" class="btn btn-default btn-sm">Reset</button>
                         </div>
                     </div>
                 </div>
