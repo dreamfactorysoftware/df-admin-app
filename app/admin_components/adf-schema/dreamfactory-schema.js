@@ -486,7 +486,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         });
 
 
-        
+
         // MESSAGES
         $scope.$on('$destroy', function (e) {
 
@@ -1298,6 +1298,16 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     db_function: {
                         title: 'DB Function',
                         text: 'Enter a db function like max(fieldname) or concat(field1, \'.\', field2)'
+                    },
+
+                    validation: {
+                        title: 'Validation',
+                        text: 'A JSON object detailing required validations, if any. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Validations" target="_blank">here</a> for more info.'
+                    },
+
+                    'aggregate_db_unction': {
+                        title: 'Aggregate DB Function',
+                        text: 'Supported DB functions to apply to this field. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Database_Functions" target="_blank">here</a> for more info.'
                     }
                 };
 
@@ -1455,6 +1465,16 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     db_function: {
                         title: 'DB Function',
                         text: 'Enter a db function like max(fieldname) or concat(field1, \'.\', field2)'
+                    },
+
+                    validation: {
+                        title: 'Validation',
+                        text: 'A JSON object detailing required validations, if any. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Validations" target="_blank">here</a> for more info.'
+                    },
+
+                    'aggregate_db_unction': {
+                        title: 'Aggregate DB Function',
+                        text: 'Supported DB functions to apply to this field. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Database_Functions" target="_blank">here</a> for more info.'
                     }
                 };
 

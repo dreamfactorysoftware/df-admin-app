@@ -117,7 +117,8 @@
                 <label>Script Type/Language</label>
                 <select class="form-control input-sm"
                         data-ng-model="currentScriptObj.type"
-                        data-ng-options="scriptType.name as scriptType.label for scriptType in scriptTypes">
+                        data-ng-options="scriptType.name as scriptType.label for scriptType in scriptTypes"
+                        data-ng-change="updateEditor(currentScriptObj.type)">
                 </select>
 
                 <label>Upload a script file</label>
