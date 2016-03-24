@@ -311,6 +311,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     var data = normalizeKeyValuePairs();
 
+                    if(scope.service.record.config.content && scope.service.record.type === 'script') {
+                        try {
+                            JSON.parse(scope.service.record.config.content);
+                        } catch (e) {
+                            alert('Invalid JSON');
+                            return;
+                        }
+                    }
+
+
                     var requestDataObj = {
                         params: {
                             fields: '*',
@@ -366,6 +376,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope._prepareServiceData();
 
                     var data = normalizeKeyValuePairs();
+
+                    if(scope.service.record.config.content && scope.service.record.type === 'script') {
+                        try {
+                            JSON.parse(scope.service.record.config.content);
+                        } catch (e) {
+                            alert('Invalid JSON');
+                            return;
+                        }
+                    }
 
                     var requestDataObj = {
                         params: {
