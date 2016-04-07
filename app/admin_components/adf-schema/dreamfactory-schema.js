@@ -524,7 +524,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         }
     }])
 
-    .directive('dfTableDetails', ['MOD_SCHEMA_ASSET_PATH', 'INSTANCE_URL', 'dfNotify', '$http', 'dfObjectService', 'dfApplicationData',  function (MOD_SCHEMA_ASSET_PATH, INSTANCE_URL, dfNotify, $http, dfObjectService, dfApplicationData) {
+    .directive('dfTableDetails', ['MOD_SCHEMA_ASSET_PATH', 'INSTANCE_URL', 'dfNotify', '$http', 'dfObjectService', 'dfApplicationData', '$timeout', function (MOD_SCHEMA_ASSET_PATH, INSTANCE_URL, dfNotify, $http, dfObjectService, dfApplicationData, $timeout) {
 
         return {
             restrict: 'E',
@@ -1005,9 +1005,33 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope.table.currentService = newValue.currentService;
                 });
 
+                var editorWatch = scope.$watch('editor', function(newValue) {
+
+                    if(!newValue) {
+                        return;
+                    }
+
+                    scope.editor.on('input', function () {
+
+                            $timeout(function() {
+                                if(!scope.editor.session.$annotations) return;
+                                var canDo = scope.editor.session.$annotations.some(function(item) {
+                                    if(item.type === 'error') return true;
+                                    else return false;
+                                });
+                                if(canDo) {
+                                    $('.save-schema-btn').addClass('disabled')
+                                } else {
+                                    $('.save-schema-btn').removeClass('disabled')
+                                }
+                            }, 500);
+                    });
+                });
+
 
                 // MESSAGES
                 scope.$on('$destroy', function (e) {
+                    editorWatch();
                     watchTableData();
                 });
 

@@ -813,7 +813,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfAceEditorScripting', ['INSTANCE_URL', 'MODSCRIPTING_ASSET_PATH', '$http', function (INSTANCE_URL, MODSCRIPTING_ASSET_PATH, $http) {
+    .directive('dfAceEditorScripting', ['INSTANCE_URL', 'MODSCRIPTING_ASSET_PATH', '$http', '$timeout', function (INSTANCE_URL, MODSCRIPTING_ASSET_PATH, $http, $timeout) {
 
         return {
             restrict: 'E',
@@ -882,6 +882,20 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         scope.$apply(function () {
                             scope.isClean = scope.editor.session.getUndoManager().isClean();
                         });
+
+                        $timeout(function() {
+                            if(!scope.editor.session.$annotations) return;
+                            var canDo = scope.editor.session.$annotations.some(function(item) {
+                                if(item.type === 'error') return true;
+                                else return false;
+                            });
+
+                            if(canDo) {
+                                $('.save-service-btn').addClass('disabled')
+                            } else {
+                                $('.save-service-btn').removeClass('disabled')
+                            }
+                        }, 500);
                     });
 
                     scope.editor.on('blur', function () {
