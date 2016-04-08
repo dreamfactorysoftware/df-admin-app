@@ -1274,8 +1274,12 @@ angular.module('dfUtility', ['dfApplication'])
                     }
 
                     // Format JSON
-                    newValue = angular.fromJson(newValue);
-                    newValue = JSON.stringify(newValue, null, '\t');
+                    try {
+                        newValue = angular.fromJson(newValue);
+                        newValue = JSON.stringify(newValue, null, '\t');
+                    } catch (e) {
+                        // Not a valid json
+                    }
 
                     scope._loadEditor(newValue, true, !scope.isEditable);
                     scope.backupDoc = angular.copy(newValue);
