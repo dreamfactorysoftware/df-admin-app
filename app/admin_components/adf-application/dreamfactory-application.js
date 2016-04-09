@@ -1034,7 +1034,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
         return {
 
-            apis: ['system', 'environment', 'config', 'service_type', 'service', 'app', 'role', 'admin', 'user', 'email_template', 'lookup', 'cors', 'app_group', 'event', 'script_type'],
+            apis: ['system', 'environment', 'config', 'service_type', 'service', 'app', 'role', 'admin', 'user', 'email_template', 'lookup', 'cors', 'app_group', 'event', 'script_type', 'package'],
 
             getApis: function () {
                 return this;

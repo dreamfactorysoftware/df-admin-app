@@ -1,0 +1,31 @@
+<label>Selected Package Content</label>
+<table class="table table-hover table-condensed table-striped table-bordered">
+    <thead>
+        <tr>
+            <th style="width: 75px"></th>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+    <tr data-ng-repeat="row in tableData" class="repeated-item">
+        <td>
+            <div class="checkbox" style="margin: 0">
+                <label>
+                    <button type="button" class="btn btn-default btn-xs" data-ng-click="removeRow($index)" title="Delete"><i class="fa fa-trash"></i></button>
+                </label>
+            </div>
+        </td>
+        <td>
+            {{row.type}}
+        </td>
+        <td>
+            {{row.name}}
+        </td>
+        <td>
+            {{row.descr}}
+        </td>
+    </tr>
+    </tbody>
+</table>
