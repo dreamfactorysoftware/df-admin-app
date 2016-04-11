@@ -1005,6 +1005,23 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope.table.currentService = newValue.currentService;
                 });
 
+                var listener = function () {
+
+                    $timeout(function() {
+                        if(!scope.editor.session.$annotations) return;
+                        var canDo = scope.editor.session.$annotations.some(function(item) {
+                            if(item.type === 'error') return true;
+                            else return false;
+                        });
+
+                        if(canDo) {
+                            $('.save-schema-btn').addClass('disabled');
+                        } else {
+                            $('.save-schema-btn').removeClass('disabled');
+                        }
+                    }, 500);
+                }
+
                 var editorWatch = scope.$watch('editor', function(newValue) {
 
                     if(!newValue) {
@@ -1012,19 +1029,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
 
                     scope.$watch(function() { return scope.editor.session.$annotations;}, function () {
+                        listener();
+                    });
 
-                        $timeout(function() {
-                            if(!scope.editor.session.$annotations) return;
-                            var canDo = scope.editor.session.$annotations.some(function(item) {
-                                if(item.type === 'error') return true;
-                                else return false;
-                            });
-                            if(canDo) {
-                                $('.save-schema-btn').addClass('disabled')
-                            } else {
-                                $('.save-schema-btn').removeClass('disabled')
-                            }
-                        }, 500);
+                    scope.editor.on('input', function () {
+                        listener();
                     });
                 });
 
