@@ -2405,7 +2405,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceDefinition', ['MOD_SERVICES_ASSET_PATH', function (MOD_SERVICES_ASSET_PATH) {
+    .directive('dfServiceDefinition', ['MOD_SERVICES_ASSET_PATH', '$timeout', function (MOD_SERVICES_ASSET_PATH, $timeout) {
 
         return {
             restrict: 'E',
@@ -2469,6 +2469,37 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         height: h - 400 + 'px'
                     })
                 })
+
+                var listener = function () {
+
+                    $timeout(function() {
+                        if(!scope.currentEditor.session.$annotations) return;
+                        var canDo = scope.currentEditor.session.$annotations.some(function(item) {
+                            if(item.type === 'error') return true;
+                            else return false;
+                        });
+
+                        if(canDo) {
+                            $('.save-service-btn').addClass('disabled');
+                        } else {
+                            $('.save-service-btn').removeClass('disabled');
+                        }
+                    }, 500);
+                }
+
+                var editorWatch = scope.$watch('currentEditor', function(newValue) {
+                    if(!newValue) {
+                        return;
+                    }
+
+                    scope.$watch(function() { return scope.currentEditor.session.$annotations;}, function () {
+                        listener();
+                    });
+
+                    scope.currentEditor.on('input', function () {
+                        listener();
+                    });
+                });
 
 
             }

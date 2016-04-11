@@ -1608,9 +1608,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         });
 
                         if(canDo) {
-                            $('.btn-upload-schema').addClass('disabled')
+                            $('.btn-upload-schema').addClass('disabled');
                         } else {
-                            $('.btn-upload-schema').removeClass('disabled')
+                            $('.btn-upload-schema').removeClass('disabled');
                         }
                     }, 500);
                 }

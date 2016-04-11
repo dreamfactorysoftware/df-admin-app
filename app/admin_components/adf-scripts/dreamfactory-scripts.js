@@ -119,7 +119,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         $scope.currentScriptObj.content = evt.target.result;
                         $scope.$apply();
                         $timeout(function() {
-                            console.log('kicked in', $scope.editor.session.$annotations)
+
                             if(!$scope.editor.session.$annotations) return;
                             var canDo = $scope.editor.session.$annotations.some(function(item) {
                                 if(item.type === 'error') return true;
@@ -894,13 +894,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                     var listener = function () {
                         $timeout(function() {
-                            console.log('returning?', !scope.editor.session.$annotations)
+
                             if(!scope.editor.session.$annotations) return;
                             var canDo = scope.editor.session.$annotations.some(function(item) {
                                 if(item.type === 'error' || item.type === 'warning') return true;
                                 else return false;
                             });
-                            console.log('can Do', canDo)
 
                             if(canDo) {
                                 $('.save-service-btn').addClass('disabled')
@@ -911,7 +910,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     }
 
                     scope.editor.on('input', function () {
-                        console.log(1)
+
                         scope.$apply(function () {
                             scope.isClean = scope.editor.session.getUndoManager().isClean();
                         });
@@ -919,7 +918,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     });
 
                     scope.$watch(function() { return scope.editor.session.$annotations; }, function(){
-                        console.log(2)
+
                         listener();
                     });
 
