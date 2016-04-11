@@ -118,20 +118,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     reader.onload = function (evt) {
                         $scope.currentScriptObj.content = evt.target.result;
                         $scope.$apply();
-                        $timeout(function() {
-
-                            if(!$scope.editor.session.$annotations) return;
-                            var canDo = $scope.editor.session.$annotations.some(function(item) {
-                                if(item.type === 'error') return true;
-                                else return false;
-                            });
-
-                            if(canDo) {
-                                $('.save-service-btn').addClass('disabled')
-                            } else {
-                                $('.save-service-btn').removeClass('disabled')
-                            }
-                        }, 500);
                     }
                     reader.onerror = function (evt) {
                         console.log('error')
@@ -892,34 +878,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                     scope.editor.focus();
 
-                    var listener = function () {
-                        $timeout(function() {
-
-                            if(!scope.editor.session.$annotations) return;
-                            var canDo = scope.editor.session.$annotations.some(function(item) {
-                                if(item.type === 'error' || item.type === 'warning') return true;
-                                else return false;
-                            });
-
-                            if(canDo) {
-                                $('.save-service-btn').addClass('disabled')
-                            } else {
-                                $('.save-service-btn').removeClass('disabled')
-                            }
-                        }, 1000);
-                    }
-
                     scope.editor.on('input', function () {
 
                         scope.$apply(function () {
                             scope.isClean = scope.editor.session.getUndoManager().isClean();
                         });
-                        listener();
-                    });
-
-                    scope.$watch(function() { return scope.editor.session.$annotations; }, function(){
-
-                        listener();
                     });
 
                     scope.editor.on('blur', function () {
