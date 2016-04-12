@@ -2434,7 +2434,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     if (newValue.record.hasOwnProperty('service_doc_by_service_id') && newValue.record.service_doc_by_service_id.length) {
                         if(!newValue.record.service_doc_by_service_id[0].content) {
-                            scope.currentFile = ' ';
+                            scope.currentFile = { paths: {}, definitions: {} };
                         } else {
                             scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
                         }
