@@ -3,8 +3,8 @@
         <form>
             <div class="form-group">
                 <label for="exampleInputEmail1">Type</label>
-                <select class="form-control" data-ng-model="selectedType" data-ng-options="type as type for type in types" data-ng-required="true">
-                    <option value="">-- No App Selected --</option>
+                <select class="form-control" data-ng-model="selectedType" data-ng-options="type as type.label for type in types" data-ng-required="true">
+                    <option value="">-- No Type Selected --</option>
                 </select>
             </div>
             <div class="form-group">

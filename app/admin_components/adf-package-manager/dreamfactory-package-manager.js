@@ -134,8 +134,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         if (typeof manifestValue === 'object') {
                             if (manifestKey === 'service') {
                                 angular.forEach(manifestValue, function (subManifestValue, subManifestKey) { 
-                                    var _type = subManifestKey.charAt(0).toUpperCase() + subManifestKey.substring(1);
-                                    scope.types.push(_type);
+                                    scope.types.push({name: 'system', label: 'System', group: 'System'});
                                 });
                             }
                             else {
@@ -143,15 +142,26 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 var _services = angular.copy(dfApplicationData.getApiData('service')); 
 
                                 var _service = _services.filter(function( obj ) {
-                                                    return obj.name == manifestKey;
-                                                });
+                                    return obj.name == manifestKey;
+                                });
 
                                 angular.forEach(_service, function (value, key) { 
                                     var type = _serviceTypes.filter(function( obj ) {
-                                                    return obj.name == value.type;
-                                                });
-                                    if (scope.types.indexOf(type[0].label) == -1) {
-                                        scope.types.push(type[0].label);
+                                        return obj.name == value.type;
+                                    });
+
+                                    var _typeObj = {
+                                        name: type[0].name, 
+                                        label: type[0].label, 
+                                        group: type[0].group
+                                    };
+
+                                    var _typeExists = scope.types.filter(function( obj ) {
+                                        return obj.name == _typeObj.name;
+                                    });
+
+                                    if (!_typeExists.length) {
+                                        scope.types.push(_typeObj);
                                     }
                                 });
                             }
@@ -168,15 +178,24 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         (scope.selectedType !== undefined) && 
                         (scope.selectedName !== undefined)) {
 
-                        var _type = scope.selectedType.charAt(0).toUpperCase() + scope.selectedType.substring(1);
+                        var _type = scope.selectedType.label;
                         var _name = scope.selectedName.charAt(0).toUpperCase() + scope.selectedName.substring(1);
 
                         var descr = [];
+                        var toRemove= [];
 
                         angular.forEach(scope.selectedNameData, function (value, key) {
-                            if (scope.selectedNameData[key]['__dfUI']['selected'] == true) {
+                            if (scope.selectedNameData[key]['__dfUI']['selected'] === true) {
                                 descr.push(scope.selectedNameData[key]['record']['display_label']);
                             }
+                            else {
+                                toRemove.push(key);
+                            }
+                        });
+
+                        toRemove.reverse();
+                        angular.forEach(toRemove, function (value, key) {
+                            scope.selectedNameData.splice(value, 1);
                         });
 
                         scope.tableData.push({
@@ -209,7 +228,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     var _names = [];
 
-                    if (newValue === 'System') {
+                    if (newValue.label === 'System') {
                         angular.forEach(scope.rawPackageData['service']['system'], function (manifestValue, manifestKey) {
                             _names.push(manifestKey);
                         });
@@ -219,15 +238,17 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         var _services = angular.copy(dfApplicationData.getApiData('service')); 
 
                         var _service = _serviceTypes.filter(function( obj ) {
-                                            return obj.label == newValue;
-                                        });
+                            return obj.label == newValue.label;
+                        });
 
-                        var cvb = _services.filter(function( obj ) {
-                                            return obj.type == _service[0].name;
-                                        });
+                        var _availServices = _services.filter(function( obj ) {
+                            return obj.type == _service[0].name;
+                        });
 
-                        angular.forEach(cvb, function (value, key) { 
-                            _names.push(value.name);
+                        angular.forEach(_availServices, function (value, key) { 
+                            if (_names.indexOf(value.name) === -1) {
+                                _names.push(value.name);                                
+                            }
                         });
                     }
                     
@@ -242,7 +263,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     var apiName = '';
 
-                    if (scope.selectedType === 'System') {
+                    if (scope.selectedType.group === 'System') {
                         switch (newValue) {
                             case 'user':
                                 apiName = 'email';
@@ -275,8 +296,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         var _serviceTypes = angular.copy(dfApplicationData.getApiData('service_type'));
 
                         var _service = _serviceTypes.filter(function( obj ) {
-                                            return obj.label == scope.selectedType;
-                                        });
+                            return obj.label == scope.selectedType.label;
+                        });
 
                         var _type = _service[0].group;
 
@@ -285,9 +306,11 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             if (_type == 'Database') {
                                 var _tableNames = [];
                                 var prefix = '_schema/';
+
                                 angular.forEach(results, function (table) {
                                     if (table.indexOf(prefix) === 0) {
                                         var name = table.slice(prefix.length);
+
                                         if (name != '' &&
                                             name.indexOf('*', name.length - 1) === -1) {
                                             name = name.slice(0, -1);
@@ -303,19 +326,38 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 var _tableNames = [];
 
                                 angular.forEach(results, function (value, key) {
-                                if (value.indexOf('/') > 0) {
-                                    var segments = value.split('/');
-                                    var _exists = _tableNames.filter(function( obj ) {
-                                                        return obj.record.folder == segments[0];
-                                                    });
+                                    if (value.indexOf('/') > 0) {
+                                        var segments = value.split('/');
+                                        var _exists = _tableNames.filter(function( obj ) {
+                                            return obj.record.name == segments[0];
+                                        });
 
-                                    if(_exists.length == 0) {
-                                        _tableNames.push(new TableData({folder: segments[0], display_label: segments[0]}));
+                                        if(_exists.length == 0) {
+                                            _tableNames.push(new TableData({name: segments[0], value: segments[0], display_label: segments[0]}));
+                                        }
                                     }
-                                }
-                            });
-                            scope.selectedNameData = _tableNames;
+                                });
 
+                                scope.selectedNameData = _tableNames;
+                            }
+
+                            if (_type == 'qwe') {
+                                var _tableNames = [];
+
+                                angular.forEach(results, function (value, key) {
+                                    if (value.indexOf('/') > 0) {
+                                        var segments = value.split('/');
+                                        var _exists = _tableNames.filter(function( obj ) {
+                                            return obj.record.folder == segments[0];
+                                        });
+
+                                        if(_exists.length == 0) {
+                                            _tableNames.push(new TableData({name: segments[0], value: segments[0], display_label: segments[0]}));
+                                        }
+                                    }
+                                });
+
+                                scope.selectedNameData = _tableNames;
                             }
                         });
                     }                
@@ -364,8 +406,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     var _serviceTypes = angular.copy(dfApplicationData.getApiData('service_type'));
 
                     var _service = _serviceTypes.filter(function( obj ) {
-                                        return obj.group == 'File';
-                                    });
+                        return obj.group == 'File';
+                    });
 
                     var searchTypes = _service.map(function(d) { return d['name']; });                    
                     var _services = angular.copy(dfApplicationData.getApiData('service')); 
@@ -378,7 +420,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     });
 
                     scope.folders = _folderNames
-                    console.log(_folderNames)
+
                     scope.selectedFolder = 'files';
                 }
 
@@ -391,7 +433,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         payload = {
                             storage: {
-                                name:"files",
+                                name: scope.selectedFolder,
                                 folder: scope.subFolderName
                             },
                             service: {
@@ -404,19 +446,23 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         var tableData = scope.tableData;
 
                         angular.forEach(tableData, function (value, key) {
-                            var ids = [];
+                            var selectedExports = [];
 
-                            if (tableData[key]['type'] === 'System') {
-                                ids = tableData[key]['data'].map(function(d) { return d['record']['id']; });
-                                
-                                //var innerObj = {};
-                                //innerObj[tableData[key]['name']] = ids;
-
-                                //var usersObj = {system: innerObj};
-                                payload['service']['system'][tableData[key]['name']] = ids;
+                            if (tableData[key]['type']['group'] === 'System') {
+                                selectedExports = tableData[key]['data'].map(function(d) { return d['record']['id']; });
+                                payload['service']['system'][tableData[key]['name']] = selectedExports;
+                            }
+                            else if (tableData[key]['type']['group'] === 'Database') {
+                                selectedExports = tableData[key]['data'].map(function(d) { return d['record']['name']; });
+                                payload['service'][tableData[key]['name']] = {'_schema': selectedExports};
+                            }
+                            else if (tableData[key]['type']['group'] === 'File') {
+                                selectedExports = tableData[key]['data'].map(function(d) { return d['record']['value']; });
+                                payload['service'][tableData[key]['name']] = selectedExports;
                             }
                             else {
-                                
+                                selectedExports = tableData[key]['data'].map(function(d) { return d['record']['value']; });
+                                payload['service'][tableData[key]['name']] = selectedExports;
                             }
                         });
 
@@ -442,6 +488,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         */
                     }).then(function successCallback(response) {
                         scope.tableData = [];
+                        scope.subFolderName = '';
                         alert('The package has been exported')
                     }, function errorCallback(response) {
                         alert('An error occurred. Please check selections and export folder')
