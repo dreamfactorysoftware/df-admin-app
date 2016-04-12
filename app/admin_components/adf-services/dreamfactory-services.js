@@ -2433,8 +2433,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     if (!newValue) return;
 
                     if (newValue.record.hasOwnProperty('service_doc_by_service_id') && newValue.record.service_doc_by_service_id.length) {
-
-                        scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
+                        if(!newValue.record.service_doc_by_service_id[0].content) {
+                            scope.currentFile = ' ';
+                        } else {
+                            scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
+                        }
                     } else {
                         scope.currentFile = { paths: {}, definitions: {} };
                     }
