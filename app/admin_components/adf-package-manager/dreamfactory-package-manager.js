@@ -130,9 +130,10 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 scope.init = function() {
                     scope.rawPackageData = angular.copy(dfApplicationData.getApiData('package'));
 
-                    angular.forEach(scope.rawPackageData, function (manifestValue, manifestKey) {  
+                    angular.forEach(scope.rawPackageData['service'], function (manifestValue, manifestKey) { 
                         if (typeof manifestValue === 'object') {
-                            if (manifestKey === 'service') {
+                            
+                            if (manifestKey === 'system') {
                                 angular.forEach(manifestValue, function (subManifestValue, subManifestKey) { 
                                     var _typeExists = scope.types.filter(function( obj ) {
                                         return obj.name == 'system';
