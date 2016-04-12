@@ -134,7 +134,13 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         if (typeof manifestValue === 'object') {
                             if (manifestKey === 'service') {
                                 angular.forEach(manifestValue, function (subManifestValue, subManifestKey) { 
-                                    scope.types.push({name: 'system', label: 'System', group: 'System'});
+                                    var _typeExists = scope.types.filter(function( obj ) {
+                                        return obj.name == 'system';
+                                    });
+
+                                    if (!_typeExists.length) {
+                                        scope.types.push({name: 'system', label: 'System', group: 'System'});
+                                    }
                                 });
                             }
                             else {
