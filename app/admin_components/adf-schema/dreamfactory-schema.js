@@ -524,7 +524,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         }
     }])
 
-    .directive('dfTableDetails', ['MOD_SCHEMA_ASSET_PATH', 'INSTANCE_URL', 'dfNotify', '$http', 'dfObjectService', 'dfApplicationData',  function (MOD_SCHEMA_ASSET_PATH, INSTANCE_URL, dfNotify, $http, dfObjectService, dfApplicationData) {
+    .directive('dfTableDetails', ['MOD_SCHEMA_ASSET_PATH', 'INSTANCE_URL', 'dfNotify', '$http', 'dfObjectService', 'dfApplicationData', '$timeout', function (MOD_SCHEMA_ASSET_PATH, INSTANCE_URL, dfNotify, $http, dfObjectService, dfApplicationData, $timeout) {
 
         return {
             restrict: 'E',
@@ -982,7 +982,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         dfNotify.success(messageOptions);
 
 
-                    }else {
+                    } else {
                         var messageOptions = {
 
                             module: 'Api Error',
@@ -1005,9 +1005,42 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope.table.currentService = newValue.currentService;
                 });
 
+                var listener = function () {
+
+                    $timeout(function() {
+                        if(!scope.editor.session.$annotations) return;
+                        var canDo = scope.editor.session.$annotations.some(function(item) {
+                            if(item.type === 'error') return true;
+                            else return false;
+                        });
+
+                        if(canDo) {
+                            $('.save-schema-btn').addClass('disabled');
+                        } else {
+                            $('.save-schema-btn').removeClass('disabled');
+                        }
+                    }, 500);
+                }
+
+                var editorWatch = scope.$watch('editor', function(newValue) {
+
+                    if(!newValue) {
+                        return;
+                    }
+
+                    scope.$watch(function() { return scope.editor.session.$annotations;}, function () {
+                        listener();
+                    });
+
+                    scope.editor.on('input', function () {
+                        listener();
+                    });
+                });
+
 
                 // MESSAGES
                 scope.$on('$destroy', function (e) {
+                    editorWatch();
                     watchTableData();
                 });
 
@@ -1530,7 +1563,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         }
     }])
 
-    .directive('dfUploadSchema', ['MOD_SCHEMA_ASSET_PATH', 'dfNotify', function (MOD_SCHEMA_ASSET_PATH, dfNotify) {
+    .directive('dfUploadSchema', ['MOD_SCHEMA_ASSET_PATH', 'dfNotify', '$timeout', function (MOD_SCHEMA_ASSET_PATH, dfNotify, $timeout) {
 
 
         return {
@@ -1574,6 +1607,37 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     ]
                 };
 
+                var listener = function () {
+
+                    $timeout(function() {
+                        if(!scope.uploadEditor.session.$annotations) return;
+                        var canDo = scope.uploadEditor.session.$annotations.some(function(item) {
+                            if(item.type === 'error') return true;
+                            else return false;
+                        });
+
+                        if(canDo) {
+                            $('.btn-upload-schema').addClass('disabled');
+                        } else {
+                            $('.btn-upload-schema').removeClass('disabled');
+                        }
+                    }, 500);
+                }
+
+                var editorWatch = scope.$watch('uploadEditor', function(newValue) {
+
+                    if(!newValue) {
+                        return;
+                    }
+
+                    scope.$watch(function() { return scope.uploadEditor.session.$annotations;}, function () {
+                        listener();
+                    });
+
+                    scope.uploadEditor.on('input', function () {
+                        listener();
+                    });
+                });
 
                 scope.uploadSchema = function () {
 

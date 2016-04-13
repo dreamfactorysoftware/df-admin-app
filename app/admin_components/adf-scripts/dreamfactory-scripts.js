@@ -813,7 +813,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfAceEditorScripting', ['INSTANCE_URL', 'MODSCRIPTING_ASSET_PATH', '$http', function (INSTANCE_URL, MODSCRIPTING_ASSET_PATH, $http) {
+    .directive('dfAceEditorScripting', ['INSTANCE_URL', 'MODSCRIPTING_ASSET_PATH', '$http', '$timeout', function (INSTANCE_URL, MODSCRIPTING_ASSET_PATH, $http, $timeout) {
 
         return {
             restrict: 'E',
@@ -879,6 +879,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     scope.editor.focus();
 
                     scope.editor.on('input', function () {
+
                         scope.$apply(function () {
                             scope.isClean = scope.editor.session.getUndoManager().isClean();
                         });
