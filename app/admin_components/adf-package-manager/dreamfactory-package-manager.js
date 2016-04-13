@@ -75,6 +75,18 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
             packageManager: {
                 title: 'Packages Overview',
+                text: 'Import and export users, apps, files, database schemas and more.'
+            },
+            packageImport: {
+                title: '<h4>Import Package</h4>',
+                text: 'To import a DreamFactory package file, follow these instructions. <br/>' +
+                    '<ul>' +
+                    '<li>Press Browse... and select a package stored on your local system.</li>' + 
+                    '<li>Press Import to import the selected package.</li>' +
+                    '</ul>'
+            },
+            packageExport: {
+                title: '<h4>Export Package</h4>',
                 text: 'To create a DreamFactory package export file, follow these instructions. <br/>' +
                     '<ul>' +
                     '<li>Select the data type from the list.</li>' +
@@ -88,6 +100,91 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
         }
 
     }])
+    .directive('file', function () {
+        return {
+            scope: {
+                file: '='
+            },
+            link: function (scope, el, attrs) {
+                el.bind('change', function (event) {
+                    var file = event.target.files[0];
+                    scope.file = file ? file : undefined;
+                    scope.$apply();
+                });
+            }
+        };
+    })
+    .directive('dfImportPackage', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', 'dfApplicationData', 'dfNotify', '$http', function (MOD_PACKAGE_MANAGER_ASSET_PATH, INSTANCE_URL, UserDataService, dfApplicationData, dfNotify, $http) {
+
+        return {
+            restrict: 'E',
+            scope: false,
+            templateUrl: MOD_PACKAGE_MANAGER_ASSET_PATH + 'views/df-import-package.html',
+            link: function (scope, elem, attrs) {
+                scope.importPackageFile = function() {
+
+                    if (scope.file !== undefined) {
+
+                    var currentUser = UserDataService.getCurrentUser();
+
+                    $http({
+                        method: 'POST',
+                        url: INSTANCE_URL + '/api/v2/system/package',
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'X-DreamFactory-Session-Token': currentUser.session_token
+                        },
+                        data: {
+                            files: scope.file
+                        }, 
+                        transformRequest: function (data, headersGetter) {
+                            var formData = new FormData();
+
+                            angular.forEach(data, function (value, key) {
+                                formData.append(key, value);
+                            });
+
+                            var headers = headersGetter();
+                            delete headers['Content-Type'];
+
+                            return formData;
+                        }
+                    })
+                    .success(function (data) {
+                        var messageOptions = {
+                            module: 'Package Manager',
+                            provider: 'dreamfactory',
+                            type: 'success',
+                            message: 'Package was imported successfully.'
+                        }
+
+                        dfNotify.success(messageOptions);
+                    })
+                    .error(function (data, status) {
+                        var messageOptions = {
+                            module: 'Package Manager',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'An error occurred.'
+                        }
+
+                        dfNotify.error(messageOptions);
+                    });
+                    }
+                    else {
+                        var messageOptions = {
+                            module: 'Package Manager',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'No package file selected.'
+                        }
+
+                        dfNotify.error(messageOptions);
+                    }
+                }
+            }
+        }
+    }])
     .directive('dfViewContent', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', function (MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData) {
 
         return {
@@ -99,7 +196,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfSelectContent', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', function (MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData) {
+    .directive('dfSelectContent', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', 'dfNotify', function (MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData, dfNotify) {
 
         return {
             restrict: 'E',
@@ -221,9 +318,18 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     }
                     else {
-                        alert('Nothing is selected');
+                        var messageOptions = {
+                            module: 'Package Manager',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'Nothing is selected for export.'
+                        }
+
+                        dfNotify.error(messageOptions);
                     }
                 }
+
+
 
                 scope.removeRow = function(row) {
                     scope.tableData.splice(row, 1)
@@ -348,7 +454,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 scope.selectedNameData = _tableNames;
                             }
 
-                            if (_type == 'qwe') {
+                            if (_type == 'other') {
                                 var _tableNames = [];
 
                                 angular.forEach(results, function (value, key) {
@@ -395,7 +501,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfExportPackage', ['INSTANCE_URL', 'ADMIN_API_KEY', 'UserDataService', 'dfApplicationData', 'dfSystemData', '$http', '$window', function (INSTANCE_URL, ADMIN_API_KEY, UserDataService, dfApplicationData, dfSystemData, $http, $window) {
+    .directive('dfExportPackage', ['INSTANCE_URL', 'ADMIN_API_KEY', 'UserDataService', 'dfApplicationData', 'dfSystemData', 'dfNotify', '$http', '$window', function (INSTANCE_URL, ADMIN_API_KEY, UserDataService, dfApplicationData, dfSystemData, dfNotify, $http, $window) {
 
         return {
 
@@ -436,7 +542,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 // PUBLIC API
                 scope.exportPackage = function() {
 
-                    if ((scope.subFolderName !== '') && (scope.tableData.length)) {
+                    if (scope.tableData.length) {
 
                         payload = {
                             storage: {
@@ -476,7 +582,14 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         scope._exportPackage();
                     }
                     else {
-                        alert('Make sure package content is selected, and a package folder is entered');
+                        var messageOptions = {
+                            module: 'Package Manager',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'No package content is selected.'
+                        }
+
+                        dfNotify.error(messageOptions);
                     }
                 };
 
@@ -496,9 +609,27 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     }).then(function successCallback(response) {
                         scope.tableData = [];
                         scope.subFolderName = '';
-                        alert('The package has been exported')
+
+                        var messageOptions = {
+                            module: 'Package Manager',
+                            provider: 'dreamfactory',
+                            type: 'success',
+                            message: 'The package has been exported.'
+                        }
+
+                        dfNotify.success(messageOptions);
+                    })
+                    .error(function (data, status) {
+                        
                     }, function errorCallback(response) {
-                        alert('An error occurred. Please check selections and export folder')
+                        var messageOptions = {
+                            module: 'Package Manager',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'An error occurred. Please check selections and export folder.'
+                        }
+
+                        dfNotify.error(messageOptions);
                     });
                 }
 
