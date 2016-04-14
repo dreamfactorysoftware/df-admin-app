@@ -1028,11 +1028,17 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         return;
                     }
 
-                    scope.$watch(function() { return scope.editor.session.$annotations;}, function () {
+                    scope.$watch(function() { return scope.editor.session.$annotations; }, function () {
                         listener();
                     });
 
                     scope.editor.on('input', function () {
+
+                        if(!scope.editor.getValue()) {
+
+                            $('.save-schema-btn').addClass('disabled');
+                            return;
+                        }
                         listener();
                     });
                 });
@@ -1634,7 +1640,13 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         listener();
                     });
 
-                    scope.uploadEditor.on('input', function () {
+                    scope.uploadEditor.on('input', function (value) {
+
+                        if(scope.uploadEditor && !scope.uploadEditor.getValue()) {
+
+                            $('.btn-upload-schema').addClass('disabled');
+                            return;
+                        }
                         listener();
                     });
                 });
