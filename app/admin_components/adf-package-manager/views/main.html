@@ -1,42 +1,48 @@
 <div>
     <div class="col-xs-12 df-section" df-fs-height>
         <div>
-
             <df-large-help data-options="dfLargeHelp.packageManager"></df-large-help>
-
-            <df-large-help data-options="dfLargeHelp.packageImport"></df-large-help>
-            <div class="row">
-                <div class="col-xs-12">
-                    <df-import-package></df-import-package>
-                    <br/>
-                </div>
-            </div>
-            <df-large-help data-options="dfLargeHelp.packageExport"></df-large-help>
-            <div class="row">
-                <div class="col-xs-12">
-                    <df-select-content></df-select-content>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12">
-                    <hr />
-                </div>
-            </div>
-            <div class="row"> 
-                <div class="col-xs-12"> 
-                    <df-view-content></df-view-content>
-                </div> 
-            </div> 
-            <div class="row" style="padding-bottom: 15px; padding-top: 15px">
-                <div class="col-xs-12">
-                    <df-select-folder></df-select-folder>
-                </div>
-            </div>
-            <div class="row df-btn-row" style="padding-bottom: 20px">
-                <div class="col-xs-12">
-                    <button df-export-package type="button" class="btn btn-primary" data-ng-click="exportPackage()">Export</button>
-                </div>
-            </div>
+            <tabs>
+                <pane title="Export Package">
+                    <df-large-help data-options="dfLargeHelp.packageExport"></df-large-help>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <df-select-content></df-select-content>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <hr />
+                        </div>
+                    </div>
+                    <div class="row"> 
+                        <div class="col-xs-12"> 
+                            <df-view-content></df-view-content>
+                        </div> 
+                    </div> 
+                    <div class="row" style="padding-bottom: 15px; padding-top: 15px">
+                        <div class="col-xs-12">
+                            <df-select-folder></df-select-folder>
+                        </div>
+                    </div>
+                    <div class="row df-btn-row" style="padding-bottom: 20px">
+                        <div class="col-xs-12">
+                            <button df-export-package type="button" class="btn btn-default" data-ng-click="exportClear()">Clear</button>
+                            &nbsp;&nbsp;
+                            <button df-export-package type="button" class="btn btn-primary" data-ng-click="exportPackage()">Export</button>
+                        </div>
+                    </div>
+                </pane>
+                <pane title="Import Package">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <br/>
+                            <df-import-package></df-import-package>
+                            <br/>
+                        </div>
+                    </div>
+                </pane>
+            </tabs>
         </div>
     </div>
 </div>

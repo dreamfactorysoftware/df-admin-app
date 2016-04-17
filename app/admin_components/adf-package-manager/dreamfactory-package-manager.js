@@ -8,8 +8,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     templateUrl: MOD_PACKAGE_MANAGER_ASSET_PATH + 'views/main.html',
                     controller: 'PackageCtrl',
                     resolve: {
-                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
-
+                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
                             if (dfApplicationData.initInProgress) {
 
                                 return dfApplicationData.initDeferred.promise;
@@ -55,15 +54,59 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
         }])
     .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
-
     }])
+    .directive('tabs', function() {
+        return {
+            restrict: 'E',
+            transclude: true,
+            scope: {},
+            controller: [ "$scope", function($scope) {
+                var panes = $scope.panes = [];
+         
+                $scope.select = function(pane) {
+                    angular.forEach(panes, function(pane) {
+                        pane.selected = false;
+                    });
+                    pane.selected = true;
+                }
+         
+                this.addPane = function(pane) {
+                    if (panes.length == 0) $scope.select(pane);
+                        panes.push(pane);
+                }
+            }],
+            template:
+                '<div class="tabbable">' +
+                    '<ul class="nav nav-tabs">' +
+                        '<li ng-repeat="pane in panes" ng-class="{active:pane.selected}">'+
+                            '<a href="" ng-click="select(pane)">{{pane.title}}</a>' +
+                        '</li>' +
+                    '</ul>' +
+                '<div class="tab-content" ng-transclude></div>' +
+            '</div>',
+            replace: true
+        };
+    }).
+    directive('pane', function() {
+        return {
+            require: '^tabs',
+            restrict: 'E',
+            transclude: true,
+            scope: { title: '@' },
+            link: function(scope, element, attrs, tabsCtrl) {
+                tabsCtrl.addPane(scope);
+            },
+            template:
+                '<div class="tab-pane" ng-class="{active: selected}" ng-transclude>' +
+                '</div>',
+            replace: true
+        };
+    })
     .controller('PackageCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
-
         $scope.$parent.title = 'Packages';
 
         // Set module links
         $scope.links = [
-
             {
                 name: 'manage-packages',
                 label: 'Manage',
@@ -77,16 +120,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 title: 'Packages Overview',
                 text: 'Import and export users, apps, files, database schemas and more.'
             },
-            packageImport: {
-                title: '<h4>Import Package</h4>',
-                text: 'To import a DreamFactory package file, follow these instructions. <br/>' +
-                    '<ul>' +
-                    '<li>Press Browse... and select a package stored on your local system.</li>' + 
-                    '<li>Press Import to import the selected package.</li>' +
-                    '</ul>'
-            },
             packageExport: {
-                title: '<h4>Export Package</h4>',
+                title: '',
                 text: 'To create a DreamFactory package export file, follow these instructions. <br/>' +
                     '<ul>' +
                     '<li>Select the data type from the list.</li>' +
@@ -225,7 +260,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 };
 
                 scope.init = function() {
-                    scope.rawPackageData = angular.copy(dfApplicationData.getApiData('package'));
+                    scope.rawPackageData = angular.copy(dfApplicationData.getApiData('package'));//scope.man.manifest;//
 
                     angular.forEach(scope.rawPackageData['service'], function (manifestValue, manifestKey) { 
                         if (typeof manifestValue === 'object') {
@@ -328,8 +363,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         dfNotify.error(messageOptions);
                     }
                 }
-
-
 
                 scope.removeRow = function(row) {
                     scope.tableData.splice(row, 1)
@@ -607,9 +640,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         }
                         */
                     }).then(function successCallback(response) {
-                        scope.tableData = [];
-                        scope.subFolderName = '';
-
                         var messageOptions = {
                             module: 'Package Manager',
                             provider: 'dreamfactory',
@@ -618,9 +648,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         }
 
                         dfNotify.success(messageOptions);
-                    })
-                    .error(function (data, status) {
-                        
+             
                     }, function errorCallback(response) {
                         var messageOptions = {
                             module: 'Package Manager',
@@ -631,6 +659,11 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         dfNotify.error(messageOptions);
                     });
+                }
+
+                scope.exportClear = function() {
+                    scope.tableData = [];
+                    scope.subFolderName = '';
                 }
 
             }
