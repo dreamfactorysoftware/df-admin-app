@@ -1,10 +1,25 @@
 <form class="form-inline">
-  <div class="form-group">
-    <label for="exampleInputName2">Export to: </label>
-    <select class="form-control" data-ng-model="selectedFolder" data-ng-options="folder as folder for folder in folders" data-ng-required="true"></select>
-  </div>
-  <div class="form-group">
-    <label for=""> / </label>
-    <input type="" class="form-control" data-ng-model="subFolderName" placeholder="Folder Name (optional)" />
-  </div>
+<div class="row">
+	<div class="col-xs-1" style="padding-top: 10px;">
+		<label for="">Export to: </label>
+	</div>
+	<div class="col-xs-11">
+	<div class="form-inline">
+		<select class="form-control" data-ng-model="selectedFolder" data-ng-options="folder as folder for folder in folders" data-ng-required="true"></select>
+	    <label for=""> / </label>
+	    <input type="" class="form-control" data-ng-model="subFolderName" placeholder="Folder Name (Optional)" />
+	    </div>
+	</div>
+</div>
+<div class="row">
+	<div></div>
+</div>
+<div class="row" style="padding-top: 10px;">
+	<div class="col-xs-1" style="padding-top: 10px;">
+		<label for="">Password: </label>
+	</div>
+	<div class="col-xs-11">
+		<input type="password" data-ng-model="packagePassword" class="form-control" />
+	</div>
+</div>
 </form>
