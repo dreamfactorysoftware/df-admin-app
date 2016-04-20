@@ -55,6 +55,20 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
     .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
     }])
+    .factory('ManifestFactory', function(dfApplicationData) {
+        var service = {};
+        var manifest = {};
+
+        service.setManifest = function() {
+            manifest = angular.copy(dfApplicationData.getApiData('package'));
+        }
+
+        service.getManifest = function() {
+            return manifest
+        }
+
+        return service;
+    })
     .directive('tabs', function() {
         return {
             restrict: 'E',
@@ -102,8 +116,11 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             replace: true
         };
     })
-    .controller('PackageCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
+    .controller('PackageCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', 'ManifestFactory', function($scope, INSTANCE_URL, dfApplicationData, ManifestFactory) {
         $scope.$parent.title = 'Packages';
+
+        // Set package manifest
+        ManifestFactory.setManifest();
 
         // Set module links
         $scope.links = [
@@ -122,14 +139,12 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             },
             packageExport: {
                 title: '',
-                text: 'To create a DreamFactory package export file, follow these instructions. <br/>' +
+                text: '<b>To create a DreamFactory package export file, follow these instructions.</b><br/>' +
                     '<ul>' +
-                    '<li>Select the data type from the list.</li>' +
-                    '<li>Choose what you\'d like to export from the selected type.</li>' +
-                    '<li>Press Add to Package.</li>' +
-                    '<li>Repeat the steps above until all you want to include in the package have been added. The selected package content is shown in the table.</li>' +
-                    '<li>Select where to export the package to, and a folder name.</li>' +
-                    '<li>Press Export to export the package to the selected location.</li>' +
+                    '<li>Use the UI below to build a list of items to export.</li>' +
+                    '<li>You should enter a password if you\'d like exported user passwords and service credentials to be encrypted. This password will be required if you decide to import this package file later.</li>' +
+                    '<li>Select a file service to store the exported zip file. Folder name is optional.</li>' +
+                    '<li>Click the Export button to save the zip file to the file storage location you selected.</li>' +
                     '</ul>'
             }
         }
@@ -157,7 +172,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             link: function (scope, elem, attrs) {
                 scope.importPackageFile = function() {
 
-                    scope.packagePassword = '';
+                    scope.packageImportPassword = '';
 
                     if (scope.file !== undefined) {
 
@@ -172,7 +187,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         },
                         data: {
                             files: scope.file,
-                            password: scope.packagePassword 
+                            password: scope.packageImportPassword 
                         }, 
                         transformRequest: function (data, headersGetter) {
                             var formData = new FormData();
@@ -196,6 +211,20 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         }
 
                         dfNotify.success(messageOptions);
+
+                        scope.packageImportPassword = '';
+                        angular.element("input[type='file']").val(null);
+console.log(data)
+
+/*
+                        scope.importModalHeadline = 'Packages';
+                        scope.importModalBody = {
+                            head: 'Package was imported successfully.', 
+                            content: response.data.error.message
+                        }
+
+                        $('#importModal').modal('show')
+*/
                     })
                     .error(function (data, status) {
                         var messageOptions = {
@@ -219,6 +248,11 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         dfNotify.error(messageOptions);
                     }
                 }
+
+                scope.importClear = function() {
+                    scope.packageImportPassword = '';
+                    angular.element("input[type='file']").val(null);
+                }
             }
         }
     }])
@@ -233,7 +267,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfSelectContent', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', 'dfNotify', function (MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData, dfNotify) {
+    .directive('dfSelectContent', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'ManifestFactory', function (MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData, dfNotify, ManifestFactory) {
 
         return {
             restrict: 'E',
@@ -262,7 +296,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 };
 
                 scope.init = function() {
-                    scope.rawPackageData = angular.copy(dfApplicationData.getApiData('package'));
+                    scope.rawPackageData = ManifestFactory.getManifest();
 
                     angular.forEach(scope.rawPackageData['service'], function (manifestValue, manifestKey) { 
                         if (typeof manifestValue === 'object') {
@@ -703,8 +737,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         }
 
                         dfNotify.success(messageOptions);
-             
+
                     }, function errorCallback(response) {
+                        /*
                         var messageOptions = {
                             module: 'Package Manager',
                             provider: 'dreamfactory',
@@ -713,12 +748,24 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         }
 
                         dfNotify.error(messageOptions);
+                        */
+
+                        scope.exportModalHeadline = 'Packages';
+                        scope.exportModalBody = {
+                            head: 'An error occurred!', 
+                            content: response.data.error.message
+                        }
+
+                        $('#exportModal').modal('show')
+
+
                     });
                 }
 
                 scope.exportClear = function() {
                     scope.tableData = [];
                     scope.subFolderName = '';
+                    scope.packagePassword = '';
                 }
 
             }
