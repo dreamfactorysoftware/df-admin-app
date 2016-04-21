@@ -7,7 +7,7 @@
 		<div class="form-inline">
 			<select class="form-control" data-ng-model="selectedFolder" data-ng-options="folder as folder for folder in folders" data-ng-required="true"></select>
 		    <label for=""> / </label>
-		    <input class="form-control" data-ng-model="subFolderName" placeholder="Folder Name (Optional)" id="nofillfolder" />
+		    <input class="form-control" data-ng-model="subFolderName" placeholder="Folder Name (Optional)" id="nofillfolder" autocomplete="nope" />
 		    </div>
 		</div>
 	</div>
@@ -20,7 +20,7 @@
 		</div>
 		<div class="col-xs-11">
 			<input type="password" style="display: none;" />
-			<input type="password" data-ng-model="packagePassword" class="form-control" id="noautofillpassword" />
+			<input type="password" data-ng-model="packagePassword" class="form-control" id="noautofillpassword" autocomplete="nope" />
 		</div>
 	</div>
 
@@ -48,7 +48,13 @@
 	      		<b>Description:</b><br />
 	      		{{exportModalBody.content}}
 	      		<br />
+	      		<div ng-if="exportModalBody.download !== ''">
+	      			<br />
+	      			{{exportModalBody.download}}
+	      			<br />
+	      		</div>
 	      	</div>
+
 	      	<div class="modal-footer">
 	        	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 	      	</div>

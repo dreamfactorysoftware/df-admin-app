@@ -55,7 +55,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
     .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
     }])
-    .factory('ManifestFactory', function(dfApplicationData) {
+    .factory('ManifestFactory', function($http, INSTANCE_URL, dfApplicationData) {
         var service = {};
         var manifest = {};
 
@@ -203,28 +203,32 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         }
                     })
                     .success(function (data) {
-                        var messageOptions = {
-                            module: 'Package Manager',
-                            provider: 'dreamfactory',
-                            type: 'success',
-                            message: 'Package was imported successfully.'
+                        
+                        if (data.hasOwnProperty('success')) {
+                            if (data.success == true) {
+                                var messageOptions = {
+                                    module: 'Package Manager',
+                                    provider: 'dreamfactory',
+                                    type: 'success',
+                                    message: 'Package was imported successfully.'
+                                }
+
+                                dfNotify.success(messageOptions);
+                            }
+
+                            if (data.success == false) {
+                                scope.importModalHeadline = 'Packages';
+                                scope.importModalBody = {
+                                    head: 'Package import failed.', 
+                                    content: data.log.notice
+                                }
+
+                                $('#importModal').modal('show')
+                            }
+
+                            scope.packageImportPassword = '';
+                            angular.element("input[type='file']").val(null);
                         }
-
-                        dfNotify.success(messageOptions);
-
-                        scope.packageImportPassword = '';
-                        angular.element("input[type='file']").val(null);
-console.log(data)
-
-/*
-                        scope.importModalHeadline = 'Packages';
-                        scope.importModalBody = {
-                            head: 'Package was imported successfully.', 
-                            content: response.data.error.message
-                        }
-
-                        $('#importModal').modal('show')
-*/
                     })
                     .error(function (data, status) {
                         var messageOptions = {
@@ -547,6 +551,7 @@ console.log(data)
                                 });
 
                                 scope.selectedNameData = _tableNames;
+                                scope.selectedNameLabel = 'Select Schema(s) to Export';
                             }
 
                             if (_type == 'File') {
@@ -729,6 +734,7 @@ console.log(data)
                         }
                         */
                     }).then(function successCallback(response) {
+                        /*
                         var messageOptions = {
                             module: 'Package Manager',
                             provider: 'dreamfactory',
@@ -737,6 +743,16 @@ console.log(data)
                         }
 
                         dfNotify.success(messageOptions);
+                        */
+
+                        scope.exportModalHeadline = 'Packages';
+                        scope.exportModalBody = {
+                            head: 'The package has been exported.', 
+                            content: 'The path to the exported package is: ',
+                            download: response.data.path
+                        }
+
+                        $('#exportModal').modal('show')
 
                     }, function errorCallback(response) {
                         /*
@@ -753,7 +769,8 @@ console.log(data)
                         scope.exportModalHeadline = 'Packages';
                         scope.exportModalBody = {
                             head: 'An error occurred!', 
-                            content: response.data.error.message
+                            content: response.data.error.message,
+                            download: ''
                         }
 
                         $('#exportModal').modal('show')
@@ -766,6 +783,13 @@ console.log(data)
                     scope.tableData = [];
                     scope.subFolderName = '';
                     scope.packagePassword = '';
+
+                    scope.names = [];
+                    scope.selectedType = '';
+                    scope.selectedName = '';
+                    scope.selectedNameLabel = '';
+                    scope.selectedNameData = [];
+                    scope.selectAll = false;
                 }
 
             }

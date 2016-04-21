@@ -45,7 +45,11 @@
 	      		{{importModalBody.head}}
 	      		<br /><br />
 	      		<b>Description:</b><br />
-	      		{{importModalBody.content}}
+
+	      		<div data-ng-repeat="notice in importModalBody.content">
+	      			{{notice}}
+	      			<br/>
+	      		</div>
 	      		<br />
 	      	</div>
 	      	<div class="modal-footer">
