@@ -23,7 +23,16 @@ angular.module('dreamfactoryApp')
         $scope.topLevelLinks = [
 
             {
+                path: 'http://www.dreamfactory.com/support',
+                target: '_blank',
+                label: 'Support',
+                name: 'support',
+                icon: dfIconService().support,
+                show: false
+            },
+            {
                 path: '#/launchpad',
+                target: null,
                 label: 'LaunchPad',
                 name: 'launchpad',
                 icon: dfIconService().launchpad,
@@ -31,6 +40,7 @@ angular.module('dreamfactoryApp')
             },
             {
                 path: '#/home',
+                target: null,
                 label: 'Admin',
                 name: 'admin',
                 icon: dfIconService().admin,
@@ -38,31 +48,45 @@ angular.module('dreamfactoryApp')
             },
             {
                 path: '#/login',
+                target: null,
                 label: 'Login',
                 name: 'login',
                 icon: dfIconService().login,
                 show: false
             },
             {
-                path: '#/logout',
-                label: 'Logout',
-                name: 'logout',
-                icon: dfIconService().logout,
-                show: false
-            },
-            {
                 path: '#/register',
+                target: null,
                 label: 'Register',
                 name: 'register',
                 icon: dfIconService().register,
                 show: false
             },
             {
-                path: '#/profile',
-                label: UserDataService.getCurrentUser().name || 'Guest',
-                name: 'profile',
-                icon: dfIconService().profile,
-                show: false
+                path: null,
+                target: null,
+                label: UserDataService.getCurrentUser().name,
+                name: 'user',
+                icon: dfIconService().user,
+                show: false,
+                subLinks: [
+                    {
+                        path: '#/profile',
+                        target: null,
+                        label: 'Profile',
+                        name: 'profile',
+                        icon: null,
+                        show: false
+                    },
+                    {
+                        path: '#/logout',
+                        target: null,
+                        label: 'Logout',
+                        name: 'logout',
+                        icon: null,
+                        show: false
+                    }
+                ]
             }
         ];
 
@@ -205,13 +229,13 @@ angular.module('dreamfactoryApp')
                 if (SystemConfigDataService.getSystemConfig().authentication.allow_open_registration) {
 
                     // yes
-                    $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'login', 'register']);
+                    $scope._setActiveLinks($scope.topLevelLinks, ['support', 'launchpad', 'login', 'register']);
 
                 }
                 else {
 
                     // no
-                    $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'login']);
+                    $scope._setActiveLinks($scope.topLevelLinks, ['support', 'launchpad', 'login']);
                 }
 
             }
@@ -222,7 +246,7 @@ angular.module('dreamfactoryApp')
                 if (SystemConfigDataService.getSystemConfig().authentication.allow_open_registration) {
 
                     // yes
-                    $scope._setActiveLinks($scope.topLevelLinks, ['login', 'register']);
+                    $scope._setActiveLinks($scope.topLevelLinks, ['support', 'login', 'register']);
 
                     // check if we are resetting a password
                     if ($location.path() === '/reset-password') {
@@ -245,7 +269,7 @@ angular.module('dreamfactoryApp')
                 else {
 
                     // no
-                    $scope._setActiveLinks($scope.topLevelLinks, ['login']);
+                    $scope._setActiveLinks($scope.topLevelLinks, ['support', 'login']);
                 }
 
             }
@@ -254,10 +278,10 @@ angular.module('dreamfactoryApp')
             else if (newValue.is_sys_admin) {
 
                 // Have to set this explicitly
-                $scope.setTopLevelLinkValue('profile', 'label', newValue.name);
+                $scope.setTopLevelLinkValue('user', 'label', newValue.name);
 
                 // Set active links fpr this user in the UI
-                $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'admin', 'profile']);
+                $scope._setActiveLinks($scope.topLevelLinks, ['support', 'launchpad', 'admin', 'user']);
 
             }
 
@@ -265,10 +289,10 @@ angular.module('dreamfactoryApp')
             else if (!newValue.is_sys_admin) {
 
                 // Have to set this explicitly
-                $scope.setTopLevelLinkValue('profile', 'label', newValue.name);
+                $scope.setTopLevelLinkValue('user', 'label', newValue.name);
 
                 // Sets active links for user in the UI
-                $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'profile']);
+                $scope._setActiveLinks($scope.topLevelLinks, ['support', 'launchpad', 'user']);
             }
         })
 
@@ -277,7 +301,7 @@ angular.module('dreamfactoryApp')
 
             if (!n) return;
 
-            $scope.setTopLevelLinkValue('profile', 'label', n);
+            $scope.setTopLevelLinkValue('user', 'label', n);
         })
 
         // on $routeChangeSuccess show/hide admin nav and chat
