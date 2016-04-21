@@ -34,27 +34,29 @@
 </form>
 
 <!-- Modal -->
-<div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  	<div class="modal-dialog" role="document">
-	    <div class="modal-content">
-	      	<div class="modal-header">
-	        	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	        	<h4 class="modal-title" id="myModalLabel">{{importModalHeadline}}</h4>
-	      	</div>
-	      	<div class="modal-body">
-	      		{{importModalBody.head}}
-	      		<br /><br />
-	      		<b>Description:</b><br />
+<!--div modal-show modal-visible="showImportDialog" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">{{importModalHeadline}}</h4>
+			</div>
+			<div class="modal-body">
+				{{importModalBody.head}}
+				<br /><br />
+				<b>Description:</b><br />
+				<div data-ng-repeat="notice in importModalBody.content">
+					{{notice}}
+					<br/><br/>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div-->
 
-	      		<div data-ng-repeat="notice in importModalBody.content">
-	      			{{notice}}
-	      			<br/>
-	      		</div>
-	      		<br />
-	      	</div>
-	      	<div class="modal-footer">
-	        	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	      	</div>
-	    </div>
-  	</div>
-</div>
+
+
+

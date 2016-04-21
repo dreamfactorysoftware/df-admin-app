@@ -55,12 +55,12 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
     .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
     }])
-    .factory('ManifestFactory', function($http, INSTANCE_URL, dfApplicationData) {
+    .factory('ManifestFactory', function() {
         var service = {};
         var manifest = {};
 
-        service.setManifest = function() {
-            manifest = angular.copy(dfApplicationData.getApiData('package'));
+        service.setManifest = function(appData) {
+            manifest = angular.copy(appData.getApiData('package'));
         }
 
         service.getManifest = function() {
@@ -68,6 +68,37 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
         }
 
         return service;
+    })
+    .directive("modalShow", function ($parse) {
+        return {
+            restrict: "A",
+            link: function (scope, element, attrs) {
+
+                //Hide or show the modal
+                scope.showModal = function (visible, elem) {
+                    if (!elem)
+                        elem = element;
+
+                    if (visible)
+                        $(elem).modal("show");                     
+                    else
+                        $(elem).modal("hide");
+                }
+
+                //Watch for changes to the modal-visible attribute
+                scope.$watch(attrs.modalShow, function (newValue, oldValue) {
+                    scope.showModal(newValue, attrs.$$element);
+                });
+
+                //Update the visible value when the dialog is closed through UI actions (Ok, cancel, etc.)
+                $(element).bind("hide.bs.modal", function () {
+                    $parse(attrs.modalShow).assign(scope, false);
+                    if (!scope.$$phase && !scope.$root.$$phase)
+                        scope.$apply();
+                });
+            }
+
+        };
     })
     .directive('tabs', function() {
         return {
@@ -120,7 +151,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
         $scope.$parent.title = 'Packages';
 
         // Set package manifest
-        ManifestFactory.setManifest();
+        ManifestFactory.setManifest(dfApplicationData);
 
         // Set module links
         $scope.links = [
@@ -163,7 +194,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             }
         };
     })
-    .directive('dfImportPackage', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', 'dfApplicationData', 'dfNotify', '$http', function (MOD_PACKAGE_MANAGER_ASSET_PATH, INSTANCE_URL, UserDataService, dfApplicationData, dfNotify, $http) {
+    .directive('dfImportPackage', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', 'dfApplicationData', 'dfNotify', '$timeout', '$http', function (MOD_PACKAGE_MANAGER_ASSET_PATH, INSTANCE_URL, UserDataService, dfApplicationData, dfNotify, $timeout, $http) {
 
         return {
             restrict: 'E',
@@ -214,20 +245,36 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 }
 
                                 dfNotify.success(messageOptions);
+
+                                scope.packageImportPassword = '';
+                                angular.element("input[type='file']").val(null);
                             }
 
                             if (data.success == false) {
+                                /*
                                 scope.importModalHeadline = 'Packages';
                                 scope.importModalBody = {
                                     head: 'Package import failed.', 
                                     content: data.log.notice
                                 }
 
-                                $('#importModal').modal('show')
-                            }
+                                scope.showImportDialog = true;
+                                */
 
-                            scope.packageImportPassword = '';
-                            angular.element("input[type='file']").val(null);
+                                var notice = '';
+
+                                angular.forEach(data.log.notice, function (value, key) {
+                                    notice += '* ' + value + '\n';
+                                });
+
+                                var msg = 'Package import failed.\n\n' +
+                                    'Reason:\n' +
+                                    notice;
+
+                                $timeout(function () {
+                                    alert(msg);
+                                }); 
+                            }
                         }
                     })
                     .error(function (data, status) {
@@ -620,7 +667,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfExportPackage', ['INSTANCE_URL', 'ADMIN_API_KEY', 'UserDataService', 'dfApplicationData', 'dfSystemData', 'dfNotify', '$http', '$window', function (INSTANCE_URL, ADMIN_API_KEY, UserDataService, dfApplicationData, dfSystemData, dfNotify, $http, $window) {
+    .directive('dfExportPackage', ['INSTANCE_URL', 'ADMIN_API_KEY', 'UserDataService', 'dfApplicationData', 'dfSystemData', 'dfNotify', '$http', '$window', '$timeout', function (INSTANCE_URL, ADMIN_API_KEY, UserDataService, dfApplicationData, dfSystemData, dfNotify, $http, $window, $timeout) {
 
         return {
 
@@ -744,7 +791,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         dfNotify.success(messageOptions);
                         */
-
+                        /*
                         scope.exportModalHeadline = 'Packages';
                         scope.exportModalBody = {
                             head: 'The package has been exported.', 
@@ -752,7 +799,16 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             download: response.data.path
                         }
 
-                        $('#exportModal').modal('show')
+                        scope.showExportDialog = true;
+                        */
+
+                        var msg = 'The package has been exported.\n\n' +
+                            'The path to the exported package is: \n' +
+                            response.data.path + '\n';
+
+                        $timeout(function () {
+                            alert(msg);
+                        }); 
 
                     }, function errorCallback(response) {
                         /*
@@ -765,7 +821,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         dfNotify.error(messageOptions);
                         */
-
+                        /*
                         scope.exportModalHeadline = 'Packages';
                         scope.exportModalBody = {
                             head: 'An error occurred!', 
@@ -773,9 +829,16 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             download: ''
                         }
 
-                        $('#exportModal').modal('show')
+                        scope.showExportDialog = true;
+                        */
 
+                        var msg = 'An error occurred!\n\n' +
+                            'Reason:\n' +
+                            response.data.error.message + '\n';
 
+                        $timeout(function () {
+                            alert(msg);
+                        }); 
                     });
                 }
 
