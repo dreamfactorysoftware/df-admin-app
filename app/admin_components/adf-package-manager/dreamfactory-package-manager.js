@@ -201,9 +201,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             scope: false,
             templateUrl: MOD_PACKAGE_MANAGER_ASSET_PATH + 'views/df-import-package.html',
             link: function (scope, elem, attrs) {
-                scope.importPackageFile = function() {
+                scope.packageImportPassword = '';
 
-                    scope.packageImportPassword = '';
+                scope.importPackageFile = function() {
 
                     if (scope.file !== undefined) {
 
@@ -211,14 +211,13 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     $http({
                         method: 'POST',
-                        url: INSTANCE_URL + '/api/v2/system/package',
+                        url: INSTANCE_URL + '/api/v2/system/package?password=' + scope.packageImportPassword,
                         headers: {
                             'Content-Type': 'multipart/form-data',
                             'X-DreamFactory-Session-Token': currentUser.session_token
                         },
                         data: {
                             files: scope.file,
-                            password: scope.packageImportPassword 
                         }, 
                         transformRequest: function (data, headersGetter) {
                             var formData = new FormData();
