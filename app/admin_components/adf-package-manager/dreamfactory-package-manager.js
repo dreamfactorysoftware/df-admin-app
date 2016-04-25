@@ -133,7 +133,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             replace: true
         };
     })
-    .controller('PackageCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', 'ManifestFactory', function($scope, INSTANCE_URL, dfApplicationData, ManifestFactory) {
+    .controller('PackageCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
         $scope.$parent.title = 'Packages';
 
         // Set module links
@@ -306,7 +306,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfSelectContent', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'ManifestFactory', function (MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData, dfNotify, ManifestFactory) {
+    .directive('dfSelectContent', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', 'dfNotify', function (MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData, dfNotify) {
 
         return {
             restrict: 'E',
