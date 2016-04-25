@@ -55,20 +55,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
     .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
     }])
-    .factory('ManifestFactory', function() {
-        var service = {};
-        var manifest = {};
-
-        service.setManifest = function(appData) {
-            manifest = angular.copy(appData.getApiData('package'));
-        }
-
-        service.getManifest = function() {
-            return manifest
-        }
-
-        return service;
-    })
     .directive("modalShow", function ($parse) {
         return {
             restrict: "A",
@@ -150,9 +136,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
     .controller('PackageCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', 'ManifestFactory', function($scope, INSTANCE_URL, dfApplicationData, ManifestFactory) {
         $scope.$parent.title = 'Packages';
 
-        // Set package manifest
-        ManifestFactory.setManifest(dfApplicationData);
-
         // Set module links
         $scope.links = [
             {
@@ -194,7 +177,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             }
         };
     })
-    .directive('dfImportPackage', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', 'dfApplicationData', 'dfNotify', '$timeout', '$http', function (MOD_PACKAGE_MANAGER_ASSET_PATH, INSTANCE_URL, UserDataService, dfApplicationData, dfNotify, $timeout, $http) {
+    .directive('dfImportPackage', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', 'dfApplicationData', 'dfAvailableApis', 'dfNotify', '$timeout', '$http', function (MOD_PACKAGE_MANAGER_ASSET_PATH, INSTANCE_URL, UserDataService, dfApplicationData, dfAvailableApis, dfNotify, $timeout, $http) {
 
         return {
             restrict: 'E',
@@ -247,6 +230,12 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                                 scope.packageImportPassword = '';
                                 angular.element("input[type='file']").val(null);
+
+                                var apis = dfAvailableApis.getApis();
+
+                                angular.forEach(apis.apis, function (value, key) { 
+                                    dfApplicationData.fetchFromApi(value);
+                                });
                             }
 
                             if (data.success == false) {
@@ -325,9 +314,10 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_PACKAGE_MANAGER_ASSET_PATH + 'views/df-select-content.html',
             link: function (scope, elem, attrs) {
 
+                scope.loading = true;
                 scope.selectAll = false;
                 scope.selectType = '';
-                scope.selectName = '';
+                scope.selectName = 'disabled';
                 scope.selectedNameLabel = '';
                 scope.selectedNameType = '';
                 scope.selectedNameData = [];
@@ -346,51 +336,62 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 };
 
                 scope.init = function() {
-                    scope.rawPackageData = ManifestFactory.getManifest();
 
-                    angular.forEach(scope.rawPackageData['service'], function (manifestValue, manifestKey) { 
-                        if (typeof manifestValue === 'object') {
-                            
-                            if (manifestKey === 'system') {
-                                angular.forEach(manifestValue, function (subManifestValue, subManifestKey) { 
-                                    var _typeExists = scope.types.filter(function( obj ) {
-                                        return obj.name == 'system';
+                    scope.types.push({name: '', label: 'Loading...', group: ''});
+                    scope.selectedType = scope.types[0]
+
+                    dfApplicationData.fetchPackageFromApi().then(function () {
+                        scope.types = [];
+                        scope.selectName = '';
+                        scope.loading = false;
+
+                        scope.rawPackageData = angular.copy(dfApplicationData.getApiData('package'));
+
+                        angular.forEach(scope.rawPackageData['service'], function (manifestValue, manifestKey) { 
+                            if (typeof manifestValue === 'object') {
+                                
+                                if (manifestKey === 'system') {
+                                    angular.forEach(manifestValue, function (subManifestValue, subManifestKey) { 
+                                        var _typeExists = scope.types.filter(function( obj ) {
+                                            return obj.name == 'system';
+                                        });
+
+                                        if (!_typeExists.length) {
+                                            scope.types.push({name: 'system', label: 'System', group: 'System'});
+                                        }
+                                    });
+                                }
+                                else {
+                                    var _serviceTypes = angular.copy(dfApplicationData.getApiData('service_type'));
+                                    var _services = angular.copy(dfApplicationData.getApiData('service')); 
+
+                                    var _service = _services.filter(function( obj ) {
+                                        return obj.name == manifestKey;
                                     });
 
-                                    if (!_typeExists.length) {
-                                        scope.types.push({name: 'system', label: 'System', group: 'System'});
-                                    }
-                                });
+                                    angular.forEach(_service, function (value, key) { 
+                                        var type = _serviceTypes.filter(function( obj ) {
+                                            return obj.name == value.type;
+                                        });
+
+                                        var _typeObj = {
+                                            name: type[0].name, 
+                                            label: type[0].label, 
+                                            group: type[0].group
+                                        };
+
+                                        var _typeExists = scope.types.filter(function( obj ) {
+                                            return obj.name == _typeObj.name;
+                                        });
+
+                                        if (!_typeExists.length) {
+                                            scope.types.push(_typeObj);
+                                        }
+                                    });
+                                }
                             }
-                            else {
-                                var _serviceTypes = angular.copy(dfApplicationData.getApiData('service_type'));
-                                var _services = angular.copy(dfApplicationData.getApiData('service')); 
+                        });
 
-                                var _service = _services.filter(function( obj ) {
-                                    return obj.name == manifestKey;
-                                });
-
-                                angular.forEach(_service, function (value, key) { 
-                                    var type = _serviceTypes.filter(function( obj ) {
-                                        return obj.name == value.type;
-                                    });
-
-                                    var _typeObj = {
-                                        name: type[0].name, 
-                                        label: type[0].label, 
-                                        group: type[0].group
-                                    };
-
-                                    var _typeExists = scope.types.filter(function( obj ) {
-                                        return obj.name == _typeObj.name;
-                                    });
-
-                                    if (!_typeExists.length) {
-                                        scope.types.push(_typeObj);
-                                    }
-                                });
-                            }
-                        }
                     });
                 }
 
@@ -503,6 +504,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     if (!newValue) return;
 
+                    if (newValue.label === 'Loading...') return;
+
+                    scope.selectedNameLabel = '';
                     var _names = [];
 
                     if (newValue.label === 'System') {
@@ -530,6 +534,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     }
                     
                     scope.names = _names;
+                    scope.selectedNameLabel = '';
                 });
 
                 var watchSelectedName = scope.$watch('selectedName', function (newValue, oldValue) {
