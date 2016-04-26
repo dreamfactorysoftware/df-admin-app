@@ -339,6 +339,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                 scope.init = function() {
 
+                    var env = angular.copy(dfApplicationData.getApiData('environment'));
+                    scope.enablePassword = env['platform']['secured_package_export'];
+
                     var apis = dfAvailableApis.getApis();
 
                     angular.forEach(apis.apis, function (value, key) { 
