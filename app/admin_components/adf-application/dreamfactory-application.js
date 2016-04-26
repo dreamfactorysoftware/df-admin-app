@@ -1247,6 +1247,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                             if (reject.data.error.message === 'Token has expired' || reject.config.url.indexOf('/profile') !== -1) {
                                 //  put session
                                 return putSession(reject);
+                            } 
+                            else if (reject.config.url.indexOf('/package') !== -1) {
+                                break;
                             } else {
                                 // refresh session
                                 return refreshSession(reject);

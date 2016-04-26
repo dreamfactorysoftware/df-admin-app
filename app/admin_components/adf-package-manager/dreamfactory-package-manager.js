@@ -190,91 +190,93 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     if (scope.file !== undefined) {
 
-                    var currentUser = UserDataService.getCurrentUser();
+                        var currentUser = UserDataService.getCurrentUser();
 
-                    $http({
-                        method: 'POST',
-                        url: INSTANCE_URL + '/api/v2/system/package?password=' + scope.packageImportPassword,
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                            'X-DreamFactory-Session-Token': currentUser.session_token
-                        },
-                        data: {
-                            files: scope.file,
-                        }, 
-                        transformRequest: function (data, headersGetter) {
-                            var formData = new FormData();
+                        $http({
+                            method: 'POST',
+                            url: INSTANCE_URL + '/api/v2/system/package?password=' + scope.packageImportPassword,
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                                'X-DreamFactory-Session-Token': currentUser.session_token
+                            },
+                            data: {
+                                files: scope.file,
+                            }, 
+                            transformRequest: function (data, headersGetter) {
+                                var formData = new FormData();
 
-                            angular.forEach(data, function (value, key) {
-                                formData.append(key, value);
-                            });
-
-                            var headers = headersGetter();
-                            delete headers['Content-Type'];
-
-                            return formData;
-                        }
-                    })
-                    .success(function (data) {
-                        
-                        if (data.hasOwnProperty('success')) {
-                            if (data.success == true) {
-                                var messageOptions = {
-                                    module: 'Package Manager',
-                                    provider: 'dreamfactory',
-                                    type: 'success',
-                                    message: 'Package was imported successfully.'
-                                }
-
-                                dfNotify.success(messageOptions);
-
-                                scope.packageImportPassword = '';
-                                angular.element("input[type='file']").val(null);
-
-                                var apis = dfAvailableApis.getApis();
-
-                                angular.forEach(apis.apis, function (value, key) { 
-                                    dfApplicationData.fetchFromApi(value);
-                                });
-                            }
-
-                            if (data.success == false) {
-                                /*
-                                scope.importModalHeadline = 'Packages';
-                                scope.importModalBody = {
-                                    head: 'Package import failed.', 
-                                    content: data.log.notice
-                                }
-
-                                scope.showImportDialog = true;
-                                */
-
-                                var notice = '';
-
-                                angular.forEach(data.log.notice, function (value, key) {
-                                    notice += '* ' + value + '\n';
+                                angular.forEach(data, function (value, key) {
+                                    formData.append(key, value);
                                 });
 
-                                var msg = 'Package import failed.\n\n' +
-                                    'Reason:\n' +
-                                    notice;
+                                var headers = headersGetter();
+                                delete headers['Content-Type'];
 
-                                $timeout(function () {
-                                    alert(msg);
-                                }); 
+                                return formData;
                             }
-                        }
-                    })
-                    .error(function (data, status) {
-                        var messageOptions = {
-                            module: 'Package Manager',
-                            provider: 'dreamfactory',
-                            type: 'error',
-                            message: 'An error occurred.'
-                        }
+                        })
+                        .success(function (data) {
+                            
+                            if (data.hasOwnProperty('success')) {
+                                if (data.success == true) {
+                                    var messageOptions = {
+                                        module: 'Package Manager',
+                                        provider: 'dreamfactory',
+                                        type: 'success',
+                                        message: 'Package was imported successfully.'
+                                    }
 
-                        dfNotify.error(messageOptions);
-                    });
+                                    dfNotify.success(messageOptions);
+
+                                    scope.packageImportPassword = '';
+                                    angular.element("input[type='file']").val(null);
+
+                                    var apis = dfAvailableApis.getApis();
+
+                                    angular.forEach(apis.apis, function (value, key) { 
+                                        dfApplicationData.fetchFromApi(value);
+                                    });
+                                }
+
+                                if (data.success == false) {
+                                    /*
+                                    scope.importModalHeadline = 'Packages';
+                                    scope.importModalBody = {
+                                        head: 'Package import failed.', 
+                                        content: data.log.notice
+                                    }
+
+                                    scope.showImportDialog = true;
+                                    */
+
+                                    var notice = '';
+
+                                    angular.forEach(data.log.notice, function (value, key) {
+                                        notice += '* ' + value + '\n';
+                                    });
+
+                                    var msg = 'Package import failed.\n\n' +
+                                        'Reason:\n' +
+                                        notice;
+
+                                    $timeout(function () {
+                                        alert(msg);
+                                    }); 
+                                }
+                            }
+                        })
+                        .error(function (data, status) {
+                            var messageOptions = {
+                                module: 'Package Manager',
+                                provider: 'dreamfactory',
+                                type: 'error',
+                                message: data.error.message
+                            }
+
+                            dfNotify.error(messageOptions);
+                        });
+
+                        scope.packageImportPassword = '';
                     }
                     else {
                         var messageOptions = {
@@ -506,8 +508,11 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     if (newValue.label === 'Loading...') return;
 
-                    scope.selectedNameLabel = '';
+                    
                     var _names = [];
+                    scope.names = [];
+                    scope.selectedName = '';
+                    scope.selectedNameLabel = '';
 
                     if (newValue.label === 'System') {
                         angular.forEach(scope.rawPackageData['service']['system'], function (manifestValue, manifestKey) {
@@ -541,8 +546,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     if (!newValue) return;
 
-                    scope.selectedNameLabel = 'Select Item(s) to Export';
-
                     var apiName = '';
 
                     if (scope.selectedType.group === 'System') {
@@ -572,6 +575,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         });
 
                         scope.selectedNameData = nameData;
+                        scope.selectedNameLabel = 'Select Item(s) to Export';
                         scope.selectedNameType = '';
                     }
                     else {
@@ -622,6 +626,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 });
 
                                 scope.selectedNameData = _tableNames;
+                                scope.selectedNameLabel = 'Select Item(s) to Export';
                             }
 
                             if (_type == 'other') {
@@ -641,6 +646,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 });
 
                                 scope.selectedNameData = _tableNames;
+                                scope.selectedNameLabel = 'Select Item(s) to Export';
                             }
                         });
                     }                
