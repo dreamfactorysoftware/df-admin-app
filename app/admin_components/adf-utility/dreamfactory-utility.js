@@ -74,7 +74,7 @@ angular.module('dfUtility', ['dfApplication'])
                             break;
 
                         case '/profile':
-                            scope.activeLink = 'profile';
+                            scope.activeLink = 'user';
                             break;
 
                         case '/login':
@@ -1274,8 +1274,12 @@ angular.module('dfUtility', ['dfApplication'])
                     }
 
                     // Format JSON
-                    newValue = angular.fromJson(newValue);
-                    newValue = JSON.stringify(newValue, null, '\t');
+                    try {
+                        newValue = angular.fromJson(newValue);
+                        newValue = JSON.stringify(newValue, null, '\t');
+                    } catch (e) {
+                        // Not a valid json
+                    }
 
                     scope._loadEditor(newValue, true, !scope.isEditable);
                     scope.backupDoc = angular.copy(newValue);
@@ -3200,12 +3204,12 @@ angular.module('dfUtility', ['dfApplication'])
         return function () {
 
             return {
+                support: 'fa fa-fw fa-support',
                 launchpad: 'fa fa-fw fa-bars',
                 admin: 'fa fa-fw fa-cog',
                 login: 'fa fa-fw fa-sign-in',
-                logout: 'fa fa-fw fa-sign-out',
                 register: 'fa fa-fw fa-group',
-                profile: 'fa fa-fw fa-user'
+                user: 'fa fa-fw fa-user'
             };
         }
     }])

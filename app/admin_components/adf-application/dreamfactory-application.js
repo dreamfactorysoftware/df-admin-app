@@ -203,6 +203,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 api.api_name = '';
             }
 
+            if (apiName === 'package') return;
+
             return dfSystemData.getSystemApisFromServer(api).then(
                 function (result) {
 
@@ -237,6 +239,27 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 $q.reject
             );
         }
+
+
+        function _fetchPackageFromApi() {
+            var api = {
+                api_name: 'package',
+                params: {}
+            };
+            
+            api.params = dfApplicationPrefs.getPrefs().data['package'];
+
+            // check for and remove null value params
+            _checkParams(api);
+
+            return dfSystemData.getSystemApisFromServer(api).then(
+                function (result) {
+                    dfApplicationObj['apis']['package'] = result.data;
+                },
+                $q.reject
+            );
+        }
+
 
         // Loads modules data and builds application object from async calls
         function _asyncInit(options) {
@@ -828,6 +851,14 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             updateServiceComponentsLocal: function (service) {
                 var dfServiceData = this.getApiData('service', { name: service.name })[0];
                 dfServiceData.components = service.components;
+            },
+
+            fetchFromApi: function(apiName) {
+                return _fetchFromApi(apiName);
+            },
+
+            fetchPackageFromApi: function() {
+                return _fetchPackageFromApi();
             }
 
         }
@@ -1034,7 +1065,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
         return {
 
-            apis: ['system', 'environment', 'config', 'service_type', 'service', 'app', 'role', 'admin', 'user', 'email_template', 'lookup', 'cors', 'app_group', 'event', 'script_type'],
+            apis: ['system', 'environment', 'config', 'service_type', 'service', 'app', 'role', 'admin', 'user', 'email_template', 'lookup', 'cors', 'app_group', 'event', 'script_type', 'package'],
 
             getApis: function () {
                 return this;
@@ -1216,6 +1247,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                             if (reject.data.error.message === 'Token has expired' || reject.config.url.indexOf('/profile') !== -1) {
                                 //  put session
                                 return putSession(reject);
+                            } 
+                            else if (reject.config.url.indexOf('/package') !== -1) {
+                                break;
                             } else {
                                 // refresh session
                                 return refreshSession(reject);
