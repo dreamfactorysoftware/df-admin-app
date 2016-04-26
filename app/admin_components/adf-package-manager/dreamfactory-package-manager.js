@@ -308,7 +308,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfSelectContent', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', 'dfNotify', function (MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData, dfNotify) {
+    .directive('dfSelectContent', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', 'dfAvailableApis', 'dfNotify', function (MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData, dfAvailableApis, dfNotify) {
 
         return {
             restrict: 'E',
@@ -339,8 +339,14 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                 scope.init = function() {
 
+                    var apis = dfAvailableApis.getApis();
+
+                    angular.forEach(apis.apis, function (value, key) { 
+                        dfApplicationData.fetchFromApi(value);
+                    });
+
                     scope.types.push({name: '', label: 'Loading...', group: ''});
-                    scope.selectedType = scope.types[0]
+                    scope.selectedType = scope.types[0];
 
                     dfApplicationData.fetchPackageFromApi().then(function () {
                         scope.types = [];
