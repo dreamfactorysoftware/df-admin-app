@@ -572,7 +572,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope._loadSamples = function () {
 
-                if (!$scope._resetAll()) return;
+                $scope._resetAll();
 
                 $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.js').then(
                     function (result) {
