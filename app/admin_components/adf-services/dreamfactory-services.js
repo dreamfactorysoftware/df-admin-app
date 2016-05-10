@@ -128,7 +128,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "label": '',
                         "description": '',
                         "is_active": true,
-                        "type": "mysql",
+                        "type": "",
                         "mutable": true,
                         "deletable": true,
                         "config": {},
@@ -147,14 +147,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     if (serviceData && serviceData.config) {
                         // Convert object from config types to array
-                        Object.keys(serviceData.config).forEach(function(key) {
-                          if (serviceData.config[key] && serviceData.config[key].constructor === Object) {
-                            var arr = [];
-                            Object.keys(serviceData.config[key]).forEach(function (objKey) {
-                                arr.push({ key: objKey, value: serviceData.config[key][objKey] })
-                            });
-                            serviceData.config[key] = arr;
-                          }
+                        Object.keys(serviceData.config).forEach(function (key) {
+                            if (serviceData.config[key] && serviceData.config[key].constructor === Object) {
+                                var arr = [];
+                                Object.keys(serviceData.config[key]).forEach(function (objKey) {
+                                    arr.push({key: objKey, value: serviceData.config[key][objKey]})
+                                });
+                                serviceData.config[key] = arr;
+                            }
                         });
 
 
@@ -228,14 +228,18 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope._prepareServiceInfoData();
                     scope._prepareServiceConfigData();
 
-                    if (scope.service.record.type !== 'rws' && scope.service.record.type !== 'script') {
-
-                        delete scope.service.record.service_doc_by_service_id;
-                        delete scope.service.recordCopy.service_doc_by_service_id;
-
-                    }
-                    else {
-                        scope._prepareServiceDefinitionData();
+                    switch (scope.service.record.type) {
+                        case 'rws':
+                        case 'nodejs':
+                        case 'php':
+                        case 'python':
+                        case 'v8js':
+                            scope._prepareServiceDefinitionData();
+                            break;
+                        default:
+                            delete scope.service.record.service_doc_by_service_id;
+                            delete scope.service.recordCopy.service_doc_by_service_id;
+                            break;
                     }
                 };
 
@@ -290,12 +294,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     var convert = function (item) {
                         var arr = data.config[item.name];
                         data.config[item.name] = {};
-                        arr.forEach(function(arrItem) {
-                          data.config[item.name][arrItem.key] = arrItem.value;
+                        arr.forEach(function (arrItem) {
+                            data.config[item.name][arrItem.key] = arrItem.value;
                         });
                     }
                     // convert key, value pair array to object
-                    scope.selectedSchema.config_schema.forEach(function(item) {
+                    scope.selectedSchema.config_schema.forEach(function (item) {
                         if (item.type.indexOf('object') > -1 && data.config[item.name] && data.config[item.name].length) {
                             convert(item);
                         }
@@ -591,8 +595,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
 
-                scope.customConfig = [
-                ];
+                scope.customConfig = [];
 
                 scope.hcv = new dfServiceValues();
 
@@ -819,22 +822,22 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.updateAffectedFields = function (fieldValue, field) {
                     if (field.name == 'driver' && field.values) {
                         var foundValue = field.values.filter(function (item) {
-                            return item.name === fieldValue;
-                        })[0] || {};
+                                return item.name === fieldValue;
+                            })[0] || {};
 
                         scope.serviceInfo.record.config.dsn = foundValue.dsn;
                     }
 
-                    if(field.label === 'Scripting Engine Type'){
+                    if (field.label === 'Scripting Engine Type') {
                         var mode = 'text';
-                        if(fieldValue === 'nodejs' || fieldValue === 'v8js'){
+                        if (fieldValue === 'nodejs' || fieldValue === 'v8js') {
                             mode = 'javascript';
-                        } else if(fieldValue) {
+                        } else if (fieldValue) {
                             mode = fieldValue;
                         }
 
                         var ide = ace.edit('ide');
-                        ide.session.setMode('ace/mode/'+mode);
+                        ide.session.setMode('ace/mode/' + mode);
                     }
                 };
 
@@ -1291,7 +1294,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     if (!scope.serviceInfo.record.config[field]) {
                         scope.serviceInfo.record.config[field] = [];
                     }
-                    scope.serviceInfo.record.config[field].push({ key: 'new_key', value: 'new_value' });
+                    scope.serviceInfo.record.config[field].push({key: 'new_key', value: 'new_value'});
                 };
 
                 scope.deleteKeyValue = function (obj, $index) {
@@ -1304,11 +1307,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
 
                     var schema = scope.selectedSchema.config_schema.filter(function (item) {
-                        return item.name == key
-                    })[0] || {};
+                            return item.name == key
+                        })[0] || {};
 
                     if (schema.items instanceof Array) {
-                        scope.serviceInfo.record.config[key].push({ });
+                        scope.serviceInfo.record.config[key].push({});
                     } else if (schema.items === 'string') {
                         scope.serviceInfo.record.config[key].push('');
                     }
@@ -1365,7 +1368,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         if (schema.default) {
                             scope.serviceInfo.record.config[schema.name] = scope.serviceInfo.record.config[schema.name] || schema.default;
 
-                        } else if(schema.name === "content" && scope.selectedSchema.group === "Custom") {
+                        } else if (schema.name === "content" && scope.selectedSchema.group === "Custom") {
                             scope.serviceInfo.record.config["content"] = scope.serviceInfo.record.config["content"] || "";
                         }
                     });
@@ -1373,7 +1376,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope.getReferences = function (key, valueField) {
                     return dfApplicationObjApis[key].record.map(function (item) {
-                        return {name: item.name, value: item[valueField] || item.id };
+                        return {name: item.name, value: item[valueField] || item.id};
                     });
                 };
 
@@ -1400,7 +1403,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.hcv.serviceTypes = serviceTypes;
 
                     scope.handleFiles = function (files) {
-                        if(!files) return;
+                        if (!files) return;
                         var file = files && files[0];
                         if (file) {
                             var reader = new FileReader();
@@ -2433,19 +2436,22 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     if (!newValue) return;
 
                     if (newValue.record.hasOwnProperty('service_doc_by_service_id') && newValue.record.service_doc_by_service_id.length) {
-                        if(!newValue.record.service_doc_by_service_id[0].content) {
-                            scope.currentFile = { paths: {}, definitions: {} };
+                        if (!newValue.record.service_doc_by_service_id[0].content) {
+                            scope.currentFile = {paths: {}, definitions: {}};
                         } else {
                             scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
                         }
                     } else {
-                        scope.currentFile = { paths: {}, definitions: {} };
+                        scope.currentFile = {paths: {}, definitions: {}};
                     }
 
                     switch (newValue.record.type) {
 
                         case 'rws':
-                        case 'script':
+                        case 'nodejs':
+                        case 'php':
+                        case 'python':
+                        case 'v8js':
                             scope.isEditable = true;
                             break;
 
@@ -2475,14 +2481,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 var listener = function () {
 
-                    $timeout(function() {
-                        if(!scope.currentEditor.session.$annotations) return;
-                        var canDo = scope.currentEditor.session.$annotations.some(function(item) {
-                            if(item.type === 'error') return true;
+                    $timeout(function () {
+                        if (!scope.currentEditor.session.$annotations) return;
+                        var canDo = scope.currentEditor.session.$annotations.some(function (item) {
+                            if (item.type === 'error') return true;
                             else return false;
                         });
 
-                        if(canDo) {
+                        if (canDo) {
                             $('.save-service-btn').addClass('disabled');
                         } else {
                             $('.save-service-btn').removeClass('disabled');
@@ -2490,12 +2496,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }, 500);
                 }
 
-                var editorWatch = scope.$watch('currentEditor', function(newValue) {
-                    if(!newValue) {
+                var editorWatch = scope.$watch('currentEditor', function (newValue) {
+                    if (!newValue) {
                         return;
                     }
 
-                    scope.$watch(function() { return scope.currentEditor.session.$annotations;}, function () {
+                    scope.$watch(function () {
+                        return scope.currentEditor.session.$annotations;
+                    }, function () {
                         listener();
                     });
 
