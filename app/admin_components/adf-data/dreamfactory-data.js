@@ -93,7 +93,13 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
         ];
 
 
-        $scope.__services__ = dfApplicationData.getApiData('service', {type: "sql_db"});
+        $scope.__services__ = [];
+        angular.forEach(dfApplicationData.getApiData('service_type', {group: 'Database'}), function (serviceTypeData) {
+            angular.forEach(dfApplicationData.getApiData('service', {type: serviceTypeData.name}), function (serviceData) {
+
+                $scope.__services__.push(serviceData);
+            });
+        });
 
         $scope.selected = {
             service: null,

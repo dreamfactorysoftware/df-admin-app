@@ -720,7 +720,13 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     switch (scope.serviceAccess.record.service.type) {
 
-                        case "sql_db":
+                        case "sqlite":
+                        case "mysql":
+                        case "pgsql":
+                        case "sqlsrv":
+                        case "sqlanywhere":
+                        case "oracle":
+                        case "ibmdb2":
                         case "mongo_db":
                         case "aws_dynamodb":
                         case "aws_simpledb":
