@@ -618,6 +618,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     var groups = scope.hcv.serviceTypes.map(function(obj) { return obj.group; });
                     scope.serviceGroups = groups.filter(function(v,i) { return groups.indexOf(v) == i; });
+
+                    scope.serviceGroups.sort();
                 });
 
 
@@ -1088,6 +1090,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     if (scope.selectedSchema) {
                         scope.decorateSchema();
                     }
+
 
                     // We set this to null and then during the _renderServiceFields function
                     // a storage type will be assigned

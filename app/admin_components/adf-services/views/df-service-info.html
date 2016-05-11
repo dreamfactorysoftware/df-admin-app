@@ -19,7 +19,7 @@
             <li class="dropdown-submenu" ng-repeat="group in serviceGroups">
                 <a tabindex="-1">{{group}}</a>
                 <ul class="dropdown-menu">
-                    <li data-ng-repeat="groupmember in hcv.serviceTypes | filter:{group:group}">
+                    <li data-ng-repeat="groupmember in hcv.serviceTypes | filter:{group:group} | orderBy:'label'">
                         <a href="" data-ng-click="$parent.$parent.serviceInfo.record.type = groupmember.name; changeServiceType()">{{groupmember.label}}</a>
                     </li>
                 </ul>
