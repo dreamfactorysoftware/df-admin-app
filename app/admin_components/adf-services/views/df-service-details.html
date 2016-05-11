@@ -33,7 +33,7 @@
         <!-- /.tab-content -->
 
         <div class="form-group">
-            <div data-ng-if="newService">
+            <div data-ng-if="newService && selectedSchema.config_schema != null">
                 <input class="btn btn-default btn-primary save-service-btn" type="submit" value="Save Service" ng-disabled="validCode"/>
             </div>
             <div data-ng-if="!newService">

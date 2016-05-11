@@ -597,6 +597,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope.customConfig = [];
 
+                scope.serviceGroups = [];
                 scope.hcv = new dfServiceValues();
 
                 dfServiceData.getServiceTypes().then(function (serviceTypes) {
@@ -614,6 +615,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
                         return item.name === scope.serviceInfo.record.type;
                     })[0];
+
+                    var groups = scope.hcv.serviceTypes.map(function(obj) { return obj.group; });
+                    scope.serviceGroups = groups.filter(function(v,i) { return groups.indexOf(v) == i; });
                 });
 
 
@@ -1364,14 +1368,18 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     });
 
                     // Set default dfServiceValues
-                    scope.selectedSchema.config_schema.forEach(function (schema) {
-                        if (schema.default) {
-                            scope.serviceInfo.record.config[schema.name] = scope.serviceInfo.record.config[schema.name] || schema.default;
+                    if (scope.selectedSchema.config_schema !== null) {
+                        scope.selectedSchema.config_schema.forEach(function (schema) {
+                            if (schema.default) {
+                                scope.serviceInfo.record.config[schema.name] = scope.serviceInfo.record.config[schema.name] || schema.default;
 
-                        } else if (schema.name === "content" && scope.selectedSchema.group === "Custom") {
-                            scope.serviceInfo.record.config["content"] = scope.serviceInfo.record.config["content"] || "";
-                        }
-                    });
+                            } else if(schema.name === "content" && scope.selectedSchema.group === "Custom") {
+                                scope.serviceInfo.record.config["content"] = scope.serviceInfo.record.config["content"] || "";
+                            }
+                        });  
+                    }
+
+                    
                 };
 
                 scope.getReferences = function (key, valueField) {
