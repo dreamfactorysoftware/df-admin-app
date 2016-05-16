@@ -1,9 +1,7 @@
 <div>
-
     <!-- Form Title -->
     <df-details-header data-new="newService" data-api-name="'Service'"
                        data-name="service.record.name"></df-details-header>
-
 
     <form data-ng-submit="saveService()" autocomplete="off">
 
@@ -13,7 +11,6 @@
             <li>
                 <a showtab href="#service-definition" id="service-definition-tab">Service Definition</a>
             </li>
-
         </ul>
 
         <div class="tab-content" style="margin-top: 20px">
@@ -38,7 +35,6 @@
             </div>
             <div data-ng-if="!newService">
                 <input class="btn btn-default btn-primary save-service-btn" type="submit" value="Save Service" ng-disabled="validCode"/>
-                <!--<input type="button" class="btn btn-warning" data-ng-click="testSetting()" value="Test My Settings" />-->
                 <button type="button" class="btn btn-default" data-ng-click="closeService()">Cancel</button>
             </div>
         </div>

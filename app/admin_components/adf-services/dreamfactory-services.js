@@ -147,14 +147,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     if (serviceData && serviceData.config) {
                         // Convert object from config types to array
-                        Object.keys(serviceData.config).forEach(function (key) {
-                            if (serviceData.config[key] && serviceData.config[key].constructor === Object) {
-                                var arr = [];
-                                Object.keys(serviceData.config[key]).forEach(function (objKey) {
-                                    arr.push({key: objKey, value: serviceData.config[key][objKey]})
-                                });
-                                serviceData.config[key] = arr;
-                            }
+                        Object.keys(serviceData.config).forEach(function(key) {
+                          if (serviceData.config[key] && serviceData.config[key].constructor === Object) {
+                            var arr = [];
+                            Object.keys(serviceData.config[key]).forEach(function (objKey) {
+                                arr.push({ key: objKey, value: serviceData.config[key][objKey] })
+                            });
+                            serviceData.config[key] = arr;
+                          }
                         });
 
 
@@ -294,12 +294,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     var convert = function (item) {
                         var arr = data.config[item.name];
                         data.config[item.name] = {};
-                        arr.forEach(function (arrItem) {
-                            data.config[item.name][arrItem.key] = arrItem.value;
+                        arr.forEach(function(arrItem) {
+                          data.config[item.name][arrItem.key] = arrItem.value;
                         });
                     }
                     // convert key, value pair array to object
-                    scope.selectedSchema.config_schema.forEach(function (item) {
+                    scope.selectedSchema.config_schema.forEach(function(item) {
                         if (item.type.indexOf('object') > -1 && data.config[item.name] && data.config[item.name].length) {
                             convert(item);
                         }
@@ -522,8 +522,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     // We have passed in data from an existing service.  Let's create
                     // a new Service obj from that data.
                     scope.service = new Service(newValue);
-
                 });
+
 
 
                 // MESSAGES
@@ -576,7 +576,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "label": null,
                         "description": null,
                         "is_active": true,
-                        "type": "rws",
+                        "type": "",
                         "mutable": true,
                         "deletable": true,
                         "config": {}
@@ -828,15 +828,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.updateAffectedFields = function (fieldValue, field) {
                     if (field.name == 'driver' && field.values) {
                         var foundValue = field.values.filter(function (item) {
-                                return item.name === fieldValue;
-                            })[0] || {};
+                            return item.name === fieldValue;
+                        })[0] || {};
 
                         scope.serviceInfo.record.config.dsn = foundValue.dsn;
                     }
 
-                    if (field.label === 'Scripting Engine Type') {
+                    if (field.label === 'Scripting Engine Type'){
                         var mode = 'text';
-                        if (fieldValue === 'nodejs' || fieldValue === 'v8js') {
+                        if(fieldValue === 'nodejs' || fieldValue === 'v8js'){
                             mode = 'javascript';
                         } else if (fieldValue) {
                             mode = fieldValue;
@@ -1091,7 +1091,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         scope.decorateSchema();
                     }
 
-
                     // We set this to null and then during the _renderServiceFields function
                     // a storage type will be assigned
                     scope._storageType = null;
@@ -1290,7 +1289,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 };
 
-
                 var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
 
                 scope.isArray = angular.isArray;
@@ -1314,11 +1312,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
 
                     var schema = scope.selectedSchema.config_schema.filter(function (item) {
-                            return item.name == key
-                        })[0] || {};
+                        return item.name == key
+                    })[0] || {};
 
                     if (schema.items instanceof Array) {
-                        scope.serviceInfo.record.config[key].push({});
+                        scope.serviceInfo.record.config[key].push({ });
                     } else if (schema.items === 'string') {
                         scope.serviceInfo.record.config[key].push('');
                     }
@@ -1371,23 +1369,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     });
 
                     // Set default dfServiceValues
-                    if (scope.selectedSchema.config_schema !== null) {
-                        scope.selectedSchema.config_schema.forEach(function (schema) {
-                            if (schema.default) {
-                                scope.serviceInfo.record.config[schema.name] = scope.serviceInfo.record.config[schema.name] || schema.default;
+                    scope.selectedSchema.config_schema.forEach(function (schema) {
+                        if (schema.default) {
+                            scope.serviceInfo.record.config[schema.name] = scope.serviceInfo.record.config[schema.name] || schema.default;
 
-                            } else if(schema.name === "content" && scope.selectedSchema.group === "Custom") {
-                                scope.serviceInfo.record.config["content"] = scope.serviceInfo.record.config["content"] || "";
-                            }
-                        });  
-                    }
-
-                    
+                        } else if (schema.name === "content" && scope.selectedSchema.group === "Custom") {
+                            scope.serviceInfo.record.config["content"] = scope.serviceInfo.record.config["content"] || "";
+                        }
+                    });
                 };
 
                 scope.getReferences = function (key, valueField) {
                     return dfApplicationObjApis[key].record.map(function (item) {
-                        return {name: item.name, value: item[valueField] || item.id};
+                        return {name: item.name, value: item[valueField] || item.id };
                     });
                 };
 
@@ -1405,6 +1399,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     if (scope.selectedSchema) {
                         scope.decorateSchema();
                     }
+
+                    scope.changeDefinitionView();
                 };
 
                 scope.hcv = new dfServiceValues();
@@ -2419,7 +2415,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceDefinition', ['MOD_SERVICES_ASSET_PATH', '$timeout', function (MOD_SERVICES_ASSET_PATH, $timeout) {
+    .directive('dfServiceDefinition', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', '$timeout', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, $timeout) {
 
         return {
             restrict: 'E',
@@ -2427,36 +2423,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-definition.html',
             link: function (scope, elem, attrs) {
 
-
                 scope.isEditorClean = true;
                 scope.isEditable = false;
                 scope.currentEditor = null;
                 scope.currentFile = null;
 
-
-                scope._prepareServiceDefinitionData = function () {
-                    if (scope.service.record.service_doc_by_service_id) {
-                        scope.service.record.service_doc_by_service_id[0] = scope.service.record.service_doc_by_service_id[0] || {};
-                        scope.service.record.service_doc_by_service_id[0].content = scope.currentEditor.session.getValue();
-                    }
-                }
-
-
-                scope.$watch('service', function (newValue, oldValue) {
-
-                    if (!newValue) return;
-
-                    if (newValue.record.hasOwnProperty('service_doc_by_service_id') && newValue.record.service_doc_by_service_id.length) {
-                        if (!newValue.record.service_doc_by_service_id[0].content) {
-                            scope.currentFile = {paths: {}, definitions: {}};
-                        } else {
-                            scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
-                        }
-                    } else {
-                        scope.currentFile = {paths: {}, definitions: {}};
-                    }
-
-                    switch (newValue.record.type) {
+                scope.changeDefinitionView = function() {
+                    switch (scope.serviceInfo.record.type) {
 
                         case 'rws':
                         case 'nodejs':
@@ -2467,11 +2440,44 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
 
                         default:
-                            scope.isEditable = true;
+                            scope.isEditable = false;
+                    }
+                };
+
+                scope._prepareServiceDefinitionData = function () {
+                    if (scope.service.record.service_doc_by_service_id) {
+                        scope.service.record.service_doc_by_service_id[0] = scope.service.record.service_doc_by_service_id[0] || {};
+                        scope.service.record.service_doc_by_service_id[0].content = scope.currentEditor.session.getValue();
+                    }
+                }
+
+                scope.$watch('service', function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    if (newValue.record.hasOwnProperty('service_doc_by_service_id') && newValue.record.service_doc_by_service_id.length) {
+                        if(!newValue.record.service_doc_by_service_id[0].content) {
+                            scope.currentFile = { paths: {}, definitions: {} };
+                        } else {
+                            scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
+                        }
+                    } else {
+                        scope.currentFile = {paths: {}, definitions: {}};
                     }
 
-                })
+                    switch (newValue.record.type) {
+                        case 'rws':
+                        case 'nodejs':
+                        case 'php':
+                        case 'python':
+                        case 'v8js':
+                            scope.isEditable = true;
+                            break;
 
+                        default:
+                            scope.isEditable = false;
+                    }
+                })
 
                 // Hack way to update text in editor;
                 $('#json-editor-tab').on('click', function () {
@@ -2492,10 +2498,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 var listener = function () {
 
-                    $timeout(function () {
+                    $timeout(function() {
                         if (!scope.currentEditor.session.$annotations) return;
-                        var canDo = scope.currentEditor.session.$annotations.some(function (item) {
-                            if (item.type === 'error') return true;
+                        var canDo = scope.currentEditor.session.$annotations.some(function(item) {
+                            if(item.type === 'error') return true;
                             else return false;
                         });
 
@@ -2507,12 +2513,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }, 500);
                 }
 
-                var editorWatch = scope.$watch('currentEditor', function (newValue) {
+                var editorWatch = scope.$watch('currentEditor', function(newValue) {
                     if (!newValue) {
                         return;
                     }
 
-                    scope.$watch(function () {
+                    scope.$watch(function() { 
                         return scope.currentEditor.session.$annotations;
                     }, function () {
                         listener();
