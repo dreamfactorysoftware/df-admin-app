@@ -4,7 +4,7 @@
     <df-simple-help data-options="dfSimpleHelp.serviceType"></df-simple-help><br/>
     <div class="btn-group" data-ng-if="newService">
         <button type="button" data-ng-model="serviceInfo.record.type" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{selectedSchema.label || 'Service Type Select'}}    <span class="caret"></span>
+            {{selectedSchema.label || 'Select Service Type'}}    <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" >
             <li class="dropdown-submenu" ng-repeat="group in serviceGroups">
