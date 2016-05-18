@@ -641,7 +641,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         'File', 
                         'Email', 
                         'Notification', 
-                        'Remote Services', 
+                        'Remote Service',
                         'Script',
                         'OAuth',
                         'LDAP' 
