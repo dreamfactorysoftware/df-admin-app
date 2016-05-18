@@ -592,6 +592,23 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 };
 
+                scope._sortArray = function(groupsArray, orderArray) {
+                    var result = [];
+
+                    orderArray.forEach(function(group){
+                        if (groupsArray.indexOf(group) !== -1) {
+                            result.push(group);
+                        }
+                    });
+
+                    if (groupsArray.length > orderArray.length) {
+                        var unsortedGroups = groupsArray.filter(function(i) {return result.indexOf(i) < 0;});
+                        result.push.apply(result, unsortedGroups);
+                    }
+
+                    return result;
+                }
+
 
                 var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
 
@@ -619,7 +636,18 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     var groups = scope.hcv.serviceTypes.map(function(obj) { return obj.group; });
                     scope.serviceGroups = groups.filter(function(v,i) { return groups.indexOf(v) == i; });
 
-                    scope.serviceGroups.sort();
+                    var sortingArray = [ 
+                        'Database', 
+                        'File', 
+                        'Email', 
+                        'Notification', 
+                        'Remote Services', 
+                        'Script',
+                        'OAuth',
+                        'LDAP' 
+                    ];
+
+                    scope.serviceGroups = scope._sortArray(scope.serviceGroups, sortingArray);
                 });
 
 
@@ -682,7 +710,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 }
 
                 scope._prepareServiceInfoData = function () {
-
                     scope.service.record = dfObjectService.mergeObjects(scope.serviceInfo.record, scope.service.record);
                 };
 
@@ -826,6 +853,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope.updateAffectedFields = function (fieldValue, field) {
+                  
                     if (field.name == 'driver' && field.values) {
                         var foundValue = field.values.filter(function (item) {
                             return item.name === fieldValue;
@@ -834,6 +862,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         scope.serviceInfo.record.config.dsn = foundValue.dsn;
                     }
 
+                    /*
                     if (field.label === 'Scripting Engine Type'){
                         var mode = 'text';
                         if(fieldValue === 'nodejs' || fieldValue === 'v8js'){
@@ -845,6 +874,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         var ide = ace.edit('ide');
                         ide.session.setMode('ace/mode/' + mode);
                     }
+                    */
                 };
 
                 scope._updateDsn = function () {
@@ -1370,12 +1400,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     // Set default dfServiceValues
                     scope.selectedSchema.config_schema.forEach(function (schema) {
+                        
                         if (schema.default) {
                             scope.serviceInfo.record.config[schema.name] = scope.serviceInfo.record.config[schema.name] || schema.default;
 
                         } else if (schema.name === "content" && scope.selectedSchema.group === "Custom") {
                             scope.serviceInfo.record.config["content"] = scope.serviceInfo.record.config["content"] || "";
                         }
+
                     });
                 };
 
@@ -1400,7 +1432,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         scope.decorateSchema();
                     }
 
-                    scope.changeDefinitionView();
+                    scope._changeDefinitionView();
                 };
 
                 scope.hcv = new dfServiceValues();
@@ -1438,6 +1470,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
                         return item.name === scope.serviceInfo.record.type;
                     })[0];
+
+
                 });
 
 
@@ -2428,7 +2462,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.currentEditor = null;
                 scope.currentFile = null;
 
-                scope.changeDefinitionView = function() {
+                scope._changeDefinitionView = function() {
                     switch (scope.serviceInfo.record.type) {
 
                         case 'rws':

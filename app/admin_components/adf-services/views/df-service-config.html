@@ -34,7 +34,7 @@
                data-ng-model="serviceInfo.record.config[field.name]"
                type="text" data-ng-required="field.required"/>
 
-        <df-ace-editor-scripting data-script-type="serviceInfo.record.config.type" data-current-edit-obj="serviceInfo.record.config[field.name]" data-is-clean="isEditorClean" data-editor="editor" data-ng-if="field.type == 'text' && field.name == 'content'"></df-ace-editor-scripting>
+        <df-ace-editor-scripting data-script-type="serviceInfo.record.type" data-current-edit-obj="serviceInfo.record.config[field.name]" data-is-clean="isEditorClean" data-editor="editor" data-ng-if="field.type == 'text' && field.name == 'content'"></df-ace-editor-scripting>
 
         <input class="form-control" data-ng-if="field.type == 'integer'"
                data-ng-model="serviceInfo.record.config[field.name]"
