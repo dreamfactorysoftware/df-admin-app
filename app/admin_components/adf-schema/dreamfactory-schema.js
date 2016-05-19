@@ -134,11 +134,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
         var tempObj = {};
 
-        angular.forEach(dfApplicationData.getApiData('service_type', {group: 'database'}), function (serviceTypeData) {
-            angular.forEach(dfApplicationData.getApiData('service', {type: serviceTypeData.name}), function (serviceData) {
-
-                tempObj[serviceData.name] = new Service(serviceData);
-            });
+        angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,psgql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,mongodb'}), function (serviceData) {
+            
+            tempObj[serviceData.name] = new Service(serviceData);
         });
 
         $scope.schemaManagerData = tempObj;
@@ -465,27 +463,21 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             var tempObj = {};
 
-            angular.forEach(dfApplicationData.getApiData('service_type', {group: 'database'}), function (serviceTypeData) {
-                angular.forEach(dfApplicationData.getApiData('service', {type: serviceTypeData.name}), function (serviceData) {
+            angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,psgql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,mongodb'}), function (serviceData) {
 
-                    tempObj[serviceData.name] = new Service(serviceData);
-                });
+                tempObj[serviceData.name] = new Service(serviceData);
             });
         });
 
-        var watchServiceComponents = $scope.$watchCollection(function () {
-            return dfApplicationData.getApiData('service', {type: 'mysql,psgql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,mongodb'})
-        }, function (newValue, oldValue) {
+        var watchServiceComponents = $scope.$watchCollection(function() {return dfApplicationData.getApiData('service', {type: 'mysql,psgql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,mongodb'})}, function (newValue, oldValue) {
 
             if (!newValue) return;
 
             var tempObj = {};
 
-            angular.forEach(dfApplicationData.getApiData('service_type', {group: 'Database'}), function (serviceTypeData) {
-                angular.forEach(dfApplicationData.getApiData('service', {type: serviceTypeData.name}), function (serviceData) {
+            angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,psgql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,mongodb'}), function (serviceData) {
 
-                    tempObj[serviceData.name] = new Service(serviceData);
-                });
+                tempObj[serviceData.name] = new Service(serviceData);
             });
 
             $scope.schemaManagerData = tempObj;
@@ -1165,13 +1157,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     {name: "decimal", value: "decimal"}
                 ];
 
-                scope.refServices = [];
-                angular.forEach(dfApplicationData.getApiData('service_type', {group: 'database'}), function (serviceTypeData) {
-                    angular.forEach(dfApplicationData.getApiData('service', {type: serviceTypeData.name}), function (serviceData) {
-
-                        scope.refServices.push(serviceData);
-                    });
-                });
+                scope.refServices = dfApplicationData.getApiData('service', {type: 'mysql,psgql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,mongodb'});
                 scope.refTables = null;
                 scope.refFields = null;
 
