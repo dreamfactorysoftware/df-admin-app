@@ -1,7 +1,22 @@
 <div class="col-xs-12" style="padding-bottom: 20px;">
     <div data-ng-hide="!isEditable || selectedSchema.subscription_required">
+        <div class="form-group ng-scope">
+            <label>Select Format</label>
+            <select class="form-control" 
+                    data-ng-model="serviceDefinitionFormat"
+                    data-ng-change="changeDefinitionFormat()">
+                <option value="0" selected="selected">JSON</option>
+                <option value="1">YAML</option>
+            </select>
+        </div>
+
+        <div class="form-group ng-scope">
+            <label>Upload a script file</label>
+            <input type="file" id="input" accept=".json,.yml" onclick="this.value = null;" onchange="angular.element(this).scope().handleDefinitionFiles(this.files)">
+        </div>
+
         <ul class="nav nav-tabs" data-role="tablist">
-            <li class="active"><a showtab href="#jsonEditor" id="json-editor-tab">JSON Editor</a></li>
+            <li class="active"><a showtab href="#jsonEditor" id="json-editor-tab">Editor</a></li>
         </ul>
 
         <div class="tab-content" style="margin-top: 20px">
