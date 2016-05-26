@@ -484,7 +484,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         }
                     }
 
-
                     scope._resetServiceDetails();
                 };
 
@@ -508,6 +507,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     });
                 };
 
+                // Refreshes the editor when switching tabs
+                scope.refreshEditor = function() {
+                    scope.currentEditor.renderer.updateText();
+                    scope.currentEditor.focus();                    
+                };
+
 
                 // WATCHERS
                 var watchData = scope.$watch('serviceData', function (newValue, oldValue) {
@@ -523,7 +528,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     // a new Service obj from that data.
                     scope.service = new Service(newValue);
                 });
-
 
 
                 // MESSAGES
@@ -880,7 +884,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope._updateDsn = function () {
 
                     var string = '';
-
 
                     switch (scope._storageType.prefix) {
 
@@ -2461,6 +2464,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.isEditable = false;
                 scope.currentEditor = null;
                 scope.currentFile = null;
+                scope.hideGutter = true;
                 scope.serviceDefinitionFormat = 0;
 
                 scope._changeDefinitionView = function() {
@@ -2488,26 +2492,31 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 }
 
                 scope.changeDefinitionFormat = function() {
+                    var aceElement = $('div[id^="ide_"]');
+                    scope.editor = ace.edit(aceElement[0].id);
 
-                    scope.editor = ace.edit('ide');
-
-                    if (scope.serviceDefinitionFormat === 0) {
+                    if (scope.serviceDefinitionFormat == 0) {
                         scope.editor.session.setMode("ace/mode/json");
                     }
-                    else if (scope.serviceDefinitionFormat === 1) {
+                    else if (scope.serviceDefinitionFormat == 1) {
                         scope.editor.session.setMode("ace/mode/yaml");
                     }
                 }
 
                 scope.handleDefinitionFiles = function (files) {
                     if (!files) return;
+
                     var file = files && files[0];
                     if (file) {
                         var reader = new FileReader();
                         reader.readAsText(file, "UTF-8");
                         reader.onload = function (evt) {
 
-                            scope.editor = ace.edit('ide');
+                            scope.currentFile = evt.target.result;
+                            scope.$apply();
+
+                            var aceElement = $('div[id^="ide_"]');
+                            scope.editor = ace.edit(aceElement[0].id);
 
                             if (files[0].name.indexOf('json') !== -1) {
                                 scope.editor.session.setMode("ace/mode/json");
@@ -2517,13 +2526,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                 scope.editor.session.setMode("ace/mode/yaml");
                                 scope.serviceDefinitionFormat = 1;
                             }
+                            else if (files[0].name.indexOf('yaml') !== -1) {
+                                scope.editor.session.setMode("ace/mode/yaml");
+                                scope.serviceDefinitionFormat = 1;
+                            }
                             else {
                                 scope.editor.session.setMode("ace/mode/json");
                                 scope.serviceDefinitionFormat = 0;
                             }
 
-                            //scope.serviceInfo.record.config["content"] = evt.target.result;
-                            scope.currentFile = evt.target.result;
                             scope.$apply();
                         }
                         reader.onerror = function (evt) {
@@ -2586,14 +2597,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 })
 
                 var listener = function () {
-
                     $timeout(function() {
                         if (!scope.currentEditor.session.$annotations) return;
-                        
-                        if (scope.serviceDefinitionFormat) {
-                            $('.save-service-btn').removeClass('disabled');
-                            return;
-                        }
                         
                         var canDo = scope.currentEditor.session.$annotations.some(function(item) {
                             if(item.type === 'error') return true;
