@@ -1,7 +1,7 @@
 'use strict';
 
 
-angular.module('dfUtility', ['dfApplication', 'ui.ace'])
+angular.module('dfUtility', ['dfApplication'])
 
     // Set a constant so we can access the 'local' path of our assets
     .constant('MOD_UTILITY_ASSET_PATH', 'admin_components/adf-utility/')
