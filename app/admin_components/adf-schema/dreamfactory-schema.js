@@ -12,7 +12,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/main.html',
                     controller: 'SchemaCtrl',
                     resolve: {
-                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
 
                             if (dfApplicationData.initInProgress) {
 
@@ -58,9 +58,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 });
         }])
 
-    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {}])
+    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
+    }])
 
-    .controller('SchemaCtrl', ['INSTANCE_URL', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function(INSTANCE_URL, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {
+    .controller('SchemaCtrl', ['INSTANCE_URL', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function (INSTANCE_URL, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {
 
 
         var Service = function (schemaData) {
@@ -71,16 +72,16 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 angular.forEach(array, function (component) {
 
-                            // setup object to be pushed onto services
-                            var componentObj = {
-                                __dfUI: {
-                                    newTable: false
-                                },
-                                name: component.name,
-                                label: component.label
-                            };
+                    // setup object to be pushed onto services
+                    var componentObj = {
+                        __dfUI: {
+                            newTable: false
+                        },
+                        name: component.name,
+                        label: component.label
+                    };
 
-                            service.push(componentObj);
+                    service.push(componentObj);
                 });
 
                 return service;
@@ -93,7 +94,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 name: schemaData.name,
                 label: schemaData.label,
                 components: getSchemaComponents(schemaData.components),
-                updateComponents : function (array) {
+                updateComponents: function (array) {
 
                     this.components = getSchemaComponents(array);
                 }
@@ -133,8 +134,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
         var tempObj = {};
 
-        angular.forEach(dfApplicationData.getApiData('service', {type: 'sql_db,mongodb'}), function (serviceData) {
-
+        angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,psgql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,mongodb'}), function (serviceData) {
+            
             tempObj[serviceData.name] = new Service(serviceData);
         });
 
@@ -254,13 +255,12 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         };
 
 
-
         // PRIVATE API
         $scope._getTableFromServer = function (requestDataObj) {
 
             return $http({
                 method: 'GET',
-                url: INSTANCE_URL + '/api/v2/'+ $scope.currentService.name + '/_schema/' + requestDataObj.name,
+                url: INSTANCE_URL + '/api/v2/' + $scope.currentService.name + '/_schema/' + requestDataObj.name,
                 params: {
                     refresh: true
                 }
@@ -286,7 +286,12 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         };
 
         $scope._refreshServiceFromServer = function () {
-            return dfApplicationData.getServiceComponents($scope.currentService.name, INSTANCE_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {params: {refresh: true, fields: 'name,label'}});
+            return dfApplicationData.getServiceComponents($scope.currentService.name, INSTANCE_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {
+                params: {
+                    refresh: true,
+                    fields: 'name,label'
+                }
+            });
         };
 
         // COMPLEX IMPLEMENTATION
@@ -340,7 +345,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             };
 
 
-            $scope._deleteTableFromServer(requestDataObj).then (
+            $scope._deleteTableFromServer(requestDataObj).then(
                 function (result) {
 
                     var messageOptions = {
@@ -400,12 +405,17 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             for (var i = 0; i < $scope.currentService.components.length; i++) {
 
                 if ($scope.currentService.components[i].name === $scope.currentTable) {
-                     tableObj = $scope.currentService.components[i]
+                    tableObj = $scope.currentService.components[i]
                 }
             }
 
 
-            dfApplicationData.getServiceComponents($scope.currentService.name, INSTANCE_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {params: {refresh: true, fields: 'name,label'}}, forceRefresh).then(
+            dfApplicationData.getServiceComponents($scope.currentService.name, INSTANCE_URL + '/api/v2/' + $scope.currentService.name + '/_schema', {
+                params: {
+                    refresh: true,
+                    fields: 'name,label'
+                }
+            }, forceRefresh).then(
                 function (result) {
 
                     // update service components
@@ -446,7 +456,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         };
 
 
-
         // WATCHERS
         var watchSchemaManagerData = $scope.$watch('schemaManagerData', function (newValue, oldValue) {
 
@@ -454,20 +463,19 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             var tempObj = {};
 
-            angular.forEach(dfApplicationData.getApiData('service', {type: 'sql_db,mongodb'}), function (serviceData) {
+            angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,psgql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,mongodb'}), function (serviceData) {
 
                 tempObj[serviceData.name] = new Service(serviceData);
             });
-
         });
 
-        var watchServiceComponents = $scope.$watchCollection(function() {return dfApplicationData.getApiData('service', {type: 'sql_db,mongodb'})}, function (newValue, oldValue) {
+        var watchServiceComponents = $scope.$watchCollection(function() {return dfApplicationData.getApiData('service', {type: 'mysql,psgql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,mongodb'})}, function (newValue, oldValue) {
 
             if (!newValue) return;
 
             var tempObj = {};
 
-            angular.forEach(dfApplicationData.getApiData('service', {type: 'sql_db,mongodb'}), function (serviceData) {
+            angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,psgql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,mongodb'}), function (serviceData) {
 
                 tempObj[serviceData.name] = new Service(serviceData);
             });
@@ -484,7 +492,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             }
 
         });
-
 
 
         // MESSAGES
@@ -513,13 +520,12 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         });
 
 
-
         // HELP
         $scope.dfLargeHelp = {
             manageSchema: {
                 title: 'Schema Manager Overview',
                 text: 'Choose a database service from the list to view or edit the schema. ' +
-                    'You can create a new database service in the Services section of this Admin Console.'
+                'You can create a new database service in the Services section of this Admin Console.'
             }
         }
     }])
@@ -572,7 +578,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return {
                         __dfUI: {
-                          newField: !fieldData
+                            newField: !fieldData
                         },
                         record: fieldData || null,
                         currentService: scope.table.currentService
@@ -583,7 +589,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return {
                         __dfUI: {
-                          newRelation: !relationData
+                            newRelation: !relationData
                         },
                         record: relationData || null,
                         currentService: scope.table.currentService
@@ -600,7 +606,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope.isEditable = true;
 
 
-
                 // PUBLIC API
                 scope.editField = function (fieldData) {
 
@@ -614,7 +619,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.deleteField = function (field) {
 
-                    if (dfNotify.confirm('Are you sure you want to delete field ' + field.name + '?' )) {
+                    if (dfNotify.confirm('Are you sure you want to delete field ' + field.name + '?')) {
 
                         scope._deleteField(field);
                     }
@@ -701,17 +706,17 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope._validateJSON = function () {
 
                     try {
-                        var result = JSON.parse( scope.editor.getValue() );
+                        var result = JSON.parse(scope.editor.getValue());
 
-                        if ( result ) {
+                        if (result) {
 
                             scope.editor.setValue(angular.toJson(result, true), -1);
                             return true;
                         }
                     }
-                    catch ( e ) {
+                    catch (e) {
 
-                      return false;
+                        return false;
                     }
                 };
 
@@ -728,7 +733,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                             if (appObj.apis.service.resource[i].name === scope.tableData.currentService.name) {
 
-                                appObj.apis.service.resource[i].components.push({'name': resource.name, 'label': resource.label});
+                                appObj.apis.service.resource[i].components.push({
+                                    'name': resource.name,
+                                    'label': resource.label
+                                });
                                 break;
                             }
                         }
@@ -746,14 +754,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope._addField = function () {
                     scope.table.record.field.push({});
-                    scope.currentEditField = new ManagedFieldData(scope.table.record.field[scope.table.record.field.length -1]);
+                    scope.currentEditField = new ManagedFieldData(scope.table.record.field[scope.table.record.field.length - 1]);
                 };
 
                 scope._deleteField = function (field) {
 
                     if (scope.table.__dfUI.newTable) {
                         var i = 0;
-                        while(i < scope.table.record.field.length) {
+                        while (i < scope.table.record.field.length) {
 
                             if (scope.table.record.field[i].name === field.name) {
                                 scope.table.record.field.splice(i, 1);
@@ -764,18 +772,19 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         }
                         scope.table.recordCopy = angular.copy(scope.table.record);
                         return;
-                    };
+                    }
+                    ;
 
                     var requestDataObj = {
 
                         path: scope.tableData.currentService.name + '/_schema/' + scope.table.record.name + '/' + field.name
                     };
 
-                    scope._deleteFieldFromTableOnServer(requestDataObj).then (
+                    scope._deleteFieldFromTableOnServer(requestDataObj).then(
                         function (result) {
 
                             var i = 0;
-                            while(i < scope.table.record.field.length) {
+                            while (i < scope.table.record.field.length) {
 
                                 if (scope.table.record.field[i].name === field.name) {
                                     scope.table.record.field.splice(i, 1);
@@ -1007,14 +1016,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 var listener = function () {
 
-                    $timeout(function() {
-                        if(!scope.editor.session.$annotations) return;
-                        var canDo = scope.editor.session.$annotations.some(function(item) {
-                            if(item.type === 'error') return true;
+                    $timeout(function () {
+                        if (!scope.editor.session.$annotations) return;
+                        var canDo = scope.editor.session.$annotations.some(function (item) {
+                            if (item.type === 'error') return true;
                             else return false;
                         });
 
-                        if(canDo) {
+                        if (canDo) {
                             $('.save-schema-btn').addClass('disabled');
                         } else {
                             $('.save-schema-btn').removeClass('disabled');
@@ -1022,19 +1031,21 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }, 500);
                 }
 
-                var editorWatch = scope.$watch('editor', function(newValue) {
+                var editorWatch = scope.$watch('editor', function (newValue) {
 
-                    if(!newValue) {
+                    if (!newValue) {
                         return;
                     }
 
-                    scope.$watch(function() { return scope.editor.session.$annotations; }, function () {
+                    scope.$watch(function () {
+                        return scope.editor.session.$annotations;
+                    }, function () {
                         listener();
                     });
 
                     scope.editor.on('input', function () {
 
-                        if(!scope.editor.getValue()) {
+                        if (!scope.editor.getValue()) {
 
                             $('.save-schema-btn').addClass('disabled');
                             return;
@@ -1076,7 +1087,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     var _new = {
                         allow_null: false,
                         auto_increment: false,
-                        db_function:null,
+                        db_function: null,
                         db_type: null,
                         default: null,
                         fixed_length: false,
@@ -1113,10 +1124,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 };
 
                 scope.typeOptions = [
-                    {name : "I will manually enter a type" , value: ""},
-                    {name : "id",value: "id"},
-                    {name : "string", value: "string"},
-                    {name: "integer",value: "integer"},
+                    {name: "I will manually enter a type", value: ""},
+                    {name: "id", value: "id"},
+                    {name: "string", value: "string"},
+                    {name: "integer", value: "integer"},
                     {name: "text", value: "text"},
                     {name: "boolean", value: "boolean"},
                     {name: "binary", value: "binary"},
@@ -1128,17 +1139,17 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     {name: "time", value: "time"},
                     {name: "reference", value: "reference"},
                     {name: "user_id", value: "user_id"},
-                    {name: "user_id_on_create",value: "user_id_on_create"},
-                    {name: "user_id_on_update",value: "user_id_on_update"},
-                    {name: "timestamp",value: "timestamp"},
-                    {name: "timestamp_on_create",value: "timestamp_on_create"},
-                    {name: "timestamp_on_update",value: "timestamp_on_update"},
-                    {name: "virtual",value: "virtual"}
+                    {name: "user_id_on_create", value: "user_id_on_create"},
+                    {name: "user_id_on_update", value: "user_id_on_update"},
+                    {name: "timestamp", value: "timestamp"},
+                    {name: "timestamp_on_create", value: "timestamp_on_create"},
+                    {name: "timestamp_on_update", value: "timestamp_on_update"},
+                    {name: "virtual", value: "virtual"}
                 ];
 
                 scope.returnTypeOptions = [
-                    {name : "string", value: "string"},
-                    {name: "integer",value: "integer"},
+                    {name: "string", value: "string"},
+                    {name: "integer", value: "integer"},
                     {name: "boolean", value: "boolean"},
                     {name: "binary", value: "binary"},
                     {name: "float", value: "float"},
@@ -1146,7 +1157,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     {name: "decimal", value: "decimal"}
                 ];
 
-                scope.refServices = dfApplicationData.getApiData('service', {type: 'sql_db,mongodb'});
+                scope.refServices = dfApplicationData.getApiData('service', {type: 'mysql,psgql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,mongodb'});
                 scope.refTables = null;
                 scope.refFields = null;
 
@@ -1207,7 +1218,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
 
                     $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/').then(
-
                         function (result) {
                             scope.refTables = result.data.resource;
                         },
@@ -1235,7 +1245,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         return;
                     }
 
-                    var ref_service_name =  scope.fieldData.currentService.name;
+                    var ref_service_name = scope.fieldData.currentService.name;
                     if (scope.field.record.ref_service) {
                         ref_service_name = scope.field.record.ref_service;
                     }
@@ -1284,7 +1294,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope._saveField = function () {
 
                     scope._saveFieldToServer().then(
-
                         function (result) {
 
                             var messageOptions = {
@@ -1322,7 +1331,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 };
 
                 // WATCHERS
-                var watchFieldData = scope.$watch('fieldData', function(newValue, oldValue) {
+                var watchFieldData = scope.$watch('fieldData', function (newValue, oldValue) {
 
                     if (!newValue) return;
 
@@ -1455,7 +1464,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope._saveRelation = function () {
 
                     scope._saveRelationToServer().then(
-
                         function (result) {
 
                             var messageOptions = {
@@ -1493,7 +1501,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 };
 
                 // WATCHERS
-                var watchRelationData = scope.$watch('relationData', function(newValue, oldValue) {
+                var watchRelationData = scope.$watch('relationData', function (newValue, oldValue) {
 
                     if (!newValue) return;
 
@@ -1559,11 +1567,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             link: function (scope, elem, attrs) {
 
 
-                $(function() {
-                    $( "#schema-navigator-resizable" ).resizable({
+                $(function () {
+                    $("#schema-navigator-resizable").resizable({
                         alsoResize: "#schema-navigator-resizable-also"
                     });
-                    $( "#schema-navigator-resizable-also" ).resizable();
+                    $("#schema-navigator-resizable-also").resizable();
                 });
             }
         }
@@ -1615,14 +1623,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 var listener = function () {
 
-                    $timeout(function() {
-                        if(!scope.uploadEditor.session.$annotations) return;
-                        var canDo = scope.uploadEditor.session.$annotations.some(function(item) {
-                            if(item.type === 'error') return true;
+                    $timeout(function () {
+                        if (!scope.uploadEditor.session.$annotations) return;
+                        var canDo = scope.uploadEditor.session.$annotations.some(function (item) {
+                            if (item.type === 'error') return true;
                             else return false;
                         });
 
-                        if(canDo) {
+                        if (canDo) {
                             $('.btn-upload-schema').addClass('disabled');
                         } else {
                             $('.btn-upload-schema').removeClass('disabled');
@@ -1630,19 +1638,21 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }, 500);
                 }
 
-                var editorWatch = scope.$watch('uploadEditor', function(newValue) {
+                var editorWatch = scope.$watch('uploadEditor', function (newValue) {
 
-                    if(!newValue) {
+                    if (!newValue) {
                         return;
                     }
 
-                    scope.$watch(function() { return scope.uploadEditor.session.$annotations;}, function () {
+                    scope.$watch(function () {
+                        return scope.uploadEditor.session.$annotations;
+                    }, function () {
                         listener();
                     });
 
                     scope.uploadEditor.on('input', function (value) {
 
-                        if(scope.uploadEditor && !scope.uploadEditor.getValue()) {
+                        if (scope.uploadEditor && !scope.uploadEditor.getValue()) {
 
                             $('.btn-upload-schema').addClass('disabled');
                             return;
@@ -1662,7 +1672,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 }
 
 
-
                 scope._uploadSchema = function () {
 
                     var requestDataObj = {
@@ -1673,7 +1682,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
 
                     scope._saveSchemaToServer(requestDataObj).then(
-                        function(result) {
+                        function (result) {
 
 
                             var messageOptions = {
@@ -1704,7 +1713,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             dfNotify.success(messageOptions);
 
                         },
-                        function(reject) {
+                        function (reject) {
 
                             var messageOptions = {
                                 module: 'Api Error',
@@ -1723,7 +1732,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope._closeUploadSchema = function () {
 
                     if (!scope.uploadIsEditorClean) {
-                        if(!dfNotify.confirm('You have unsaved changes.  Continue without saving?')) {
+                        if (!dfNotify.confirm('You have unsaved changes.  Continue without saving?')) {
 
                             return;
                         }

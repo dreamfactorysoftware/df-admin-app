@@ -128,7 +128,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "label": '',
                         "description": '',
                         "is_active": true,
-                        "type": "sql_db",
+                        "type": "",
                         "mutable": true,
                         "deletable": true,
                         "config": {},
@@ -228,14 +228,18 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope._prepareServiceInfoData();
                     scope._prepareServiceConfigData();
 
-                    if (scope.service.record.type !== 'rws' && scope.service.record.type !== 'script') {
-
-                        delete scope.service.record.service_doc_by_service_id;
-                        delete scope.service.recordCopy.service_doc_by_service_id;
-
-                    }
-                    else {
-                        scope._prepareServiceDefinitionData();
+                    switch (scope.service.record.type) {
+                        case 'rws':
+                        case 'nodejs':
+                        case 'php':
+                        case 'python':
+                        case 'v8js':
+                            scope._prepareServiceDefinitionData();
+                            break;
+                        default:
+                            delete scope.service.record.service_doc_by_service_id;
+                            delete scope.service.recordCopy.service_doc_by_service_id;
+                            break;
                     }
                 };
 
@@ -480,7 +484,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         }
                     }
 
-
                     scope._resetServiceDetails();
                 };
 
@@ -504,6 +507,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     });
                 };
 
+                // Refreshes the editor when switching tabs
+                scope.refreshEditor = function() {
+                    scope.currentEditor.renderer.updateText();
+                    scope.currentEditor.focus();                    
+                };
+
 
                 // WATCHERS
                 var watchData = scope.$watch('serviceData', function (newValue, oldValue) {
@@ -518,7 +527,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     // We have passed in data from an existing service.  Let's create
                     // a new Service obj from that data.
                     scope.service = new Service(newValue);
-
                 });
 
 
@@ -572,7 +580,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "label": null,
                         "description": null,
                         "is_active": true,
-                        "type": "rws",
+                        "type": "",
                         "mutable": true,
                         "deletable": true,
                         "config": {}
@@ -588,12 +596,29 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 };
 
+                scope._sortArray = function(groupsArray, orderArray) {
+                    var result = [];
+
+                    orderArray.forEach(function(group){
+                        if (groupsArray.indexOf(group) !== -1) {
+                            result.push(group);
+                        }
+                    });
+
+                    if (groupsArray.length > orderArray.length) {
+                        var unsortedGroups = groupsArray.filter(function(i) {return result.indexOf(i) < 0;});
+                        result.push.apply(result, unsortedGroups);
+                    }
+
+                    return result;
+                }
+
 
                 var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
 
-                scope.customConfig = [
-                ];
+                scope.customConfig = [];
 
+                scope.serviceGroups = [];
                 scope.hcv = new dfServiceValues();
 
                 dfServiceData.getServiceTypes().then(function (serviceTypes) {
@@ -611,6 +636,22 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
                         return item.name === scope.serviceInfo.record.type;
                     })[0];
+
+                    var groups = scope.hcv.serviceTypes.map(function(obj) { return obj.group; });
+                    scope.serviceGroups = groups.filter(function(v,i) { return groups.indexOf(v) == i; });
+
+                    var sortingArray = [ 
+                        'Database', 
+                        'File', 
+                        'Email', 
+                        'Notification', 
+                        'Remote Service',
+                        'Script',
+                        'OAuth',
+                        'LDAP' 
+                    ];
+
+                    scope.serviceGroups = scope._sortArray(scope.serviceGroups, sortingArray);
                 });
 
 
@@ -673,7 +714,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 }
 
                 scope._prepareServiceInfoData = function () {
-
                     scope.service.record = dfObjectService.mergeObjects(scope.serviceInfo.record, scope.service.record);
                 };
 
@@ -817,6 +857,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope.updateAffectedFields = function (fieldValue, field) {
+                  
                     if (field.name == 'driver' && field.values) {
                         var foundValue = field.values.filter(function (item) {
                             return item.name === fieldValue;
@@ -825,23 +866,24 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         scope.serviceInfo.record.config.dsn = foundValue.dsn;
                     }
 
-                    if(field.label === 'Scripting Engine Type'){
+                    /*
+                    if (field.label === 'Scripting Engine Type'){
                         var mode = 'text';
                         if(fieldValue === 'nodejs' || fieldValue === 'v8js'){
                             mode = 'javascript';
-                        } else if(fieldValue) {
+                        } else if (fieldValue) {
                             mode = fieldValue;
                         }
 
                         var ide = ace.edit('ide');
-                        ide.session.setMode('ace/mode/'+mode);
+                        ide.session.setMode('ace/mode/' + mode);
                     }
+                    */
                 };
 
                 scope._updateDsn = function () {
 
                     var string = '';
-
 
                     switch (scope._storageType.prefix) {
 
@@ -1280,7 +1322,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 };
 
-
                 var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
 
                 scope.isArray = angular.isArray;
@@ -1291,7 +1332,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     if (!scope.serviceInfo.record.config[field]) {
                         scope.serviceInfo.record.config[field] = [];
                     }
-                    scope.serviceInfo.record.config[field].push({ key: 'new_key', value: 'new_value' });
+                    scope.serviceInfo.record.config[field].push({key: 'new_key', value: 'new_value'});
                 };
 
                 scope.deleteKeyValue = function (obj, $index) {
@@ -1362,12 +1403,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     // Set default dfServiceValues
                     scope.selectedSchema.config_schema.forEach(function (schema) {
+                        
                         if (schema.default) {
                             scope.serviceInfo.record.config[schema.name] = scope.serviceInfo.record.config[schema.name] || schema.default;
 
-                        } else if(schema.name === "content" && scope.selectedSchema.group === "Custom") {
+                        } else if (schema.name === "content" && scope.selectedSchema.group === "Custom") {
                             scope.serviceInfo.record.config["content"] = scope.serviceInfo.record.config["content"] || "";
                         }
+
                     });
                 };
 
@@ -1391,6 +1434,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     if (scope.selectedSchema) {
                         scope.decorateSchema();
                     }
+
+                    scope._changeDefinitionView();
                 };
 
                 scope.hcv = new dfServiceValues();
@@ -1400,7 +1445,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.hcv.serviceTypes = serviceTypes;
 
                     scope.handleFiles = function (files) {
-                        if(!files) return;
+                        if (!files) return;
                         var file = files && files[0];
                         if (file) {
                             var reader = new FileReader();
@@ -1428,6 +1473,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
                         return item.name === scope.serviceInfo.record.type;
                     })[0];
+
+
                 });
 
 
@@ -2405,7 +2452,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceDefinition', ['MOD_SERVICES_ASSET_PATH', '$timeout', function (MOD_SERVICES_ASSET_PATH, $timeout) {
+    .directive('dfServiceDefinition', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', '$timeout', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, $timeout) {
 
         return {
             restrict: 'E',
@@ -2413,19 +2460,88 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-definition.html',
             link: function (scope, elem, attrs) {
 
-
                 scope.isEditorClean = true;
                 scope.isEditable = false;
                 scope.currentEditor = null;
                 scope.currentFile = null;
+                scope.hideGutter = true;
+                scope.serviceDefinitionFormat = 0;
 
+                scope._changeDefinitionView = function() {
+                    switch (scope.serviceInfo.record.type) {
+
+                        case 'rws':
+                        case 'nodejs':
+                        case 'php':
+                        case 'python':
+                        case 'v8js':
+                            scope.isEditable = true;
+                            break;
+
+                        default:
+                            scope.isEditable = false;
+                    }
+                };
 
                 scope._prepareServiceDefinitionData = function () {
                     if (scope.service.record.service_doc_by_service_id) {
                         scope.service.record.service_doc_by_service_id[0] = scope.service.record.service_doc_by_service_id[0] || {};
                         scope.service.record.service_doc_by_service_id[0].content = scope.currentEditor.session.getValue();
+                        scope.service.record.service_doc_by_service_id[0].format = parseInt(scope.serviceDefinitionFormat);
                     }
                 }
+
+                scope.changeDefinitionFormat = function() {
+                    var aceElement = $('div[id^="ide_"]');
+                    scope.editor = ace.edit(aceElement[0].id);
+
+                    if (scope.serviceDefinitionFormat == 0) {
+                        scope.editor.session.setMode("ace/mode/json");
+                    }
+                    else if (scope.serviceDefinitionFormat == 1) {
+                        scope.editor.session.setMode("ace/mode/yaml");
+                    }
+                }
+
+                scope.handleDefinitionFiles = function (files) {
+                    if (!files) return;
+
+                    var file = files && files[0];
+                    if (file) {
+                        var reader = new FileReader();
+                        reader.readAsText(file, "UTF-8");
+                        reader.onload = function (evt) {
+
+                            scope.currentFile = evt.target.result;
+                            scope.$apply();
+
+                            var aceElement = $('div[id^="ide_"]');
+                            scope.editor = ace.edit(aceElement[0].id);
+
+                            if (files[0].name.indexOf('json') !== -1) {
+                                scope.editor.session.setMode("ace/mode/json");
+                                scope.serviceDefinitionFormat = 0;
+                            }
+                            else if (files[0].name.indexOf('yml') !== -1) {
+                                scope.editor.session.setMode("ace/mode/yaml");
+                                scope.serviceDefinitionFormat = 1;
+                            }
+                            else if (files[0].name.indexOf('yaml') !== -1) {
+                                scope.editor.session.setMode("ace/mode/yaml");
+                                scope.serviceDefinitionFormat = 1;
+                            }
+                            else {
+                                scope.editor.session.setMode("ace/mode/json");
+                                scope.serviceDefinitionFormat = 0;
+                            }
+
+                            scope.$apply();
+                        }
+                        reader.onerror = function (evt) {
+                            console.log('error')
+                        }
+                    }
+                };
 
 
                 scope.$watch('service', function (newValue, oldValue) {
@@ -2436,25 +2552,32 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         if(!newValue.record.service_doc_by_service_id[0].content) {
                             scope.currentFile = { paths: {}, definitions: {} };
                         } else {
-                            scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
+                            if (newValue.record.service_doc_by_service_id[0].format === 0) {
+                                scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
+                                scope.serviceDefinitionFormat = 0;
+                            }
+                            else {
+                                scope.currentFile = newValue.record.service_doc_by_service_id[0].content;
+                                scope.serviceDefinitionFormat = 1;
+                            }
                         }
                     } else {
-                        scope.currentFile = { paths: {}, definitions: {} };
+                        scope.currentFile = {paths: {}, definitions: {}};
                     }
 
                     switch (newValue.record.type) {
-
                         case 'rws':
-                        case 'script':
+                        case 'nodejs':
+                        case 'php':
+                        case 'python':
+                        case 'v8js':
                             scope.isEditable = true;
                             break;
 
                         default:
-                            scope.isEditable = true;
+                            scope.isEditable = false;
                     }
-
                 })
-
 
                 // Hack way to update text in editor;
                 $('#json-editor-tab').on('click', function () {
@@ -2474,15 +2597,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 })
 
                 var listener = function () {
-
                     $timeout(function() {
-                        if(!scope.currentEditor.session.$annotations) return;
+                        if (!scope.currentEditor.session.$annotations) return;
+                        
                         var canDo = scope.currentEditor.session.$annotations.some(function(item) {
                             if(item.type === 'error') return true;
                             else return false;
                         });
 
-                        if(canDo) {
+                        if (canDo) {
                             $('.save-service-btn').addClass('disabled');
                         } else {
                             $('.save-service-btn').removeClass('disabled');
@@ -2491,11 +2614,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 }
 
                 var editorWatch = scope.$watch('currentEditor', function(newValue) {
-                    if(!newValue) {
+                    if (!newValue) {
                         return;
                     }
 
-                    scope.$watch(function() { return scope.currentEditor.session.$annotations;}, function () {
+                    scope.$watch(function() { 
+                        return scope.currentEditor.session.$annotations;
+                    }, function () {
                         listener();
                     });
 
@@ -2503,8 +2628,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         listener();
                     });
                 });
-
-
             }
         }
     }])
