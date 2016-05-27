@@ -572,7 +572,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope._loadSamples = function () {
 
-                if (!$scope._resetAll()) return;
+                $scope._resetAll();
 
                 $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.js').then(
                     function (result) {
@@ -868,7 +868,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         mode = 'text';
                     }
 
-                    scope.editor.session.setMode("ace/mode/"+mode);
+                    scope.editor.session.setMode("ace/mode/" + mode);
 
                     scope.backupDoc = angular.copy(contents);
 
@@ -901,10 +901,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     if (newValue === 'samples') return false;
 
                     if (!newValue === null || newValue === undefined) {
-                        scope._loadEditor('', false, true);
+                        //Empty editor
+                        scope._loadEditor('', false, false);
                         return false;
                     }
 
+                    //There is content to load
                     scope._loadEditor(newValue, false, false);
                 });
 
