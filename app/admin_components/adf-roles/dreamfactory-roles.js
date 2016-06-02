@@ -820,7 +820,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.serviceAccess.record.service_id = newValue.id;
                     scope.serviceAccess.record.service.components = ['', '*'];
                     if ('All' !== scope.serviceAccess.record.service.name) {
-                        switch (scope.service.record.type) {
+                        switch (scope.serviceAccess.record.type) {
                             case 'rws':
                             case 'nodejs':
                             case 'php':
