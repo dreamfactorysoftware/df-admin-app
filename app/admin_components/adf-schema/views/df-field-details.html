@@ -183,12 +183,17 @@
     <!--<button data-ng-if="field.__dfUI.isNewField" type="button" class="btn btn-primary" data-ng-click="saveField()">Save</button>-->
     <!--<button data-ng-if="!field.__dfUI.isNewField" type="button" class="btn btn-primary" data-ng-click="updateField()">Update</button>-->
     <div class="row df-btn-row" style="padding-bottom: 20px">
-        <div class="col-xs-12">
+        <div class="col-xs-12"  ng-hide="$parent.table.__dfUI.newTable">
             <button type="button" class="btn btn-primary" data-ng-click="saveField()"
-                    ng-hide="$parent.table.__dfUI.newTable">Save
+                    >Save
             </button>
             <button type="button" class="btn btn-default" data-ng-click="closeField($parent.table.__dfUI.newTable)">
                 Cancel
+            </button>
+        </div>
+        <div class="col-xs-12"  ng-hide="!$parent.table.__dfUI.newTable">
+            <button type="button" class="btn btn-primary" data-ng-click="closeField($parent.table.__dfUI.newTable)">
+                Save
             </button>
         </div>
     </div>
