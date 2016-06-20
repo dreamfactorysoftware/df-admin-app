@@ -3,45 +3,55 @@
     <!-- Admin Listing -->
     <div data-ng-hide="currentEditAdmin">
 
-
         <!-- Section Header -->
         <df-section-header data-title="'Manage Admins'"></df-section-header>
 
         <!-- ToolBar -->
         <df-section-toolbar>
-            <df-toolbar-view-modes></df-toolbar-view-modes>
-            <input type="text" data-ng-model="$parent.filterText" data-ng-change="changeFilter($parent.filterText)" class="df-search-box" placeholder="Search">
-            <div class="btn-group btn-group-sm pull-right df-btn-group">
-                <button df-import-admins
-                        type="button"
-                        class="btn btn-default btn-sm"
-                        title="Import Admins from xml, json, or csv file"
-                        data-ng-click="importAdmins()">
-                    <i class="fa fa-fw fa-upload"></i>
-                </button>
-                <div class="btn-group df-btn-group">
-                    <a df-export-admins type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" title="Export admins to xml, json, or csv file">
-                        <i class="fa fa-fw fa-download">&nbsp; </i>
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li data-ng-click="exportAdmins('csv')">
-                            <a>CSV</a>
-                        </li>
-                        <li data-ng-click="exportAdmins('json')">
-                            <a>JSON</a>
-                        </li>
-                        <li data-ng-click="exportAdmins('xml')">
-                            <a>XML</a>
-                        </li>
-                    </ul>
+            <div class="btn-toolbar pull-left" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <df-toolbar-paginate data-api="'admin'" ></df-toolbar-paginate>
+                </div>
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <input type="text" data-ng-model="$parent.filterText" data-ng-change="changeFilter($parent.filterText)" class="df-search-box" placeholder="Search">
+                </div>
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <button class="btn btn-default btn-sm pull-right" data-ng-click="deleteSelectedAdmins()" data-ng-disabled="selectedAdmins.length === 0" title="Delete selected admins"><i class="fa fa-fw fa-trash"></i></button>
+
                 </div>
             </div>
 
+            <div class="btn-toolbar pull-right" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <div class="btn-group df-btn-group">
+                        <button df-import-admins
+                                type="button"
+                                class="btn btn-default btn-sm"
+                                title="Import Admins from xml, json, or csv file"
+                                data-ng-click="importAdmins()">
+                            <i class="fa fa-fw fa-upload"></i>
+                        </button>
 
-            <df-toolbar-paginate data-api="'admin'" ></df-toolbar-paginate>
-            <div class="btn-group btn-group-sm hidden-xs df-btn-group" ng-show="admins.length" data-ng-if="currentViewMode === 'table'">
-                <button class="btn btn-default" data-ng-click="deleteSelectedAdmins()" data-ng-disabled="selectedAdmins.length === 0" title="Delete selected admins"><i class="fa fa-fw fa-trash"></i></button>
+                        <a df-export-admins type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" title="Export admins to xml, json, or csv file">
+                            <i class="fa fa-fw fa-download">&nbsp; </i>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li data-ng-click="exportAdmins('csv')">
+                                <a>CSV</a>
+                            </li>
+                            <li data-ng-click="exportAdmins('json')">
+                                <a>JSON</a>
+                            </li>
+                            <li data-ng-click="exportAdmins('xml')">
+                                <a>XML</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="btn-group" role="group" aria-label="Third group">
+                        <df-toolbar-view-modes></df-toolbar-view-modes>
+                    </div>
+                </div>
             </div>
             <div style="clear: both"></div>
         </df-section-toolbar>
