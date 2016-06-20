@@ -20,31 +20,31 @@
                         <!-- User Email -->
                         <div class="form-group">
                             <label>Email</label>
-                            <input type="email" class="form-control" data-ng-model="user.record.email" placeholder="Enter email address."/>
+                            <input type="email" class="form-control" data-ng-model="user.record.email" placeholder=""/>
                         </div>
 
                         <!-- User First Name -->
                         <div class="form-group">
                             <label>First Name</label>
-                            <input type="text" class="form-control" data-ng-model="user.record.first_name" placeholder="Enter first name." />
+                            <input type="text" class="form-control" data-ng-model="user.record.first_name" placeholder="" />
                         </div>
 
                         <!-- User Last Name -->
                         <div class="form-group">
                             <label>Last Name</label>
-                            <input type="text" class="form-control" data-ng-model="user.record.last_name" placeholder="Enter last name." />
+                            <input type="text" class="form-control" data-ng-model="user.record.last_name" placeholder="" />
                         </div>
 
                         <!-- User Display Name -->
                         <div class="form-group">
                             <label>Display Name</label>
-                            <input type="text" class="form-control" data-ng-model="user.record.name" placeholder="Enter display name."  />
+                            <input type="text" class="form-control" data-ng-model="user.record.name" placeholder=""  />
                         </div>
 
                         <!-- User Phone -->
                         <div class="form-group">
                             <label>Phone</label>
-                            <input type="text" class="form-control" data-ng-model="user.record.phone" placeholder="Enter phone number."  />
+                            <input type="text" class="form-control" data-ng-model="user.record.phone" placeholder=""  />
                         </div>
 
                     </div>
@@ -61,7 +61,7 @@
 
                         <!-- UserSend Invite on create -->
                         <div data-ng-show="newUser">
-                            <div class="form-group">
+                            <div class="checkbox">
                                 <label>
                                     <input type="checkbox" data-ng-model="sendEmailOnCreate" data-ng-checked="sendEmailOnCreate"/>
                                     Send Email Invitation
