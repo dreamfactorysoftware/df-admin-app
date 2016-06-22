@@ -81,7 +81,7 @@
                         </td>
                         <td class="no-border">
                             <div class="btn-group pull-left">
-                                <button type="button" class="btn btn-sm btn-default"
+                                <button type="button" class="btn btn-default"
                                         data-ng-click="deleteStringFromArray(serviceInfo.record.config[field.name], $index)"
                                         title="Delete">
                                     <i class="fa fa-trash-o fa-fw"></i>
@@ -123,9 +123,9 @@
                             <input class="form-control" data-ng-if="part.type == 'text'"
                                    data-ng-model="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
                                    type="text" data-ng-required="part.required">
-                            <input class="form-control" data-ng-if="part.type == 'boolean'"
+                            <input class="checkbox" data-ng-if="part.type == 'boolean'"
                                    data-ng-model="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
-                                   type="checkbox">
+                                   type="checkbox" style="margin-top: 13px">
                             <input class="form-control" data-ng-if="part.type == 'integer'"
                                    data-ng-model="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
                                    type="number" data-ng-required="part.required">
@@ -137,12 +137,12 @@
                             </select>
                             <df-verb-picker data-ng-if="part.type == 'verb_mask'"
                                             data-allowed-verb-mask="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
-                                            data-size="sm">
+                                            data-size="">
                             </df-verb-picker>
                         </td>
                         <td class="no-border">
                             <div class="btn-group pull-left">
-                                <button type="button" class="btn btn-sm btn-default"
+                                <button type="button" class="btn btn-default"
                                         data-ng-click="deleteObjectFromArray(serviceInfo.record.config[field.name], $index)"
                                         title="Delete">
                                     <i class="fa fa-trash-o fa-fw"></i>
@@ -184,7 +184,7 @@
 
                     <td class="no-border">
                         <div class="btn-group pull-left">
-                            <button type="button" class="btn btn-sm btn-default"
+                            <button type="button" class="btn btn-default"
                                     data-ng-click="deleteKeyValue(serviceInfo.record.config[field.name], key)">
                                 <i class="fa fa-trash-o fa-fw"></i>
                             </button>

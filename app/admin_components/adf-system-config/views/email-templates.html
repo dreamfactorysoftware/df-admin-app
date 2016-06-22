@@ -23,9 +23,7 @@
 
     <div>
         <div class="form-group">
-            <label>Template Name
-                <small style="color: grey"> required</small>
-            </label>
+            <label>Template Name</label>
             <input class="form-control" data-ng-model="selectedEmailTemplate.record.name"
                    placeholder="Enter template name." data-ng-disabled="selectedEmailTemplate === null"/>
         </div>
@@ -40,20 +38,23 @@
 
         <div class="form-group">
             <label>Recipient</label>
+            <df-simple-help data-options="helpText.recipient"></df-simple-help>
             <input class="form-control" data-ng-model="selectedEmailTemplate.record.to"
-                   placeholder="Enter recipient address." data-ng-disabled="selectedEmailTemplate === null"/>
+                   placeholder="" data-ng-disabled="selectedEmailTemplate === null"/>
         </div>
 
         <div class="form-group">
             <label>Cc</label>
-            <input class="form-control" data-ng-model="selectedEmailTemplate.record.cc" placeholder="Enter cc address."
+            <df-simple-help data-options="helpText.cc"></df-simple-help>
+            <input class="form-control" data-ng-model="selectedEmailTemplate.record.cc" placeholder=""
                    data-ng-disabled="selectedEmailTemplate === null"/>
         </div>
 
         <div class="form-group">
             <label>Bcc</label>
+            <df-simple-help data-options="helpText.bcc"></df-simple-help>
             <input class="form-control" data-ng-model="selectedEmailTemplate.record.bcc"
-                   placeholder="Enter bcc address." data-ng-disabled="selectedEmailTemplate === null"/>
+                   placeholder="" data-ng-disabled="selectedEmailTemplate === null"/>
         </div>
 
         <hr/>
@@ -87,14 +88,16 @@
 
         <div class="form-group">
             <label>Reply to Name</label>
+            <df-simple-help data-options="helpText.reply_to_name"></df-simple-help>
             <input class="form-control" data-ng-model="selectedEmailTemplate.record.reply_to_name"
-                   placeholder="Enter reply to name." data-ng-disabled="selectedEmailTemplate === null"/>
+                   placeholder="" data-ng-disabled="selectedEmailTemplate === null"/>
         </div>
 
         <div class="form-group">
             <label>Reply to Email</label>
+            <df-simple-help data-options="helpText.reply_to_email"></df-simple-help>
             <input class="form-control" data-ng-model="selectedEmailTemplate.record.reply_to_email"
-                   placeholder="Enter reply to email." data-ng-disabled="selectedEmailTemplate === null"/>
+                   placeholder="" data-ng-disabled="selectedEmailTemplate === null"/>
         </div>
 
     </div>

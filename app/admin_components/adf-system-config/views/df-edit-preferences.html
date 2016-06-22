@@ -3,7 +3,7 @@
         <div class="col-md-6">
             <div data-ng-repeat="(key, value) in prefs">
                 <div data-ng-if="key === 'application'">
-                    <h3>{{key}}</h3>
+                    <legend><h4>Application</h4></legend>
                     <div class="panel panel-default">
                         <ul class="list-group">
                             <li class="list-group-item" data-ng-repeat="(key, value) in value">
@@ -46,7 +46,7 @@
 
 
                 <div data-ng-if="key === 'sections'">
-                    <h3>{{key}}</h3>
+                    <legend><h4>Sections</h4></legend>
                     <div class="panel panel-default">
                         <ul class="list-group">
                             <li class="list-group-item" data-ng-repeat="(key, value) in value">

@@ -673,6 +673,25 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         )
                     }
 
+                    scope.helpText = {
+                        origin: {
+                            title: 'Origin',
+                            text: 'Enter origin. Origin is a required field.'
+                        },
+                        paths: {
+                            title: 'Paths',
+                            text: 'Enter allowed paths.'
+                        },
+                        headers: {
+                            title: 'Headers',
+                            text: 'Enter allowed headers.'
+                        },
+                        max_age: {
+                            title: 'Max Age',
+                            text: 'Enter max age.'
+                        }
+                    }
+
 
                     var watchcorsEntries = scope.$watch('corsEntries', function (newValue, oldValue) {
 
@@ -1012,6 +1031,29 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                             }
                         )
+                    }
+
+                    scope.helpText = {
+                        recipient: {
+                            title: 'Recipient',
+                            text: 'Enter recipient address.'
+                        },
+                        cc: {
+                            title: 'Cc',
+                            text: 'Enter cc address.'
+                        },
+                        bcc: {
+                            title: 'Bcc',
+                            text: 'Enter bcc address.'
+                        },
+                        reply_to_name: {
+                            title: 'Reply to Name',
+                            text: 'Enter reply to name.'
+                        },
+                        reply_to_email: {
+                            title: 'Reply to Email',
+                            text: 'Enter reply to email.'
+                        }
                     }
 
 

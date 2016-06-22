@@ -1343,16 +1343,34 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 });
 
                 scope.helpText = {
+                    name: {
+                        title: 'Name',
+                        text: 'The field name used by the API.'
+                    },
+                    alias: {
+                        title: 'Alias',
+                        text: 'If set, the alias is used in table access instead of the name.'
+                    },
+                    label: {
+                        title: 'Label',
+                        text: 'A displayable name used by clients.'
+                    },
+                    type: {
+                        title: 'Type',
+                        text: 'This is a simplified DreamFactory type.'
+                    },
+                    database_type: {
+                        title: 'Database Type',
+                        text: 'If necessary, enter a type acceptable to the underlying database.'
+                    },
                     db_function: {
                         title: 'DB Function',
                         text: 'Enter a db function like max(fieldname) or concat(field1, \'.\', field2)'
                     },
-
                     validation: {
                         title: 'Validation',
                         text: 'A JSON object detailing required validations, if any. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Validations" target="_blank">here</a> for more info.'
                     },
-
                     'aggregate_db_unction': {
                         title: 'Aggregate DB Function',
                         text: 'Supported DB functions to apply to this field. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Database_Functions" target="_blank">here</a> for more info.'

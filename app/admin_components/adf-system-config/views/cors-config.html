@@ -18,28 +18,34 @@
 
     <div>
         <div class="form-group">
-            <label>Origin<small style="color: grey"> required</small></label>
-            <input class="form-control" data-ng-model="selectedCorsEntry.record.origin" placeholder="Enter origin." data-ng-disabled="selectedCorsEntry === null"/>
+            <label>Origin</label>
+            <df-simple-help data-options="helpText.origin"></df-simple-help>
+            <input class="form-control" data-ng-model="selectedCorsEntry.record.origin" placeholder="" data-ng-disabled="selectedCorsEntry === null"/ required>
         </div>
 
         <div class="form-group">
             <label>Paths</label>
-            <input class="form-control" data-ng-model="selectedCorsEntry.record.path" placeholder="Enter allowed paths." data-ng-disabled="selectedCorsEntry === null"/>
+            <df-simple-help data-options="helpText.paths"></df-simple-help>
+            <input class="form-control" data-ng-model="selectedCorsEntry.record.path" placeholder="" data-ng-disabled="selectedCorsEntry === null"/>
         </div>
 
         <div class="form-group">
             <label>Headers</label>
-            <input class="form-control" data-ng-model="selectedCorsEntry.record.header" placeholder="Enter allowed headers." data-ng-disabled="selectedCorsEntry === null" />
+            <df-simple-help data-options="helpText.headers"></df-simple-help>
+            <input class="form-control" data-ng-model="selectedCorsEntry.record.header" placeholder="" data-ng-disabled="selectedCorsEntry === null" />
         </div>
 
         <div class="form-group">
             <label>Max Age</label>
-            <input class="form-control" data-ng-model="selectedCorsEntry.record.max_age" placeholder="Enter max age." data-ng-disabled="selectedCorsEntry === null" />
+            <df-simple-help data-options="helpText.max_age"></df-simple-help>
+            <input class="form-control" data-ng-model="selectedCorsEntry.record.max_age" placeholder="" data-ng-disabled="selectedCorsEntry === null" />
         </div>
 
         <div class="form-group">
             <label>Methods</label>
-            <df-verb-picker data-allowed-verbs="selectedCorsEntry.record.method"></df-verb-picker>
+            <div>
+                <df-verb-picker data-allowed-verbs="selectedCorsEntry.record.method"></df-verb-picker>
+            </div>
         </div>
 
         <div class="form-group">

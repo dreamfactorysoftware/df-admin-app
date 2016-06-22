@@ -1,1 +1,114 @@
-<div> <df-large-help data-options="dfLargeHelp.emailTemplates"></df-large-help> <df-section-toolbar> <div class="col-sm-4 col-md-3"> <select id="select-email-template" class="form-control input-sm" data-ng-model="$parent.selectedEmailTemplate" data-ng-options="email as email.record.name for email in emailTemplates" data-ng-change="changeEmailTemplate()"> <option value="">-- Select Email Template -- </select> </div> <div class="btn-group btn-group-sm"> <button type="button" class="btn btn-default" data-ng-click="addEmailTemplate()"><i class="fa fa-fw fa-plus"></i></button> <button type="button" class="btn btn-default" data-ng-click="deleteEmailTemplate()" data-ng-disabled="!selectedEmailTemplate"><i class="fa fa-fw fa-trash"></i></button> </div> </df-section-toolbar> <div> <div class="form-group"> <label>Template Name <small style="color: grey"> required</small> </label> <input class="form-control" data-ng-model="selectedEmailTemplate.record.name" placeholder="Enter template name." data-ng-disabled="selectedEmailTemplate === null"> </div> <div class="form-group"> <label>Template Description</label> <input class="form-control" data-ng-model="selectedEmailTemplate.record.description" placeholder="Enter template description." data-ng-disabled="selectedEmailTemplate === null"> </div> <hr> <div class="form-group"> <label>Recipient</label> <input class="form-control" data-ng-model="selectedEmailTemplate.record.to" placeholder="Enter recipient address." data-ng-disabled="selectedEmailTemplate === null"> </div> <div class="form-group"> <label>Cc</label> <input class="form-control" data-ng-model="selectedEmailTemplate.record.cc" placeholder="Enter cc address." data-ng-disabled="selectedEmailTemplate === null"> </div> <div class="form-group"> <label>Bcc</label> <input class="form-control" data-ng-model="selectedEmailTemplate.record.bcc" placeholder="Enter bcc address." data-ng-disabled="selectedEmailTemplate === null"> </div> <hr> <div class="form-group"> <label>Subject</label> <input class="form-control" data-ng-model="selectedEmailTemplate.record.subject" placeholder="Enter email subject." data-ng-disabled="selectedEmailTemplate === null"> </div> <div class="form-group"> <label>Body</label> <textarea class="form-control" rows="20" data-ng-model="selectedEmailTemplate.record.body_html" data-ng-disabled="selectedEmailTemplate === null"></textarea> </div> <hr> <div class="form-group"> <label>Sender Name</label> <input class="form-control" data-ng-model="selectedEmailTemplate.record.from_name" placeholder="Enter sender name." data-ng-disabled="selectedEmailTemplate === null"> </div> <div class="form-group"> <label>Sender Email</label> <input class="form-control" data-ng-model="selectedEmailTemplate.record.from_email" placeholder="Enter sender email." data-ng-disabled="selectedEmailTemplate === null"> </div> <div class="form-group"> <label>Reply to Name</label> <input class="form-control" data-ng-model="selectedEmailTemplate.record.reply_to_name" placeholder="Enter reply to name." data-ng-disabled="selectedEmailTemplate === null"> </div> <div class="form-group"> <label>Reply to Email</label> <input class="form-control" data-ng-model="selectedEmailTemplate.record.reply_to_email" placeholder="Enter reply to email." data-ng-disabled="selectedEmailTemplate === null"> </div> </div> </div> <div class="row"> <div class="col-xs-12"> <button type="button" class="btn btn-primary" data-ng-click="saveEmailTemplate()"> <span data-ng-if="selectedEmailTemplate.__dfUI.newTemplate">Save</span> <span data-ng-if="!selectedEmailTemplate.__dfUI.newTemplate">Update</span> </button> </div> </div>
+<div>
+    <df-large-help data-options="dfLargeHelp.emailTemplates"></df-large-help>
+
+    <df-section-toolbar>
+
+        <div class="col-sm-4 col-md-3">
+            <select id="select-email-template" class="form-control input-sm"
+                    data-ng-model="$parent.selectedEmailTemplate"
+                    data-ng-options="email as email.record.name for email in emailTemplates"
+                    data-ng-change="changeEmailTemplate()">
+                <option value="">-- Select Email Template --</option>
+            </select>
+        </div>
+
+        <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-default" data-ng-click="addEmailTemplate()"><i
+                    class="fa fa-fw fa-plus"></i></button>
+            <button type="button" class="btn btn-default" data-ng-click="deleteEmailTemplate()"
+                    data-ng-disabled="!selectedEmailTemplate"><i class="fa fa-fw fa-trash"></i></button>
+        </div>
+
+    </df-section-toolbar>
+
+    <div>
+        <div class="form-group">
+            <label>Template Name</label>
+            <input class="form-control" data-ng-model="selectedEmailTemplate.record.name"
+                   placeholder="Enter template name." data-ng-disabled="selectedEmailTemplate === null"/>
+        </div>
+
+        <div class="form-group">
+            <label>Template Description</label>
+            <input class="form-control" data-ng-model="selectedEmailTemplate.record.description"
+                   placeholder="Enter template description." data-ng-disabled="selectedEmailTemplate === null"/>
+        </div>
+
+        <hr/>
+
+        <div class="form-group">
+            <label>Recipient</label>
+            <df-simple-help data-options="helpText.recipient"></df-simple-help>
+            <input class="form-control" data-ng-model="selectedEmailTemplate.record.to"
+                   placeholder="" data-ng-disabled="selectedEmailTemplate === null"/>
+        </div>
+
+        <div class="form-group">
+            <label>Cc</label>
+            <df-simple-help data-options="helpText.cc"></df-simple-help>
+            <input class="form-control" data-ng-model="selectedEmailTemplate.record.cc" placeholder=""
+                   data-ng-disabled="selectedEmailTemplate === null"/>
+        </div>
+
+        <div class="form-group">
+            <label>Bcc</label>
+            <df-simple-help data-options="helpText.bcc"></df-simple-help>
+            <input class="form-control" data-ng-model="selectedEmailTemplate.record.bcc"
+                   placeholder="" data-ng-disabled="selectedEmailTemplate === null"/>
+        </div>
+
+        <hr/>
+
+        <div class="form-group">
+            <label>Subject</label>
+            <input class="form-control" data-ng-model="selectedEmailTemplate.record.subject"
+                   placeholder="Enter email subject." data-ng-disabled="selectedEmailTemplate === null"/>
+        </div>
+
+        <div class="form-group">
+            <label>Body</label>
+            <textarea class="form-control" rows="20" data-ng-model="selectedEmailTemplate.record.body_html"
+                      data-ng-disabled="selectedEmailTemplate === null"></textarea>
+        </div>
+
+
+        <hr/>
+
+        <div class="form-group">
+            <label>Sender Name</label>
+            <input class="form-control" data-ng-model="selectedEmailTemplate.record.from_name"
+                   placeholder="Enter sender name." data-ng-disabled="selectedEmailTemplate === null"/>
+        </div>
+
+        <div class="form-group">
+            <label>Sender Email</label>
+            <input class="form-control" data-ng-model="selectedEmailTemplate.record.from_email"
+                   placeholder="Enter sender email." data-ng-disabled="selectedEmailTemplate === null"/>
+        </div>
+
+        <div class="form-group">
+            <label>Reply to Name</label>
+            <df-simple-help data-options="helpText.reply_to_name"></df-simple-help>
+            <input class="form-control" data-ng-model="selectedEmailTemplate.record.reply_to_name"
+                   placeholder="" data-ng-disabled="selectedEmailTemplate === null"/>
+        </div>
+
+        <div class="form-group">
+            <label>Reply to Email</label>
+            <df-simple-help data-options="helpText.reply_to_email"></df-simple-help>
+            <input class="form-control" data-ng-model="selectedEmailTemplate.record.reply_to_email"
+                   placeholder="" data-ng-disabled="selectedEmailTemplate === null"/>
+        </div>
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <button type="button" class="btn btn-primary" data-ng-click="saveEmailTemplate()">
+            <span data-ng-if="selectedEmailTemplate.__dfUI.newTemplate">Save</span>
+            <span data-ng-if="!selectedEmailTemplate.__dfUI.newTemplate">Update</span>
+        </button>
+    </div>
+</div>
+

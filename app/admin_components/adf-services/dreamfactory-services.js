@@ -549,7 +549,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     basic: {
                         title: 'Services Overview',
-                        text: 'Services are where you set up REST API connections to databases, file storage, email, and remote web services.'
+                        text: 'Services are where you set up REST API connections to databases, file storage, email, remote web services, and more.'
                     },
                     config: {
                         title: 'Config Overview',
@@ -557,7 +557,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     },
                     serviceDef: {
                         title: 'Service Definition Overview',
-                        text: 'Specify the definition of the service below. Refer to the <a target="_blank" href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md" title="Link to Swagger">OpenAPI docs</a> for details, or build and export your own from <a target="_blank" href="http://editor.swagger.io/#/" title="Link to Swagger Editor">here</a>.'
+                        text: 'For Remote Services and Scripts, you can specify a definition of the service below. Refer to the <a target="_blank" href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md" title="Link to Swagger">OpenAPI docs</a> for details, or build and export your own from <a target="_blank" href="http://editor.swagger.io/#/" title="Link to Swagger Editor">here</a>.'
                     }
                 }
             }
@@ -2129,7 +2129,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.fields = [
                     {
                         name: 'id',
-                        label: 'Id',
+                        label: 'ID',
                         active: true
                     },
                     {
