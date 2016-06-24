@@ -170,13 +170,18 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.samplesScripts = null;
             // $scope.sampleScripts = new ScriptObj('sample-scripts', 'v8js', getSampleScripts.data);
 
-            // All these vars pertain to building of events dynamically on the client
-            dfApplicationData.getApiData('event', null, true).then(function (result) {
+            if(dfApplicationData.getApiData('event') === undefined) {
+                // All these vars pertain to building of events dynamically on the client
+                dfApplicationData.getApiData('event', null, true).then(function (result) {
+                  $scope.events = dfApplicationData.getApiData('event');
+                  $scope.highlightScript();
+                });
+            }
+            else {
                 $scope.events = dfApplicationData.getApiData('event');
                 $scope.highlightScript();
-            });
-
-
+            }
+            
             $scope.scriptTypes = dfApplicationData.getApiData('script_type');
             $scope.uppercaseVerbLabels = true;
             $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete']
