@@ -90,6 +90,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     type: scriptLanguage || 'v8js',
                     content: scriptData || '',
                     is_active: false,
+                    allow_event_modification: false,
                     __newScript: true
                 }
             };
