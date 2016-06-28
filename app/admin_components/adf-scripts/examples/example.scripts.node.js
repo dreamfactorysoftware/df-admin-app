@@ -18,7 +18,7 @@ if (event.request.payload.resource) { // use 'payload' for request
     lodash._.each(event.request.payload.resource, function( record ) {
 
         if (!record.name) {
-            throw 'Name cannot be empty';
+            throw 'Name field is required';
         }
     });
 }
@@ -37,10 +37,10 @@ var lodash = require("lodash");
 
 if (event.response.content.resource) {  // use 'content' for response
 
+    // For this change to take effect you have to enable modification of response in admin console script editor.
+    // Checkbox label is 'Allow script to modify request (pre-process) or response (post-process)'.
     lodash._.each(event.response.content.resource, function( record ) {
 
-        // For this change to take effect you have to enable modification of response in admin console script editor.
-        // Checkbox label is 'Allow script to modify request (pre-process) or response (post-process)'.
-        record.extraField = 'Feed the dog.';
+        record.extraField = 'Feed the dog';
     });
 }
