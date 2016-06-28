@@ -580,7 +580,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 $scope._resetAll();
 
-                $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.js').then(
+                $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.v8.js').then(
                     function (result) {
 
                         $scope.sampleScripts = new ScriptObj('sample-scripts', 'v8js', result.data);
