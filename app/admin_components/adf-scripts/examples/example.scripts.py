@@ -1,4 +1,5 @@
 # Here are a few basic Python examples.
+# Requires Bunch dictionary for dot notation, use PIP to install.
 # See wiki.dreamfactory.com for more examples.
 
 # ****************** Pre-processing script on a table ******************
