@@ -18,7 +18,7 @@ if (event.request.payload.resource) { // use 'payload' for request
     lodash._.each(event.request.payload.resource, function( record ) {
 
         if (!record.name) {
-            throw 'Name field is required';
+            throw new Error('Name field is required');
         }
     });
 }

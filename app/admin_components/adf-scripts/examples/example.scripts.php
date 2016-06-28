@@ -24,12 +24,14 @@ if(!empty($payload['resource'])){
 //  To allow modification of response content, select checkbox in scripting tab of admin console.
 
 // use 'content' for response
-$content = $event['request']['$content'];
+$content = $event['response']['content'];
 
 // For this change to take effect you have to enable modification of response in admin console script editor.
 // Checkbox label is 'Allow script to modify request (pre-process) or response (post-process)'.
 if(!empty($content['resource'])){
-    foreach($content['resource'] as $record){
+    foreach($content['resource'] as $k => $record){
         $record['extraField'] = 'Feed the dog';
+        $content['resource'][$k] = $record;
     }
+    $event['response']['content'] = $content;
 }
