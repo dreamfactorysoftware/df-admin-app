@@ -19,30 +19,31 @@
     <div>
         <div class="form-group">
             <label>Origin</label>
-            <df-simple-help data-options="helpText.origin"></df-simple-help>
+            <df-simple-help data-options="helpTextCors.origin"></df-simple-help>
             <input class="form-control" data-ng-model="selectedCorsEntry.record.origin" placeholder="" data-ng-disabled="selectedCorsEntry === null"/ required>
         </div>
 
         <div class="form-group">
             <label>Paths</label>
-            <df-simple-help data-options="helpText.paths"></df-simple-help>
+            <df-simple-help data-options="helpTextCors.paths"></df-simple-help>
             <input class="form-control" data-ng-model="selectedCorsEntry.record.path" placeholder="" data-ng-disabled="selectedCorsEntry === null"/>
         </div>
 
         <div class="form-group">
             <label>Headers</label>
-            <df-simple-help data-options="helpText.headers"></df-simple-help>
+            <df-simple-help data-options="helpTextCors.headers"></df-simple-help>
             <input class="form-control" data-ng-model="selectedCorsEntry.record.header" placeholder="" data-ng-disabled="selectedCorsEntry === null" />
         </div>
 
         <div class="form-group">
             <label>Max Age</label>
-            <df-simple-help data-options="helpText.max_age"></df-simple-help>
+            <df-simple-help data-options="helpTextCors.max_age"></df-simple-help>
             <input class="form-control" data-ng-model="selectedCorsEntry.record.max_age" placeholder="" data-ng-disabled="selectedCorsEntry === null" />
         </div>
 
         <div class="form-group">
             <label>Methods</label>
+            <df-simple-help data-options="helpTextCors.methods"></df-simple-help>
             <div>
                 <df-verb-picker data-allowed-verbs="selectedCorsEntry.record.method"></df-verb-picker>
             </div>

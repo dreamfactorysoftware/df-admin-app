@@ -673,22 +673,26 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         )
                     }
 
-                    scope.helpText = {
+                    scope.helpTextCors = {
                         origin: {
-                            title: 'Origin',
-                            text: 'Enter origin. Origin is a required field.'
+                            title: 'Origin (Access-Control-Allow-Origin)',
+                            text: 'Enter origin that you would like to allow. Enter * for allowing any origin. Origin is a required field.'
                         },
                         paths: {
                             title: 'Paths',
-                            text: 'Enter allowed paths.'
+                            text: 'Enter allowed paths. Example: * allows any path, api/v2/* will allow any path with api/v2/ prefix.'
                         },
                         headers: {
-                            title: 'Headers',
-                            text: 'Enter allowed headers.'
+                            title: 'Headers (Access-Control-Allow-Headers)',
+                            text: 'Enter allowed headers. Enter * for allowing any header.'
                         },
                         max_age: {
-                            title: 'Max Age',
-                            text: 'Enter max age.'
+                            title: 'Max Age (Access-Control-Max-Age)',
+                            text: 'Enter max age. This indicates how long (in seconds) the results of a pre-flight request can be cached. Enter 0 for no caching.'
+                        },
+                        methods: {
+                            title: 'Methods (Access-Control-Allow-Methods)',
+                            text: 'Select HTTP verbs/methods that are allowed.'
                         }
                     }
 
