@@ -9,7 +9,7 @@
             </div>
 
             <div class="col-xs-10 ">
-                <!--input type="text" data-ng-model="pathFilter" class="form-control input-sm" placeholder="Filter"-->
+
             </div>
         </div>
     </div>
@@ -18,7 +18,7 @@
     <div df-fs-height id="scripting-sidebar-list" style="height:500px; overflow-y: scroll">
         <!-- Menu for Scripting Type -->
         <div class="list-group scripting-list-group"
-             data-ng-show="menuPathArr.length === 0 || currentScriptObj.name === 'sample-scripts' ">
+             data-ng-show="$parent.$parent.menuPathArr.length === 0 || $parent.currentScriptObj.name === 'sample-scripts' ">
             <a class="list-group-item" data-ng-repeat="type in eventTypes | filter: pathFilter"
                data-ng-click="setEventType(type)"
                ng-class="{ highlighted: events.process.$$isHighlighted || events.broadcast.$$isHighlighted }">
@@ -27,23 +27,23 @@
            </a>
         </div>
 
-
         <!-- Handle menu for process driven event scripts -->
         <div data-ng-if="currentEventTypeObj.name === 'process-scripts'">
-            <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 1">
+
+            <div class="list-group scripting-list-group" data-ng-show="$parent.$parent.menuPathArr.length === 1">
                 <a class="list-group-item" ng-class="{ highlighted: paths.$$isHighlighted }" data-ng-repeat="(service,paths) in events.process | filter: pathFilter"
                    data-ng-click="setService(service, paths)">{{service}}<i
                         class="fa fa-fw fa-chevron-right pull-right"></i></a>
             </div>
 
-            <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 2">
+            <div class="list-group scripting-list-group" data-ng-show="$parent.$parent.menuPathArr.length === 2">
                 <a class="list-group-item"
                    data-ng-repeat="(path,verbs) in currentServiceObj.paths | filter: pathFilter"
                    ng-class="{ highlighted: verbs.$$isHighlighted }"
                    data-ng-click="setPath(path, verbs)">{{path}}<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
             </div>
 
-            <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 3">
+            <div class="list-group scripting-list-group" data-ng-show="$parent.$parent.menuPathArr.length === 3">
                 <span data-ng-repeat="(verb, eventList) in currentPathObj.verbs | filter: pathFilter">
                     <a data-ng-if="eventList.length > 1"  data-ng-click="setEventList(currentPathObj.name, verb, eventList)" ng-class="{ highlighted: eventList.$$isHighlighted }">{{currentPathObj.name}}<span class="pull-right text-muted"
                               style="font-size: 10px; margin-top: 5px; text-transform: uppercase;">{{verb}}</span>
@@ -71,20 +71,20 @@
         <!-- Handle menu for broadcast driven event scripts -->
         <div data-ng-if="currentEventTypeObj.name === 'broadcast-scripts'">
 
-            <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 1">
+            <div class="list-group scripting-list-group" data-ng-show="$parent.$parent.menuPathArr.length === 1">
                 <a class="list-group-item" data-ng-repeat="(service,paths) in events.broadcast | filter: pathFilter"
                    data-ng-click="setService(service, paths)" ng-class="{ highlighted: isHighlightedItem(service) }">{{service}}<i
                         class="fa fa-fw fa-chevron-right pull-right"></i></a>
             </div>
 
-            <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 2">
+            <div class="list-group scripting-list-group" data-ng-show="$parent.$parent.menuPathArr.length === 2">
                 <a class="list-group-item"
                    data-ng-repeat="(path,verbs) in currentServiceObj.paths | filter: pathFilter"
                    ng-class="{ highlighted: isHighlightedItem(path) }"
                    data-ng-click="setPath(path, verbs)">{{path}}<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
             </div>
 
-            <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 3">
+            <div class="list-group scripting-list-group" data-ng-show="$parent.$parent.menuPathArr.length === 3">
                 <span data-ng-repeat="(verb,eventList) in currentPathObj.verbs | filter: pathFilter">
                     <a data-ng-if="eventList.length > 1" data-ng-click="setEventList(currentPathObj.name, verb, eventList)" ng-class="{ highlighted: isHighlightedItem(currentPathObj.name) }">{{currentPathObj.name}}<span class="pull-right text-muted" style="font-size: 10px; margin-top: 5px; text-transform: uppercase;">{{verb}}</span>
                     </a>
@@ -106,19 +106,19 @@
             </div>
         </div>
 
-        <div data-ng-show="currentScriptObj && currentScriptObj.name">
+        <div data-ng-show="$parent.$parent.currentScriptObj && $parent.$parent.currentScriptObj.name">
             <div class="form-group">
                 <label>Script Name</label>
                 <input class="form-control" type="text" data-ng-disabled="true"
-                       data-ng-model="currentScriptObj.name"/>
+                       data-ng-model="$parent.currentScriptObj.name"/>
             </div>
 
             <div class="form-group">
                 <label>Script Type/Language</label>
                 <select class="form-control input-sm"
-                        data-ng-model="currentScriptObj.type"
+                        data-ng-model="$parent.currentScriptObj.type"
                         data-ng-options="scriptType.name as scriptType.label for scriptType in scriptTypes"
-                        data-ng-change="updateEditor(currentScriptObj.type)">
+                        data-ng-change="updateEditor($parent.currentScriptObj.type)">
                 </select>
             </div>
             <div class="form-group">
@@ -130,7 +130,7 @@
             <div class="form-inline">
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" data-ng-model="currentScriptObj.is_active"/>
+                        <input type="checkbox" data-ng-model="$parent.currentScriptObj.is_active"/>
                         &nbsp;
                         Active
                     </label>
@@ -140,7 +140,7 @@
             <div class="form-inline">
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" data-ng-model="currentScriptObj.allow_event_modification"/>
+                        <input type="checkbox" data-ng-model="$parent.currentScriptObj.allow_event_modification"/>
                         &nbsp;
                         Allow script to modify request (pre-process) or response (post-process)
                     </label>
