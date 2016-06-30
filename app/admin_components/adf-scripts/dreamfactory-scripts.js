@@ -81,6 +81,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
         function (INSTANCE_URL, SystemConfigDataService, $scope, $http, dfApplicationData, dfNotify, MODSCRIPTING_EXAMPLES_PATH) {
 
             $scope.$parent.title = 'Scripts';
+            $scope.sampleSelect = null;
 
             // Loosely defined script object for when a script is non-existent.
             var ScriptObj = function (scriptId, scriptLanguage, scriptData) {
@@ -95,6 +96,10 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             };
 
+            $scope.scriptSamplesSelect = function(type) {
+                $scope.sampleSelect = type;
+                $scope._loadSampleScript(type);
+            }
 
             $scope.highlightScript = function () {
                 $http({
@@ -182,7 +187,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.events = dfApplicationData.getApiData('event');
                 $scope.highlightScript();
             }
-            
+
             $scope.scriptTypes = dfApplicationData.getApiData('script_type');
             $scope.uppercaseVerbLabels = true;
             $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete']
@@ -250,11 +255,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                     $scope._deleteScript();
                 }
-            };
-
-            $scope.loadSampleScript = function(type) {
-
-                $scope._loadSampleScript(type);
             };
 
 
