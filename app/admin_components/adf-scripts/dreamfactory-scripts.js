@@ -330,7 +330,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 $scope.menuPathArr.push(typeObj.label);
                 $scope.currentEventTypeObj = typeObj;
-                $scope.pathFilter = '';
 
                 var evt = null;
                 if (typeObj.item_name === 'process') {
@@ -360,7 +359,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 $scope.menuPathArr.push(name);
                 $scope.currentServiceObj = { "name": name, "paths": eventObj };
-                $scope.pathFilter = '';
 
                 $scope.highlightCurrentServiceObj($scope.currentServiceObj);
                 return false;
@@ -452,7 +450,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 var newVerbList = constructPaths(name, pathObj.verb, pathObj.parameter);
 
                 $scope.currentPathObj = { "name": name, "verbs": newVerbList };
-                $scope.pathFilter = '';
                 $scope.highlightCurrentPathObj($scope.currentPathObj);
             };
 
@@ -627,12 +624,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             templateUrl: MODSCRIPTING_ASSET_PATH + 'views/script-sidebar-menu.html',
             link: function (scope, elem, attrs) {
 
-
                 scope.menuOpen = true;
-                //scope.menuPathArr = [];
-
-                scope.pathFilter = '';
-
 
                 // PUBLIC API
                 scope.toggleMenu = function () {
@@ -687,7 +679,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 // COMPLEX IMPLEMENTATION
                 scope._menuBack = function () {
-
                     // Do we have a script type.  If not stop.
                     if (!scope.currentEventTypeObj) return false;
 
@@ -704,23 +695,20 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                                     scope.menuPathArr.pop();
                                     scope.currentEventTypeObj = null;
-                                    scope.pathFilter = '';
                                     break;
 
                                 case 2:
 
                                     scope.menuPathArr.pop();
                                     scope.currentServiceObj = null;
-                                    scope.pathFilter = '';
                                     scope.highlightEvent(scope.events.process);
                                     break
 
                                 case 3:
                                     scope.menuPathArr.pop();
                                     scope.currentPathObj = null;
-                                    scope.pathFilter = '';
                                     scope.highlightCurrentServiceObj(scope.currentServiceObj);
-
+                                    scope.currentScriptObj = null;
                                     break;
 
                                 case 4:
@@ -759,7 +747,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                                     scope.menuPathArr.pop();
                                     scope.currentEventTypeObj = null;
-                                    scope.pathFilter = '';
                                     break;
 
                                 case 2:
@@ -772,9 +759,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                 case 3:
                                     scope.menuPathArr.pop();
                                     scope.currentPathObj = null;
-                                    scope.pathFilter = '';
                                     scope.highlightCurrentServiceObj(scope.currentServiceObj);
-
                                     break;
 
                                 case 4:
@@ -799,16 +784,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                                     break;
                             }
-                            break;
-
-                        case 'sample-scripts':
-
-                            scope.menuPathArr.pop();
-                            scope.currentScriptObj = null;
-                            scope.currentPathObj = null;
-                            scope.currentServiceObj = null;
-                            scope.currentEventTypeObj = null;
-
                             break;
 
                         default:

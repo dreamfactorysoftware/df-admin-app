@@ -22,8 +22,8 @@
                                             <button class="btn btn-default" data-ng-click="toggleMenu()">Toggle Menu</button>
                                         </div>
                                         <div class="btn-group btn-group-sm">
-                                            <button class="btn btn-default" data-ng-click="saveScript()" data-ng-disabled="!currentScriptObj">Save</button>
-                                            <button class="btn btn-default" data-ng-click="deleteScript()" data-ng-disabled="!currentScriptObj">Delete</button>
+                                            <button class="btn btn-default" data-ng-click="saveScript()" data-ng-disabled="$parent.$parent.menuPathArr.length !== 5"">Save</button>
+                                            <button class="btn btn-default" data-ng-click="deleteScript()" data-ng-disabled="$parent.$parent.menuPathArr.length !== 5"">Delete</button>
                                         </div>
                                     </div>
                                 </div>
