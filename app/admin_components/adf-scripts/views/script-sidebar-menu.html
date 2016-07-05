@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-xs-2">
                 <button type="button" class="btn btn-default btn-sm" data-ng-click="menuBack()"
-                        data-ng-disabled="!currentEventTypeObj">Back
+                        data-ng-disabled="!$parent.$parent.menuPathArr.length">Back
                 </button>
             </div>
 
@@ -13,7 +13,6 @@
             </div>
         </div>
     </div>
-
 
     <div df-fs-height id="scripting-sidebar-list" style="height:500px; overflow-y: scroll">
         <!-- Menu for Scripting Type -->

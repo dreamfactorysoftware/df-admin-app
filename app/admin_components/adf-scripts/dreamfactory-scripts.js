@@ -679,6 +679,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 // COMPLEX IMPLEMENTATION
                 scope._menuBack = function () {
+                  
                     // Do we have a script type.  If not stop.
                     if (!scope.currentEventTypeObj) return false;
 
@@ -689,24 +690,22 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             switch (scope.menuPathArr.length) {
 
                                 case 0:
+                                    scope.currentEventTypeObj = null;
                                     break;
 
                                 case 1:
 
                                     scope.menuPathArr.pop();
-                                    scope.currentEventTypeObj = null;
                                     break;
 
                                 case 2:
 
                                     scope.menuPathArr.pop();
-                                    scope.currentServiceObj = null;
                                     scope.highlightEvent(scope.events.process);
                                     break
 
                                 case 3:
                                     scope.menuPathArr.pop();
-                                    scope.currentPathObj = null;
                                     scope.highlightCurrentServiceObj(scope.currentServiceObj);
                                     scope.currentScriptObj = null;
                                     break;
@@ -721,13 +720,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                         scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
                                     } else {
                                         scope.menuPathArr.pop();
-                                        scope.currentScriptObj = null;
                                     }
 
                                     break;
 
                                 case 5:
-                                    scope.currentScriptObj = null;
                                     scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
                                     scope.menuPathArr.pop();
                                     break;
