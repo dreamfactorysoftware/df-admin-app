@@ -670,6 +670,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 // PRIVATE API
 
+                scope._clearScriptEditor = function() {
+                    scope.currentScriptObj = null;
+                    ace.edit('ide').session.setValue('');
+                };
+
                 // Confirm close with unsaved changes.
                 scope._confirmCloseScript = function () {
 
@@ -679,7 +684,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 // COMPLEX IMPLEMENTATION
                 scope._menuBack = function () {
-                  
+
                     // Do we have a script type.  If not stop.
                     if (!scope.currentEventTypeObj) return false;
 
@@ -694,12 +699,10 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     break;
 
                                 case 1:
-
                                     scope.menuPathArr.pop();
                                     break;
 
                                 case 2:
-
                                     scope.menuPathArr.pop();
                                     scope.highlightEvent(scope.events.process);
                                     break
@@ -707,7 +710,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                 case 3:
                                     scope.menuPathArr.pop();
                                     scope.highlightCurrentServiceObj(scope.currentServiceObj);
-                                    scope.currentScriptObj = null;
                                     break;
 
                                 case 4:
@@ -716,6 +718,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     // at the end of the path, or there's one more
                                     // level
                                     if(scope.currentPathObj.events) {
+                                        scope._clearScriptEditor();
                                         scope.menuPathArr.splice(2,2);
                                         scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
                                     } else {
@@ -725,6 +728,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     break;
 
                                 case 5:
+                                    scope._clearScriptEditor();
                                     scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
                                     scope.menuPathArr.pop();
                                     break;
@@ -741,44 +745,38 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     break;
 
                                 case 1:
-
                                     scope.menuPathArr.pop();
-                                    scope.currentEventTypeObj = null;
                                     break;
 
                                 case 2:
-
                                     scope.menuPathArr.pop();
-                                    scope.currentScriptObj = null;
                                     scope.highlightEvent(scope.events.broadcast);
                                     break;
 
                                 case 3:
                                     scope.menuPathArr.pop();
-                                    scope.currentPathObj = null;
                                     scope.highlightCurrentServiceObj(scope.currentServiceObj);
                                     break;
 
                                 case 4:
-
                                     // Two cases for 4-length. Check whether we are
                                     // at the end of the path, or there's one more
                                     // level
                                     if(scope.currentPathObj.events) {
+                                        scope._clearScriptEditor();
                                         scope.menuPathArr.splice(2,2);
                                         scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
                                     } else {
                                         scope.menuPathArr.pop();
-                                        scope.currentScriptObj = null;
                                     }
 
                                     break;
 
                                 case 5:
+                                    scope._clearScriptEditor();
                                     scope.currentScriptObj = null;
                                     scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
                                     scope.menuPathArr.pop();
-
                                     break;
                             }
                             break;
