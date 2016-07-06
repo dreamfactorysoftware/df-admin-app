@@ -9640,7 +9640,7 @@ body {
 }
 
 /* line 26, ../sass/partials/_df-scripting.scss */
-.scripting-list-group > a.highlighted {
+.scripting-list-group a.highlighted {
   background: #fcf8e3;
 }
 
