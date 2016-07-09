@@ -12,12 +12,12 @@
                     <!-- Application Name -->
                     <div class="form-group">
                         <label>Application Name</label><df-simple-help data-options="dfHelp.name"></df-simple-help>
-                        <input class="form-control" type="text" data-ng-model="app.record.name" placeholder="Enter Name" data-ng-required="true"/>
+                        <input class="form-control" type="text" data-ng-model="app.record.name" placeholder="" data-ng-required="true"/>
                     </div>
 
                     <div class="form-group">
                         <label>Description</label><df-simple-help data-options="dfHelp.description"></df-simple-help>
-                        <input class="form-control" type="text" data-ng-model="app.record.description" placeholder="Enter Description"/>
+                        <input class="form-control" type="text" data-ng-model="app.record.description" placeholder=""/>
                     </div>
 
 					<!-- Your Application API Key -->
@@ -38,7 +38,7 @@
 
                     <!-- Application Location -->
                     <div class="form-group">
-                        <label>Where will this app live</label><df-simple-help data-options="dfHelp.appLocation"></df-simple-help>
+                        <label>App Location</label><df-simple-help data-options="dfHelp.appLocation"></df-simple-help>
                         <div class="radio" data-ng-repeat="location in locations">
                             <label>
                                 <input type="radio" data-ng-model="app.record.type" value="{{location.value}}">
@@ -125,10 +125,10 @@
 
                 <div class="form-group">
                     <div data-ng-if="newApp">
-                        <input class="btn btn-default btn-primary" type="submit" value="Save Application" />
+                        <input class="btn btn-default btn-primary" type="submit" value="Save" />
                     </div>
                     <div data-ng-if="!newApp">
-                        <input class="btn btn-default btn-primary" type="submit" value="Save Application" />
+                        <input class="btn btn-default btn-primary" type="submit" value="Save" />
                         <button type="button" class="btn btn-default" data-ng-click="closeApp()">Cancel</button>
                     </div>
                 </div>

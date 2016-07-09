@@ -16,15 +16,16 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right df-navbar-nav">
-                <li data-ng-repeat="link in links" data-ng-if="link.show == true && link.name !== 'profile' && link.name !== 'logout'" data-ng-class="activeLink === link.name ? 'active': ''">
-                    <a  href="{{link.path}}"><i class="{{link.icon}}"></i> {{link.label}}</a>
+                <li data-ng-repeat="link in links" data-ng-if="link.show == true && !link.subLinks" data-ng-class="activeLink === link.name ? 'active': ''">
+                    <a href="{{link.path}}" target="{{link.target}}"><i class="{{link.icon}}"></i> {{link.label}}</a>
                 </li>
 
-                <li class="dropdown" data-ng-repeat="link in links" data-ng-if="link.show == true && link.name === 'profile' && link.label !== 'Guest'" data-ng-class="activeLink === link.name ? 'active': ''">
+                <li class="dropdown" data-ng-repeat="link in links" data-ng-if="link.show == true && link.subLinks && link.subLinks.length > 0" data-ng-class="activeLink === link.name ? 'active': ''">
                     <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="{{link.icon}}"></i> {{link.label}} <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#/profile">Profile</a></li>
-                        <li><a href="#/logout">Logout</a></li>
+                        <li data-ng-repeat="subLink in link.subLinks">
+                            <a href="{{subLink.path}}" target="{{subLink.target}}">{{subLink.label}}</a>
+                        </li>
                     </ul>
                 </li>
             </ul>

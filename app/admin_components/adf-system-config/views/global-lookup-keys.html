@@ -22,9 +22,7 @@
 
     <div>
         <div class="form-group">
-            <label>Name
-                <small style="color: grey"> required</small>
-            </label>
+            <label>Name</label>
             <input class="form-control" data-ng-model="selectedLookup.record.name" placeholder="Enter name."
                    data-ng-disabled="selectedLookup === null"/>
         </div>
@@ -36,9 +34,13 @@
         </div>
 
         <div class="form-group">
-            <label>Private</label>
-            <input data-ng-model="selectedLookup.record.private" type="checkbox"
+            <div class="checkbox">
+                <label>
+                    <input data-ng-model="selectedLookup.record.private" type="checkbox"
                    data-ng-disabled="selectedLookup === null"/>
+                    Private
+                </label>
+            </div>
         </div>
 
     </div>

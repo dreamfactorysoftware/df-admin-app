@@ -20,7 +20,6 @@
                 <label>Upload a script file</label>
                 <input type="file" id="input" onclick="this.value = null;" onchange="angular.element(this).scope().$parent.handleFiles(this.files)">
             </div>
-
         </div>
 
         <input class="form-control" data-ng-if="field.type == 'string'"
@@ -35,12 +34,7 @@
                data-ng-model="serviceInfo.record.config[field.name]"
                type="text" data-ng-required="field.required"/>
 
-        <!-- <textarea class="form-control" rows="6" data-ng-if="field.type == 'text' && field.name == 'content'"
-               data-ng-model="serviceInfo.record.config[field.name]"
-               data-ng-required="field.required">
-        </textarea> -->
-
-        <df-ace-editor-scripting data-script-type="serviceInfo.record.config.type" data-current-edit-obj="serviceInfo.record.config[field.name]" data-is-clean="isEditorClean" data-editor="editor" data-ng-if="field.type == 'text' && field.name == 'content'"></df-ace-editor-scripting>
+        <df-ace-editor-scripting data-script-type="serviceInfo.record.type" data-current-edit-obj="serviceInfo.record.config[field.name]" data-is-clean="isEditorClean" data-editor="editor" data-ng-if="field.type == 'text' && field.name == 'content'"></df-ace-editor-scripting>
 
         <input class="form-control" data-ng-if="field.type == 'integer'"
                data-ng-model="serviceInfo.record.config[field.name]"
@@ -57,10 +51,6 @@
                 data-ng-options="option.value as option.name for option in getReferences(field.ref_table, field.ref_fields)"
                 data-ng-change="updateAffectedFields(serviceInfo.record.config[field.name], field)">
         </select>
-        <!--angular 1.4.0 required-->
-        <!--<select class="form-control" ng-if="field.type == 'picklist'" ng-model="serviceInfo.record.config[field.name]"-->
-        <!--ng-options="option.name as option.label disable when option.disable for option in field.values">-->
-        <!--</select>-->
 
         <div class="panel panel-default" data-ng-if="field.type.indexOf('array') > -1">
             <div class="form-group" data-ng-if="!isArray(field.items)">
@@ -91,7 +81,7 @@
                         </td>
                         <td class="no-border">
                             <div class="btn-group pull-left">
-                                <button type="button" class="btn btn-sm btn-default"
+                                <button type="button" class="btn btn-default"
                                         data-ng-click="deleteStringFromArray(serviceInfo.record.config[field.name], $index)"
                                         title="Delete">
                                     <i class="fa fa-trash-o fa-fw"></i>
@@ -133,9 +123,9 @@
                             <input class="form-control" data-ng-if="part.type == 'text'"
                                    data-ng-model="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
                                    type="text" data-ng-required="part.required">
-                            <input class="form-control" data-ng-if="part.type == 'boolean'"
+                            <input class="checkbox" data-ng-if="part.type == 'boolean'"
                                    data-ng-model="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
-                                   type="checkbox">
+                                   type="checkbox" style="margin-top: 13px">
                             <input class="form-control" data-ng-if="part.type == 'integer'"
                                    data-ng-model="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
                                    type="number" data-ng-required="part.required">
@@ -147,12 +137,12 @@
                             </select>
                             <df-verb-picker data-ng-if="part.type == 'verb_mask'"
                                             data-allowed-verb-mask="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
-                                            data-size="sm">
+                                            data-size="">
                             </df-verb-picker>
                         </td>
                         <td class="no-border">
                             <div class="btn-group pull-left">
-                                <button type="button" class="btn btn-sm btn-default"
+                                <button type="button" class="btn btn-default"
                                         data-ng-click="deleteObjectFromArray(serviceInfo.record.config[field.name], $index)"
                                         title="Delete">
                                     <i class="fa fa-trash-o fa-fw"></i>
@@ -171,8 +161,6 @@
                 <tr>
                     <th>{{ field.object.key.label }}</th>
                     <th>{{ field.object.value.label }}</th>
-
-
                     <th class="no-border">
                         <div class="btn-group pull-left">
                             <button type="button" class="btn btn-default btn-sm"
@@ -196,7 +184,7 @@
 
                     <td class="no-border">
                         <div class="btn-group pull-left">
-                            <button type="button" class="btn btn-sm btn-default"
+                            <button type="button" class="btn btn-default"
                                     data-ng-click="deleteKeyValue(serviceInfo.record.config[field.name], key)">
                                 <i class="fa fa-trash-o fa-fw"></i>
                             </button>
@@ -206,6 +194,10 @@
                 </tbody>
             </table>
         </div>
-
     </div>
+
+    <div data-ng-if="selectedSchema.subscription_required">
+        <br/><h4>This feature requires a product subscription.</h4> Email dspsales@dreamfactory.com or call +1-650-641-1800 for pricing information.
+    </div>
+
 </div>

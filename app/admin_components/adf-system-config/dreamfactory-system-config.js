@@ -673,6 +673,29 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         )
                     }
 
+                    scope.helpTextCors = {
+                        origin: {
+                            title: 'Origin (Access-Control-Allow-Origin)',
+                            text: 'Enter origin that you would like to allow. Enter * for allowing any origin. Origin is a required field.'
+                        },
+                        paths: {
+                            title: 'Paths',
+                            text: 'Enter allowed paths. Example: * allows any path, api/v2/* will allow any path with api/v2/ prefix.'
+                        },
+                        headers: {
+                            title: 'Headers (Access-Control-Allow-Headers)',
+                            text: 'Enter allowed headers. Enter * for allowing any header.'
+                        },
+                        max_age: {
+                            title: 'Max Age (Access-Control-Max-Age)',
+                            text: 'Enter max age. This indicates how long (in seconds) the results of a pre-flight request can be cached. Enter 0 for no caching.'
+                        },
+                        methods: {
+                            title: 'Methods (Access-Control-Allow-Methods)',
+                            text: 'Select HTTP verbs/methods that are allowed.'
+                        }
+                    }
+
 
                     var watchcorsEntries = scope.$watch('corsEntries', function (newValue, oldValue) {
 
@@ -1012,6 +1035,29 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                             }
                         )
+                    }
+
+                    scope.helpText = {
+                        recipient: {
+                            title: 'Recipient',
+                            text: 'Enter recipient address.'
+                        },
+                        cc: {
+                            title: 'Cc',
+                            text: 'Enter cc address.'
+                        },
+                        bcc: {
+                            title: 'Bcc',
+                            text: 'Enter bcc address.'
+                        },
+                        reply_to_name: {
+                            title: 'Reply to Name',
+                            text: 'Enter reply to name.'
+                        },
+                        reply_to_email: {
+                            title: 'Reply to Email',
+                            text: 'Enter reply to email.'
+                        }
                     }
 
 

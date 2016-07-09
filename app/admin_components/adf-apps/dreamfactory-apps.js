@@ -86,11 +86,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 name: 'import-app',
                 label: 'Import',
                 path: 'import-app'
-            },
-            {
-                name: 'app-groups',
-                label: 'Groups',
-                path: 'app-groups'
             }
         ];
 
@@ -564,7 +559,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 scope.fields = [
                     {
                         name: 'id',
-                        label: 'Id',
+                        label: 'ID',
                         active: true
                     },
                     {
@@ -908,55 +903,55 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 scope.sampleApps = [
                     {
                         name: 'Address Book for Android',
-                        description: 'An address book app for Android showing user registration, user login, and CRUD.',
+                        description: '',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/android-sdk/master/package/add_android.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/android-sdk'
                     },
                     {
-                        name: 'Address Book for iOS',
-                        description: 'An address book app for iOS Objective-C showing user registration, user login, and CRUD.',
+                        name: 'Address Book for iOS Objective-C',
+                        description: '',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/ios-sdk/master/example-ios/package/add_ios.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/ios-sdk'
                     },
                     {
                         name: 'Address Book for iOS Swift',
-                        description: 'An address book app for iOS Swift showing user registration, user login, and CRUD.',
+                        description: '',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/ios-swift-sdk/master/SampleAppSwift/package/add_ios_swift.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/ios-swift-sdk'
                     },
                     {
                         name: 'Address Book for JavaScript',
-                        description: 'An address book app for JavaScript showing user registration, user login, and CRUD.',
+                        description: '',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/javascript-sdk/master/add_javascript.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/javascript-sdk'
                     },
                     {
                         name: 'Address Book for AngularJS',
-                        description: 'An address book app for AngularJS showing user registration, user login, and CRUD.',
+                        description: '',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/angular-sdk/master/add_angular.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/angular-sdk'
                     },
                     {
                         name: 'Address Book for Angular 2',
-                        description: 'An address book app for Angular 2 showing user registration, user login, and CRUD.',
+                        description: '',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/angular2-sdk/master/add_angular2.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/angular2-sdk'
                     },
                     {
                         name: 'Address Book for Titanium',
-                        description: 'An address book app for Titanium showing user registration, user login, and CRUD.',
+                        description: '',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/titanium-sdk/master/add_titanium.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/titanium-sdk'
                     },
                     {
                         name: 'Address Book for ReactJS',
-                        description: 'An address book app for ReactJS showing user registration, user login, and CRUD.',
+                        description: '',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/reactjs-sdk/master/add_reactjs.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/reactjs-sdk'
                     },
                     {
                         name: 'Address Book for .NET',
-                        description: 'An address book app for .NET showing user registration, user login, and CRUD.',
+                        description: '',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/.net-sdk/master/DreamFactory.AddressBook/App_Package/add_dotnet.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/.net-sdk'
                     }
@@ -1145,8 +1140,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 });
 
                 // HELP
-
-
                 scope.dfHelp = {
                     applicationName: {
                         title: 'Application Name',
@@ -1154,470 +1147,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     }
                 }
 
-
-            }
-        }
-    }])
-
-    .directive('dfAppGroups', ['MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfNotify', function (MOD_APPS_ASSET_PATH, dfApplicationData, dfNotify) {
-
-        // @TODO: Need to notify of unsaved app groups.  This may require additional functionality in the sidebar menu directive
-        return {
-            restrict: 'E',
-            scope: false,
-            templateUrl: MOD_APPS_ASSET_PATH + 'views/df-app-groups.html',
-            link: function (scope, elem, attrs) {
-
-                var App = function (appData) {
-
-                    return {
-
-                        __dfUI: {
-                            selected: false
-                        },
-                        record: appData
-                    }
-                }
-
-                var AppGroup = function (appGroupData) {
-
-                    function genTempId() {
-                        return Math.floor(Math.random() * 100000)
-                    }
-
-                    var _new = {
-                        id: null,
-                        name: 'NEW APP GROUP',
-                        app_to_app_group_by_group_id: []
-                    };
-
-
-                    appGroupData = appGroupData || _new;
-
-                    return {
-                        __dfUI: {
-                            newAppGroup: appGroupData.id,
-                            tempId: genTempId()
-                        },
-                        record: angular.copy(appGroupData),
-                        recordCopy: angular.copy(appGroupData)
-                    }
-                };
-
-
-                scope.appGroups = null;
-                scope.apps = null;
-                scope.selectedAppGroup = null;
-
-
-                // PUBLIC API
-                scope.addAppGroup = function () {
-
-                    scope._addAppGroup();
-                };
-
-                scope.deleteAppGroup = function () {
-
-                    scope._deleteAppGroup()
-                };
-
-                scope.saveAppGroup = function () {
-
-                    var appGroup = scope.selectedAppGroup;
-
-                    if (appGroup == null) {
-
-                        var messageOptions = {
-                            module: 'App Groups',
-                            type: 'warn',
-                            provider: 'dreamfactory',
-                            message: 'No app group selected.'
-                        };
-
-                        dfNotify.warn(messageOptions);
-
-                        angular.element('#select-app-group').focus();
-
-                        return;
-                    }
-
-                    if (appGroup.record.id === null) {
-
-                        if (appGroup.record.name === 'NEW APP GROUP') {
-
-                            var messageOptions = {
-                                module: 'App Groups',
-                                type: 'warn',
-                                provider: 'dreamfactory',
-                                message: 'App Groups should have a unique name.  Please rename your app group to something other than the default \'new\' app group name.'
-                            };
-
-                            dfNotify.warn(messageOptions);
-
-                            return;
-                        }
-                        scope._saveAppGroup(appGroup);
-                    } else {
-
-                        scope._updateAppGroup(appGroup);
-                    }
-
-                };
-
-
-                // PRIVATE API
-                scope._saveAppGroupToServer = function (requestDataObj) {
-
-                    return dfApplicationData.saveApiData('app_group', requestDataObj).$promise;
-                };
-
-                scope._updateAppGroupToServer = function (requestDataObj) {
-
-                    return dfApplicationData.updateApiData('app_group', requestDataObj).$promise;
-                };
-
-                scope._deleteAppGroupFromServer = function (requestDataObj) {
-
-                    return dfApplicationData.deleteApiData('app_group', requestDataObj).$promise;
-                };
-
-                scope._updateAssignedApps = function (appGroup) {
-
-                    var tempArr = [];
-
-                    angular.forEach(scope.apps, function (managedApp) {
-
-                        var alreadyAdded = false;
-
-                        if(managedApp.__dfUI.selected ){
-                            angular.forEach(appGroup.record.app_to_app_group_by_group_id, function(app_to_app_group) {
-                                if (app_to_app_group.app_id == managedApp.record.id) {
-                                    alreadyAdded = true;
-                                }
-                            });
-
-                            if(!alreadyAdded){
-                                tempArr.push({'app_id': managedApp.record.id});
-                            }
-                        } else {
-                            var appGroupId = null;
-                            angular.forEach(appGroup.record.app_to_app_group_by_group_id, function(app_to_app_group) {
-                                if(app_to_app_group.app_id == managedApp.record.id){
-                                    alreadyAdded = true;
-                                    appGroupId = app_to_app_group.id
-                                }
-                            });
-
-                            if(alreadyAdded){
-                                tempArr.push({
-                                    'group_id': null,
-                                    'app_id': managedApp.record.id,
-                                    'id': appGroupId
-                                })
-                            }
-                        }
-                    });
-                    appGroup.record.app_to_app_group_by_group_id = tempArr;
-                };
-
-                scope._checkUnsavedAppGroups = function () {
-
-                    var i = 0;
-
-                    while (i < scope.apps.length) {
-
-                        if (scope.apps[i].__dfUI.newAppGroup === null) {
-                            return true;
-                        }
-
-                        i++
-                    }
-
-                    return false;
-                }
-
-
-                // COMPLEX IMPLEMENTATION
-                scope._addAppGroup = function () {
-                    scope.appGroups.push(new AppGroup());
-                    scope.selectedAppGroup = scope.appGroups[scope.appGroups.length - 1];
-                };
-
-                scope._deleteAppGroup = function () {
-
-
-                    // If this is a recently add/new appgroup that hasn't been saved yet.
-                    if (scope.selectedAppGroup.__dfUI.newAppGroup === null) {
-
-                        var i = 0;
-
-                        while (i < scope.appGroups.length) {
-                            if (scope.appGroups[i].__dfUI.tempId === scope.selectedAppGroup.__dfUI.tempId) {
-                                scope.appGroups.splice(i, 1);
-                                break;
-                            }
-
-                            i++
-                        }
-
-                        var messageOptions = {
-                            module: 'App Groups',
-                            type: 'success',
-                            provider: 'dreamfactory',
-                            message: 'App Group deleted successfully.'
-
-                        };
-
-                        dfNotify.success(messageOptions);
-
-                        scope.selectedAppGroup = null;
-
-                        return;
-                    }
-
-
-                    var requestDataObj = {
-                        params: {
-                            fields: '*',
-                            related: 'app_to_app_group_by_group_id'
-                        },
-                        data: scope.selectedAppGroup.record
-                    };
-
-
-                    scope._deleteAppGroupFromServer(requestDataObj).then(
-                        function (result) {
-
-                            var messageOptions = {
-                                module: 'App Groups',
-                                type: 'success',
-                                provider: 'dreamfactory',
-                                message: 'App Group deleted successfully.'
-                            };
-
-                            dfNotify.success(messageOptions);
-
-                            // Find where this group is in the array of app groups and
-                            // remove
-                            var i = 0;
-
-                            while (i < scope.appGroups.length) {
-
-                                if (scope.appGroups[i].record.name === result.name) {
-
-                                    scope.appGroups.splice(i, 1);
-                                }
-
-                                i++;
-                            }
-
-                            scope.selectedAppGroup = null;
-
-                        },
-                        function (reject) {
-
-                            var messageOptions = {
-                                module: 'Api Error',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            };
-
-                            dfNotify.error(messageOptions);
-
-                        }
-                    )
-
-
-                };
-
-                scope._saveAppGroup = function (appGroup) {
-
-                    scope._updateAssignedApps(appGroup);
-
-                    var requestDataObj = {
-                        params: {
-                            fields: '*',
-                            related: 'app_to_app_group_by_group_id'
-                        },
-                        data: appGroup.record
-                    };
-
-                    scope._saveAppGroupToServer(requestDataObj).then(
-                        function (result) {
-
-                            var messageOptions = {
-                                module: 'App Groups',
-                                type: 'success',
-                                provider: 'dreamfactory',
-                                message: 'App Group created successfully.'
-
-                            };
-
-                            dfNotify.success(messageOptions);
-
-                            // Reinsert into the matrix.....HA!
-                            // No Seriously
-                            // Find where this group is in the array of app groups and
-                            // replace with the new record sent back from server.
-                            // also replace the selectedTemplate with the new record as well
-                            var i = 0;
-
-                            while (i < scope.appGroups.length) {
-                                if (scope.appGroups[i].record.name === result.record[0].name) {
-
-                                    var _newAppGroup = new AppGroup(result.record[0]);
-
-                                    scope.appGroups[i] = _newAppGroup;
-                                    scope.selectedAppGroup = _newAppGroup;
-                                }
-
-                                i++;
-                            }
-                        },
-                        function (reject) {
-
-                            var messageOptions = {
-                                module: 'Api Error',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-
-                            };
-
-                            dfNotify.error(messageOptions);
-                        }
-                    )
-
-                };
-
-                scope._updateAppGroup = function (appGroup) {
-
-
-                    scope._updateAssignedApps(appGroup);
-
-                    var requestDataObj = {
-                        params: {
-                            fields: '*',
-                            related: 'app_to_app_group_by_group_id'
-                        },
-                        data: appGroup.record
-                    };
-
-
-                    scope._updateAppGroupToServer(requestDataObj).then(
-                        function (result) {
-
-                            var messageOptions = {
-                                module: 'App Groups',
-                                type: 'success',
-                                provider: 'dreamfactory',
-                                message: 'App Group updated successfully.'
-                            };
-
-                            dfNotify.success(messageOptions);
-
-                            // Reinsert into the matrix.....HA!
-                            // No Seriously
-                            // Find where this group is in the array of app groups and
-                            // replace with the new record sent back from server.
-                            // also replace the selectedTemplate with the new record as well
-                            var i = 0;
-
-                            while (i < scope.appGroups.length) {
-                                if (scope.appGroups[i].record.name === result.name) {
-
-                                    var _newAppGroup = new AppGroup(result);
-
-                                    scope.appGroups[i] = _newAppGroup;
-                                    scope.selectedAppGroup = _newAppGroup;
-                                }
-
-                                i++;
-                            }
-
-                        },
-                        function (reject) {
-
-                            var messageOptions = {
-                                module: 'Api Error',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            };
-
-                            dfNotify.error(messageOptions);
-
-                        }
-                    )
-                };
-
-
-                // WATCHERS
-                var watchAppGroups = scope.$watch('appGroups', function (newValue, oldValue) {
-
-
-                    if (newValue === null) {
-
-                        scope.appGroups = [];
-
-                        angular.forEach(dfApplicationData.getApiData('app_group'), function (appGroupData) {
-
-                            scope.appGroups.push(new AppGroup(appGroupData))
-
-
-                        });
-                    }
-                });
-
-                var watchApps = scope.$watch('apps', function (newValue, oldValue) {
-
-                    if (newValue === null) {
-
-                        scope.apps = [];
-
-                        angular.forEach(dfApplicationData.getApiData('app'), function (appData) {
-
-                            scope.apps.push(new App(appData));
-                        })
-                    }
-                });
-
-                var watchSelectedAppGroup = scope.$watch('selectedAppGroup', function (newValue, oldValue) {
-
-                    angular.forEach(scope.apps, function (appObj) {
-                        appObj.__dfUI.selected = false;
-                    });
-
-                    if (!newValue) return;
-
-                    if (newValue.record.app_to_app_group_by_group_id.length > 0) {
-                        angular.forEach(scope.apps, function (managedApp) {
-                            angular.forEach(newValue.record.app_to_app_group_by_group_id, function (app_to_app_group) {
-                                if (managedApp.record.id === app_to_app_group.app_id) {
-                                    managedApp.__dfUI.selected = true;
-                                }
-                            })
-                        })
-                    }
-                });
-
-
-                // HANDLE MESSAGES
-                scope.$on('$destroy', function (e) {
-
-                    watchAppGroups();
-                    watchApps();
-                    watchSelectedAppGroup();
-                });
-
-
-                scope.dfLargeHelp = {
-                    appGroups: {
-                        title: 'Groups Overview',
-                        text: 'Applications can optionally be put into groups. The LaunchPad UI will group the available apps accordingly.'
-                    }
-                }
 
             }
         }

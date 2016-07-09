@@ -81,6 +81,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
         function (INSTANCE_URL, SystemConfigDataService, $scope, $http, dfApplicationData, dfNotify, MODSCRIPTING_EXAMPLES_PATH) {
 
             $scope.$parent.title = 'Scripts';
+            $scope.sampleSelect = null;
 
             // Loosely defined script object for when a script is non-existent.
             var ScriptObj = function (scriptId, scriptLanguage, scriptData) {
@@ -90,10 +91,15 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     type: scriptLanguage || 'v8js',
                     content: scriptData || '',
                     is_active: false,
+                    allow_event_modification: false,
                     __newScript: true
                 }
             };
 
+            $scope.scriptSamplesSelect = function(type) {
+                $scope.sampleSelect = type;
+                $scope._loadSampleScript(type);
+            }
 
             $scope.highlightScript = function () {
                 $http({
@@ -170,12 +176,17 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.samplesScripts = null;
             // $scope.sampleScripts = new ScriptObj('sample-scripts', 'v8js', getSampleScripts.data);
 
-            // All these vars pertain to building of events dynamically on the client
-            dfApplicationData.getApiData('event', null, true).then(function (result) {
+            if(dfApplicationData.getApiData('event') === undefined) {
+                // All these vars pertain to building of events dynamically on the client
+                dfApplicationData.getApiData('event', null, true).then(function (result) {
+                  $scope.events = dfApplicationData.getApiData('event');
+                  $scope.highlightScript();
+                });
+            }
+            else {
                 $scope.events = dfApplicationData.getApiData('event');
                 $scope.highlightScript();
-            });
-
+            }
 
             $scope.scriptTypes = dfApplicationData.getApiData('script_type');
             $scope.uppercaseVerbLabels = true;
@@ -190,7 +201,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             // Stuff for the editor
             $scope.editor = null;
             $scope.isEditorClean = true;
-
+            $scope.menuPathArr = [];
 
             // PUBLIC API
             $scope.setEventType = function (typeObj) {
@@ -244,11 +255,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                     $scope._deleteScript();
                 }
-            };
-
-            $scope.loadSamples = function () {
-
-                $scope._loadSamples();
             };
 
 
@@ -324,7 +330,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 $scope.menuPathArr.push(typeObj.label);
                 $scope.currentEventTypeObj = typeObj;
-                $scope.pathFilter = '';
 
                 var evt = null;
                 if (typeObj.item_name === 'process') {
@@ -354,7 +359,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 $scope.menuPathArr.push(name);
                 $scope.currentServiceObj = { "name": name, "paths": eventObj };
-                $scope.pathFilter = '';
 
                 $scope.highlightCurrentServiceObj($scope.currentServiceObj);
                 return false;
@@ -377,6 +381,45 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return flag;
             };
+
+            $scope._loadSampleScript = function(type) {
+
+                var fileExt = '';
+                var mode = '';
+
+                switch (type) {
+                    case 'node':
+                        fileExt = 'node.js';
+                        mode = 'javascript';
+                        break;
+                    case 'php':
+                        fileExt = 'php';
+                        mode = 'php';
+                        break;
+                    case 'python':
+                        fileExt = 'py';
+                        mode = 'python';
+                        break;
+                    case 'v8js':
+                        fileExt = 'v8.js';
+                        mode = 'javascript';
+                        break;
+                }
+
+                var editor = ace.edit('ide_samples');
+
+                editor.session.setMode({path:'ace/mode/' + mode, inline:true});
+                editor.setOptions({readOnly: true});
+
+                $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.' + fileExt).then(
+                    function (result) {
+                        editor.session.setValue(result.data);
+                    },
+                    function (reject) {
+                        dfNotify.error(reject)
+                    }
+                )
+            }
 
             var constructPaths = function (name, verbList, parameter) {
                 var newEventName;
@@ -407,7 +450,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 var newVerbList = constructPaths(name, pathObj.verb, pathObj.parameter);
 
                 $scope.currentPathObj = { "name": name, "verbs": newVerbList };
-                $scope.pathFilter = '';
                 $scope.highlightCurrentPathObj($scope.currentPathObj);
             };
 
@@ -570,30 +612,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             };
 
-            $scope._loadSamples = function () {
-
-                if (!$scope._resetAll()) return;
-
-                $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.js').then(
-                    function (result) {
-
-                        $scope.sampleScripts = new ScriptObj('sample-scripts', 'v8js', result.data);
-                        $scope.currentEventTypeObj = {name: 'sample-scripts', label: 'Sample Scripts'};
-                        $scope.currentScriptObj = $scope.sampleScripts;
-                        $scope.menuPathArr.push('Sample Scripts');
-                    },
-                    function (reject) {
-                        dfNotify.error(reject)
-                        $scope.sampleScrips = ''
-                    }
-                )
-
-                return false;
-            };
-
-
             // MESSAGES
-
 
         }])
     .directive('scriptSidebarMenu', ['MODSCRIPTING_ASSET_PATH', function (MODSCRIPTING_ASSET_PATH) {
@@ -605,12 +624,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             templateUrl: MODSCRIPTING_ASSET_PATH + 'views/script-sidebar-menu.html',
             link: function (scope, elem, attrs) {
 
-
                 scope.menuOpen = true;
-                scope.menuPathArr = [];
-
-                scope.pathFilter = '';
-
 
                 // PUBLIC API
                 scope.toggleMenu = function () {
@@ -656,6 +670,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 // PRIVATE API
 
+                scope._clearScriptEditor = function() {
+                    scope.currentScriptObj = null;
+                    ace.edit('ide').session.setValue('');
+                };
+
                 // Confirm close with unsaved changes.
                 scope._confirmCloseScript = function () {
 
@@ -669,7 +688,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     // Do we have a script type.  If not stop.
                     if (!scope.currentEventTypeObj) return false;
 
-
                     switch (scope.currentEventTypeObj.name) {
 
                         case 'process-scripts':
@@ -677,29 +695,21 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             switch (scope.menuPathArr.length) {
 
                                 case 0:
+                                    scope.currentEventTypeObj = null;
                                     break;
 
                                 case 1:
-
                                     scope.menuPathArr.pop();
-                                    scope.currentEventTypeObj = null;
-                                    scope.pathFilter = '';
                                     break;
 
                                 case 2:
-
                                     scope.menuPathArr.pop();
-                                    scope.currentServiceObj = null;
-                                    scope.pathFilter = '';
                                     scope.highlightEvent(scope.events.process);
                                     break
 
                                 case 3:
                                     scope.menuPathArr.pop();
-                                    scope.currentPathObj = null;
-                                    scope.pathFilter = '';
                                     scope.highlightCurrentServiceObj(scope.currentServiceObj);
-
                                     break;
 
                                 case 4:
@@ -708,22 +718,20 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     // at the end of the path, or there's one more
                                     // level
                                     if(scope.currentPathObj.events) {
+                                        scope._clearScriptEditor();
                                         scope.menuPathArr.splice(2,2);
                                         scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
                                     } else {
                                         scope.menuPathArr.pop();
-                                        scope.currentScriptObj = null;
                                     }
 
                                     break;
 
                                 case 5:
-                                    scope.currentScriptObj = null;
+                                    scope._clearScriptEditor();
                                     scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
                                     scope.menuPathArr.pop();
-
                                     break;
-
                             }
                             break;
 
@@ -737,59 +745,40 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                     break;
 
                                 case 1:
-
                                     scope.menuPathArr.pop();
-                                    scope.currentEventTypeObj = null;
-                                    scope.pathFilter = '';
                                     break;
 
                                 case 2:
-
                                     scope.menuPathArr.pop();
-                                    scope.currentScriptObj = null;
                                     scope.highlightEvent(scope.events.broadcast);
                                     break;
 
                                 case 3:
                                     scope.menuPathArr.pop();
-                                    scope.currentPathObj = null;
-                                    scope.pathFilter = '';
                                     scope.highlightCurrentServiceObj(scope.currentServiceObj);
-
                                     break;
 
                                 case 4:
-
                                     // Two cases for 4-length. Check whether we are
                                     // at the end of the path, or there's one more
                                     // level
                                     if(scope.currentPathObj.events) {
+                                        scope._clearScriptEditor();
                                         scope.menuPathArr.splice(2,2);
                                         scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
                                     } else {
                                         scope.menuPathArr.pop();
-                                        scope.currentScriptObj = null;
                                     }
 
                                     break;
 
                                 case 5:
+                                    scope._clearScriptEditor();
                                     scope.currentScriptObj = null;
                                     scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
                                     scope.menuPathArr.pop();
-
                                     break;
                             }
-                            break;
-
-                        case 'sample-scripts':
-
-                            scope.menuPathArr.pop();
-                            scope.currentScriptObj = null;
-                            scope.currentPathObj = null;
-                            scope.currentServiceObj = null;
-                            scope.currentEventTypeObj = null;
-
                             break;
 
                         default:
@@ -813,7 +802,28 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfAceEditorScripting', ['INSTANCE_URL', 'MODSCRIPTING_ASSET_PATH', '$http', function (INSTANCE_URL, MODSCRIPTING_ASSET_PATH, $http) {
+
+    .directive('dfAceSamplesSelect', ['INSTANCE_URL', 'MODSCRIPTING_ASSET_PATH', '$http', '$timeout', function (INSTANCE_URL, MODSCRIPTING_ASSET_PATH, $http, $timeout) {
+
+        return {
+            restrict: 'E',
+            scope: {
+                currentScript: '=?',
+                isClean: '=?',
+                viewer: '=?',
+                scriptType: '=?'
+            },
+            templateUrl: MODSCRIPTING_ASSET_PATH + 'views/df-ace-samples.html',
+            link: function (scope, elem, attrs) {
+              scope.viewer = ace.edit('ide_samples');
+
+
+
+            }
+          }
+
+    }])
+    .directive('dfAceEditorScripting', ['INSTANCE_URL', 'MODSCRIPTING_ASSET_PATH', '$http', '$timeout', function (INSTANCE_URL, MODSCRIPTING_ASSET_PATH, $http, $timeout) {
 
         return {
             restrict: 'E',
@@ -832,7 +842,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 scope._setEditorInactive = function (stateBool) {
 
                     if (stateBool) {
-
                         scope.editor.setOptions({
                             readOnly: true,
                             highlightActiveLine: false,
@@ -855,7 +864,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     scope.editor && scope.editor.destroy();
 
                     scope.editor = ace.edit('ide');
-
                     //scope.editor.setTheme("ace/theme/twilight");
 
                     if(mode === true){
@@ -868,7 +876,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         mode = 'text';
                     }
 
-                    scope.editor.session.setMode("ace/mode/"+mode);
+                    scope.editor.session.setMode("ace/mode/" + mode);
 
                     scope.backupDoc = angular.copy(contents);
 
@@ -879,6 +887,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     scope.editor.focus();
 
                     scope.editor.on('input', function () {
+
                         scope.$apply(function () {
                             scope.isClean = scope.editor.session.getUndoManager().isClean();
                         });
@@ -900,10 +909,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     if (newValue === 'samples') return false;
 
                     if (!newValue === null || newValue === undefined) {
-                        scope._loadEditor('', false, true);
+                        //Empty editor
+                        scope._loadEditor('', false, false);
                         return false;
                     }
 
+                    //There is content to load
                     scope._loadEditor(newValue, false, false);
                 });
 

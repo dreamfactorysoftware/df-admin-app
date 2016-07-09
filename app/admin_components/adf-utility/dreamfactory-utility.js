@@ -74,7 +74,7 @@ angular.module('dfUtility', ['dfApplication'])
                             break;
 
                         case '/profile':
-                            scope.activeLink = 'profile';
+                            scope.activeLink = 'user';
                             break;
 
                         case '/login':
@@ -1119,6 +1119,7 @@ angular.module('dfUtility', ['dfApplication'])
             templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-ace-editor.html',
             link: function (scope, elem, attrs) {
 
+                window.define = window.define || ace.define;
 
                 var _elem = $(elem),
                     _rand = Math.floor((Math.random() * 100) + 1);
@@ -1128,8 +1129,7 @@ angular.module('dfUtility', ['dfApplication'])
                 scope.editor = null;
                 scope.currentScriptObj = '';
                 scope.backupDoc = '';
-                scope.hideGutter = !!scope.hideGutter;
-
+                scope.hideGutter = scope.hideGutter || true;
 
                 // PRIVATE API
                 scope._getFileFromServer = function (requestDataObj) {
@@ -1171,7 +1171,6 @@ angular.module('dfUtility', ['dfApplication'])
                 scope._setEditorInactive = function (stateBool) {
 
                     if (stateBool) {
-
                         scope.editor.setOptions({
                             readOnly: true,
                             highlightActiveLine: false,
@@ -1192,24 +1191,27 @@ angular.module('dfUtility', ['dfApplication'])
 
                     inactive = inactive || false;
 
-
-
                     scope.editor = ace.edit('ide_' + _rand);
+
                     scope.editor.renderer.setShowGutter(scope.hideGutter);
 
-                    //scope.editor.setTheme("ace/theme/twilight");
-
-                    if(mode){
-                        scope.editor.session.setMode("ace/mode/json");
-                    }else{
+                    if (mode === false) {
                         scope.editor.session.setMode("ace/mode/javascript");
+                        scope.editor.session.setMode({
+                            path: "ace/mode/javascript",
+                            v: Date.now() 
+                        });
+                    }
+                    else {
+                        scope.editor.session.setMode({
+                            path: "ace/mode/" + mode,
+                            v: Date.now() 
+                        });
                     }
 
                     scope._setEditorInactive(inactive);
 
                     scope.editor.session.setValue(contents);
-
-                    scope.editor.focus();
 
                     scope.editor.on('input', function() {
                         scope.$apply(function() {
@@ -1255,7 +1257,6 @@ angular.module('dfUtility', ['dfApplication'])
 
                     scope._getFileFromServer(requestDataObj).then(
                         function(result) {
-
                             scope.currentScript = result.data;
                             scope._loadEditor(result.data.script_body, false);
                         },
@@ -1266,7 +1267,29 @@ angular.module('dfUtility', ['dfApplication'])
                     )
                 });
 
+
                 var watchDirectData = scope.$watch('directData', function (newValue, oldValue) {
+
+                    var dataFormat = null;
+
+                    if (scope.$parent.hasOwnProperty('service')) {
+                        if (scope.$parent.service !== null) {
+
+                            if(scope.$parent.service.record.service_doc_by_service_id.length > 0) {
+                                var format = scope.$parent.service.record.service_doc_by_service_id[0].format;
+                                switch (format) {
+                                    case 0:
+                                        dataFormat = 'json';
+                                        break;
+                                    case 1:
+                                        dataFormat = 'yaml';
+                                        break;
+                                    default:
+                                        dataFormat = 'json';
+                                }
+                            }
+                        }
+                    }
 
                     if (!newValue) {
                         scope._loadEditor('', false, true);
@@ -1274,10 +1297,14 @@ angular.module('dfUtility', ['dfApplication'])
                     }
 
                     // Format JSON
-                    newValue = angular.fromJson(newValue);
-                    newValue = JSON.stringify(newValue, null, '\t');
+                    try {
+                        newValue = angular.fromJson(newValue);
+                        newValue = JSON.stringify(newValue, null, '\t');
+                    } catch (e) {
+                        // Not a valid json
+                    }
 
-                    scope._loadEditor(newValue, true, !scope.isEditable);
+                    scope._loadEditor(newValue, dataFormat, !scope.isEditable);
                     scope.backupDoc = angular.copy(newValue);
                     scope.currentEditor = scope.editor;
 
@@ -1367,9 +1394,7 @@ angular.module('dfUtility', ['dfApplication'])
                 scope.$on('reload:script', function (e, mode) {
 
                     scope._loadEditor(scope.backupDoc, mode);
-
                 });
-
             }
         }
     }])
@@ -3200,12 +3225,12 @@ angular.module('dfUtility', ['dfApplication'])
         return function () {
 
             return {
+                support: 'fa fa-fw fa-support',
                 launchpad: 'fa fa-fw fa-bars',
                 admin: 'fa fa-fw fa-cog',
                 login: 'fa fa-fw fa-sign-in',
-                logout: 'fa fa-fw fa-sign-out',
                 register: 'fa fa-fw fa-group',
-                profile: 'fa fa-fw fa-user'
+                user: 'fa fa-fw fa-user'
             };
         }
     }])

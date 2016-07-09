@@ -14,7 +14,7 @@
                                     <label>Select App Package File</label>
                                     <div class="panel panel-default">
                                         <div class="panel-body">
-                                            <p>Select one of the sample apps below, enter the URL for a package file, or browse for a local package file.  Package files are zip files with a .dfpkg extension. Click 'Import' to add the app to your DreamFactory instance.</p>
+                                            <p>Select one of the sample apps below, enter the URL for a package file, or browse for a local package file. Click 'Import' to add the app to your DreamFactory instance.</p>
                                             <p data-ng-repeat="app in sampleApps">
                                                 <input type="button"
                                                        class="btn btn-default btn-sm"
@@ -22,7 +22,7 @@
                                                        data-ng-click="loadSampleApp(app)"
                                                        onClick="this.blur()"/>
                                                 <a href={{app.repo_url}}
-                                                   target = "_blank">&nbsp;{{app.name}}</a> - {{app.description}}
+                                                   target = "_blank">&nbsp;{{app.name}}</a> {{app.description}}
                                             </p>
                                             <div class="input-group" >
                                                     <span class="input-group-btn">
@@ -32,7 +32,7 @@
                                                     </span>
                                                 <input type="text" class="form-control"
                                                        data-ng-model="appPath"
-                                                       placeholder="Select sample app, enter url, or browse for app package.">
+                                                       placeholder="">
                                             </div><!-- /input-group -->
                                         </div>
                                     </div>
@@ -45,7 +45,7 @@
                                 <div class="form-group">
                                     <label>Storage Service (optional)</label>
                                     <select class="form-control" data-ng-model="storageService" data-ng-options="obj as obj.name for obj in services" >
-                                        <option value="" >-- Select Storage Service --</option>
+                                        <option value="" ></option>
                                     </select>
                                 </div>
                             </div>
@@ -55,7 +55,7 @@
                             <div class="col-lg-6" >
                                 <div class="form-group">
                                     <label>Storage Folder (optional)</label>
-                                    <input class="form-control" type="text" data-ng-model="storageContainer" placeholder="Enter Storage Folder" data-ng-required="false"/>
+                                    <input class="form-control" type="text" data-ng-model="storageContainer" placeholder="" data-ng-required="false"/>
                                 </div>
                             </div>
                         </div>

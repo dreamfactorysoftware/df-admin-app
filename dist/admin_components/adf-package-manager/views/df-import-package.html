@@ -1,0 +1,22 @@
+<form class="form-inline" autocomplete="off"> <div class="row"> <div class="col-xs-1" style="padding-top: 10px"> <label for="">Select File: </label> </div> <div class="col-xs-11"> <div class="form-inline"> <input type="file" file="file" class="btn btn-default" id="fileSelect"> </div> </div> </div> <div class="row"> <div></div> </div> <div class="row" style="padding-top: 10px"> <div class="col-xs-1" style="padding-top: 10px"> <label for="">Password: </label> </div> <div class="col-xs-11"> <input type="" class="form-control" data-ng-model="packageImportPassword" id="noautofillpassword"> (Optional) </div> </div> <div class="row" style="padding-top: 10px"> <div class="col-xs-1" style="padding-top: 10px"> <label for=""> </label> </div> <div class="col-xs-11"> <button df-export-package type="button" class="btn btn-primary" data-ng-click="importPackageFile()">Import</button> <button df-export-package type="button" class="btn btn-default" data-ng-click="importClear()">Clear</button> </div> </div> </form> <!-- Modal --> <!--div modal-show modal-visible="showImportDialog" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">{{importModalHeadline}}</h4>
+			</div>
+			<div class="modal-body">
+				{{importModalBody.head}}
+				<br /><br />
+				<b>Description:</b><br />
+				<div data-ng-repeat="notice in importModalBody.content">
+					{{notice}}
+					<br/><br/>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div-->
