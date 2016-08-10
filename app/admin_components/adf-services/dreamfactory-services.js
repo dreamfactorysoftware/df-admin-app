@@ -81,9 +81,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
         return dfServiceData;
     }])
 
-    .controller('ServicesCtrl', ['$scope', function ($scope) {
+    .controller('ServicesCtrl', ['$scope', 'dfApplicationData', function ($scope, dfApplicationData) {
 
         $scope.$parent.title = 'Services';
+
+        dfApplicationData.loadApi(['service']);
 
         // Set module links
         $scope.links = [

@@ -62,7 +62,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
     }])
 
-    .controller('RolesCtrl', ['$scope', function ($scope) {
+    .controller('RolesCtrl', ['$scope', '$q', 'dfApplicationData', 'SystemConfigDataService', function ($scope, $q, dfApplicationData, SystemConfigDataService) {
 
         $scope.$parent.title = 'Roles';
 
@@ -81,6 +81,9 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
         ];
 
+        $scope.loading = dfApplicationData.loadApi(['role', 'service']);
+
+        $scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
 
         // Set empty section options
         $scope.emptySectionOptions = {
@@ -92,7 +95,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
     }])
 
     .directive('dfRoleDetails', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfApplicationPrefs', '$q', 'SystemConfigDataService', 'dfSystemData', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, dfApplicationPrefs, $q, SystemConfigDataService, dfSystemData) {
-
 
         return {
 
@@ -132,8 +134,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 scope.role = null;
 
-                scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
-
                 // Is this going to be a new Role
                 if (scope.newRole) {
                     scope.role = new Role();
@@ -145,7 +145,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 if (scope.services[0].name !== 'All') {
                     scope.services.unshift({id: null, name: 'All', components: ["", "*"]});
                 }
-
 
                 // PUBLIC API
                 scope.saveRole = function () {
@@ -550,7 +549,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 scope._removeServiceAccess = function (serviceAccessObjIndex) {
                     if (!scope.roleServiceAccesses[serviceAccessObjIndex].record.id) {
-                      scope.roleServiceAccesses.splice(serviceAccessObjIndex, 1);  
+                      scope.roleServiceAccesses.splice(serviceAccessObjIndex, 1);
                     } else {
                         scope.roleServiceAccesses[serviceAccessObjIndex].record.role_id = null;
                     }

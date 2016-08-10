@@ -1572,11 +1572,14 @@ angular.module('dfUtility', ['dfApplication'])
             templateUrl : MOD_UTILITY_ASSET_PATH + 'views/df-toolbar-paginate.html',
             link: function (scope, elem, attrs) {
 
-                scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+                scope.totalCount = 0;
                 scope.pagesArr = [];
                 scope.currentPage = {};
                 scope.isInProgress = false;
 
+                if (dfApplicationData.systemDataExists(scope.api)) {
+                    scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+                }
 
                 // PUBLIC API
                 scope.getPrevious = function () {
@@ -1722,7 +1725,7 @@ angular.module('dfUtility', ['dfApplication'])
                     var arr = [ "first_name", "last_name", "name", "email" ];
 
                     return arr.map(function(item) {
-                        return item + ' like "%' + filterText + '%"'
+                        return '(' + item + ' like "%' + filterText + '%")'
                     }).join(' or ');
 
                 }

@@ -472,6 +472,21 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 return;
                             }
+
+                            if (template.record.origin === undefined) {
+
+                                var messageOptions = {
+                                    module: 'CORS',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: 'Origin is a required field.'
+                                };
+
+                                dfNotify.error(messageOptions);
+
+                                return;
+                            }
+
                             scope._saveCorsEntry(template);
                         } else {
 
@@ -834,6 +849,21 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 return;
                             }
+
+                            if (template.record.name === undefined) {
+
+                                var messageOptions = {
+                                    module: 'Email Templates',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: 'Template Name is a required field.'
+                                };
+
+                                dfNotify.error(messageOptions);
+
+                                return;
+                            }
+
                             scope._saveEmailTemplate(template);
                         } else {
 
@@ -1187,6 +1217,21 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 return;
                             }
+
+                            if (lookup.record.name === undefined) {
+
+                                var messageOptions = {
+                                    module: 'Global Lookup Keys',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: 'Lookup keys should have a unique name.  Please name your key.'
+                                };
+
+                                dfNotify.error(messageOptions);
+
+                                return;
+                            }
+
                             scope._saveLookup(lookup);
                         } else {
 

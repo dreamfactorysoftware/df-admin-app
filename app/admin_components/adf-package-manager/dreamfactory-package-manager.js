@@ -136,6 +136,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
     .controller('PackageCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
         $scope.$parent.title = 'Packages';
 
+        dfApplicationData.loadApi(['environment', 'package', 'service_type', 'service', 'role', 'app', 'admin', 'user']);
+
         // Set module links
         $scope.links = [
             {
@@ -578,10 +580,18 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         var nameData = [];
 
-                        angular.forEach(dataArray, function (value, key) {
-                            dataArray[key]['display_label'] = dataArray[key][apiName];
-                            nameData.push(new TableData(dataArray[key]))
-                        });
+                        if (newValue === 'event') {
+                            var dataArray = angular.copy(scope.rawPackageData['service']['system'])
+                                angular.forEach(dataArray['event'], function (value, key) {
+                                    nameData.push(new TableData({display_label: value}));
+                                });
+                        }
+                        else {
+                            angular.forEach(dataArray, function (value, key) {
+                                dataArray[key]['display_label'] = dataArray[key][apiName];
+                                nameData.push(new TableData(dataArray[key]));
+                            });
+                        }
 
                         scope.selectedNameData = nameData;
                         scope.selectedNameLabel = 'Select Item(s) to Export';
@@ -755,7 +765,13 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             var selectedExports = [];
 
                             if (tableData[key]['type']['group'] === 'System') {
-                                selectedExports = tableData[key]['data'].map(function(d) { return d['record']['id']; });
+                                if (tableData[key]['name'] === 'event') {
+                                    selectedExports = tableData[key]['data'].map(function(d) { return d['record']['display_label']; });
+                                }
+                                else {
+                                    selectedExports = tableData[key]['data'].map(function(d) { return d['record']['id']; });
+                                }
+
                                 payload['service']['system'][tableData[key]['name']] = selectedExports;
                             }
                             else if (tableData[key]['type']['group'] === 'Database') {
