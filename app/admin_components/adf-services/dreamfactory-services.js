@@ -312,6 +312,24 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 // COMPLEX IMPLEMENTATION
                 scope._saveService = function () {
+                    if (!scope.serviceInfo.record.config.hasOwnProperty('content') && (
+                      (scope.serviceInfo.record.type === 'nodejs') ||
+                      (scope.serviceInfo.record.type === 'php') ||
+                      (scope.serviceInfo.record.type === 'python') ||
+                      (scope.serviceInfo.record.type === 'v8js'))) {
+
+                        var messageOptions = {
+                            module: 'Service Save Error',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: 'Content is required and can\'t be empty'
+
+                        };
+
+                        dfNotify.error(messageOptions);
+
+                        return;
+                    }
 
                     scope._prepareServiceData();
 
