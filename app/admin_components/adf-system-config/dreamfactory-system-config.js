@@ -86,15 +86,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
             $scope.test = dfApplicationData.loadApi(['environment', 'config', 'cors', 'lookup', 'email_template']);
 
-            var watchData = $scope.$watch('test', function (newValue, oldValue) {
-                dfApplicationData.getApiData('environment')
-            });
-
-            // MESSAGES
-            $scope.$on('$destroy', function (e) {
-                watchData();
-            });
-
             var SystemConfig = function (systemConfigData) {
 
                 return {
@@ -133,16 +124,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
             // CREATE SHORT NAMES
             $scope.es = SystemConfigEventsService.systemConfigController;
-
+            
             // PUBLIC API
-            //$scope.systemEnv = dfApplicationData.getApiData('environment');
-            // Config will always be the first in the array so we grab the 0th value
-            $scope.systemConfig = new SystemConfig(dfApplicationData.getApiData('config')[0]);
-            $scope.getCacheEnabledServices();
-            $scope.corsEntriesData = dfApplicationData.getApiData('cors');
-            $scope.globalLookupsData = dfApplicationData.getApiData('lookup');
-            $scope.emailTemplatesData = dfApplicationData.getApiData('email_template');
-
 
             $scope.links = [
 
@@ -316,15 +299,40 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/system-info.html',
             link: function (scope, elem, attrs) {
 
-                  scope.systemEnv = dfApplicationData.getApiData('environment');
-
-
                 scope.upgrade = function () {
 
                     window.top.location = 'http://wiki.dreamfactory.com/';
                 };
 
                 scope.APP_VERSION = APP_VERSION;
+
+                var watchEnvironment = scope.$watch('systemEnv', function (newValue, oldValue) {
+
+                    if (newValue === null) {
+                        sscope.systemEnv = dfApplicationData.getApiData('environment');
+                    }
+
+                });
+
+                var watchdfApplicationData = scope.$watchCollection(function () {
+                    return dfApplicationData.getApiData('environment')
+                }, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    scope.systemEnv = dfApplicationData.getApiData('environment');
+                });
+
+
+                scope.$on('$destroy', function (e) {
+
+                    watchEnvironment();
+                    watchdfApplicationData();
+                });
+
+
+
+
             }
         }
     }])
