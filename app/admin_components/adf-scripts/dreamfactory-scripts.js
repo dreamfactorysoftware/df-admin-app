@@ -872,10 +872,9 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 scope._loadEditor = function (contents, mode, inactive) {
 
                     inactive = inactive || false;
-                    scope.editor && scope.editor.destroy();
+                    //scope.editor && scope.editor.destroy();
 
                     scope.editor = ace.edit('ide');
-                    //scope.editor.setTheme("ace/theme/twilight");
 
                     if(mode === true){
                         mode = 'json';

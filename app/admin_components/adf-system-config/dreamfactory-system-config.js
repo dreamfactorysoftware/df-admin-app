@@ -84,6 +84,16 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
     .controller('SystemConfigurationCtrl', ['$scope', 'dfApplicationData', 'SystemConfigEventsService', 'SystemConfigDataService', 'dfObjectService', 'dfNotify', 'INSTANCE_URL', '$http',
         function ($scope, dfApplicationData, SystemConfigEventsService, SystemConfigDataService, dfObjectService, dfNotify, INSTANCE_URL, $http) {
 
+            $scope.test = dfApplicationData.loadApi(['environment', 'config', 'cors', 'lookup', 'email_template']);
+
+            var watchData = $scope.$watch('test', function (newValue, oldValue) {
+                dfApplicationData.getApiData('environment')
+            });
+
+            // MESSAGES
+            $scope.$on('$destroy', function (e) {
+                watchData();
+            });
 
             var SystemConfig = function (systemConfigData) {
 
@@ -125,7 +135,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.es = SystemConfigEventsService.systemConfigController;
 
             // PUBLIC API
-            $scope.systemEnv = dfApplicationData.getApiData('environment');
+            //$scope.systemEnv = dfApplicationData.getApiData('environment');
             // Config will always be the first in the array so we grab the 0th value
             $scope.systemConfig = new SystemConfig(dfApplicationData.getApiData('config')[0]);
             $scope.getCacheEnabledServices();
@@ -298,13 +308,16 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             }
         }])
 
-    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', 'INSTANCE_URL', 'APP_VERSION', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, INSTANCE_URL, APP_VERSION, $http, dfNotify) {
+    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', 'INSTANCE_URL', 'APP_VERSION', '$http', 'dfNotify', 'dfApplicationData', function (MODSYSCONFIG_ASSET_PATH, INSTANCE_URL, APP_VERSION, $http, dfNotify, dfApplicationData) {
 
         return {
             restrict: 'E',
             scope: false,
             templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/system-info.html',
             link: function (scope, elem, attrs) {
+
+                  scope.systemEnv = dfApplicationData.getApiData('environment');
+
 
                 scope.upgrade = function () {
 
