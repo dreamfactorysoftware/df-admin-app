@@ -408,8 +408,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     });
                 }
 
-                scope.init();
-
                 scope.addToPackage = function() {
                     var searchSelected = scope.selectedNameData.map(function(d) { return d['__dfUI']['selected']; });                    
 
@@ -670,8 +668,19 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         });
                     }                
                 });
-                
+
+                var watchEnvironmentData = scope.$watchCollection(function () {
+                    return dfApplicationData.getApiData('environment')
+                }, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    scope.init();
+
+                });
+
                 scope.$on('$destroy', function (e) {
+                    watchEnvironmentData();
                     watchSelectedType();
                     watchSelectedName();
                 });
@@ -722,7 +731,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     var searchTypes = _service.map(function(d) { return d['name']; });                    
                     var _services = angular.copy(dfApplicationData.getApiData('service')); 
                     var _folderNames = [];
-
                     angular.forEach(_services, function (value, key) {
                         if (searchTypes.indexOf(value.type) > -1) {
                             _folderNames.push(value.name);
@@ -734,8 +742,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     scope.selectedFolder = 'files';
                 }
 
-                scope.folderInit();
-                    
+
+
                 // PUBLIC API
                 scope.exportPackage = function() {
 
@@ -890,8 +898,19 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     scope.selectAll = false;
                 }
 
+
+                var watchServiceTypeData = scope.$watchCollection(function () {
+                    return dfApplicationData.getApiData('service_type')
+                }, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    scope.folderInit();
+                });
+
+                scope.$on('$destroy', function (e) {
+                    watchServiceTypeData();
+                });
             }
         }
     }])
-
-

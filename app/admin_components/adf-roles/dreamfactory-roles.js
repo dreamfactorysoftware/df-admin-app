@@ -139,13 +139,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.role = new Role();
                 }
 
-                // Other Data
-                scope.services = dfApplicationData.getApiData('service');
-
-                if (scope.services[0].name !== 'All') {
-                    scope.services.unshift({id: null, name: 'All', components: ["", "*"]});
-                }
-
                 // PUBLIC API
                 scope.saveRole = function () {
 
@@ -430,6 +423,39 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     watchData();
 
                     scope.$broadcast('dfPaginate:reset:records');
+                });
+
+
+
+                var watchService = scope.$watch('services', function (newValue, oldValue) {
+                    if (newValue === null) {
+
+                        scope.services = dfApplicationData.getApiData('service');
+
+                        if (scope.services[0].name !== 'All') {
+                            scope.services.unshift({id: null, name: 'All', components: ["", "*"]});
+                        }
+                    }
+
+                });
+
+                var watchServiceData = scope.$watchCollection(function () {
+                    return dfApplicationData.getApiData('service')
+                }, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    scope.services = dfApplicationData.getApiData('service');
+
+                    if (scope.services[0].name !== 'All') {
+                        scope.services.unshift({id: null, name: 'All', components: ["", "*"]});
+                    }
+                });
+
+
+                scope.$on('$destroy', function (e) {
+                    watchService();
+                    watchServiceData();
                 });
 
 
@@ -1370,4 +1396,3 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             }
         }
     }]);
-

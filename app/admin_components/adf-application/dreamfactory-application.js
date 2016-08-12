@@ -246,7 +246,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 api_name: 'package',
                 params: {}
             };
-            
+
             api.params = dfApplicationPrefs.getPrefs().data['package'];
 
             // check for and remove null value params
@@ -639,7 +639,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             _asyncInit(newApis).then(
                 function () {
-                    return;
+                    return true;
                 }
             );
         }
@@ -1288,7 +1288,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                             if (reject.data.error.message === 'Token has expired' || reject.config.url.indexOf('/profile') !== -1) {
                                 //  put session
                                 return putSession(reject);
-                            } 
+                            }
                             else if (reject.config.url.indexOf('/package') !== -1) {
                                 break;
                             } else {
@@ -1593,4 +1593,3 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }
             }
         }])
-

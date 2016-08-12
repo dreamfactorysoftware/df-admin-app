@@ -309,7 +309,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 var watchEnvironment = scope.$watch('systemEnv', function (newValue, oldValue) {
 
                     if (newValue === null) {
-                        sscope.systemEnv = dfApplicationData.getApiData('environment');
+                        scope.systemEnv = dfApplicationData.getApiData('environment');
                     }
 
                 });
