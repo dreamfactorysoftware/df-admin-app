@@ -1057,7 +1057,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 lookup: {},
                 cors: {},
                 event: {
-                    full_map: true
+                    scriptable: true
                 }
             },
 
