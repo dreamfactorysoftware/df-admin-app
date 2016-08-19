@@ -50,9 +50,9 @@ angular.module('dfSwaggerEditor', ['ngRoute', 'dfUtility', 'dfApplication', 'dfH
 
                     if (!newValue) return;
 
-                    if (newValue.record.hasOwnProperty('service_doc_by_service_id')) {
+                    if (newValue.record.hasOwnProperty('doc')) {
 
-                        scope.swaggerFile = angular.copy(angular.fromJson(newValue.record.service_doc_by_service_id[0].content));
+                        scope.swaggerFile = angular.copy(angular.fromJson(newValue.record.doc.content));
                     }
                 });
 

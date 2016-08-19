@@ -134,7 +134,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "mutable": true,
                         "deletable": true,
                         "config": {},
-                        "service_doc_by_service_id": [
+                        "doc": [
                             {
                                 content: {
                                     "paths": {},
@@ -239,8 +239,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             scope._prepareServiceDefinitionData();
                             break;
                         default:
-                            delete scope.service.record.service_doc_by_service_id;
-                            delete scope.service.recordCopy.service_doc_by_service_id;
+                            delete scope.service.record.doc;
+                            delete scope.service.recordCopy.doc;
                             break;
                     }
                 };
@@ -250,7 +250,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         delete requestObj.data.config.options_ctrl;
 
                     return requestObj;
-                }
+                };
 
                 scope._restoreRequestDataObj = function (requestObj) {
                     if (requestObj.resource) {
@@ -347,8 +347,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     var requestDataObj = {
                         params: {
-                            fields: '*',
-                            related: 'service_doc_by_service_id'
+                            fields: '*'
                         },
                         data: data
                     };
@@ -403,8 +402,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     var requestDataObj = {
                         params: {
-                            fields: '*',
-                            related: 'service_doc_by_service_id'
+                            fields: '*'
                         },
                         data: data
                     };
@@ -540,7 +538,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 // Refreshes the editor when switching tabs
                 scope.refreshEditor = function() {
                     scope.currentEditor.renderer.updateText();
-                    scope.currentEditor.focus();                    
+                    scope.currentEditor.focus();
                 };
 
 
@@ -670,15 +668,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     var groups = scope.hcv.serviceTypes.map(function(obj) { return obj.group; });
                     scope.serviceGroups = groups.filter(function(v,i) { return groups.indexOf(v) == i; });
 
-                    var sortingArray = [ 
-                        'Database', 
-                        'File', 
-                        'Email', 
-                        'Notification', 
+                    var sortingArray = [
+                        'Database',
+                        'File',
+                        'Email',
+                        'Notification',
                         'Remote Service',
                         'Script',
                         'OAuth',
-                        'LDAP' 
+                        'LDAP'
                     ];
 
                     scope.serviceGroups = scope._sortArray(scope.serviceGroups, sortingArray);
@@ -887,7 +885,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope.updateAffectedFields = function (fieldValue, field) {
-                  
+
                     if (field.name == 'driver' && field.values) {
                         var foundValue = field.values.filter(function (item) {
                             return item.name === fieldValue;
@@ -1433,7 +1431,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     // Set default dfServiceValues
                     scope.selectedSchema.config_schema.forEach(function (schema) {
-                        
+
                         if (schema.default) {
                             scope.serviceInfo.record.config[schema.name] = scope.serviceInfo.record.config[schema.name] || schema.default;
 
@@ -2514,10 +2512,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope._prepareServiceDefinitionData = function () {
-                    if (scope.service.record.service_doc_by_service_id) {
-                        scope.service.record.service_doc_by_service_id[0] = scope.service.record.service_doc_by_service_id[0] || {};
-                        scope.service.record.service_doc_by_service_id[0].content = scope.currentEditor.session.getValue();
-                        scope.service.record.service_doc_by_service_id[0].format = parseInt(scope.serviceDefinitionFormat);
+                    if (scope.service.record.doc) {
+                        scope.service.record.doc = scope.service.record.doc || {};
+                        scope.service.record.doc.content = scope.currentEditor.session.getValue();
+                        scope.service.record.doc.format = parseInt(scope.serviceDefinitionFormat);
                     }
                 }
 
@@ -2578,16 +2576,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     if (!newValue) return;
 
-                    if (newValue.record.hasOwnProperty('service_doc_by_service_id') && newValue.record.service_doc_by_service_id.length) {
-                        if(!newValue.record.service_doc_by_service_id[0].content) {
+                    if (newValue.record.hasOwnProperty('doc') && newValue.record.doc) {
+                        if(!newValue.record.doc.content) {
                             scope.currentFile = { paths: {}, definitions: {} };
                         } else {
-                            if (newValue.record.service_doc_by_service_id[0].format === 0) {
-                                scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
+                            if (newValue.record.doc.format === 0) {
+                                scope.currentFile = angular.fromJson(newValue.record.doc.content);
                                 scope.serviceDefinitionFormat = 0;
                             }
                             else {
-                                scope.currentFile = newValue.record.service_doc_by_service_id[0].content;
+                                scope.currentFile = newValue.record.doc.content;
                                 scope.serviceDefinitionFormat = 1;
                             }
                         }
@@ -2629,7 +2627,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 var listener = function () {
                     $timeout(function() {
                         if (!scope.currentEditor.session.$annotations) return;
-                        
+
                         var canDo = scope.currentEditor.session.$annotations.some(function(item) {
                             if(item.type === 'error') return true;
                             else return false;
@@ -2648,7 +2646,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         return;
                     }
 
-                    scope.$watch(function() { 
+                    scope.$watch(function() {
                         return scope.currentEditor.session.$annotations;
                     }, function () {
                         listener();

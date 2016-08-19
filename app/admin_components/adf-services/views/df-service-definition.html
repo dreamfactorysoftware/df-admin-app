@@ -1,5 +1,5 @@
 <div class="col-xs-12" style="padding-bottom: 20px;">
-    <div data-ng-hide="!isEditable || selectedSchema.subscription_required">
+    <div data-ng-hide="selectedSchema.subscription_required">
         <div class="form-group ng-scope">
             <label>Select Format</label>
             <select class="form-control" 
@@ -21,7 +21,7 @@
 
         <div class="tab-content" style="margin-top: 20px">
             <div id="jsonEditor" class="tab-pane active">
-        	    <df-ace-editor data-direct-data="currentFile" data-is-editable="true" data-is-clean="isEditorClean" data-current-editor="currentEditor"></df-ace-editor>
+        	    <df-ace-editor data-direct-data="currentFile" data-is-editable="isEditable" data-is-clean="isEditorClean" data-current-editor="currentEditor"></df-ace-editor>
             </div>
         </div>
     </div>
