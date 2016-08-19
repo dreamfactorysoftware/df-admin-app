@@ -107,7 +107,9 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $http({
                     method: 'GET',
                     url: INSTANCE_URL + '/api/v2/system/event_script',
-                    params: {}
+                    params: {
+                        as_list: true
+                    }
                 }).then(function (result) {
                     $scope.highlightedEvents = result.data.resource;
                     $scope.events.$$isHighlighted = $scope.highlightEvent($scope.events);
