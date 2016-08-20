@@ -578,9 +578,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         var nameData = [];
 
-                        if (newValue === 'event') {
+                        if (newValue === 'event_script') {
                             var dataArray = angular.copy(scope.rawPackageData['service']['system'])
-                                angular.forEach(dataArray['event'], function (value, key) {
+                                angular.forEach(dataArray['event_script'], function (value, key) {
                                     nameData.push(new TableData({display_label: value}));
                                 });
                         }
@@ -773,7 +773,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             var selectedExports = [];
 
                             if (tableData[key]['type']['group'] === 'System') {
-                                if (tableData[key]['name'] === 'event') {
+                                if (tableData[key]['name'] === 'event_script') {
                                     selectedExports = tableData[key]['data'].map(function(d) { return d['record']['display_label']; });
                                 }
                                 else {
