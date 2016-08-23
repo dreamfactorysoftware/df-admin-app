@@ -83,6 +83,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.$parent.title = 'Scripts';
             $scope.sampleSelect = null;
 
+            dfApplicationData.loadApi(['event', 'script_type']);
+
             // Loosely defined script object for when a script is non-existent.
             var ScriptObj = function (scriptId, scriptLanguage, scriptData) {
 
@@ -96,27 +98,26 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             };
 
-            $scope.scriptSamplesSelect = function(type) {
+            $scope.scriptSamplesSelect = function (type) {
                 $scope.sampleSelect = type;
                 $scope._loadSampleScript(type);
-            }
+            };
 
             $scope.highlightScript = function () {
                 $http({
                     method: 'GET',
-                    url: INSTANCE_URL + '/api/v2/system/event',
+                    url: INSTANCE_URL + '/api/v2/system/event_script',
                     params: {
-                        only_scripted: true
+                        as_list: true
                     }
                 }).then(function (result) {
-                    $scope.highlightedEvents = result.data.resource
-                    $scope.events.process.$$isHighlighted = $scope.highlightEvent($scope.events.process);
-                    $scope.events.broadcast.$$isHighlighted = $scope.highlightEvent($scope.events.broadcast);
+                    $scope.highlightedEvents = result.data.resource;
+                    $scope.events.$$isHighlighted = $scope.highlightEvent($scope.events);
                 })
             };
 
             $scope.handleFiles = function (files) {
-                if(!files)return;
+                if (!files)return;
                 var file = files && files[0];
                 if (file) {
                     var reader = new FileReader();
@@ -124,7 +125,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     reader.onload = function (evt) {
                         $scope.currentScriptObj.content = evt.target.result;
                         $scope.$apply();
-                    }
+                    };
                     reader.onerror = function (evt) {
                         console.log('error')
                     }
@@ -156,31 +157,16 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope.isHostedSystem = false; // SystemConfigDataService.getSystemConfig().is_hosted;
 
-
-            // Array containing data that describes the scripting types.
-            $scope.eventTypes = [
-
-                {
-                    name: 'process-scripts',
-                    label: 'Process Event Scripts',
-                    item_name: 'process'
-                //},
-                //{
-                //    name: 'broadcast-scripts',
-                //    label: "Broadcast Event Scripts",
-                //    item_name: 'broadcast'
-                }
-            ];
-
             // Sample Scripts
             $scope.samplesScripts = null;
             // $scope.sampleScripts = new ScriptObj('sample-scripts', 'v8js', getSampleScripts.data);
 
+            // All these vars pertain to building of events dynamically on the client
             if(dfApplicationData.getApiData('event') === undefined) {
                 // All these vars pertain to building of events dynamically on the client
                 dfApplicationData.getApiData('event', null, true).then(function (result) {
-                  $scope.events = dfApplicationData.getApiData('event');
-                  $scope.highlightScript();
+                    $scope.events = dfApplicationData.getApiData('event');
+                    $scope.highlightScript();
                 });
             }
             else {
@@ -188,12 +174,21 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.highlightScript();
             }
 
-            $scope.scriptTypes = dfApplicationData.getApiData('script_type');
+
+            if(dfApplicationData.getApiData('script_type') === undefined) {
+                // These values are used to build the script type dropdown
+                dfApplicationData.getApiData('script_type', null, true).then(function (result) {
+                  $scope.scriptTypes = dfApplicationData.getApiData('script_type');
+                });
+            }
+            else {
+                $scope.scriptTypes = dfApplicationData.getApiData('script_type');
+            }
+
             $scope.uppercaseVerbLabels = true;
             $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete']
 
             // Keep track of what's going on in the module
-            $scope.currentEventTypeObj = null;
             $scope.currentServiceObj = null;
             $scope.currentPathObj = null;
             $scope.currentScriptObj = null;
@@ -204,11 +199,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.menuPathArr = [];
 
             // PUBLIC API
-            $scope.setEventType = function (typeObj) {
-
-                $scope._setEventType(typeObj);
-            };
-
             $scope.setService = function (name, eventObj) {
 
                 $scope._setService(name, eventObj);
@@ -232,8 +222,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope._setEventList(name, verb, events);
             };
 
-            $scope.clearEventList = function() {
-                if($scope.currentPathObj.events) {
+            $scope.clearEventList = function () {
+                if ($scope.currentPathObj.events) {
                     $scope.cachePath.name = $scope.currentPathObj.name;
                     $scope.cachePath.verb = $scope.currentPathObj.verb;
                     $scope.cachePath.events = $scope.currentPathObj.events;
@@ -263,7 +253,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             // Retrieves associated path(s) data for an event
             $scope._getEventFromServer = function (requestDataObj) {
 
-
                 return $http({
                     method: 'GET',
                     url: INSTANCE_URL + '/api/v2/' + requestDataObj.eventName,
@@ -277,7 +266,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return $http({
                     method: 'GET',
-                    url: INSTANCE_URL + '/api/v2/system/event/' + requestDataObj.name,
+                    url: INSTANCE_URL + '/api/v2/system/event_script/' + requestDataObj.name,
                     params: requestDataObj.params
                 })
             };
@@ -287,7 +276,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return $http({
                     method: 'POST',
-                    url: INSTANCE_URL + '/api/v2/system/event/' + requestDataObj.name,
+                    url: INSTANCE_URL + '/api/v2/system/event_script/' + requestDataObj.name,
                     params: requestDataObj.params,
                     data: requestDataObj.data
                 }).then($scope.highlightScript);
@@ -298,7 +287,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return $http({
                     method: 'DELETE',
-                    url: INSTANCE_URL + '/api/v2/system/event/' + requestDataObj.name,
+                    url: INSTANCE_URL + '/api/v2/system/event_script/' + requestDataObj.name,
                     params: requestDataObj.params
                 }).then($scope.highlightScript);
             };
@@ -324,21 +313,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             // COMPLEX IMPLEMENTATION
 
-            $scope._setEventType = function (typeObj) {
-
-                $scope._resetAll();
-
-                $scope.menuPathArr.push(typeObj.label);
-                $scope.currentEventTypeObj = typeObj;
-
-                var evt = null;
-                if (typeObj.item_name === 'process') {
-                    $scope.events.process.$$isHighlighted = $scope.highlightEvent($scope.events.process);
-                } else {
-                    $scope.events.broadcast.$$isHighlighted = $scope.highlightEvent($scope.events.broadcast);
-                }
-            };
-
             $scope.highlightEvent = function (evt) {
                 var flag = false;
                 for (var item in evt) {
@@ -358,7 +332,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope._setService = function (name, eventObj) {
 
                 $scope.menuPathArr.push(name);
-                $scope.currentServiceObj = { "name": name, "paths": eventObj };
+                $scope.currentServiceObj = {"name": name, "paths": eventObj};
 
                 $scope.highlightCurrentServiceObj($scope.currentServiceObj);
                 return false;
@@ -382,7 +356,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 return flag;
             };
 
-            $scope._loadSampleScript = function(type) {
+            $scope._loadSampleScript = function (type) {
 
                 var fileExt = '';
                 var mode = '';
@@ -408,7 +382,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 var editor = ace.edit('ide_samples');
 
-                editor.session.setMode({path:'ace/mode/' + mode, inline:true});
+                editor.session.setMode({path: 'ace/mode/' + mode, inline: true});
                 editor.setOptions({readOnly: true});
 
                 $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.' + fileExt).then(
@@ -426,10 +400,10 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 var newVerbList = angular.copy(verbList);
                 if (name.indexOf("{") >= 0 && name.indexOf("}") >= 0) {
                     if (parameter) {
-                        angular.forEach(verbList, function(eventArray, verbName) {
-                            angular.forEach(parameter, function(paramArray, paramName) {
-                                angular.forEach(paramArray, function(itemName, itemIndex) {
-                                    angular.forEach(eventArray, function(eventName, eventIndex) {
+                        angular.forEach(verbList, function (eventArray, verbName) {
+                            angular.forEach(parameter, function (paramArray, paramName) {
+                                angular.forEach(paramArray, function (itemName, itemIndex) {
+                                    angular.forEach(eventArray, function (eventName, eventIndex) {
                                         newEventName = eventName.replace("{" + paramName + "}", itemName);
                                         newVerbList[verbName].push(newEventName);
                                     });
@@ -444,12 +418,10 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
 
             $scope._setPath = function (name, pathObj) {
-                var verbList, newEventName;
-
                 $scope.menuPathArr.push(name);
                 var newVerbList = constructPaths(name, pathObj.verb, pathObj.parameter);
 
-                $scope.currentPathObj = { "name": name, "verbs": newVerbList };
+                $scope.currentPathObj = {"name": name, "verbs": newVerbList};
                 $scope.highlightCurrentPathObj($scope.currentPathObj);
             };
 
@@ -474,21 +446,20 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 return flag;
             };
 
-            $scope._setEventList = function(name, verb, events) {
+            $scope._setEventList = function (name, verb, events) {
                 $scope.currentPathObj.name = name;
                 $scope.currentPathObj.events = events;
                 $scope.currentPathObj.verb = verb;
-                if(name) {
+                if (name) {
                     $scope.menuPathArr.push("[" + verb.toUpperCase() + "] " + name);
                 }
 
             };
 
-
             $scope.isHighlightedItem = function (evt) {
                 return $scope.highlightedEvents && $scope.highlightedEvents.filter(function (item) {
-                    return item === evt;
-                }).length;
+                        return item === evt;
+                    }).length;
             };
 
             $scope._setScript = function (scriptIdStr) {
@@ -502,6 +473,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     function (result) {
 
                         $scope.currentScriptObj = $scope.__getDataFromHttpResponse(result);
+                        $scope.editor.session.setValue($scope.currentScriptObj.content);
                         $scope.menuPathArr.push(scriptIdStr);
                     },
 
@@ -652,14 +624,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     return true;
                 };
 
-                scope.updateEditor = function(scriptType){
+                scope.updateEditor = function (scriptType) {
                     var mode = 'text';
-                    if(['nodejs', 'v8js'].indexOf(scriptType) !== -1){
+                    if (['nodejs', 'v8js'].indexOf(scriptType) !== -1) {
                         mode = 'javascript';
-                    } else if(scriptType){
+                    } else if (scriptType) {
                         mode = scriptType;
                     }
-                    ace.edit('ide').session.setMode('ace/mode/'+mode);
+                    ace.edit('ide').session.setMode('ace/mode/' + mode);
                 }
 
                 scope.jumpTo = function (index) {
@@ -670,7 +642,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 // PRIVATE API
 
-                scope._clearScriptEditor = function() {
+                scope._clearScriptEditor = function () {
                     scope.currentScriptObj = null;
                     ace.edit('ide').session.setValue('');
                 };
@@ -685,104 +657,42 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 // COMPLEX IMPLEMENTATION
                 scope._menuBack = function () {
 
-                    // Do we have a script type.  If not stop.
-                    if (!scope.currentEventTypeObj) return false;
+                    switch (scope.menuPathArr.length) {
 
-                    switch (scope.currentEventTypeObj.name) {
-
-                        case 'process-scripts':
-
-                            switch (scope.menuPathArr.length) {
-
-                                case 0:
-                                    scope.currentEventTypeObj = null;
-                                    break;
-
-                                case 1:
-                                    scope.menuPathArr.pop();
-                                    break;
-
-                                case 2:
-                                    scope.menuPathArr.pop();
-                                    scope.highlightEvent(scope.events.process);
-                                    break
-
-                                case 3:
-                                    scope.menuPathArr.pop();
-                                    scope.highlightCurrentServiceObj(scope.currentServiceObj);
-                                    break;
-
-                                case 4:
-
-                                    // Two cases for 4-length. Check whether we are
-                                    // at the end of the path, or there's one more
-                                    // level
-                                    if(scope.currentPathObj.events) {
-                                        scope._clearScriptEditor();
-                                        scope.menuPathArr.splice(2,2);
-                                        scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
-                                    } else {
-                                        scope.menuPathArr.pop();
-                                    }
-
-                                    break;
-
-                                case 5:
-                                    scope._clearScriptEditor();
-                                    scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
-                                    scope.menuPathArr.pop();
-                                    break;
-                            }
+                        case 0:
+                            scope.menuPathArr.pop();
                             break;
 
-
-                        case 'broadcast-scripts':
-
-
-                            switch (scope.menuPathArr.length) {
-
-                                case 0:
-                                    break;
-
-                                case 1:
-                                    scope.menuPathArr.pop();
-                                    break;
-
-                                case 2:
-                                    scope.menuPathArr.pop();
-                                    scope.highlightEvent(scope.events.broadcast);
-                                    break;
-
-                                case 3:
-                                    scope.menuPathArr.pop();
-                                    scope.highlightCurrentServiceObj(scope.currentServiceObj);
-                                    break;
-
-                                case 4:
-                                    // Two cases for 4-length. Check whether we are
-                                    // at the end of the path, or there's one more
-                                    // level
-                                    if(scope.currentPathObj.events) {
-                                        scope._clearScriptEditor();
-                                        scope.menuPathArr.splice(2,2);
-                                        scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
-                                    } else {
-                                        scope.menuPathArr.pop();
-                                    }
-
-                                    break;
-
-                                case 5:
-                                    scope._clearScriptEditor();
-                                    scope.currentScriptObj = null;
-                                    scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
-                                    scope.menuPathArr.pop();
-                                    break;
-                            }
+                        case 1:
+                            scope.menuPathArr.pop();
+                            scope.highlightEvent(scope.events);
                             break;
 
-                        default:
+                        case 2:
+                            scope.menuPathArr.pop();
+                            scope.highlightCurrentServiceObj(scope.currentServiceObj);
+                            break;
 
+                        case 3:
+
+                            // Two cases for 4-length. Check whether we are
+                            // at the end of the path, or there's one more
+                            // level
+                            if (scope.currentPathObj.events) {
+                                scope._clearScriptEditor();
+                                scope.menuPathArr.splice(2, 2);
+                                scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
+                            } else {
+                                scope.menuPathArr.pop();
+                            }
+
+                            break;
+
+                        case 4:
+                            scope._clearScriptEditor();
+                            scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
+                            scope.menuPathArr.pop();
+                            break;
                     }
                 };
 
@@ -815,12 +725,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             },
             templateUrl: MODSCRIPTING_ASSET_PATH + 'views/df-ace-samples.html',
             link: function (scope, elem, attrs) {
-              scope.viewer = ace.edit('ide_samples');
-
+                scope.viewer = ace.edit('ide_samples');
 
 
             }
-          }
+        }
 
     }])
     .directive('dfAceEditorScripting', ['INSTANCE_URL', 'MODSCRIPTING_ASSET_PATH', '$http', '$timeout', function (INSTANCE_URL, MODSCRIPTING_ASSET_PATH, $http, $timeout) {
@@ -861,16 +770,15 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 scope._loadEditor = function (contents, mode, inactive) {
 
                     inactive = inactive || false;
-                    scope.editor && scope.editor.destroy();
+                    //scope.editor && scope.editor.destroy();
 
                     scope.editor = ace.edit('ide');
-                    //scope.editor.setTheme("ace/theme/twilight");
 
-                    if(mode === true){
+                    if (mode === true) {
                         mode = 'json';
-                    } else if(scope.scriptType && ['nodejs', 'v8js'].indexOf(scope.scriptType) !== -1){
+                    } else if (scope.scriptType && ['nodejs', 'v8js'].indexOf(scope.scriptType) !== -1) {
                         mode = 'javascript';
-                    } else if(scope.scriptType){
+                    } else if (scope.scriptType) {
                         mode = scope.scriptType;
                     } else {
                         mode = 'text';
@@ -897,7 +805,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         scope.$apply(function () {
                             try {
                                 scope.currentEditObj = scope.editor.getValue();
-                            } catch (e) {}
+                            } catch (e) {
+                            }
                         });
                     });
 

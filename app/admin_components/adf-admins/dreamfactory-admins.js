@@ -84,6 +84,8 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
             $scope.$parent.title = 'Admins';
 
+            dfApplicationData.loadApi(['admin']);
+
             // Set module links
             $scope.links = [
                 {
@@ -949,7 +951,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             var arr = [ "first_name", "last_name", "name", "email" ];
 
                             filters = arr.map(function(item) {
-                                return item + ' like "%' + filterText + '%"'
+                                return '(' + item + ' like "%' + filterText + '%")'
                             }).join(' or ');
 
                         }
@@ -1291,6 +1293,3 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 					   }
 				   }
 			   }])
-
-
-

@@ -246,7 +246,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 api_name: 'package',
                 params: {}
             };
-            
+
             api.params = dfApplicationPrefs.getPrefs().data['package'];
 
             // check for and remove null value params
@@ -612,6 +612,38 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             return $location.path();
         }
 
+        function _systemDataExists(apiName) {
+            var appObj = dfApplicationObj;
+
+            if (appObj.hasOwnProperty('apis')) {
+                if (appObj['apis'].hasOwnProperty(apiName)) {
+                    return appObj['apis'][apiName];
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+
+        function _loadApi(apis) {
+            var newApis = [];
+            angular.forEach(apis, function(value, key) {
+                if (_systemDataExists(value) === false) {
+                    this.push(value);
+                }
+
+            }, newApis);
+
+            _asyncInit(newApis).then(
+                function () {
+                    return true;
+                }
+            );
+        }
+
 
         return {
 
@@ -859,6 +891,14 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             fetchPackageFromApi: function() {
                 return _fetchPackageFromApi();
+            },
+
+            systemDataExists: function(apiName) {
+              return _systemDataExists(apiName);
+            },
+
+            loadApi: function(apis) {
+              return _loadApi(apis);
             }
 
         }
@@ -1009,15 +1049,14 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 service: {
                     include_count: true,
                     include_components: true,
-                    limit: 100,
-                    related: 'service_doc_by_service_id'
+                    limit: 100
                 },
                 config: {},
                 email_template: {},
                 lookup: {},
                 cors: {},
                 event: {
-                    full_map: true
+                    scriptable: true
                 }
             },
 
@@ -1065,7 +1104,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
         return {
 
-            apis: ['system', 'environment', 'config', 'service_type', 'service', 'app', 'role', 'admin', 'user', 'email_template', 'lookup', 'cors', 'app_group', 'event', 'script_type', 'package'],
+            //List of all APIs: 'system', 'environment', 'config', 'service_type', 'service', 'app', 'role', 'admin', 'user', 'email_template', 'lookup', 'cors', 'app_group', 'event', 'script_type', 'package'
+            apis: [],
 
             getApis: function () {
                 return this;
@@ -1247,7 +1287,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                             if (reject.data.error.message === 'Token has expired' || reject.config.url.indexOf('/profile') !== -1) {
                                 //  put session
                                 return putSession(reject);
-                            } 
+                            }
                             else if (reject.config.url.indexOf('/package') !== -1) {
                                 break;
                             } else {
@@ -1552,4 +1592,3 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }
             }
         }])
-

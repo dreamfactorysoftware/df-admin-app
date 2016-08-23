@@ -84,6 +84,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
     .controller('SystemConfigurationCtrl', ['$scope', 'dfApplicationData', 'SystemConfigEventsService', 'SystemConfigDataService', 'dfObjectService', 'dfNotify', 'INSTANCE_URL', '$http',
         function ($scope, dfApplicationData, SystemConfigEventsService, SystemConfigDataService, dfObjectService, dfNotify, INSTANCE_URL, $http) {
 
+            $scope.test = dfApplicationData.loadApi(['environment', 'config', 'cors', 'lookup', 'email_template']);
 
             var SystemConfig = function (systemConfigData) {
 
@@ -123,16 +124,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
             // CREATE SHORT NAMES
             $scope.es = SystemConfigEventsService.systemConfigController;
-
+            
             // PUBLIC API
-            $scope.systemEnv = dfApplicationData.getApiData('environment');
-            // Config will always be the first in the array so we grab the 0th value
-            $scope.systemConfig = new SystemConfig(dfApplicationData.getApiData('config')[0]);
-            $scope.getCacheEnabledServices();
-            $scope.corsEntriesData = dfApplicationData.getApiData('cors');
-            $scope.globalLookupsData = dfApplicationData.getApiData('lookup');
-            $scope.emailTemplatesData = dfApplicationData.getApiData('email_template');
-
 
             $scope.links = [
 
@@ -298,7 +291,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             }
         }])
 
-    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', 'INSTANCE_URL', 'APP_VERSION', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, INSTANCE_URL, APP_VERSION, $http, dfNotify) {
+    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', 'INSTANCE_URL', 'APP_VERSION', '$http', 'dfNotify', 'dfApplicationData', function (MODSYSCONFIG_ASSET_PATH, INSTANCE_URL, APP_VERSION, $http, dfNotify, dfApplicationData) {
 
         return {
             restrict: 'E',
@@ -312,6 +305,34 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 };
 
                 scope.APP_VERSION = APP_VERSION;
+
+                var watchEnvironment = scope.$watch('systemEnv', function (newValue, oldValue) {
+
+                    if (newValue === null) {
+                        scope.systemEnv = dfApplicationData.getApiData('environment');
+                    }
+
+                });
+
+                var watchdfApplicationData = scope.$watchCollection(function () {
+                    return dfApplicationData.getApiData('environment')
+                }, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    scope.systemEnv = dfApplicationData.getApiData('environment');
+                });
+
+
+                scope.$on('$destroy', function (e) {
+
+                    watchEnvironment();
+                    watchdfApplicationData();
+                });
+
+
+
+
             }
         }
     }])
@@ -472,6 +493,21 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 return;
                             }
+
+                            if (template.record.origin === undefined) {
+
+                                var messageOptions = {
+                                    module: 'CORS',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: 'Origin is a required field.'
+                                };
+
+                                dfNotify.error(messageOptions);
+
+                                return;
+                            }
+
                             scope._saveCorsEntry(template);
                         } else {
 
@@ -834,6 +870,21 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 return;
                             }
+
+                            if (template.record.name === undefined) {
+
+                                var messageOptions = {
+                                    module: 'Email Templates',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: 'Template Name is a required field.'
+                                };
+
+                                dfNotify.error(messageOptions);
+
+                                return;
+                            }
+
                             scope._saveEmailTemplate(template);
                         } else {
 
@@ -1187,6 +1238,21 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 return;
                             }
+
+                            if (lookup.record.name === undefined) {
+
+                                var messageOptions = {
+                                    module: 'Global Lookup Keys',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: 'Lookup keys should have a unique name.  Please name your key.'
+                                };
+
+                                dfNotify.error(messageOptions);
+
+                                return;
+                            }
+
                             scope._saveLookup(lookup);
                         } else {
 

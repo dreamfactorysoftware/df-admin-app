@@ -286,6 +286,13 @@ module.exports = function (grunt) {
     //   dist: {}
     // },
 
+    // Minify safely
+    uglify: {
+      options: {
+        mangle: false
+      }
+    },
+
     imagemin: {
       dist: {
         files: [{

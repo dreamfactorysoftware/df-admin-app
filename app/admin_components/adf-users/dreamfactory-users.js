@@ -66,6 +66,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
             $scope.$parent.title = 'Users';
 
+            dfApplicationData.loadApi(['user', 'role']);
+
             // Set module links
             $scope.links = [
                 {
@@ -94,7 +96,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 title: 'You have no Users that match your search criteria!',
                 text: '',
             };
-        }])
+        }
+    ])
 
     .directive('dfUserDetails', ['MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', function(MOD_USER_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore) {
 
@@ -1257,5 +1260,3 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             }
         }
     }])
-
-

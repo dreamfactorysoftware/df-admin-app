@@ -21,7 +21,7 @@
 
             <div class="form-group">
                 <label>Alias</label>
-                <input type="text" class="form-control" data-ng-model="table.record.alias" placeholder=""/>
+                <input type="text" class="form-control" data-ng-model="table.record.alias" placeholder="Enter alias label."/>
             </div>
 
             <div class="form-group">
@@ -105,6 +105,9 @@
 
                 <button data-ng-if="table.__dfUI.newTable" type="button" class="btn btn-primary save-schema-btn"
                         data-ng-click="saveTable()">Save
+                </button>
+                <button data-ng-if="table.__dfUI.newTable" type="button" class="btn btn-default"
+                        data-ng-click="clearTable()">Cancel
                 </button>
                 <button data-ng-if="!table.__dfUI.newTable" type="button" class="btn btn-primary save-schema-btn"
                         data-ng-click="updateTable()">Save

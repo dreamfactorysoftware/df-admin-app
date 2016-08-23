@@ -117,6 +117,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         // Set Title in parent
         $scope.$parent.title = 'Schema';
 
+        dfApplicationData.loadApi(['service']);
+
         // Set module links
         $scope.links = [
             {
@@ -539,6 +541,13 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 table: '=?bindTable'
             },
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-table-details.html',
+            controller: function($scope) {
+
+              this.removeField = function () {
+                  $scope.table.record.field.pop();
+              }
+            },
+
             link: function (scope, elem, attrs) {
 
 
@@ -645,6 +654,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope._updateTable();
                 };
 
+                scope.clearTable = function () {
+
+                    scope._clearTable();
+                };
+
                 scope.setPrimaryKey = function (field) {
 
                     scope._setPrimaryKey(field);
@@ -702,6 +716,18 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     })
 
                 };
+
+                scope._clearTable = function () {
+
+                  var confirmRes = dfNotify.confirmNoSave();
+
+                  if (confirmRes) {
+
+                      scope.table.record = {};
+                  }
+
+                };
+
 
                 scope._validateJSON = function () {
 
@@ -772,8 +798,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         }
                         scope.table.recordCopy = angular.copy(scope.table.record);
                         return;
-                    }
-                    ;
+                    };
 
                     var requestDataObj = {
 
@@ -1079,8 +1104,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 fieldData: '=',
                 currentTable: '='
             },
+            require: '^dfTableDetails',
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-field-details.html',
-            link: function (scope, elem, attrs) {
+            link: function (scope, elem, attrs, dfTableDetailsCtrl) {
 
                 var Field = function (fieldData) {
 
@@ -1166,15 +1192,21 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     if (!dfObjectService.compareObjectsAsJson(scope.field.record, scope.field.recordCopy)) {
 
-                        if (!noConfirm && !dfNotify.confirmNoSave()) {
-                            return false;
+                        var confirmRes = dfNotify.confirmNoSave();
+
+                        if (!noConfirm && confirmRes) {//dfNotify.confirmNoSave()) {
+                          // Undo changes to field record object
+                          dfObjectService.mergeObjects(scope.field.recordCopy, scope.field.record)
+
+                          // Remove the temporary field inserted in the table
+                          dfTableDetailsCtrl.removeField();
+                          scope._closeField();
                         }
-
-                        // Undo changes to field record object
-                        dfObjectService.mergeObjects(scope.field.recordCopy, scope.field.record)
                     }
-
-                    scope._closeField();
+                    else {
+                        dfTableDetailsCtrl.removeField();
+                        scope._closeField();
+                    }
                 };
 
                 scope.saveField = function () {
@@ -1727,9 +1759,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             scope.uploadEditor.session.getUndoManager().markClean();
                             scope.uploadIsEditorClean = true;
 
-
+                            scope.refreshService(true);
                             dfNotify.success(messageOptions);
-
                         },
                         function (reject) {
 
@@ -1843,4 +1874,3 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             }
         };
     });
-

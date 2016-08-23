@@ -64,11 +64,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
     }])
 
-    .controller('AppsCtrl', ['$scope', function ($scope) {
+    .controller('AppsCtrl', ['$scope', 'dfApplicationData', function ($scope, dfApplicationData) {
 
 
         // Set Title in parent
         $scope.$parent.title = 'Apps';
+
+        dfApplicationData.loadApi(['service', 'role', 'app']);
 
         // Set module links
         $scope.links = [
@@ -415,7 +417,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             return item.id == scope.app.record.storage_service_id;
                         })[0];
                     }
-                    
+
                 };
 
                 // WATCHERS

@@ -82,6 +82,8 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
         $scope.$parent.title = 'Data';
 
+        dfApplicationData.loadApi(['service']);
+
         // Set module links
         $scope.links = [
 
@@ -125,4 +127,3 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
             $scope.options = options;
         });
     }]);
-

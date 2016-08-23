@@ -136,6 +136,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
     .controller('PackageCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
         $scope.$parent.title = 'Packages';
 
+        dfApplicationData.loadApi(['environment', 'package', 'service_type', 'service', 'role', 'app', 'admin', 'user']);
+
         // Set module links
         $scope.links = [
             {
@@ -406,8 +408,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     });
                 }
 
-                scope.init();
-
                 scope.addToPackage = function() {
                     var searchSelected = scope.selectedNameData.map(function(d) { return d['__dfUI']['selected']; });                    
 
@@ -578,10 +578,18 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         var nameData = [];
 
-                        angular.forEach(dataArray, function (value, key) {
-                            dataArray[key]['display_label'] = dataArray[key][apiName];
-                            nameData.push(new TableData(dataArray[key]))
-                        });
+                        if (newValue === 'event_script') {
+                            var dataArray = angular.copy(scope.rawPackageData['service']['system'])
+                                angular.forEach(dataArray['event_script'], function (value, key) {
+                                    nameData.push(new TableData({display_label: value}));
+                                });
+                        }
+                        else {
+                            angular.forEach(dataArray, function (value, key) {
+                                dataArray[key]['display_label'] = dataArray[key][apiName];
+                                nameData.push(new TableData(dataArray[key]));
+                            });
+                        }
 
                         scope.selectedNameData = nameData;
                         scope.selectedNameLabel = 'Select Item(s) to Export';
@@ -660,8 +668,19 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         });
                     }                
                 });
-                
+
+                var watchEnvironmentData = scope.$watchCollection(function () {
+                    return dfApplicationData.getApiData('environment')
+                }, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    scope.init();
+
+                });
+
                 scope.$on('$destroy', function (e) {
+                    watchEnvironmentData();
                     watchSelectedType();
                     watchSelectedName();
                 });
@@ -712,7 +731,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     var searchTypes = _service.map(function(d) { return d['name']; });                    
                     var _services = angular.copy(dfApplicationData.getApiData('service')); 
                     var _folderNames = [];
-
                     angular.forEach(_services, function (value, key) {
                         if (searchTypes.indexOf(value.type) > -1) {
                             _folderNames.push(value.name);
@@ -724,8 +742,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     scope.selectedFolder = 'files';
                 }
 
-                scope.folderInit();
-                    
+
+
                 // PUBLIC API
                 scope.exportPackage = function() {
 
@@ -755,7 +773,13 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             var selectedExports = [];
 
                             if (tableData[key]['type']['group'] === 'System') {
-                                selectedExports = tableData[key]['data'].map(function(d) { return d['record']['id']; });
+                                if (tableData[key]['name'] === 'event_script') {
+                                    selectedExports = tableData[key]['data'].map(function(d) { return d['record']['display_label']; });
+                                }
+                                else {
+                                    selectedExports = tableData[key]['data'].map(function(d) { return d['record']['id']; });
+                                }
+
                                 payload['service']['system'][tableData[key]['name']] = selectedExports;
                             }
                             else if (tableData[key]['type']['group'] === 'Database') {
@@ -874,8 +898,19 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     scope.selectAll = false;
                 }
 
+
+                var watchServiceTypeData = scope.$watchCollection(function () {
+                    return dfApplicationData.getApiData('service_type')
+                }, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    scope.folderInit();
+                });
+
+                scope.$on('$destroy', function (e) {
+                    watchServiceTypeData();
+                });
             }
         }
     }])
-
-
