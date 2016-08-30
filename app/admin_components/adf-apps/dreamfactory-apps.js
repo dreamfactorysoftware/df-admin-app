@@ -940,6 +940,12 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         repo_url: 'https://github.com/dreamfactorysoftware/angular2-sdk'
                     },
                     {
+                        name: 'Address Book for Ionic',
+                        description: '',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/ionic-sdk/master/package/add_ionic.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/ionic-sdk'
+                    },
+                    {
                         name: 'Address Book for Titanium',
                         description: '',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/titanium-sdk/master/add_titanium.dfpkg',

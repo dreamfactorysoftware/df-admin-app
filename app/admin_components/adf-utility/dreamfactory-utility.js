@@ -2184,6 +2184,11 @@ angular.module('dfUtility', ['dfApplication'])
                         icon: ''
                     },
                     {
+                        label: 'Ionic',
+                        href: 'https://github.com/dreamfactorysoftware/ionic-sdk',
+                        icon: ''
+                    },
+                    {
                         label: 'Titanium',
                         href: 'https://github.com/dreamfactorysoftware/titanium-sdk',
                         icon: ''
