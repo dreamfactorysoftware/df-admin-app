@@ -56,7 +56,7 @@
             <div style="clear: both"></div>
         </df-section-toolbar>
 
-        <div data-ng-show="admins.length === 0 && !filterText">
+        <div data-ng-show="admins.length === 0 && !filterText && emptySectionOptions.active">
             <df-empty-section></df-empty-section>
         </div>
 
@@ -195,5 +195,3 @@
 
 
 </div>
-
-

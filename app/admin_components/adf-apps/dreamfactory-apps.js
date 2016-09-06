@@ -64,11 +64,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
     }])
 
-    .controller('AppsCtrl', ['$scope', 'dfApplicationData', function ($scope, dfApplicationData) {
+    .controller('AppsCtrl', ['$rootScope', '$scope', 'dfApplicationData', function ($rootScope, $scope, dfApplicationData) {
 
 
         // Set Title in parent
         $scope.$parent.title = 'Apps';
+
+        $rootScope.isRouteLoading = true;
 
         dfApplicationData.loadApi(['service', 'role', 'app']);
 
@@ -96,9 +98,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
             title: 'You have no Apps!',
             text: 'Click the button below to get started building your first application.  You can always create new applications by clicking the tab located in the section menu to the left.',
             buttonText: 'Create An App!',
-            viewLink: $scope.links[1]
+            viewLink: $scope.links[1],
+            active: false
         };
-
 
         $scope.$on('$destroy', function (e) {
 
@@ -531,7 +533,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         }
     }])
 
-    .directive('dfManageApps', ['MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfReplaceParams', 'dfNotify', '$window', function (MOD_APPS_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfReplaceParams, dfNotify, $window) {
+    .directive('dfManageApps', ['$rootScope', 'MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfReplaceParams', 'dfNotify', '$window', function ($rootScope, MOD_APPS_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfReplaceParams, dfNotify, $window) {
 
         return {
 
@@ -819,6 +821,10 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                         scope.apps = _app;
 
+                        if (!_app.length) {
+                            scope.emptySectionOptions.active = true;
+                        }
+
                         return;
                     }
                 });
@@ -837,9 +843,12 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     });
 
                     scope.apps = _app;
+
+                    if (!_app.length) {
+                        scope.emptySectionOptions.active = true;
+                    }
+
                     return;
-
-
                 });
 
 
@@ -871,6 +880,10 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     });
 
                     scope.apps = _apps;
+
+                    if (!_apps.length) {
+                        scope.emptySectionOptions.active = true;
+                    }
                 });
 
                 scope.$on('$destroy', function (e) {
@@ -879,6 +892,12 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     watchApps();
                     watchApiData();
                 });
+
+                scope.$watch('$viewContentLoaded',
+                    function(event){
+                        $rootScope.isRouteLoading = false;
+                    }
+                );
             }
         }
     }])
