@@ -936,7 +936,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
 
-
                 // WATCHERS
 
                 var watchAdmins = scope.$watch('admins', function (newValue, oldValue) {
@@ -970,6 +969,12 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         return;
                     }
 
+                    if (newValue !== null && oldValue !== null) {
+
+                        if (newValue.length === 0 && oldValue.length === 0) {
+                            scope.emptySectionOptions.active = true;
+                        }
+                    }
                 });
 
                 var watchApiData = scope.$watchCollection(function() {
@@ -987,12 +992,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     scope.admins = _admins;
 
-                    if (!_admins.length) {
-                        scope.emptySectionOptions.active = true;
-                    }
-
                     return;
-
                 });
 
 
@@ -1023,10 +1023,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     });
 
                     scope.admins = _admins;
-
-                    if (!_admins.length) {
-                        scope.emptySectionOptions.active = true;
-                    }
                 });
 
                 scope.$on('$destroy', function(e) {
@@ -1041,6 +1037,13 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 );
             }
         }
+    }])
+
+    .directive('dfAdminLoading', ['$rootScope', function($rootScope) {
+      return {
+        restrict: 'E',
+        template: "<div class='col-lg-12' ng-if='isRouteLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
+      };
     }])
 
     .directive('dfImportAdmins', ['MOD_ADMIN_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfTableEventService', 'dfNotify', function (MOD_ADMIN_ASSET_PATH, INSTANCE_URL, $http, dfTableEventService, dfNotify) {

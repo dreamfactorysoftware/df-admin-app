@@ -1046,7 +1046,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 var watchUsers = scope.$watch('users', function (newValue, oldValue) {
 
-                    if (newValue == null) {
+                    if (newValue === null) {
 
                         var _users = [];
 
@@ -1056,9 +1056,17 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         });
 
                         scope.users = _users;
+
                         return;
                     }
 
+
+                    if (newValue !== null && oldValue !== null) {
+
+                        if (newValue.length === 0 && oldValue.length === 0) {
+                            scope.emptySectionOptions.active = true;
+                        }
+                    }
                 });
 
                 var watchApiData = scope.$watchCollection(function() {
@@ -1075,10 +1083,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     });
 
                     scope.users = _users;
-
-                    if (!_users.length) {
-                        scope.emptySectionOptions.active = true;
-                    }
 
                     return;
                 });
@@ -1111,10 +1115,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     });
 
                     scope.users = _users;
-
-                    if (!_users.length) {
-                        scope.emptySectionOptions.active = true;
-                    }
                 });
 
                 scope.$on('$destroy', function(e) {
@@ -1129,6 +1129,13 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 );
             }
         }
+    }])
+
+    .directive('dfUserLoading', ['$rootScope', function($rootScope) {
+      return {
+        restrict: 'E',
+        template: "<div class='col-lg-12' ng-if='isRouteLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
+      };
     }])
 
     .directive('dfImportUsers', ['MOD_USER_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfTableEventService', 'dfNotify', function (MOD_USER_ASSET_PATH, INSTANCE_URL, $http, dfTableEventService, dfNotify) {

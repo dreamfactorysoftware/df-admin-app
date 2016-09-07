@@ -1165,11 +1165,14 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         scope.roles = _roles;
 
-                        if (!_roles.length) {
+                        return;
+                    }
+
+                    if (newValue !== null && oldValue !== null) {
+
+                        if (newValue.length === 0 && oldValue.length === 0) {
                             scope.emptySectionOptions.active = true;
                         }
-
-                        return;
                     }
                 });
 
@@ -1187,10 +1190,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     });
 
                     scope.roles = _roles;
-
-                    if (!_roles.length) {
-                        scope.emptySectionOptions.active = true;
-                    }
 
                     return;
                 });
@@ -1223,10 +1222,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     });
 
                     scope.roles = _roles;
-
-                    if (!_roles.length) {
-                        scope.emptySectionOptions.active = true;
-                    }
                 });
 
                 scope.$on('$destroy', function (e) {
@@ -1240,6 +1235,13 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 );
             }
         }
+    }])
+
+    .directive('dfRoleLoading', ['$rootScope', function($rootScope) {
+      return {
+        restrict: 'E',
+        template: "<div class='col-lg-12' ng-if='isRouteLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
+      };
     }])
 
     .directive('dfAssignLookUpKeys', ['MOD_ROLES_ASSET_PATH', function (MOD_ROLES_ASSET_PATH) {
