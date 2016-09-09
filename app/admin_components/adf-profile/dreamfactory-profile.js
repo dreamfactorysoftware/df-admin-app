@@ -68,9 +68,11 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
 
     }])
-    .controller('ProfileCtrl', ['$scope', 'UserDataService', function ($scope, UserDataService) {
+    .controller('ProfileCtrl', ['$scope', 'UserDataService', 'dfApplicationData', function ($scope, UserDataService, dfApplicationData) {
 
         $scope.currentUser = UserDataService.getCurrentUser();
+
+        dfApplicationData.loadApi(['admin']);
 
         // Set Title in parent
         // $scope.$parent.title = $scope.currentUser.name + ' Profile';
