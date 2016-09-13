@@ -61,12 +61,14 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
     }])
 
-    .controller('UsersCtrl', ['$scope', 'dfApplicationData', 'dfNotify',
-        function($scope, dfApplicationData, dfNotify){
+    .controller('UsersCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify',
+        function($rootScope, $scope, dfApplicationData, dfNotify){
 
             $scope.$parent.title = 'Users';
 
-            dfApplicationData.loadApi(['user', 'role']);
+            $rootScope.isRouteLoading = true;
+
+            dfApplicationData.loadApi(['user', 'role', 'app']);
 
             // Set module links
             $scope.links = [
@@ -88,7 +90,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 title: 'You have no Users!',
                 text: 'Click the button below to get started adding users.  You can always create new users by clicking the tab located in the section menu to the left.',
                 buttonText: 'Create A User!',
-                viewLink: $scope.links[1]
+                viewLink: $scope.links[1],
+                active: false
             };
 
             // Set empty search result message
@@ -381,7 +384,20 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     if (!newValue) return false;
 
                     scope.user = new User(newValue);
+                });
 
+                var watchAppData = scope.$watch('apps', function (newValue, oldValue) {
+
+                    if (!newValue) return false;
+
+                    scope.apps = newValue;
+                });
+
+                var watchRoleData = scope.$watch('roles', function (newValue, oldValue) {
+
+                    if (!newValue) return false;
+
+                    scope.roles = newValue;
                 });
 
 
@@ -390,6 +406,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope.$on('$destroy', function(e) {
 
                     watchUserData();
+                    watchAppData();
+                    watchRoleData();
                 });
 
 
@@ -497,7 +515,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     }])
 
-    .directive('dfUserRoles', ['MOD_USER_ASSET_PATH', function(MOD_USER_ASSET_PATH) {
+    .directive('dfUserRoles', ['MOD_USER_ASSET_PATH', 'dfApplicationData', function(MOD_USER_ASSET_PATH, dfApplicationData) {
         return {
             restrict: 'E',
             scope: false,
@@ -505,6 +523,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             link: function (scope, elem, attrs) {
 
                 scope.roleToAppMap = {};
+                scope.apps = [];
+                scope.roles = [];
+
+                dfApplicationData.getApiData('role');
+                dfApplicationData.getApiData('app');
 
                 scope.$watch('user', function () {
                     if (!scope.user) return;
@@ -550,6 +573,30 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         });
                     }
                 };
+
+                var watchAppData = scope.$watch('apps', function (newValue, oldValue) {
+
+                    if (!newValue) return false;
+
+                    scope.apps = newValue;
+                });
+
+                var watchRoleData = scope.$watchCollection('roles', function (newValue, oldValue) {
+
+                    if (!newValue) return false;
+
+                    scope.roles = newValue;
+                });
+
+
+                // MESSAGES
+
+                scope.$on('$destroy', function(e) {
+
+                    watchAppData();
+                    watchRoleData();
+                });
+
             }
         };
     }])
@@ -718,7 +765,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     }])
 
-    .directive('dfManageUsers', ['MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', function (MOD_USER_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify) {
+    .directive('dfManageUsers', ['$rootScope', 'MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', function ($rootScope, MOD_USER_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify) {
 
         return {
             restrict: 'E',
@@ -999,7 +1046,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 var watchUsers = scope.$watch('users', function (newValue, oldValue) {
 
-                    if (newValue == null) {
+                    if (newValue === null) {
 
                         var _users = [];
 
@@ -1009,9 +1056,17 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         });
 
                         scope.users = _users;
+
                         return;
                     }
 
+
+                    if (newValue !== null && oldValue !== null) {
+
+                        if (newValue.length === 0 && oldValue.length === 0) {
+                            scope.emptySectionOptions.active = true;
+                        }
+                    }
                 });
 
                 var watchApiData = scope.$watchCollection(function() {
@@ -1028,8 +1083,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     });
 
                     scope.users = _users;
-                    return;
 
+                    return;
                 });
 
 
@@ -1065,10 +1120,22 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope.$on('$destroy', function(e) {
                     watchUsers();
                     scope.$broadcast('toolbar:paginate:user:reset');
-                })
+                });
 
+                scope.$watch('$viewContentLoaded',
+                    function(event){
+                        $rootScope.isRouteLoading = false;
+                    }
+                );
             }
         }
+    }])
+
+    .directive('dfUserLoading', ['$rootScope', function($rootScope) {
+      return {
+        restrict: 'E',
+        template: "<div class='col-lg-12' ng-if='isRouteLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
+      };
     }])
 
     .directive('dfImportUsers', ['MOD_USER_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfTableEventService', 'dfNotify', function (MOD_USER_ASSET_PATH, INSTANCE_URL, $http, dfTableEventService, dfNotify) {

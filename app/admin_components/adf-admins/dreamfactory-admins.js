@@ -79,10 +79,12 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
     }])
 
-    .controller('AdminsCtrl', ['$scope', 'dfApplicationData', 'dfNotify',
-        function($scope, dfApplicationData, dfNotify){
+    .controller('AdminsCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify',
+        function($rootScope, $scope, dfApplicationData, dfNotify){
 
             $scope.$parent.title = 'Admins';
+
+            $rootScope.isRouteLoading = true;
 
             dfApplicationData.loadApi(['admin']);
 
@@ -106,7 +108,8 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 title: 'You have no Admins!',
                 text: 'Click the button below to get started adding admins.  You can always create new admins by clicking the tab located in the section menu to the left.',
                 buttonText: 'Create An Admin!',
-                viewLink: $scope.links[1]
+                viewLink: $scope.links[1],
+                active: false
             };
 
             // Set empty search result message
@@ -672,7 +675,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     }])
 
-    .directive('dfManageAdmins', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$location', function (MOD_ADMIN_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $location) {
+    .directive('dfManageAdmins', ['$rootScope', 'MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$location', function ($rootScope, MOD_ADMIN_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $location) {
 
         return {
             restrict: 'E',
@@ -933,7 +936,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
 
-
                 // WATCHERS
 
                 var watchAdmins = scope.$watch('admins', function (newValue, oldValue) {
@@ -967,6 +969,12 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         return;
                     }
 
+                    if (newValue !== null && oldValue !== null) {
+
+                        if (newValue.length === 0 && oldValue.length === 0) {
+                            scope.emptySectionOptions.active = true;
+                        }
+                    }
                 });
 
                 var watchApiData = scope.$watchCollection(function() {
@@ -983,8 +991,8 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     });
 
                     scope.admins = _admins;
-                    return;
 
+                    return;
                 });
 
 
@@ -1022,8 +1030,20 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     scope.$broadcast('toolbar:paginate:admin:reset');
                 })
 
+                scope.$watch('$viewContentLoaded',
+                    function(event){
+                        $rootScope.isRouteLoading = false;
+                    }
+                );
             }
         }
+    }])
+
+    .directive('dfAdminLoading', ['$rootScope', function($rootScope) {
+      return {
+        restrict: 'E',
+        template: "<div class='col-lg-12' ng-if='isRouteLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
+      };
     }])
 
     .directive('dfImportAdmins', ['MOD_ADMIN_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfTableEventService', 'dfNotify', function (MOD_ADMIN_ASSET_PATH, INSTANCE_URL, $http, dfTableEventService, dfNotify) {

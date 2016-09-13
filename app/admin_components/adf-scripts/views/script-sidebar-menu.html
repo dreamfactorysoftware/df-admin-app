@@ -29,7 +29,7 @@
                    data-ng-click="setPath(path, verbs)">{{path}}<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
             </div>
 
-            <div class="list-group scripting-list-group" data-ng-show="$parent.$parent.menuPathArr.length === 2">
+            <div class="list-group scripting-list-group" data-ng-show="$parent.$parent.menuPathArr.length > 1 &&  $parent.$parent.menuPathArr.length < 4 && !currentPathObj.events">
                 <span data-ng-repeat="(verb, eventList) in currentPathObj.verbs">
                     <a data-ng-if="eventList.length > 1"  data-ng-click="setEventList(currentPathObj.name, verb, eventList)"
                        ng-class="{ highlighted: eventList.$$isHighlighted }">{{currentPathObj.name}}

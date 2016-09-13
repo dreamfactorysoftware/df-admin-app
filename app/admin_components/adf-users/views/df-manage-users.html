@@ -46,11 +46,11 @@
             <div style="clear: both"></div>
         </df-section-toolbar>
 
-        <div data-ng-show="users.length === 0 && !filterText">
+        <div data-ng-show="users.length === 0 && !filterText && emptySectionOptions.active">
             <df-empty-section></df-empty-section>
         </div>
 
-        <div data-ng-show="users.length === 0 && filterText">
+        <div data-ng-show="users.length === 0 && filterText && !emptySectionOptions.active">
             <df-empty-search-result></df-empty-search-result>
         </div>
 
@@ -183,5 +183,3 @@
 
 
 </div>
-
-

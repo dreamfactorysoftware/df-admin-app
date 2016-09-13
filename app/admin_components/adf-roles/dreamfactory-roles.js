@@ -62,9 +62,11 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
     }])
 
-    .controller('RolesCtrl', ['$scope', '$q', 'dfApplicationData', 'SystemConfigDataService', function ($scope, $q, dfApplicationData, SystemConfigDataService) {
+    .controller('RolesCtrl', ['$rootScope', '$scope', '$q', 'dfApplicationData', 'SystemConfigDataService', function ($rootScope, $scope, $q, dfApplicationData, SystemConfigDataService) {
 
         $scope.$parent.title = 'Roles';
+
+        $rootScope.isRouteLoading = true;
 
         // Set module links
         $scope.links = [
@@ -90,7 +92,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             title: 'You have no Roles!',
             text: 'Click the button below to get started creating your first role.  You can always create new roles by clicking the tab located in the section menu to the left.',
             buttonText: 'Create A Role!',
-            viewLink: $scope.links[1]
+            viewLink: $scope.links[1],
+            active: false
         };
     }])
 
@@ -888,7 +891,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
         }
     }])
 
-    .directive('dfManageRoles', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfSystemData', 'SystemConfigDataService', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfSystemData, SystemConfigDataService) {
+    .directive('dfManageRoles', ['$rootScope', 'MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfSystemData', 'SystemConfigDataService', function ($rootScope, MOD_ROLES_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfSystemData, SystemConfigDataService) {
 
 
         return {
@@ -1161,7 +1164,15 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         });
 
                         scope.roles = _roles;
+
                         return;
+                    }
+
+                    if (newValue !== null && oldValue !== null) {
+
+                        if (newValue.length === 0 && oldValue.length === 0) {
+                            scope.emptySectionOptions.active = true;
+                        }
                     }
                 });
 
@@ -1179,6 +1190,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     });
 
                     scope.roles = _roles;
+
                     return;
                 });
 
@@ -1216,8 +1228,20 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     watchRoles();
                 })
 
+                scope.$watch('$viewContentLoaded',
+                    function(event){
+                        $rootScope.isRouteLoading = false;
+                    }
+                );
             }
         }
+    }])
+
+    .directive('dfRoleLoading', ['$rootScope', function($rootScope) {
+      return {
+        restrict: 'E',
+        template: "<div class='col-lg-12' ng-if='isRouteLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
+      };
     }])
 
     .directive('dfAssignLookUpKeys', ['MOD_ROLES_ASSET_PATH', function (MOD_ROLES_ASSET_PATH) {
@@ -1309,9 +1333,9 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 };
 
                 scope._deleteLookUpKey = function (keyObjIndex) {
-                    if (scope.roleLookUpKeys[keyObjIndex].record.role_id !== undefined) 
+                    if (scope.roleLookUpKeys[keyObjIndex].record.role_id !== undefined)
                         scope.roleLookUpKeys[keyObjIndex].record.role_id = null;
-                    else 
+                    else
                         scope.roleLookUpKeys.splice(keyObjIndex, 1);
                 };
 

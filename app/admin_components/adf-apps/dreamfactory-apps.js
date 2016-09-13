@@ -64,11 +64,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
     }])
 
-    .controller('AppsCtrl', ['$scope', 'dfApplicationData', function ($scope, dfApplicationData) {
+    .controller('AppsCtrl', ['$rootScope', '$scope', 'dfApplicationData', function ($rootScope, $scope, dfApplicationData) {
 
 
         // Set Title in parent
         $scope.$parent.title = 'Apps';
+
+        $rootScope.isRouteLoading = true;
 
         dfApplicationData.loadApi(['service', 'role', 'app']);
 
@@ -96,9 +98,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
             title: 'You have no Apps!',
             text: 'Click the button below to get started building your first application.  You can always create new applications by clicking the tab located in the section menu to the left.',
             buttonText: 'Create An App!',
-            viewLink: $scope.links[1]
+            viewLink: $scope.links[1],
+            active: false
         };
-
 
         $scope.$on('$destroy', function (e) {
 
@@ -531,7 +533,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         }
     }])
 
-    .directive('dfManageApps', ['MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfReplaceParams', 'dfNotify', '$window', function (MOD_APPS_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfReplaceParams, dfNotify, $window) {
+    .directive('dfManageApps', ['$rootScope', 'MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfReplaceParams', 'dfNotify', '$window', function ($rootScope, MOD_APPS_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfReplaceParams, dfNotify, $window) {
 
         return {
 
@@ -821,6 +823,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                         return;
                     }
+
+                    if (newValue !== null && oldValue !== null) {
+
+                        if (newValue.length === 0 && oldValue.length === 0) {
+                            scope.emptySectionOptions.active = true;
+                        }
+                    }
                 });
 
                 var watchApiData = scope.$watchCollection(function () {
@@ -837,9 +846,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     });
 
                     scope.apps = _app;
+
                     return;
-
-
                 });
 
 
@@ -879,8 +887,21 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     watchApps();
                     watchApiData();
                 });
+
+                scope.$watch('$viewContentLoaded',
+                    function(event){
+                        $rootScope.isRouteLoading = false;
+                    }
+                );
             }
         }
+    }])
+
+    .directive('dfAppLoading', ['$rootScope', function($rootScope) {
+      return {
+        restrict: 'E',
+        template: "<div class='col-lg-12' ng-if='isRouteLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
+      };
     }])
 
     .directive('dfImportApp', ['MOD_APPS_ASSET_PATH', '$http', 'dfApplicationData', 'dfNotify', function (MOD_APPS_ASSET_PATH, $http, dfApplicationData, dfNotify) {
@@ -938,6 +959,12 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         description: '',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/angular2-sdk/master/add_angular2.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/angular2-sdk'
+                    },
+                    {
+                        name: 'Address Book for Ionic',
+                        description: '',
+                        package_url: 'https://raw.github.com/dreamfactorysoftware/ionic-sdk/master/package/add_ionic.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/ionic-sdk'
                     },
                     {
                         name: 'Address Book for Titanium',
