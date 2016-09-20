@@ -132,6 +132,91 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             };
 
+            $scope.githubDialog = function () {
+
+                var element = angular.element('#githubModal');
+                element.appendTo("body").modal('show');
+            };
+
+            $scope.githubUpload = function () {
+
+                var url = angular.copy($scope.githubURL);
+                var url_params = url.substr(url.indexOf('.com/') + 5);
+                var url_array = url_params.split('/');
+
+                var github_api_url = '';
+
+                var owner = '';
+                var repo = '';
+                var branch = '';
+                var path = '';
+
+                if (url.indexOf('raw.github') > -1) {
+                    owner = url_array[0];
+                    repo = url_array[1];
+                    branch = url_array[2];
+                    path = url_array.splice(3, url_array.length - 3).join('/');
+                }
+                else {
+                    owner = url_array[0];
+                    repo = url_array[1];
+                    branch = url_array[3];
+                    path = url_array.splice(4, url_array.length - 4).join('/');
+                }
+
+                github_api_url = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path + '?ref=' + branch;
+
+
+                var username = angular.copy($scope.credentials.githubUsername);
+                var password = angular.copy($scope.credentials.githubPassword);
+
+                var authdata = btoa(username + ':' + password);
+
+                if (username) {
+                    $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
+                }
+
+                $http.get(github_api_url, {
+
+                    headers: {
+                        'X-DreamFactory-API-Key': undefined,
+                        'X-DreamFactory-Session-Token': undefined,
+                    },
+                })
+                .then(function successCallback(response) {
+
+                    var extension = path.substr(path.lastIndexOf('.') + 1, path.length - path.lastIndexOf('.'));
+
+                    var mode = '';
+
+                    switch (extension) {
+                        case 'js':
+                            mode = 'javascript';
+                            break;
+                        case 'php':
+                            mode = 'php';
+                            break;
+                        case 'py':
+                            mode = 'python';
+                            break;
+                        case 'json':
+                            mode = 'json';
+                            break;
+                        default:
+                            mode = 'javascript'
+                    }
+
+                    var decodedString = atob(response.data.content);
+                    $scope.editor.session.setValue(decodedString);
+                    $scope.editor.session.setMode({path: 'ace/mode/' + mode, inline: true});
+
+                    var element = angular.element('#githubModal');
+                    element.appendTo("body").modal('hide');
+                }, function errorCallback(response) {
+                    //console.log(response);
+                });
+            }
+
             $scope.__getDataFromHttpResponse = function (httpResponseObj) {
 
                 if (!httpResponseObj) return [];
@@ -192,6 +277,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.currentServiceObj = null;
             $scope.currentPathObj = null;
             $scope.currentScriptObj = null;
+
+            // GitHub form models
+            $scope.githubURL = null;
+            $scope.githubPrivate = false;
+            $scope.credentials = {};
 
             // Stuff for the editor
             $scope.editor = null;
@@ -586,7 +676,54 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             // MESSAGES
 
+
+            var watchGithubURL = $scope.$watch('githubURL', function (newValue, oldValue) {
+
+                if (!newValue) return false;
+
+                if (newValue.indexOf('.js') > 0 ||
+                    newValue.indexOf('.py') > 0 ||
+                    newValue.indexOf('.php') > 0 ||
+                    newValue.indexOf('.txt') > 0) {
+
+                    var url = angular.copy($scope.githubURL);
+                    var url_params = url.substr(url.indexOf('.com/') + 5);
+                    var url_array = url_params.split('/');
+
+                    var owner = url_array[0];
+                    var repo = url_array[1];
+
+                    var github_api_url = 'https://api.github.com/users/' + owner + '/repos';
+
+                    $http.get(github_api_url, {
+                        headers: {
+                            'X-DreamFactory-API-Key': undefined,
+                            'X-DreamFactory-Session-Token': undefined
+                        },
+                    })
+                    .success(function (data) {
+
+                        //var qwe = data.map(function(d) { return d['name']; })
+                        var repos = data.filter(function( obj ) {
+                            return obj.name == repo;
+                        });
+
+                        if (repos.length === 0) {
+                            $scope.githubPrivate = true;
+                        }
+                        else {
+                            $scope.githubPrivate = false;
+                        }
+                    });
+                }
+            });
+
+            $scope.$on('$destroy', function (e) {
+
+                watchGithubURL();
+            });
         }])
+        
     .directive('scriptSidebarMenu', ['MODSCRIPTING_ASSET_PATH', function (MODSCRIPTING_ASSET_PATH) {
 
         return {

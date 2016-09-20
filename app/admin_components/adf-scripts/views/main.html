@@ -1,5 +1,4 @@
 <div class="">
-
     <div class="">
         <div class="df-section df-section-all-round" df-fs-height>
             <div data-ng-show="isHostedSystem">
@@ -73,4 +72,41 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal animated fadeIn" id="githubModal"  data-backdrop="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <form ng-submit="">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span>
+                  <span class="sr-only">X</span>
+              </button>
+              <h4 class="modal-title">Upload a script file from GitHub</h4>
+            </div>
+            <div class="modal-body">
+            <div class="form-group">
+                <label for="exampleInputEmail1">GitHub File URL</label>
+                <input type="text" class="form-control" data-ng-model="githubURL" id="" placeholder="https://github.com/user/repo/blob/file.json">
+            </div>
+            <div>
+                <br>
+            </div>
+            <div class="form-group" ng-if="githubPrivate">
+                <label for="githubuser">GitHub Username</label>
+                <input type="text" class="form-control" data-ng-model="credentials.githubUsername" id="githubuser" placeholder="Username">
+            </div>
+            <div class="form-group" ng-if="githubPrivate">
+                <label for="githubpass">GitHub Password</label>
+                <input type="password" class="form-control" data-ng-model="credentials.githubPassword" id="githubpass" placeholder="Password" value=" ">
+            </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" >Cancel</button>
+              <button type="submit" class="btn btn-primary" onclick="angular.element(this).scope().githubUpload()">Upload</button>
+            </div>
+        </form>
+    </div>
+  </div>
 </div>
