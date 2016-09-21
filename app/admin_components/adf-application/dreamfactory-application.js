@@ -1283,6 +1283,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         break;
 
                     default:
+                        if (reject.status !== 401) break;
+                        if (reject.config.ignore401) break;
+
                         if ((reject.status === 401 || reject.data.error.code === 401)  && reject.config.url.indexOf('/session') === -1 && $rootScope.initInProgress === false) {
                             if (reject.data.error.message === 'Token has expired' || reject.config.url.indexOf('/profile') !== -1) {
                                 //  put session

@@ -72,13 +72,15 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Upload a script file</label>
-                <input type="file" id="input" onclick="this.value = null;" onchange="angular.element(this).scope().handleFiles(this.files)" ng-model="filename">
-
+                  <label>Upload a script file</label><br>
+                  <span>From Desktop:&nbsp;</span>
+                  <label class="btn btn-default btn-file btn-sm">
+                      Select File... <input type="file" style="display: none;"  onclick="this.value = null;" onchange="angular.element(this).scope().handleFiles(this.files)" ng-model="filename">
+                  </label>
             </div>
             <div class="form-group">
-                <label>Upload a script file from GitHub</label><br>
-                <button type="button" class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubDialog()">Browse...</button>
+                <span>From GitHub:&nbsp;&nbsp;&nbsp;</span>
+                <button type="button" class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShow()">Select File...</button>
             </div>
             <div class="form-inline">
                 <div class="checkbox">

@@ -132,15 +132,40 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             };
 
-            $scope.githubDialog = function () {
+            $scope.githubModalShow = function () {
 
                 var element = angular.element('#githubModal');
+
+                element.on('hidden.bs.modal', function(){
+                    $(this).find('form')[0].reset();
+                });
+
                 element.appendTo("body").modal('show');
+            };
+
+            $scope.githubModalCancel = function () {
+
+                $scope.githubModal = { private: false };
+                $scope.modalError = {};
+                $scope.$apply();
+
+                var element = angular.element('#githubModal');
+
+                element.on('hidden.bs.modal', function(){
+                    $(this).find('form')[0].reset();
+                });
+
+                element.appendTo("body").modal('hide');
             };
 
             $scope.githubUpload = function () {
 
-                var url = angular.copy($scope.githubURL);
+                var url = angular.copy($scope.githubModal.url);
+
+                if (url === null) {
+                    return;
+                }
+
                 var url_params = url.substr(url.indexOf('.com/') + 5);
                 var url_array = url_params.split('/');
 
@@ -167,8 +192,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 github_api_url = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path + '?ref=' + branch;
 
 
-                var username = angular.copy($scope.credentials.githubUsername);
-                var password = angular.copy($scope.credentials.githubPassword);
+                var username = angular.copy($scope.githubModal.username);
+                var password = angular.copy($scope.githubModal.password);
 
                 var authdata = btoa(username + ':' + password);
 
@@ -182,6 +207,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         'X-DreamFactory-API-Key': undefined,
                         'X-DreamFactory-Session-Token': undefined,
                     },
+                    ignore401: true
                 })
                 .then(function successCallback(response) {
 
@@ -210,10 +236,33 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     $scope.editor.session.setValue(decodedString);
                     $scope.editor.session.setMode({path: 'ace/mode/' + mode, inline: true});
 
+                    $scope.githubModal = { private: false };
+                    $scope.modalError = {};
+                    $scope.$apply();
+
                     var element = angular.element('#githubModal');
+
+                    element.on('hidden.bs.modal', function(){
+                        $(this).find('form')[0].reset();
+                    });
+
                     element.appendTo("body").modal('hide');
+
                 }, function errorCallback(response) {
-                    //console.log(response);
+
+                    if (response.status === 401) {
+                        $scope.modalError = {
+                            visible: true,
+                            message: 'Error: Authentication failed.'
+                        }
+                    }
+
+                    if (response.status === 404) {
+                        $scope.modalError = {
+                            visible: true,
+                            message: 'Error: The file could not be found.'
+                        }
+                    }
                 });
             }
 
@@ -279,9 +328,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.currentScriptObj = null;
 
             // GitHub form models
-            $scope.githubURL = null;
-            $scope.githubPrivate = false;
-            $scope.credentials = {};
+            $scope.modalError = {};
+            $scope.githubModal = {};
 
             // Stuff for the editor
             $scope.editor = null;
@@ -676,17 +724,41 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             // MESSAGES
 
-
-            var watchGithubURL = $scope.$watch('githubURL', function (newValue, oldValue) {
+            var watchGithubCredUser = $scope.$watch('githubModal.username', function (newValue, oldValue) {
 
                 if (!newValue) return false;
+
+                $scope.modalError = {
+                    visible: false,
+                    message: ''
+                }
+            });
+
+            var watchGithubCredPass = $scope.$watch('githubModal.password', function (newValue, oldValue) {
+
+                if (!newValue) return false;
+
+                $scope.modalError = {
+                    visible: false,
+                    message: ''
+                }
+            });
+
+            var watchGithubURL = $scope.$watch('githubModal.url', function (newValue, oldValue) {
+
+                if (!newValue) return false;
+
+                $scope.modalError = {
+                    visible: false,
+                    message: ''
+                }
 
                 if (newValue.indexOf('.js') > 0 ||
                     newValue.indexOf('.py') > 0 ||
                     newValue.indexOf('.php') > 0 ||
                     newValue.indexOf('.txt') > 0) {
 
-                    var url = angular.copy($scope.githubURL);
+                    var url = angular.copy($scope.githubModal.url);
                     var url_params = url.substr(url.indexOf('.com/') + 5);
                     var url_array = url_params.split('/');
 
@@ -701,19 +773,20 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             'X-DreamFactory-Session-Token': undefined
                         },
                     })
-                    .success(function (data) {
+                    .then(function successCallback(response) {
 
-                        //var qwe = data.map(function(d) { return d['name']; })
-                        var repos = data.filter(function( obj ) {
-                            return obj.name == repo;
-                        });
+                      var repos = response.data.filter(function( obj ) {
+                          return obj.name == repo;
+                      });
 
-                        if (repos.length === 0) {
-                            $scope.githubPrivate = true;
-                        }
-                        else {
-                            $scope.githubPrivate = false;
-                        }
+                      if (repos.length === 0) {
+                          $scope.githubModal.private = true;
+                      }
+                      else {
+                          $scope.githubModal.private = false;
+                      }
+                    }, function errorCallback(response) {
+
                     });
                 }
             });
@@ -721,9 +794,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.$on('$destroy', function (e) {
 
                 watchGithubURL();
+                watchGithubCredUser();
+                watchGithubCredPass();
             });
         }])
-        
+
     .directive('scriptSidebarMenu', ['MODSCRIPTING_ASSET_PATH', function (MODSCRIPTING_ASSET_PATH) {
 
         return {
