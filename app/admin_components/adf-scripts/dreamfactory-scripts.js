@@ -145,9 +145,10 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope.githubModalCancel = function () {
 
-                $scope.githubModal = { private: false };
-                $scope.modalError = {};
-                $scope.$apply();
+                $scope.$apply(function () {
+                  $scope.githubModal = { private: false };
+                  $scope.modalError = {};
+                });
 
                 var element = angular.element('#githubModal');
 
@@ -236,10 +237,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     $scope.editor.session.setValue(decodedString);
                     $scope.editor.session.setMode({path: 'ace/mode/' + mode, inline: true});
 
-                    $scope.githubModal = { private: false };
-                    $scope.modalError = {};
-                    $scope.$apply();
-
                     var element = angular.element('#githubModal');
 
                     element.on('hidden.bs.modal', function(){
@@ -263,6 +260,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             message: 'Error: The file could not be found.'
                         }
                     }
+                });
+
+                $scope.$apply(function () {
+                    $scope.githubModal = { private: false };
+                    $scope.modalError = {};
                 });
             }
 
@@ -765,7 +767,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     var owner = url_array[0];
                     var repo = url_array[1];
 
-                    var github_api_url = 'https://api.github.com/users/' + owner + '/repos';
+                    var github_api_url = 'https://api.github.com/repos/' + owner + '/' + repo;
 
                     $http.get(github_api_url, {
                         headers: {
@@ -775,18 +777,20 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     })
                     .then(function successCallback(response) {
 
-                      var repos = response.data.filter(function( obj ) {
-                          return obj.name == repo;
-                      });
+                        $scope.githubModal.private = response.data.private;
 
-                      if (repos.length === 0) {
-                          $scope.githubModal.private = true;
-                      }
-                      else {
-                          $scope.githubModal.private = false;
-                      }
+                        $scope.modalError = {
+                            visible: false,
+                            message: ''
+                        }
                     }, function errorCallback(response) {
 
+                        if (response.status === 404) {
+                            $scope.modalError = {
+                                visible: true,
+                                message: 'Error: The repository could not be found.'
+                            }
+                        }
                     });
                 }
             });
