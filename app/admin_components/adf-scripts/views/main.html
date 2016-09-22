@@ -74,42 +74,4 @@
     </div>
 </div>
 
-<div class="modal animated fadeIn" id="githubModal" data-backdrop="false">
-  <div class="modal-dialog">
-    <div class="modal-content">
-        <form ng-submit="" name="user_form">
-            <div class="modal-header">
-              <button type="button" class="close" onclick="angular.element(this).scope().githubModalCancel()">
-                  <span aria-hidden="true">&times;</span>
-                  <span class="sr-only">X</span>
-              </button>
-              <h4 class="modal-title">Upload a script file from GitHub</h4>
-            </div>
-            <div class="modal-body">
-            <div class="form-group">
-                <label for="exampleInputEmail1">GitHub File URL</label>
-                <input type="text" class="form-control" data-ng-model="githubModal.url" id="" placeholder="https://github.com/user/repo/blob/file.json">
-            </div>
-            <div>
-                <br>
-            </div>
-            <div class="form-group" ng-if="githubModal.private">
-                <label for="githubuser">GitHub Username</label>
-                <input type="text" class="form-control" data-ng-model="githubModal.username" id="githubuser" placeholder="Username">
-            </div>
-            <div class="form-group" ng-if="githubModal.private">
-                <label for="githubpass">GitHub Password</label>
-                <input type="password" class="form-control" data-ng-model="githubModal.password" id="githubpass" placeholder="Password">
-            </div>
-            <div>
-                <div class="alert alert-danger" role="alert" ng-if="modalError.visible" >{{modalError.message}}</div>
-            </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" onclick="angular.element(this).scope().githubModalCancel()">Cancel</button>
-              <button type="submit" class="btn btn-primary" onclick="angular.element(this).scope().githubUpload()">Upload</button>
-            </div>
-        </form>
-    </div>
-  </div>
-</div>
+<df-github-modal editor="editor"></df-github-modal>
