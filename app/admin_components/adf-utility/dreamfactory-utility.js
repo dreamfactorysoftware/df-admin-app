@@ -12,7 +12,8 @@ angular.module('dfUtility', ['dfApplication'])
       return {
           restrict: 'E',
           scope: {
-              editor: '=?'
+              editor: '=?',
+              accept: '=?'
           },
           templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-github-modal.html', link: function (scope, elem, attrs) {
 
@@ -99,7 +100,9 @@ angular.module('dfUtility', ['dfApplication'])
                       var element = angular.element('#githubModal');
 
                       element.on('hidden.bs.modal', function(){
-                          $(this).find('form')[0].reset();
+                          if ($(this).find('form')[0] !== undefined) {
+                              $(this).find('form')[0].reset();
+                          }
                       });
 
                       scope.githubModal = { private: false };
@@ -137,7 +140,9 @@ angular.module('dfUtility', ['dfApplication'])
                   var element = angular.element('#githubModal');
 
                   element.on('hidden.bs.modal', function(){
-                      $(this).find('form')[0].reset();
+                      if ($(this).find('form')[0] !== undefined) {
+                          $(this).find('form')[0].reset();
+                      }
                   });
 
                   element.appendTo("body").modal('hide');
@@ -172,10 +177,9 @@ angular.module('dfUtility', ['dfApplication'])
                       message: ''
                   }
 
-                  if (newValue.indexOf('.js') > 0 ||
-                      newValue.indexOf('.py') > 0 ||
-                      newValue.indexOf('.php') > 0 ||
-                      newValue.indexOf('.txt') > 0) {
+                  var file_ext = newValue.substring(newValue.lastIndexOf('.') + 1, newValue.length)
+
+                  if (scope['accept'].indexOf(file_ext) > -1) {
 
                       var url = angular.copy(scope.githubModal.url);
                       var url_params = url.substr(url.indexOf('.com/') + 5);
@@ -200,6 +204,14 @@ angular.module('dfUtility', ['dfApplication'])
                           scope.githubModal.private = true;
                       });
                   }
+                  else {
+
+                    var formats = scope['accept'].join(', ');
+                    scope.modalError = {
+                        visible: true,
+                        message: 'Error: Invalid file format. Only ' + formats + ' file format(s) allowed'
+                    }
+                  }
               });
 
               scope.$on('githubShowModal',function(event, data){
@@ -207,7 +219,9 @@ angular.module('dfUtility', ['dfApplication'])
                   var element = angular.element('#githubModal');
 
                   element.on('hidden.bs.modal', function(){
-                      $(this).find('form')[0].reset();
+                      if ($(this).find('form')[0] !== undefined) {
+                          $(this).find('form')[0].reset();
+                      }
                   });
 
                   element.appendTo("body").modal('show');

@@ -591,7 +591,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache) {
+    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', '$rootScope', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache, $rootScope) {
 
 
         return {
@@ -622,6 +622,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         record: data,
                         recordCopy: angular.copy(data)
                     }
+                };
+
+                scope.githubModalShow = function () {
+
+                    $rootScope.$broadcast('githubShowModal', {});
                 };
 
                 scope._sortArray = function(groupsArray, orderArray) {
@@ -2494,6 +2499,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.currentFile = null;
                 scope.hideGutter = true;
                 scope.serviceDefinitionFormat = 0;
+                scope.allowedDefinitionFormats = ['json','yml','yaml'];
 
                 scope._changeDefinitionView = function() {
                     switch (scope.serviceInfo.record.type) {

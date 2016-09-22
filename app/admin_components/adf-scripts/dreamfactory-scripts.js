@@ -193,6 +193,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.uppercaseVerbLabels = true;
             $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete']
 
+            $scope.allowedScriptFormats = ['js','php','py', 'txt'];
+
             // Keep track of what's going on in the module
             $scope.currentServiceObj = null;
             $scope.currentPathObj = null;
