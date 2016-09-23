@@ -1371,8 +1371,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
     }])
 
     // Enter confirmation code page
-    .directive('dreamfactoryConfirmUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '_dfObjectService', '_dfStringService', 'UserDataService', 'UserEventsService', 'SystemConfigDataService',
-        function(MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, _dfObjectService, _dfStringService, UserDataService, UserEventsService, SystemConfigDataService) {
+    .directive('dreamfactoryConfirmUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$location', '$http', '_dfObjectService', '_dfStringService', 'UserDataService', 'UserEventsService', 'SystemConfigDataService',
+        function(MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $location, $http, _dfObjectService, _dfStringService, UserDataService, UserEventsService, SystemConfigDataService) {
 
             return {
 
@@ -1391,7 +1391,17 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // it defaults to showing the template.  This is currently the only option
                     var defaults = {showTemplate: true, title: 'User Confirmation'};
 
+                    var uri = $location.absUrl().split('?');
+                    var code = '';
+                    if(uri.length > 1){
+                        var params = uri[1];
+                        if(params && params.indexOf('code') !== -1){
+                            code = params.substring(5);
+                        }
+                    }
                     scope.options = _dfObjectService.mergeObjects(scope.options, defaults);
+                    scope.options.code = code;
+                    scope.user = {code: code};
 
                     // This is included on the top level tag of our directive template and
                     // controls whether the template is rendered or not.
