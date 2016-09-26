@@ -784,7 +784,18 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
 
                 var ManagedUser = function (userData) {
+                    if(userData) {
+                        userData.confirm_msg = 'N/A';
+                        if(userData.confirmed === true){
+                            userData.confirm_msg = 'Confirmed';
+                        } else if (userData.confirmed === false){
+                            userData.confirm_msg = 'Pending';
+                        }
 
+                        if (userData.expired === true){
+                            userData.confirm_msg = 'Expired';
+                        }
+                    }
                     return {
                         __dfUI: {
                             selected: false
@@ -839,7 +850,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     },
                     {
                         name: 'confirmed',
-                        label: 'Confirmed',
+                        label: 'Registration',
                         active: true
                     }
                 ];

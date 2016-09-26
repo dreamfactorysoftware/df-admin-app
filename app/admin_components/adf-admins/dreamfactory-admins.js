@@ -685,7 +685,18 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
 
                 var ManagedAdmin = function (adminData) {
+                    if(adminData) {
+                        adminData.confirm_msg = 'N/A';
+                        if(adminData.confirmed === true){
+                            adminData.confirm_msg = 'Confirmed';
+                        } else if (adminData.confirmed === false){
+                            adminData.confirm_msg = 'Pending';
+                        }
 
+                        if (adminData.expired === true){
+                            adminData.confirm_msg = 'Expired';
+                        }
+                    }
                     return {
                         __dfUI: {
                             selected: false
@@ -738,7 +749,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     },
                     {
                         name: 'confirmed',
-                        label: 'Confirmed',
+                        label: 'Registration',
                         active: true
                     }
                 ];
