@@ -523,11 +523,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             link: function (scope, elem, attrs) {
 
                 scope.roleToAppMap = {};
-                scope.apps = [];
-                scope.roles = [];
+                //scope.apps = [];
+                //scope.roles = [];
 
-                dfApplicationData.getApiData('role');
-                dfApplicationData.getApiData('app');
+                scope.roles = dfApplicationData.getApiData('role');
+                scope.apps = dfApplicationData.getApiData('app');
 
                 scope.$watch('user', function () {
                     if (!scope.user) return;
