@@ -414,7 +414,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 };
 
                 scope.changeStorageService = function () {
-                    if (scope.app && scope.app.record) {
+                    if (scope.app && scope.app.record && scope.storageServices) {
                         scope.selectedStorageService = scope.storageServices.filter(function (item) {
                             return item.id == scope.app.record.storage_service_id;
                         })[0];
@@ -489,6 +489,11 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     scope.roles = dfApplicationData.getApiData('role');
                 });
 
+                $rootScope.$on("service", function  (){
+
+                    scope.storageServices = dfApplicationData.getApiData('service',
+                        {type: 'local_file,aws_s3,azure_blob,rackspace_cloud_files,openstack_object_storage'});
+                });
 
                 // HELP
 
