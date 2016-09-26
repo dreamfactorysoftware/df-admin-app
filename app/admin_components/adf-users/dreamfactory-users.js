@@ -386,6 +386,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     scope.user = new User(newValue);
                 });
 
+                /*
                 var watchAppData = scope.$watch('apps', function (newValue, oldValue) {
 
                     if (!newValue) return false;
@@ -399,18 +400,26 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     scope.roles = newValue;
                 });
-
+                */
 
                 // MESSAGES
 
                 scope.$on('$destroy', function(e) {
 
                     watchUserData();
-                    watchAppData();
-                    watchRoleData();
+                    //watchAppData();
+                    //watchRoleData();
                 });
 
+                $rootScope.$on("app", function  (){
 
+                    scope.apps = dfApplicationData.getApiData('app');
+                });
+
+                $rootScope.$on("role", function  (){
+
+                    scope.roles = dfApplicationData.getApiData('role');
+                });
 
                 // HELP
 

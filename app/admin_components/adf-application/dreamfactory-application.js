@@ -235,6 +235,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     // Set the loading screen
                     // dfMainLoading.update(apiName);
+                    $rootScope.$broadcast(apiName);
                 },
                 $q.reject
             );
@@ -729,7 +730,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     return _fetchFromApi(api);
                 }
-
 
                 // check for data
                 if (dfApplicationObj.apis.hasOwnProperty(api)) {
