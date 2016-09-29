@@ -1154,7 +1154,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 var watchRoles = scope.$watchCollection('roles', function (newValue, oldValue) {
 
-                    if (newValue == null) {
+                    if (newValue === null) {
 
                         var _roles = [];
 
@@ -1167,10 +1167,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         return;
                     }
-
-                    if (newValue !== null && oldValue !== null) {
-
-                        if (newValue.length === 0 && oldValue.length === 0) {
+                    else {
+                        if (newValue.length === 0) {
                             scope.emptySectionOptions.active = true;
                         }
                     }
