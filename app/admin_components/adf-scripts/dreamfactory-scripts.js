@@ -85,6 +85,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             dfApplicationData.loadApi(['event', 'script_type']);
 
+            $scope.serviceTypeConfig = 'scripts';
+
             // Loosely defined script object for when a script is non-existent.
             var ScriptObj = function (scriptId, scriptLanguage, scriptData) {
 
@@ -132,9 +134,19 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             };
 
+            $scope.handleGitFiles = function (data) {
+              console.log('handleGitFiles');
+                if (!data)return;
+
+                        $scope.currentScriptObj.content = data;
+                        $scope.$apply();
+
+            };
+
+
             $scope.githubModalShow = function () {
 
-                $rootScope.$broadcast('githubShowModal', {});
+                $rootScope.$broadcast('githubShowModal', $scope.serviceTypeConfig);
             };
 
             $scope.__getDataFromHttpResponse = function (httpResponseObj) {
@@ -662,6 +674,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             });
 
+
             $scope.$on('$destroy', function (e) {
 
                 watchGithubURL();
@@ -892,7 +905,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             }
                         });
                     });
-
                 };
 
                 // WATCHERS AND INIT

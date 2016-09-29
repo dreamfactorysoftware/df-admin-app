@@ -7,13 +7,14 @@ angular.module('dfUtility', ['dfApplication'])
     .constant('MOD_UTILITY_ASSET_PATH', 'admin_components/adf-utility/')
 
     // declare our directive and pass in our constant
-    .directive('dfGithubModal', ['MOD_UTILITY_ASSET_PATH', '$http', 'dfApplicationData', function (MOD_UTILITY_ASSET_PATH, $http, dfApplicationData, $rootScope) {
+    .directive('dfGithubModal', ['MOD_UTILITY_ASSET_PATH', '$http', 'dfApplicationData', '$rootScope', function (MOD_UTILITY_ASSET_PATH, $http, dfApplicationData, $rootScope) {
 
       return {
           restrict: 'E',
           scope: {
               editor: '=?',
-              accept: '=?'
+              accept: '=?',
+              target: '=?'
           },
           templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-github-modal.html', link: function (scope, elem, attrs) {
 
@@ -93,11 +94,18 @@ angular.module('dfUtility', ['dfApplication'])
                               mode = 'javascript'
                       }
 
-                      var decodedString = atob(response.data.content);
-                      scope['editor'].session.setValue(decodedString);
-                      scope['editor'].session.setMode({path: 'ace/mode/' + mode, inline: true});
+                      if (scope['editor'] !== undefined) {
+                          console.log('editor - utility');
+                          var decodedString = atob(response.data.content);
+                          scope['editor'].session.setValue(decodedString);
+                          scope['editor'].session.setMode({path: 'ace/mode/' + mode, inline: true});
+                          scope['editor'].focus();
+                          scope.currentScriptObj = {
+                              content: decodedString
+                          };
+                      }
 
-                      var element = angular.element('#githubModal');
+                      var element = angular.element('#' + scope['target']);
 
                       element.on('hidden.bs.modal', function(){
                           if ($(this).find('form')[0] !== undefined) {
@@ -109,8 +117,6 @@ angular.module('dfUtility', ['dfApplication'])
                       scope.modalError = {};
 
                       element.appendTo("body").modal('hide');
-
-
 
                   }, function errorCallback(response) {
 
@@ -128,8 +134,6 @@ angular.module('dfUtility', ['dfApplication'])
                           }
                       }
                   });
-
-
               }
 
               scope.githubModalCancel = function () {
@@ -137,7 +141,7 @@ angular.module('dfUtility', ['dfApplication'])
                   scope.githubModal = { private: false };
                   scope.modalError = {};
 
-                  var element = angular.element('#githubModal');
+                  var element = angular.element('#' + scope['target']);
 
                   element.on('hidden.bs.modal', function(){
                       if ($(this).find('form')[0] !== undefined) {
@@ -216,7 +220,9 @@ angular.module('dfUtility', ['dfApplication'])
 
               scope.$on('githubShowModal',function(event, data){
 
-                  var element = angular.element('#githubModal');
+                if (data === undefined) return;
+
+                  var element = angular.element('#' + data);
 
                   element.on('hidden.bs.modal', function(){
                       if ($(this).find('form')[0] !== undefined) {
@@ -1423,13 +1429,13 @@ angular.module('dfUtility', ['dfApplication'])
                         scope.editor.session.setMode("ace/mode/javascript");
                         scope.editor.session.setMode({
                             path: "ace/mode/javascript",
-                            v: Date.now() 
+                            v: Date.now()
                         });
                     }
                     else {
                         scope.editor.session.setMode({
                             path: "ace/mode/" + mode,
-                            v: Date.now() 
+                            v: Date.now()
                         });
                     }
 
