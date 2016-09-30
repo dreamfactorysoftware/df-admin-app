@@ -581,8 +581,9 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             });
                         });
 
-                        $scope._setEventList(null, $scope.cachePath.verb, $scope.cachePath.verbs, $scope.cachePath.events);
-                        $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 1);
+                        $scope.menuPathArr = $scope.menuPathArr.slice(0, 2);
+                        $scope._setEventList($scope.cachePath.name, $scope.cachePath.verb, $scope.cachePath.verbs, $scope.cachePath.events);
+
                         $scope.currentScriptObj = null;
                         $scope.editor.session.getUndoManager().reset();
                         $scope.editor.session.getUndoManager().markClean();
