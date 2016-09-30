@@ -135,7 +135,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             $scope.handleGitFiles = function (data) {
-              console.log('handleGitFiles');
+
                 if (!data)return;
 
                         $scope.currentScriptObj.content = data;
@@ -233,18 +233,19 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope._setScript(scriptIdStr);
             };
 
-            $scope.setEventList = function (name, verb, events) {
+            $scope.setEventList = function (name, verb, verbs, events) {
                 $scope.cachePath = { // Ugly, but needed for "back" functionality
                     verbs: $scope.currentPathObj.verbs,
                     name: $scope.currentPathObj.name
                 }
-                $scope._setEventList(name, verb, events);
+                $scope._setEventList(name, verb, verbs, events);
             };
 
             $scope.clearEventList = function () {
                 if ($scope.currentPathObj.events) {
                     $scope.cachePath.name = $scope.currentPathObj.name;
                     $scope.cachePath.verb = $scope.currentPathObj.verb;
+                    $scope.cachePath.verbs = $scope.currentPathObj.verbs;
                     $scope.cachePath.events = $scope.currentPathObj.events;
 
                     $scope.currentPathObj.events = null;
@@ -438,6 +439,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope._setPath = function (name, pathObj) {
                 $scope.menuPathArr.push(name);
+
                 var newVerbList = constructPaths(name, pathObj.verb, pathObj.parameter);
 
                 $scope.currentPathObj = {"name": name, "verbs": newVerbList};
@@ -465,10 +467,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 return flag;
             };
 
-            $scope._setEventList = function (name, verb, events) {
+            $scope._setEventList = function (name, verb, verbs, events) {
                 $scope.currentPathObj.name = name;
                 $scope.currentPathObj.events = events;
                 $scope.currentPathObj.verb = verb;
+                $scope.currentPathObj.verbs = verbs;
+
                 if (name) {
                     $scope.menuPathArr.push("[" + verb.toUpperCase() + "] " + name);
                 }
@@ -577,7 +581,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             });
                         });
 
-                        $scope._setEventList(null, $scope.cachePath.verb, $scope.cachePath.events);
+                        $scope._setEventList(null, $scope.cachePath.verb, $scope.cachePath.verbs, $scope.cachePath.events);
                         $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 1);
                         $scope.currentScriptObj = null;
                         $scope.editor.session.getUndoManager().reset();
@@ -695,8 +699,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                     case 4:
                         $scope._clearScriptEditor();
-                        $scope._setEventList(null, $scope.cachePath.verb, $scope.cachePath.events);
-                        $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 1);
+                        $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 2);
+                        $scope._setEventList($scope.cachePath.name, $scope.cachePath.verb, $scope.cachePath.verbs, $scope.cachePath.events);
                         break;
                 }
             };
