@@ -172,7 +172,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             };
 
-            $scope.isHostedSystem = false; // SystemConfigDataService.getSystemConfig().is_hosted;
+            $scope.isHostedSystem = SystemConfigDataService.getSystemConfig().is_hosted;
 
             // Sample Scripts
             $scope.samplesScripts = null;
@@ -350,7 +350,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope._setService = function (name, eventObj) {
 
-                $scope.menuPathArr.push(name);
+                $scope.menuPathArr = angular.copy([name]);
                 $scope.currentServiceObj = {"name": name, "paths": eventObj};
 
                 $scope.highlightCurrentServiceObj($scope.currentServiceObj);
@@ -573,16 +573,15 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             new PNotify({
                                 title: 'Scripts',
                                 type: 'success',
-                                text: 'Script "' + $scope.currentScriptObj.name + '" deleted successfully.'
+                                text: 'Script deleted successfully.'
                             });
                         });
 
-
-                        $scope.menuPathArr.pop();
+                        $scope._setEventList(null, $scope.cachePath.verb, $scope.cachePath.events);
+                        $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 1);
                         $scope.currentScriptObj = null;
                         $scope.editor.session.getUndoManager().reset();
                         $scope.editor.session.getUndoManager().markClean();
-
                     },
 
                     function (reject) {
@@ -600,8 +599,122 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                     }
                 )
-
             };
+
+            $scope.menuOpen = true;
+
+            // PUBLIC API
+            $scope.toggleMenu = function () {
+
+                $scope._toggleMenu();
+            };
+
+            $scope.menuBack = function () {
+
+                // Check if we have chnaged the script
+                if (!$scope.isEditorClean) {
+
+                    // Script has been changed.  Confirm close.
+                    if (!$scope._confirmCloseScript()) {
+
+                        return false;
+                    } else {
+                        $scope.editor.session.getUndoManager().reset();
+                        $scope.editor.session.getUndoManager().markClean();
+                        $scope.isEditorClean = true;
+                    }
+                }
+
+                $scope._menuBack();
+                return true;
+            };
+
+            $scope.updateEditor = function (scriptType) {
+                var mode = 'text';
+                if (['nodejs', 'v8js'].indexOf(scriptType) !== -1) {
+                    mode = 'javascript';
+                } else if (scriptType) {
+                    mode = scriptType;
+                }
+                ace.edit('ide').session.setMode('ace/mode/' + mode);
+            }
+
+            $scope.jumpTo = function (index) {
+
+                $scope._jumpTo(index);
+            };
+
+
+            // PRIVATE API
+
+            $scope._clearScriptEditor = function () {
+                $scope.currentScriptObj = null;
+                ace.edit('ide').session.setValue('');
+            };
+
+            // Confirm close with unsaved changes.
+            $scope._confirmCloseScript = function () {
+
+                return confirm('You have unsaved changes.  Close anyway?');
+            };
+
+
+            // COMPLEX IMPLEMENTATION
+            $scope._menuBack = function () {
+
+                switch ($scope.menuPathArr.length) {
+
+                    case 0:
+                        $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 1);
+                        break;
+
+                    case 1:
+                        $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 1);
+                        $scope.menuPathArr = [];
+                        $scope.highlightEvent($scope.events);
+                        break;
+
+                    case 2:
+                        $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 1);
+                        $scope.highlightCurrentServiceObj($scope.currentServiceObj);
+                        break;
+
+                    case 3:
+                        // Two cases for 4-length. Check whether we are
+                        // at the end of the path, or there's one more
+                        // level
+                        if ($scope.currentPathObj.events) {
+                            $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 2);
+                            $scope.setPath($scope.cachePath.name, {verb: $scope.cachePath.verbs});
+                            $scope._clearScriptEditor();
+                        } else {
+                          $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 1);
+                        }
+
+                        break;
+
+                    case 4:
+                        $scope._clearScriptEditor();
+                        $scope._setEventList(null, $scope.cachePath.verb, $scope.cachePath.events);
+                        $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 1);
+                        break;
+                }
+            };
+
+            $scope._jumpTo = function (index) {
+
+                while ($scope.menuPathArr.length - 1 !== index) {
+                    $scope.menuBack();
+                }
+            };
+
+            $scope._toggleMenu = function () {
+
+                $scope.menuOpen = !scope.menuOpen;
+            };
+
+            $scope.$broadcast('script:loaded:success');
+
 
             // MESSAGES
 
@@ -692,119 +805,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             templateUrl: MODSCRIPTING_ASSET_PATH + 'views/script-sidebar-menu.html',
             link: function (scope, elem, attrs) {
 
-                scope.menuOpen = true;
 
-                // PUBLIC API
-                scope.toggleMenu = function () {
-
-                    scope._toggleMenu();
-                };
-
-                scope.menuBack = function () {
-
-                    // Check if we have chnaged the script
-                    if (!scope.isEditorClean) {
-
-                        // Script has been changed.  Confirm close.
-                        if (!scope._confirmCloseScript()) {
-
-                            return false;
-                        } else {
-                            scope.editor.session.getUndoManager().reset();
-                            scope.editor.session.getUndoManager().markClean();
-                            scope.isEditorClean = true;
-                        }
-                    }
-
-                    scope._menuBack();
-                    return true;
-                };
-
-                scope.updateEditor = function (scriptType) {
-                    var mode = 'text';
-                    if (['nodejs', 'v8js'].indexOf(scriptType) !== -1) {
-                        mode = 'javascript';
-                    } else if (scriptType) {
-                        mode = scriptType;
-                    }
-                    ace.edit('ide').session.setMode('ace/mode/' + mode);
-                }
-
-                scope.jumpTo = function (index) {
-
-                    scope._jumpTo(index);
-                };
-
-
-                // PRIVATE API
-
-                scope._clearScriptEditor = function () {
-                    scope.currentScriptObj = null;
-                    ace.edit('ide').session.setValue('');
-                };
-
-                // Confirm close with unsaved changes.
-                scope._confirmCloseScript = function () {
-
-                    return confirm('You have unsaved changes.  Close anyway?');
-                };
-
-
-                // COMPLEX IMPLEMENTATION
-                scope._menuBack = function () {
-
-                    switch (scope.menuPathArr.length) {
-
-                        case 0:
-                            scope.menuPathArr.pop();
-                            break;
-
-                        case 1:
-                            scope.menuPathArr.pop();
-                            scope.highlightEvent(scope.events);
-                            break;
-
-                        case 2:
-                            scope.menuPathArr.pop();
-                            scope.highlightCurrentServiceObj(scope.currentServiceObj);
-                            break;
-
-                        case 3:
-
-                            // Two cases for 4-length. Check whether we are
-                            // at the end of the path, or there's one more
-                            // level
-                            if (scope.currentPathObj.events) {
-                                scope._clearScriptEditor();
-                                scope.menuPathArr.splice(2, 2);
-                                scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
-                            } else {
-                                scope.menuPathArr.pop();
-                            }
-
-                            break;
-
-                        case 4:
-                            scope._clearScriptEditor();
-                            scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
-                            scope.menuPathArr.pop();
-                            break;
-                    }
-                };
-
-                scope._jumpTo = function (index) {
-
-                    while (scope.menuPathArr.length - 1 !== index) {
-                        scope.menuBack();
-                    }
-                };
-
-                scope._toggleMenu = function () {
-
-                    scope.menuOpen = !scope.menuOpen;
-                };
-
-                scope.$broadcast('script:loaded:success');
             }
         }
     }])
