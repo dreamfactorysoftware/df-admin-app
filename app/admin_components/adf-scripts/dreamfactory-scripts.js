@@ -669,17 +669,15 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 switch ($scope.menuPathArr.length) {
 
                     case 0:
-                        $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 1);
                         break;
 
                     case 1:
-                        $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 1);
                         $scope.menuPathArr = [];
                         $scope.highlightEvent($scope.events);
                         break;
 
                     case 2:
-                        $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 1);
+                        $scope.menuPathArr = $scope.menuPathArr.slice(0, 1);
                         $scope.highlightCurrentServiceObj($scope.currentServiceObj);
                         break;
 
@@ -688,18 +686,18 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         // at the end of the path, or there's one more
                         // level
                         if ($scope.currentPathObj.events) {
-                            $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 2);
+                            $scope.menuPathArr = $scope.menuPathArr.slice(0, 1);
                             $scope.setPath($scope.cachePath.name, {verb: $scope.cachePath.verbs});
                             $scope._clearScriptEditor();
                         } else {
-                          $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 1);
+                          $scope.menuPathArr = $scope.menuPathArr.slice(0, 1);
                         }
 
                         break;
 
                     case 4:
                         $scope._clearScriptEditor();
-                        $scope.menuPathArr = $scope.menuPathArr.slice(0, $scope.menuPathArr.length - 2);
+                        $scope.menuPathArr = $scope.menuPathArr.slice(0, 2);
                         $scope._setEventList($scope.cachePath.name, $scope.cachePath.verb, $scope.cachePath.verbs, $scope.cachePath.events);
                         break;
                 }
