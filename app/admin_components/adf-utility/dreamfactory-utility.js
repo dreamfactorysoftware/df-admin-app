@@ -7,6 +7,236 @@ angular.module('dfUtility', ['dfApplication'])
     .constant('MOD_UTILITY_ASSET_PATH', 'admin_components/adf-utility/')
 
     // declare our directive and pass in our constant
+    .directive('dfGithubModal', ['MOD_UTILITY_ASSET_PATH', '$http', 'dfApplicationData', '$rootScope', function (MOD_UTILITY_ASSET_PATH, $http, dfApplicationData, $rootScope) {
+
+      return {
+          restrict: 'E',
+          scope: {
+              editor: '=?',
+              accept: '=?',
+              target: '=?'
+          },
+          templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-github-modal.html', link: function (scope, elem, attrs) {
+
+              scope.modalError = {};
+              scope.githubModal = {};
+
+              scope.githubUpload = function () {
+
+                  var url = angular.copy(scope.githubModal.url);
+
+                  if (url === null) {
+                      return;
+                  }
+
+                  var url_params = url.substr(url.indexOf('.com/') + 5);
+                  var url_array = url_params.split('/');
+
+                  var github_api_url = '';
+
+                  var owner = '';
+                  var repo = '';
+                  var branch = '';
+                  var path = '';
+
+                  if (url.indexOf('raw.github') > -1) {
+                      owner = url_array[0];
+                      repo = url_array[1];
+                      branch = url_array[2];
+                      path = url_array.splice(3, url_array.length - 3).join('/');
+                  }
+                  else {
+                      owner = url_array[0];
+                      repo = url_array[1];
+                      branch = url_array[3];
+                      path = url_array.splice(4, url_array.length - 4).join('/');
+                  }
+
+                  github_api_url = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path + '?ref=' + branch;
+
+                  var username = angular.copy(scope.githubModal.username);
+                  var password = angular.copy(scope.githubModal.password);
+
+                  var authdata = btoa(username + ':' + password);
+
+                  if (username) {
+                      $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
+                  }
+
+                  $http.get(github_api_url, {
+
+                      headers: {
+                          'X-DreamFactory-API-Key': undefined,
+                          'X-DreamFactory-Session-Token': undefined,
+                      },
+                      ignore401: true
+                  })
+                  .then(function successCallback(response) {
+
+                      var extension = path.substr(path.lastIndexOf('.') + 1, path.length - path.lastIndexOf('.'));
+
+                      var mode = '';
+
+                      switch (extension) {
+                          case 'js':
+                              mode = 'javascript';
+                              break;
+                          case 'php':
+                              mode = 'php';
+                              break;
+                          case 'py':
+                              mode = 'python';
+                              break;
+                          case 'json':
+                              mode = 'json';
+                              break;
+                          default:
+                              mode = 'javascript'
+                      }
+
+                      if (scope['editor'] !== undefined) {
+                          console.log('editor - utility');
+                          var decodedString = atob(response.data.content);
+                          scope['editor'].session.setValue(decodedString);
+                          scope['editor'].session.setMode({path: 'ace/mode/' + mode, inline: true});
+                          scope['editor'].focus();
+                          scope.currentScriptObj = {
+                              content: decodedString
+                          };
+                      }
+
+                      var element = angular.element('#' + scope['target']);
+
+                      element.on('hidden.bs.modal', function(){
+                          if ($(this).find('form')[0] !== undefined) {
+                              $(this).find('form')[0].reset();
+                          }
+                      });
+
+                      scope.githubModal = { private: false };
+                      scope.modalError = {};
+
+                      element.appendTo("body").modal('hide');
+
+                  }, function errorCallback(response) {
+
+                      if (response.status === 401) {
+                          scope.modalError = {
+                              visible: true,
+                              message: 'Error: Authentication failed.'
+                          }
+                      }
+
+                      if (response.status === 404) {
+                          scope.modalError = {
+                              visible: true,
+                              message: 'Error: The file could not be found.'
+                          }
+                      }
+                  });
+              }
+
+              scope.githubModalCancel = function () {
+
+                  scope.githubModal = { private: false };
+                  scope.modalError = {};
+
+                  var element = angular.element('#' + scope['target']);
+
+                  element.on('hidden.bs.modal', function(){
+                      if ($(this).find('form')[0] !== undefined) {
+                          $(this).find('form')[0].reset();
+                      }
+                  });
+
+                  element.appendTo("body").modal('hide');
+              };
+
+              var watchGithubCredUser = scope.$watch('githubModal.username', function (newValue, oldValue) {
+
+                  if (!newValue) return false;
+
+                  scope.modalError = {
+                      visible: false,
+                      message: ''
+                  }
+              });
+
+              var watchGithubCredPass = scope.$watch('githubModal.password', function (newValue, oldValue) {
+
+                  if (!newValue) return false;
+
+                  scope.modalError = {
+                      visible: false,
+                      message: ''
+                  }
+              });
+
+              var watchGithubURL = scope.$watch('githubModal.url', function (newValue, oldValue) {
+
+                  if (!newValue) return false;
+
+                  scope.modalError = {
+                      visible: false,
+                      message: ''
+                  }
+
+                  var file_ext = newValue.substring(newValue.lastIndexOf('.') + 1, newValue.length)
+
+                  if (scope['accept'].indexOf(file_ext) > -1) {
+
+                      var url = angular.copy(scope.githubModal.url);
+                      var url_params = url.substr(url.indexOf('.com/') + 5);
+                      var url_array = url_params.split('/');
+
+                      var owner = url_array[0];
+                      var repo = url_array[1];
+
+                      var github_api_url = 'https://api.github.com/repos/' + owner + '/' + repo;
+
+                      $http.get(github_api_url, {
+                          headers: {
+                              'X-DreamFactory-API-Key': undefined,
+                              'X-DreamFactory-Session-Token': undefined
+                          },
+                      })
+                      .then(function successCallback(response) {
+
+                          scope.githubModal.private = response.data.private;
+                      }, function errorCallback(response) {
+
+                          scope.githubModal.private = true;
+                      });
+                  }
+                  else {
+
+                    var formats = scope['accept'].join(', ');
+                    scope.modalError = {
+                        visible: true,
+                        message: 'Error: Invalid file format. Only ' + formats + ' file format(s) allowed'
+                    }
+                  }
+              });
+
+              scope.$on('githubShowModal',function(event, data){
+
+                if (data === undefined) return;
+
+                  var element = angular.element('#' + data);
+
+                  element.on('hidden.bs.modal', function(){
+                      if ($(this).find('form')[0] !== undefined) {
+                          $(this).find('form')[0].reset();
+                      }
+                  });
+
+                  element.appendTo("body").modal('show');
+              });
+          }
+      }
+    }])
+
+    // declare our directive and pass in our constant
     .directive('dfComponentTitle', ['MOD_UTILITY_ASSET_PATH', '$location', function (MOD_UTILITY_ASSET_PATH, $location) {
 
         return {
@@ -1199,13 +1429,13 @@ angular.module('dfUtility', ['dfApplication'])
                         scope.editor.session.setMode("ace/mode/javascript");
                         scope.editor.session.setMode({
                             path: "ace/mode/javascript",
-                            v: Date.now() 
+                            v: Date.now()
                         });
                     }
                     else {
                         scope.editor.session.setMode({
                             path: "ace/mode/" + mode,
-                            v: Date.now() 
+                            v: Date.now()
                         });
                     }
 

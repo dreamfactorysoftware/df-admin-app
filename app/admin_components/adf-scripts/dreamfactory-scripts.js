@@ -77,13 +77,15 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
     .run(['INSTANCE_URL', '$http', function (INSTANCE_URL, $http) {
 
     }])
-    .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'MODSCRIPTING_EXAMPLES_PATH',
-        function (INSTANCE_URL, SystemConfigDataService, $scope, $http, dfApplicationData, dfNotify, MODSCRIPTING_EXAMPLES_PATH) {
+    .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$rootScope', '$http', 'dfApplicationData', 'dfNotify', 'MODSCRIPTING_EXAMPLES_PATH',
+        function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify, MODSCRIPTING_EXAMPLES_PATH) {
 
             $scope.$parent.title = 'Scripts';
             $scope.sampleSelect = null;
 
             dfApplicationData.loadApi(['event', 'script_type']);
+
+            $scope.serviceTypeConfig = 'scripts';
 
             // Loosely defined script object for when a script is non-existent.
             var ScriptObj = function (scriptId, scriptLanguage, scriptData) {
@@ -132,6 +134,21 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             };
 
+            $scope.handleGitFiles = function (data) {
+
+                if (!data)return;
+
+                        $scope.currentScriptObj.content = data;
+                        $scope.$apply();
+
+            };
+
+
+            $scope.githubModalShow = function () {
+
+                $rootScope.$broadcast('githubShowModal', $scope.serviceTypeConfig);
+            };
+
             $scope.__getDataFromHttpResponse = function (httpResponseObj) {
 
                 if (!httpResponseObj) return [];
@@ -155,7 +172,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             };
 
-            $scope.isHostedSystem = false; // SystemConfigDataService.getSystemConfig().is_hosted;
+            $scope.isHostedSystem = SystemConfigDataService.getSystemConfig().is_hosted;
 
             // Sample Scripts
             $scope.samplesScripts = null;
@@ -188,6 +205,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.uppercaseVerbLabels = true;
             $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete']
 
+            $scope.allowedScriptFormats = ['js','php','py', 'txt'];
+
             // Keep track of what's going on in the module
             $scope.currentServiceObj = null;
             $scope.currentPathObj = null;
@@ -214,18 +233,19 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope._setScript(scriptIdStr);
             };
 
-            $scope.setEventList = function (name, verb, events) {
+            $scope.setEventList = function (name, verb, verbs, events) {
                 $scope.cachePath = { // Ugly, but needed for "back" functionality
                     verbs: $scope.currentPathObj.verbs,
                     name: $scope.currentPathObj.name
                 }
-                $scope._setEventList(name, verb, events);
+                $scope._setEventList(name, verb, verbs, events);
             };
 
             $scope.clearEventList = function () {
                 if ($scope.currentPathObj.events) {
                     $scope.cachePath.name = $scope.currentPathObj.name;
                     $scope.cachePath.verb = $scope.currentPathObj.verb;
+                    $scope.cachePath.verbs = $scope.currentPathObj.verbs;
                     $scope.cachePath.events = $scope.currentPathObj.events;
 
                     $scope.currentPathObj.events = null;
@@ -331,7 +351,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope._setService = function (name, eventObj) {
 
-                $scope.menuPathArr.push(name);
+                $scope.menuPathArr = angular.copy([name]);
                 $scope.currentServiceObj = {"name": name, "paths": eventObj};
 
                 $scope.highlightCurrentServiceObj($scope.currentServiceObj);
@@ -419,6 +439,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope._setPath = function (name, pathObj) {
                 $scope.menuPathArr.push(name);
+
                 var newVerbList = constructPaths(name, pathObj.verb, pathObj.parameter);
 
                 $scope.currentPathObj = {"name": name, "verbs": newVerbList};
@@ -446,10 +467,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 return flag;
             };
 
-            $scope._setEventList = function (name, verb, events) {
+            $scope._setEventList = function (name, verb, verbs, events) {
                 $scope.currentPathObj.name = name;
                 $scope.currentPathObj.events = events;
                 $scope.currentPathObj.verb = verb;
+                $scope.currentPathObj.verbs = verbs;
+
                 if (name) {
                     $scope.menuPathArr.push("[" + verb.toUpperCase() + "] " + name);
                 }
@@ -554,16 +577,16 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             new PNotify({
                                 title: 'Scripts',
                                 type: 'success',
-                                text: 'Script "' + $scope.currentScriptObj.name + '" deleted successfully.'
+                                text: 'Script deleted successfully.'
                             });
                         });
 
+                        $scope.menuPathArr = $scope.menuPathArr.slice(0, 2);
+                        $scope._setEventList($scope.cachePath.name, $scope.cachePath.verb, $scope.cachePath.verbs, $scope.cachePath.events);
 
-                        $scope.menuPathArr.pop();
                         $scope.currentScriptObj = null;
                         $scope.editor.session.getUndoManager().reset();
                         $scope.editor.session.getUndoManager().markClean();
-
                     },
 
                     function (reject) {
@@ -581,12 +604,201 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                     }
                 )
-
             };
+
+            $scope.menuOpen = true;
+
+            // PUBLIC API
+            $scope.toggleMenu = function () {
+
+                $scope._toggleMenu();
+            };
+
+            $scope.menuBack = function () {
+
+                // Check if we have chnaged the script
+                if (!$scope.isEditorClean) {
+
+                    // Script has been changed.  Confirm close.
+                    if (!$scope._confirmCloseScript()) {
+
+                        return false;
+                    } else {
+                        $scope.editor.session.getUndoManager().reset();
+                        $scope.editor.session.getUndoManager().markClean();
+                        $scope.isEditorClean = true;
+                    }
+                }
+
+                $scope._menuBack();
+                return true;
+            };
+
+            $scope.updateEditor = function (scriptType) {
+                var mode = 'text';
+                if (['nodejs', 'v8js'].indexOf(scriptType) !== -1) {
+                    mode = 'javascript';
+                } else if (scriptType) {
+                    mode = scriptType;
+                }
+                ace.edit('ide').session.setMode('ace/mode/' + mode);
+            }
+
+            $scope.jumpTo = function (index) {
+
+                $scope._jumpTo(index);
+            };
+
+
+            // PRIVATE API
+
+            $scope._clearScriptEditor = function () {
+                $scope.currentScriptObj = null;
+                ace.edit('ide').session.setValue('');
+            };
+
+            // Confirm close with unsaved changes.
+            $scope._confirmCloseScript = function () {
+
+                return confirm('You have unsaved changes.  Close anyway?');
+            };
+
+
+            // COMPLEX IMPLEMENTATION
+            $scope._menuBack = function () {
+
+                switch ($scope.menuPathArr.length) {
+
+                    case 0:
+                        break;
+
+                    case 1:
+                        $scope.menuPathArr = [];
+                        $scope.highlightEvent($scope.events);
+                        break;
+
+                    case 2:
+                        $scope.menuPathArr = $scope.menuPathArr.slice(0, 1);
+                        $scope.highlightCurrentServiceObj($scope.currentServiceObj);
+                        break;
+
+                    case 3:
+                        // Two cases for 4-length. Check whether we are
+                        // at the end of the path, or there's one more
+                        // level
+                        if ($scope.currentPathObj.events) {
+                            $scope.menuPathArr = $scope.menuPathArr.slice(0, 1);
+                            $scope.setPath($scope.cachePath.name, {verb: $scope.cachePath.verbs});
+                            $scope._clearScriptEditor();
+                        } else {
+                          $scope.menuPathArr = $scope.menuPathArr.slice(0, 1);
+                        }
+
+                        break;
+
+                    case 4:
+                        $scope._clearScriptEditor();
+                        $scope.menuPathArr = $scope.menuPathArr.slice(0, 2);
+                        $scope._setEventList($scope.cachePath.name, $scope.cachePath.verb, $scope.cachePath.verbs, $scope.cachePath.events);
+                        break;
+                }
+            };
+
+            $scope._jumpTo = function (index) {
+
+                while ($scope.menuPathArr.length - 1 !== index) {
+                    $scope.menuBack();
+                }
+            };
+
+            $scope._toggleMenu = function () {
+
+                $scope.menuOpen = !scope.menuOpen;
+            };
+
+            $scope.$broadcast('script:loaded:success');
+
 
             // MESSAGES
 
+            var watchGithubCredUser = $scope.$watch('githubModal.username', function (newValue, oldValue) {
+
+                if (!newValue) return false;
+
+                $scope.modalError = {
+                    visible: false,
+                    message: ''
+                }
+            });
+
+            var watchGithubCredPass = $scope.$watch('githubModal.password', function (newValue, oldValue) {
+
+                if (!newValue) return false;
+
+                $scope.modalError = {
+                    visible: false,
+                    message: ''
+                }
+            });
+
+            var watchGithubURL = $scope.$watch('githubModal.url', function (newValue, oldValue) {
+
+                if (!newValue) return false;
+
+                $scope.modalError = {
+                    visible: false,
+                    message: ''
+                }
+
+                if (newValue.indexOf('.js') > 0 ||
+                    newValue.indexOf('.py') > 0 ||
+                    newValue.indexOf('.php') > 0 ||
+                    newValue.indexOf('.txt') > 0) {
+
+                    var url = angular.copy($scope.githubModal.url);
+                    var url_params = url.substr(url.indexOf('.com/') + 5);
+                    var url_array = url_params.split('/');
+
+                    var owner = url_array[0];
+                    var repo = url_array[1];
+
+                    var github_api_url = 'https://api.github.com/repos/' + owner + '/' + repo;
+
+                    $http.get(github_api_url, {
+                        headers: {
+                            'X-DreamFactory-API-Key': undefined,
+                            'X-DreamFactory-Session-Token': undefined
+                        },
+                    })
+                    .then(function successCallback(response) {
+
+                        $scope.githubModal.private = response.data.private;
+
+                        $scope.modalError = {
+                            visible: false,
+                            message: ''
+                        }
+                    }, function errorCallback(response) {
+
+                        if (response.status === 404) {
+                            $scope.modalError = {
+                                visible: true,
+                                message: 'Error: The repository could not be found.'
+                            }
+                        }
+                    });
+                }
+            });
+
+
+            $scope.$on('$destroy', function (e) {
+
+                watchGithubURL();
+                watchGithubCredUser();
+                watchGithubCredPass();
+            });
         }])
+
     .directive('scriptSidebarMenu', ['MODSCRIPTING_ASSET_PATH', function (MODSCRIPTING_ASSET_PATH) {
 
         return {
@@ -596,119 +808,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             templateUrl: MODSCRIPTING_ASSET_PATH + 'views/script-sidebar-menu.html',
             link: function (scope, elem, attrs) {
 
-                scope.menuOpen = true;
 
-                // PUBLIC API
-                scope.toggleMenu = function () {
-
-                    scope._toggleMenu();
-                };
-
-                scope.menuBack = function () {
-
-                    // Check if we have chnaged the script
-                    if (!scope.isEditorClean) {
-
-                        // Script has been changed.  Confirm close.
-                        if (!scope._confirmCloseScript()) {
-
-                            return false;
-                        } else {
-                            scope.editor.session.getUndoManager().reset();
-                            scope.editor.session.getUndoManager().markClean();
-                            scope.isEditorClean = true;
-                        }
-                    }
-
-                    scope._menuBack();
-                    return true;
-                };
-
-                scope.updateEditor = function (scriptType) {
-                    var mode = 'text';
-                    if (['nodejs', 'v8js'].indexOf(scriptType) !== -1) {
-                        mode = 'javascript';
-                    } else if (scriptType) {
-                        mode = scriptType;
-                    }
-                    ace.edit('ide').session.setMode('ace/mode/' + mode);
-                }
-
-                scope.jumpTo = function (index) {
-
-                    scope._jumpTo(index);
-                };
-
-
-                // PRIVATE API
-
-                scope._clearScriptEditor = function () {
-                    scope.currentScriptObj = null;
-                    ace.edit('ide').session.setValue('');
-                };
-
-                // Confirm close with unsaved changes.
-                scope._confirmCloseScript = function () {
-
-                    return confirm('You have unsaved changes.  Close anyway?');
-                };
-
-
-                // COMPLEX IMPLEMENTATION
-                scope._menuBack = function () {
-
-                    switch (scope.menuPathArr.length) {
-
-                        case 0:
-                            scope.menuPathArr.pop();
-                            break;
-
-                        case 1:
-                            scope.menuPathArr.pop();
-                            scope.highlightEvent(scope.events);
-                            break;
-
-                        case 2:
-                            scope.menuPathArr.pop();
-                            scope.highlightCurrentServiceObj(scope.currentServiceObj);
-                            break;
-
-                        case 3:
-
-                            // Two cases for 4-length. Check whether we are
-                            // at the end of the path, or there's one more
-                            // level
-                            if (scope.currentPathObj.events) {
-                                scope._clearScriptEditor();
-                                scope.menuPathArr.splice(2, 2);
-                                scope.setPath(scope.cachePath.name, {verb: scope.cachePath.verbs});
-                            } else {
-                                scope.menuPathArr.pop();
-                            }
-
-                            break;
-
-                        case 4:
-                            scope._clearScriptEditor();
-                            scope._setEventList(null, scope.cachePath.verb, scope.cachePath.events);
-                            scope.menuPathArr.pop();
-                            break;
-                    }
-                };
-
-                scope._jumpTo = function (index) {
-
-                    while (scope.menuPathArr.length - 1 !== index) {
-                        scope.menuBack();
-                    }
-                };
-
-                scope._toggleMenu = function () {
-
-                    scope.menuOpen = !scope.menuOpen;
-                };
-
-                scope.$broadcast('script:loaded:success');
             }
         }
     }])
@@ -809,7 +909,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             }
                         });
                     });
-
                 };
 
                 // WATCHERS AND INIT

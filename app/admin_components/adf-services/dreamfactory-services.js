@@ -591,7 +591,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache) {
+    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', '$rootScope', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache, $rootScope) {
 
 
         return {
@@ -1325,7 +1325,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache) {
+    .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', '$rootScope', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache, $rootScope) {
 
 
         return {
@@ -1352,9 +1352,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
 
+                scope.allowedConfigFormats = ['json','js','php'];
+                scope.serviceTypeConfig = 'configmodal';
+
                 scope.isArray = angular.isArray;
 
                 scope.customConfig = [];
+
+                scope.githubModalShowConfig = function () {
+
+                    $rootScope.$broadcast('githubShowModal', 'configmodal');
+                };
 
                 scope.addKeyValue = function (field) {
                     if (!scope.serviceInfo.record.config[field]) {
@@ -2480,7 +2488,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceDefinition', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', '$timeout', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, $timeout) {
+    .directive('dfServiceDefinition', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', '$timeout', '$rootScope', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, $timeout, $rootScope) {
 
         return {
             restrict: 'E',
@@ -2494,6 +2502,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.currentFile = null;
                 scope.hideGutter = true;
                 scope.serviceDefinitionFormat = 0;
+                scope.allowedDefinitionFormats = ['json','yml','yaml'];
+                scope.serviceType = 'definition';
 
                 scope._changeDefinitionView = function() {
                     switch (scope.serviceInfo.record.type) {
@@ -2606,6 +2616,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             scope.isEditable = false;
                     }
                 })
+
+                scope.githubModalShowDef = function (serviceType) {
+
+                    $rootScope.$broadcast('githubShowModal', 'definition');
+                };
 
                 // Hack way to update text in editor;
                 $('#json-editor-tab').on('click', function () {

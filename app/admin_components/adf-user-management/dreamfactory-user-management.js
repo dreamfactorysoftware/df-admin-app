@@ -753,8 +753,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
     }])
 
     // Password Reset Directive
-    .directive('dreamfactoryPasswordReset', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfNotify',
-        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, UserEventsService, _dfStringService, _dfObjectService, dfNotify) {
+    .directive('dreamfactoryPasswordReset', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfNotify', '$location',
+        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, UserEventsService, _dfStringService, _dfObjectService, dfNotify, $location) {
 
             return {
                 restrict: 'E',
@@ -788,6 +788,14 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     scope.resetWaiting = false;
 
+                    scope.user = {}
+
+                    var UrlParams = $location.search();
+
+                    Object.keys(UrlParams).forEach(function(key,index) {
+
+                        scope.user[key] = UrlParams[key];
+                    });
 
                     // PUBLIC API
 
@@ -801,8 +809,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope.dismissSuccess = function () {
                         scope.successMsg = '';
                     }
-
-
 
                     // PUBLIC API
                     scope.resetPassword = function (credsDataObj) {
@@ -1050,8 +1056,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
 
     // Register Directive.  Takes care of registering a user for our application
-    .directive('dreamfactoryRegisterUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$rootScope', '$cookieStore', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfXHRHelper',
-        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $rootScope, $cookieStore, UserEventsService, _dfStringService, _dfObjectService, dfXHRHelper) {
+    .directive('dreamfactoryRegisterUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$rootScope', '$cookieStore', '$location', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfXHRHelper',
+        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $rootScope, $cookieStore, $location, UserEventsService, _dfStringService, _dfObjectService, dfXHRHelper) {
 
 
             return {
@@ -1082,6 +1088,15 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope.identical = true;
 
                     scope.errorMsg = '';
+
+                    scope.user = {}
+
+                    var UrlParams = $location.search();
+
+                    Object.keys(UrlParams).forEach(function(key,index) {
+
+                        scope.user[key] = UrlParams[key];
+                    });
 
 
                     // I was lazy.  These two dismiss errors don't
@@ -1318,17 +1333,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             },
             link: function(scope, elem, attrs) {
 
-
                 scope.es = UserEventsService.profile;
-
 
                 var defaults = {showTemplate: true}
                 scope.options = _dfObjectService.mergeObjects(scope.options, defaults);
-
-
-
-
-
 
             }
         }
@@ -1371,8 +1379,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
     }])
 
     // Enter confirmation code page
-    .directive('dreamfactoryConfirmUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '_dfObjectService', '_dfStringService', 'UserDataService', 'UserEventsService', 'SystemConfigDataService',
-        function(MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, _dfObjectService, _dfStringService, UserDataService, UserEventsService, SystemConfigDataService) {
+    .directive('dreamfactoryConfirmUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$location', '$http', '_dfObjectService', '_dfStringService', 'UserDataService', 'UserEventsService', 'SystemConfigDataService',
+        function(MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $location, $http, _dfObjectService, _dfStringService, UserDataService, UserEventsService, SystemConfigDataService) {
 
             return {
 
@@ -1384,7 +1392,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     inErrorMsg: '=?'
                 },
                 link: function(scope, elem, attrs) {
-
 
                     // PUBLIC VARS
                     // This holds our options object.  If we don't provide an options object
@@ -1404,7 +1411,14 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope.successMsg = '';
                     scope.confirmWaiting = false;
 
+                    scope.user = {}
 
+                    var UrlParams = $location.search();
+
+                    Object.keys(UrlParams).forEach(function(key,index) {
+
+                        scope.user[key] = UrlParams[key];
+                    });
 
                     // I was lazy.  These two dismiss errors don't
                     // follow the module pattern.
@@ -1805,7 +1819,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             mergeObjects: function (obj1, obj2) {
 
                 for (var key in obj1) {
-                    obj2[key] = obj1[key]
+                    obj2[key] = obj1[key];
                 }
 
                 return obj2;

@@ -96,7 +96,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
 
         $scope.__services__ = [];
-        angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2'}), function (serviceData) {
+        angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db'}), function (serviceData) {
 
             $scope.__services__.push(serviceData);
         });

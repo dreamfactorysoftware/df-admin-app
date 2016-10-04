@@ -2,7 +2,7 @@
     <div data-ng-hide="selectedSchema.subscription_required">
         <div class="form-group ng-scope">
             <label>Select Format</label>
-            <select class="form-control" 
+            <select class="form-control"
                     data-ng-model="serviceDefinitionFormat"
                     data-ng-change="changeDefinitionFormat()">
                 <option value="0" selected="selected">JSON</option>
@@ -12,7 +12,12 @@
 
         <div class="form-group ng-scope">
             <label>Upload a script file</label>
-            <input type="file" id="input" accept=".json,.yml,.yaml" onclick="this.value = null;" onchange="angular.element(this).scope().handleDefinitionFiles(this.files)">
+            <div>
+            <label class="btn btn-default btn-file btn-sm">
+                Select Desktop File... <input type="file" style="display: none;" accept=".json,.yml,.yaml" onclick="this.value = null;" onchange="angular.element(this).scope().handleDefinitionFiles(this.files)" ng-model="filename">
+            </label>
+            <button type="button" class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShowDef()">Select GitHub File...</button>
+            </div>
         </div>
 
         <ul class="nav nav-tabs" data-role="tablist">
@@ -30,3 +35,5 @@
             <h4>This feature requires a product subscription.</h4> Email dspsales@dreamfactory.com or call +1-650-641-1800 for pricing information.
     </div>
 </div>
+
+<df-github-modal editor="currentEditor" accept="allowedDefinitionFormats" target="serviceType"></df-github-modal>

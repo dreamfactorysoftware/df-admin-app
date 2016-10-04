@@ -102,7 +102,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     ])
 
-    .directive('dfUserDetails', ['MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', function(MOD_USER_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore) {
+    .directive('dfUserDetails', ['MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', '$rootScope', function(MOD_USER_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore, $rootScope) {
 
         return {
 
@@ -386,6 +386,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     scope.user = new User(newValue);
                 });
 
+                /*
                 var watchAppData = scope.$watch('apps', function (newValue, oldValue) {
 
                     if (!newValue) return false;
@@ -399,18 +400,26 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     scope.roles = newValue;
                 });
-
+                */
 
                 // MESSAGES
 
                 scope.$on('$destroy', function(e) {
 
                     watchUserData();
-                    watchAppData();
-                    watchRoleData();
+                    //watchAppData();
+                    //watchRoleData();
                 });
 
+                $rootScope.$on("app", function  (){
 
+                    scope.apps = dfApplicationData.getApiData('app');
+                });
+
+                $rootScope.$on("role", function  (){
+
+                    scope.roles = dfApplicationData.getApiData('role');
+                });
 
                 // HELP
 
@@ -523,11 +532,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             link: function (scope, elem, attrs) {
 
                 scope.roleToAppMap = {};
-                scope.apps = [];
-                scope.roles = [];
+                //scope.apps = [];
+                //scope.roles = [];
 
-                dfApplicationData.getApiData('role');
-                dfApplicationData.getApiData('app');
+                scope.roles = dfApplicationData.getApiData('role');
+                scope.apps = dfApplicationData.getApiData('app');
 
                 scope.$watch('user', function () {
                     if (!scope.user) return;
@@ -775,7 +784,18 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
 
                 var ManagedUser = function (userData) {
+                    if(userData) {
+                        userData.confirm_msg = 'N/A';
+                        if(userData.confirmed === true){
+                            userData.confirm_msg = 'Confirmed';
+                        } else if (userData.confirmed === false){
+                            userData.confirm_msg = 'Pending';
+                        }
 
+                        if (userData.expired === true){
+                            userData.confirm_msg = 'Expired';
+                        }
+                    }
                     return {
                         __dfUI: {
                             selected: false
@@ -830,7 +850,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     },
                     {
                         name: 'confirmed',
-                        label: 'Confirmed',
+                        label: 'Registration',
                         active: true
                     }
                 ];
