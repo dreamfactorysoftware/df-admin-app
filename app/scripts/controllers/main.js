@@ -248,18 +248,24 @@ angular.module('dreamfactoryApp')
                     // yes
                     $scope._setActiveLinks($scope.topLevelLinks, ['support', 'login', 'register']);
 
-                    // check if we are resetting a password
+                    var params = [];
+                    var UrlParams = $location.search();
+
+                    Object.keys(UrlParams).forEach(function(key,index) {
+                        params.push(key + '=' + UrlParams[key]);
+                    });
+
                     if ($location.path() === '/reset-password') {
 
-                        $location.url('/reset-password');
+                        $location.url('/reset-password' + params.join('&'));
                     }
                     else if ($location.path() === '/user-invite'){
 
-                        $location.url('/user-invite')
+                        $location.url('/user-invite?' + params.join('&'));
                     }
                     else if ($location.path() === '/register-confirm'){
 
-                        $location.url('/register-confirm')
+                        $location.url('/register-confirm?' + params.join('&'));
                     }
                     else {
 
@@ -803,23 +809,3 @@ angular.module('dreamfactoryApp')
             $scope.confirmLoginErrorMsg = errMsg.data.error.message;
         });
     }]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

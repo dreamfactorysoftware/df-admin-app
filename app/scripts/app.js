@@ -212,6 +212,7 @@ angular
                             $location.url('/launchpad');
                             return;
                         }
+
                     }]
                 }
             })
@@ -296,4 +297,3 @@ angular
 
             SystemConfigDataService.setSystemConfig(SystemConfig);
     }]);
-

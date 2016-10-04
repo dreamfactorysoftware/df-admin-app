@@ -794,7 +794,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     Object.keys(UrlParams).forEach(function(key,index) {
 
-                        scope.user[key] = UrlParams[key]
+                        scope.user[key] = UrlParams[key];
                     });
 
                     // PUBLIC API
@@ -1095,7 +1095,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     Object.keys(UrlParams).forEach(function(key,index) {
 
-                        scope.user[key] = UrlParams[key]
+                        scope.user[key] = UrlParams[key];
                     });
 
 
@@ -1393,7 +1393,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 },
                 link: function(scope, elem, attrs) {
 
-
                     // PUBLIC VARS
                     // This holds our options object.  If we don't provide an options object
                     // it defaults to showing the template.  This is currently the only option
@@ -1418,7 +1417,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     Object.keys(UrlParams).forEach(function(key,index) {
 
-                        scope.user[key] = UrlParams[key]
+                        scope.user[key] = UrlParams[key];
                     });
 
                     // I was lazy.  These two dismiss errors don't
@@ -1820,7 +1819,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             mergeObjects: function (obj1, obj2) {
 
                 for (var key in obj1) {
-                    obj2[key] = obj1[key]
+                    obj2[key] = obj1[key];
                 }
 
                 return obj2;
