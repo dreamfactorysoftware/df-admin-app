@@ -2184,20 +2184,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         active: true
                     },
                     {
-                        name: 'is_active',
-                        label: 'Active',
+                        name: 'type',
+                        label: 'Type',
                         active: true
                     },
                     {
-                        name: 'mutable',
-                        label: 'Mutable',
+                        name: 'is_active',
+                        label: 'Active',
                         active: true
                     }
-                    /*{
-                     name: 'native_format',
-                     label: 'Native Format',
-                     active: true
-                     },*/
                 ];
 
                 scope.order = {
