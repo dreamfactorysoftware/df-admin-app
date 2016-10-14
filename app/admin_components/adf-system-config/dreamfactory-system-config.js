@@ -647,7 +647,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 while (i < scope.corsEntries.length) {
 
-                                    if (scope.corsEntries[i].record.name === result.name) {
+                                    if (scope.corsEntries[i].record.path === result.path) {
 
                                         var _newHost = new CorsEntry(result);
 
