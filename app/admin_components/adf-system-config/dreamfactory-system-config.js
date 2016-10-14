@@ -421,9 +421,14 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         var _new = {
                             id: null,
-                            origin: 'NEW',
-                            path: null,
+                            path: 'NEW',
+                            description: null,
+                            origin: '*',
+                            header: '*',
+                            exposed_header: null,
+                            max_age: 0,
                             method: [],
+                            supports_credentials: false,
                             enabled: false
                         };
 
@@ -452,7 +457,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                     scope.deleteCorsEntry = function () {
 
-                        if (dfNotify.confirm("Delete " + scope.selectedCorsEntry.record.origin + "?")) {
+                        if (dfNotify.confirm("Delete " + scope.selectedCorsEntry.record.path + "?")) {
 
                             scope._deleteCorsEntry();
                         }
@@ -480,13 +485,13 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         if (template.record.id === null) {
 
-                            if (template.record.origin === 'NEW') {
+                            if (template.record.path === 'NEW') {
 
                                 var messageOptions = {
                                     module: 'CORS',
                                     type: 'warn',
                                     provider: 'dreamfactory',
-                                    message: 'Entries should have a unique origin.  Please rename your origin to something other than the default \'new\' origin name.'
+                                    message: 'Entries should have a unique path pattern.  Please rename your entry to something other than the default \'new\' name.'
                                 };
 
                                 dfNotify.warn(messageOptions);
@@ -494,13 +499,13 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 return;
                             }
 
-                            if (template.record.origin === undefined) {
+                            if (template.record.path === undefined) {
 
                                 var messageOptions = {
                                     module: 'CORS',
                                     type: 'error',
                                     provider: 'dreamfactory',
-                                    message: 'Origin is a required field.'
+                                    message: 'Path is a required field.'
                                 };
 
                                 dfNotify.error(messageOptions);
@@ -561,7 +566,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 type: 'success',
                                 provider: 'dreamfactory',
                                 message: 'CORS entry deleted successfully.'
-
                             };
 
                             dfNotify.success(messageOptions);
@@ -643,7 +647,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 while (i < scope.corsEntries.length) {
 
-                                    if (scope.corsEntries[i].record.origin === result.origin) {
+                                    if (scope.corsEntries[i].record.name === result.name) {
 
                                         var _newHost = new CorsEntry(result);
 
@@ -710,17 +714,27 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     }
 
                     scope.helpTextCors = {
-                        origin: {
-                            title: 'Origin (Access-Control-Allow-Origin)',
-                            text: 'Enter origin that you would like to allow. Enter * for allowing any origin. Origin is a required field.'
+                        description: {
+                            title: 'Description',
+                            text: 'Enter a description for this entry.'
                         },
-                        paths: {
-                            title: 'Paths',
-                            text: 'Enter allowed paths. Example: * allows any path, api/v2/* will allow any path with api/v2/ prefix.'
+                        path: {
+                            title: 'Path',
+                            text: 'Enter an absolute path or a pattern to match against incoming requests. ' +
+                            'Example: * allows any path, api/v2/* will allow any path with api/v2/ prefix. ' +
+                                'Path is matched by most accurate, i.e. api/v2/system/environment will match api/v2/* before *.'
+                        },
+                        origins: {
+                            title: 'Origin (Access-Control-Allow-Origin)',
+                            text: 'Enter a comma-delimited list of origins that you would like to allow for this path. Enter * for allowing any origin.'
                         },
                         headers: {
                             title: 'Headers (Access-Control-Allow-Headers)',
-                            text: 'Enter allowed headers. Enter * for allowing any header.'
+                            text: 'Enter a comma-delimited list of allowed headers. Enter * to allow any header.'
+                        },
+                        exposed_headers: {
+                            title: 'Exposed Headers (Access-Control-Expose-Headers)',
+                            text: 'Enter a comma-delimited list of headers to expose.'
                         },
                         max_age: {
                             title: 'Max Age (Access-Control-Max-Age)',
