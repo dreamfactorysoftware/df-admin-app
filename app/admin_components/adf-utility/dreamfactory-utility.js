@@ -1798,6 +1798,7 @@ angular.module('dfUtility', ['dfApplication'])
             restrict: 'E',
             scope: {
                 api: '=',
+                type: '=?',
                 prepFunc: '=?'
             },
             replace: true,
@@ -2216,6 +2217,446 @@ angular.module('dfUtility', ['dfApplication'])
             }
         }
     }])
+
+
+    // Used for manage section pagination
+    .directive('dfTablePaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$location', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $location) {
+
+
+        return {
+            restrict: 'E',
+            scope: {
+                api: '=',
+                type: '=?',
+                prepFunc: '=?',
+                totalCount: '=totalCount'
+            },
+            replace: true,
+            templateUrl : MOD_UTILITY_ASSET_PATH + 'views/df-toolbar-paginate.html',
+            link: function (scope, elem, attrs) {
+
+                scope.totalCount = 0;
+                scope.pagesArr = [];
+                scope.currentPage = {};
+                scope.isInProgress = false;
+
+                if (dfApplicationData.systemDataExists(scope.api)) {
+                    scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+                }
+
+                // PUBLIC API
+                scope.getPrevious = function () {
+
+                    if (scope._isFirstPage() || scope.isInProgress) {
+                        return false;
+                    } else {
+
+                        scope._getPrevious();
+
+                    }
+                };
+
+                scope.getNext = function () {
+
+                    if (scope._isLastPage() || scope.isInProgress) {
+                        return false;
+                    } else {
+
+                        scope._getNext();
+
+                    }
+                };
+
+                scope.getPage = function (pageObj) {
+
+                    scope._getPage(pageObj);
+                }
+
+                scope.prepFunc = function (data) {
+
+                    return data;
+                }
+
+
+                // PRIVATE API
+
+                // Data
+                scope._getDataFromServer = function(offset, type, value) {
+                    var params = {
+                            offset: offset,
+                            include_count: true
+                        }
+                    if(type) {
+                        if(type == 'filter') {
+                            params.filter = value
+                        } else {
+                            params.type = value
+                        }
+                    }
+
+
+                    return dfApplicationData.getDataSetFromServer(scope.api, {
+                        params: params
+                    }).$promise
+                };
+
+
+                // Pagination
+                scope._calcTotalPages = function (totalCount, numPerPage) {
+
+                    return Math.ceil(totalCount / numPerPage);
+                };
+
+                scope._createPageObj = function (_pageNum) {
+
+                    return {
+                        number: _pageNum + 1,
+                        value: _pageNum,
+                        offset: _pageNum * dfApplicationPrefs.getPrefs().data[scope.api].limit,
+                        stopPropagation: false
+                    }
+                };
+
+                scope._createPagesArr = function (_totalCount) {
+
+
+                    scope.pagesArr = [];
+
+                    for (var i = 0; i < _totalCount; i++) {
+
+                        scope.pagesArr.push(scope._createPageObj(i));
+                    }
+                };
+
+                scope._setCurrentPage = function (pageDataObj) {
+
+                    scope.currentPage = pageDataObj;
+                };
+
+                scope._getCurrentPage = function () {
+
+                    if (!scope.currentPage && scope.pagesArr.length > 0) {
+                        scope.currentPage = scope.pagesArr[0];
+                    } else if (!scope.currentPage && !scope.pagesArr.length) {
+
+                        scope.pagesArr.push(scope._createPageObj(0));
+                        scope.currentPage = scope.pagesArr[0];
+                    }
+
+                    return scope.currentPage;
+                };
+
+                scope._isFirstPage = function () {
+
+                    return scope._getCurrentPage().value === 0;
+                };
+
+                scope._isLastPage = function () {
+
+                    return scope.currentPage.value === scope.pagesArr.length - 1
+                };
+
+                scope._previousPage = function () {
+
+                    scope.currentPage = scope.pagesArr[scope.currentPage.value - 1]
+                };
+
+                scope._nextPage = function () {
+
+                    scope.currentPage = scope.pagesArr[scope.currentPage.value + 1]
+                };
+
+                scope._calcPagination = function (newValue) {
+
+                    scope.pagesArr = [];
+
+                    if (scope.totalCount == 0) {
+                        scope.pagesArr.push(scope._createPageObj(0));
+                        return false;
+                    }
+
+                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationPrefs.getPrefs().data[newValue].limit));
+                };
+
+                //local function for filter detection
+                var detectFilter = function() {
+                    // Checking if we have filters applied
+                    var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : undefined;
+                    if(!filterText) return false;
+
+                    var arr = [ "first_name", "last_name", "name", "email" ];
+
+                    return arr.map(function(item) {
+                        return '(' + item + ' like "%' + filterText + '%")'
+                    }).join(' or ');
+
+                }
+
+                // COMPLEX IMPLEMENTATION
+                scope._getPrevious = function () {
+
+                    if (scope.isInProgress) return false;
+
+                    scope.isInProgress = true;
+
+                    var offset = scope.pagesArr[scope.currentPage.value - 1].offset
+
+                    var filter = detectFilter();
+                    var filterFunction = filter ? scope._getDataFromServer(offset, 'filter', filter) : scope._getDataFromServer(offset);
+
+                    filterFunction.then(
+
+                        function(result) {
+
+                            scope.linkedData = scope.prepFunc({dataArr: result.record});
+                            scope._previousPage();
+                            scope.$emit('toolbar:paginate:' + scope.type + ':update');
+                        },
+
+                        function(reject) {
+
+                            var messageOptions = {
+                                module: 'DreamFactory Paginate Table',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            }
+
+                            dfNotify.error(messageOptions);
+                        }
+                    ).finally(
+                        function() {
+
+                            scope.isInProgress = false;
+                        }
+                    )
+                };
+
+                scope._getNext = function () {
+
+                    if (scope.isInProgress) return false;
+
+                    scope.isInProgress = true;
+
+                    var offset = scope.pagesArr[scope.currentPage.value + 1].offset
+
+                    var filter = detectFilter();
+                    var filterFunction = filter ? scope._getDataFromServer(offset, 'filter', filter) : scope._getDataFromServer(offset);
+
+                    filterFunction.then(
+
+                        function(result) {
+                            scope.linkedData = scope.prepFunc({dataArr: result.record});
+                            scope._nextPage();
+                            if (scope.type !== undefined) {
+                                scope.$emit('toolbar:paginate:' + scope.type + ':update');
+                            }
+                            else {
+                                scope.$emit('toolbar:paginate:' + scope.api + ':update');
+                            }
+                        },
+
+                        function(reject) {
+                            var messageOptions = {
+                                module: 'DreamFactory Paginate Table',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            }
+
+                            dfNotify.error(messageOptions);
+                        }
+                    ).finally(
+                        function() {
+
+                            scope.isInProgress = false;
+                        }
+                    )
+                };
+
+                scope._getPage = function (pageObj) {
+
+                    if (scope.isInProgress) return false;
+
+                    scope.isInProgress = true;
+
+                    var filter = detectFilter();
+                    var filterFunction = filter ? scope._getDataFromServer(pageObj.offset, 'filter', filter) : scope._getDataFromServer(pageObj.offset);
+
+                    filterFunction.then(
+
+                        function(result) {
+
+                            // scope.linkedData = scope.prepFunc({dataArr: result.record});
+                            scope._setCurrentPage(pageObj);
+                            scope.$emit('toolbar:paginate:' + scope.type + ':update');
+                        },
+
+                        function(reject) {
+
+                            var messageOptions = {
+                                module: 'DreamFactory Paginate Table',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            }
+
+                            dfNotify.error(messageOptions);
+                        }
+                    ).finally(
+                        function() {
+
+                            scope.isInProgress = false;
+                        }
+                    )
+
+                };
+
+                // WATCHERS
+
+                var watchApi = scope.$watch('api', function(newValue, oldValue) {
+
+                    if (!newValue) return false;
+
+                    scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+
+                    scope._calcPagination(newValue);
+                    scope._setCurrentPage(scope.pagesArr[0]);
+                });
+
+                // This is fired on $destroy in controllers that use this directive
+                scope.$on('toolbar:paginate:' + scope.type + ':reset', function (e) {
+
+                    // If we're logging out don't bother
+                    // dfApplicationObj is being destroyed
+                    if ($location.path() === '/logout') {
+                        return;
+                    }
+
+                    // are we currently updating the model.
+                    // yes.
+                    if (scope.isInProgress) return false;
+
+
+                    // We are about to update our data model.
+                    // Block any more calls until we are done.
+                    scope.isInProgress = true;
+
+
+                    var filter = detectFilter();
+                    var filterFunction = filter ? scope._getDataFromServer(0, 'filter', filter) : scope._getDataFromServer(0);
+
+                    // We just want to reset back to the first page.
+                    filterFunction.then(
+                        function(result) {
+
+                            // reset everything.
+                            scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+                            scope._calcPagination(scope.api);
+                            // scope.linkedData = scope.prepFunc({dataArr: result.record});
+                            scope._setCurrentPage(scope.pagesArr[0]);
+
+                            // We're done modifiying our data object and calcualting pagination
+                            // if it was needed.  Let everyone know data is upto date.
+                            scope.$emit('toolbar:paginate:' + scope.type + ':update');
+                        },
+
+                        function(reject) {
+
+                            // There was an error
+                            var messageOptions = {
+                                module: 'DreamFactory Paginate Table',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            }
+
+                            dfNotify.error(messageOptions);
+                        }
+                    ).finally(
+                        function() {
+                            // Stop our progress indicator
+                            scope.isInProgress = false;
+                        }
+                    )
+                });
+
+                //scope.$on('toolbar:paginate:' + scope.api + ':delete', function (e) {
+                scope.$on('toolbar:paginate:' + scope.type + ':delete', function (e) {
+
+                    // are we currently updating the model.
+                    // yes.
+                    if (scope.isInProgress) return;
+
+
+                    // set up vars
+                    var curOffset = scope.currentPage.offset,
+                        recalcPagination = false;
+
+                    // Are we on the last page and was the last record deleted
+                    if (scope._isLastPage() && !dfApplicationData.getApiData(scope.api).length) {
+
+                        // set var so we know to recalc our pagination
+                        recalcPagination = true;
+
+                        // We need to set the offset for pagination
+                        if (scope.currentPage.number !== 1) {
+
+                            // calc proper offset
+                            curOffset = scope.currentPage.offset - dfApplicationPrefs.getPrefs().data[scope.api].limit
+                        }
+                    }
+
+                    // We are about to update our data model.
+                    // Block any more calls until we are done.
+                    scope.isInProgress = true;
+
+                    // This tells the dfApplicationObj to update it self and pull
+                    // record with a specific offset
+                    scope._getDataFromServer(curOffset).then(
+                        function(result) {
+
+                            // Total count will have been updated.  Grab our new record count
+                            scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+
+                            // did we need to recalc pagination
+                            if (recalcPagination) {
+
+                                // Yep.  Make it happen captin
+                                scope._calcPagination(scope.api);
+                                scope._setCurrentPage(scope.pagesArr[scope.pagesArr.length -1]);
+                            }
+
+                            // We're done modifiying our data object and calcualting pagination
+                            // if it was needed.  Let everyone know data is upto date.
+                            //scope.$emit('toolbar:paginate:' + scope.api + ':update');
+                            scope.$emit('toolbar:paginate:' + scope.type + ':update');
+                        },
+
+                        function(reject) {
+
+                            // There was an error
+                            var messageOptions = {
+                                module: 'DreamFactory Paginate Table',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            }
+
+                            dfNotify.error(messageOptions);
+                        }
+                    ).finally(
+                        function() {
+
+                            // Stop our progress indicator
+                            scope.isInProgress = false;
+                        }
+                    )
+                })
+            }
+        }
+    }])
+
 
     // Details section headers
     .directive('dfDetailsHeader', ['MOD_UTILITY_ASSET_PATH', function (MOD_UTILITY_ASSET_PATH) {
