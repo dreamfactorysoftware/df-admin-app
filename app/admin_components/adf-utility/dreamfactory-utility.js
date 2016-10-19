@@ -1399,6 +1399,7 @@ angular.module('dfUtility', ['dfApplication'])
                 };
 
                 scope._setEditorInactive = function (stateBool) {
+                    stateBool = stateBool || false;
 
                     if (stateBool) {
                         scope.editor.setOptions({
@@ -1541,6 +1542,19 @@ angular.module('dfUtility', ['dfApplication'])
                     scope.currentEditor = scope.editor;
 
                 }, true);
+
+
+                var watchIsEditable = scope.$watch('isEditable', function (newValue, oldValue) {
+
+                  console.log('watchIsEditable = ' + newValue);
+                  scope.editor.setOptions({
+                      readOnly: false,
+                      highlightActiveLine: true,
+                      highlightGutterLine: true
+                  })
+                  scope.editor.renderer.$cursorLayer.element.style.opacity=100;
+
+                });
 
 
                 // MESSAGES
