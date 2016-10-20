@@ -222,6 +222,13 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                             if (data.hasOwnProperty('success')) {
                                 if (data.success == true) {
+
+                                    var apis = ['app', 'admin', 'user', 'role', 'service'];
+
+                                    angular.forEach(apis, function (value, key) {
+                                        dfApplicationData.getApiData(value, null, true);
+                                    });
+
                                     var messageOptions = {
                                         module: 'Package Manager',
                                         provider: 'dreamfactory',
@@ -233,12 +240,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                                     scope.packageImportPassword = '';
                                     angular.element("input[type='file']").val(null);
-
-                                    var apis = dfAvailableApis.getApis();
-
-                                    angular.forEach(apis.apis, function (value, key) {
-                                        dfApplicationData.fetchFromApi(value);
-                                    });
                                 }
 
                                 if (data.success == false) {
