@@ -538,7 +538,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 // Refreshes the editor when switching tabs
                 scope.refreshEditor = function() {
                     scope.currentEditor.renderer.updateText();
-                    scope.currentEditor.focus();
+
+                    var aceElement = $('div[id^="ide"]');
+                    var editor = ace.edit(aceElement[0].id);
+
+                    editor.resize(true);
+                    editor.focus();
                 };
 
 
