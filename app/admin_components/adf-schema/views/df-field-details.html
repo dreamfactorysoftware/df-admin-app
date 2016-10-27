@@ -98,31 +98,6 @@
             Foreign Key</label>
     </div>
 
-    <div class="checkbox">
-        <label>
-            <input type="checkbox" data-ng-disabled="(field.record.type != 'reference') && !field.record.is_foreign_key"
-                   data-ng-model="field.record.is_virtual_foreign_key"/>
-            Virtual Foreign Key</label>
-    </div>
-
-    <div class="checkbox">
-        <label>
-            <input type="checkbox"
-                   data-ng-disabled="((field.record.type != 'reference') && !field.record.is_foreign_key) || !field.record.is_virtual_foreign_key"
-                   data-ng-change="changeForeignReferenceService()"
-                   data-ng-model="field.record.is_foreign_ref_service"/>
-            Foreign Reference Service</label>
-    </div>
-
-    <label>Reference Service</label>
-    <select data-ng-disabled="((field.record.type != 'reference') && !field.record.is_foreign_key) || !field.record.is_virtual_foreign_key || !field.record.is_foreign_ref_service"
-            class="form-control"
-            data-ng-change="_loadReferenceTables()"
-            data-ng-model="field.record.ref_service"
-            data-ng-options="o.name as o.label for o in refServices">
-        <option value="">-- Select Reference Service --</option>
-    </select> <br/>
-
     <span data-ng-if="(field.record.type === 'reference') || field.record.is_foreign_key"
           data-ng-init="_loadReferenceTables()"></span>
 
@@ -141,11 +116,10 @@
     <label>Reference Field</label>
     <select data-ng-disabled="((field.record.type !== 'reference') && !field.record.is_foreign_key) || !field.record.ref_table"
             class="form-control"
-            data-ng-model="field.record.ref_fields"
+            data-ng-model="field.record.ref_field"
             data-ng-options="o.name as o.name for o in refFields">
         <option value="">-- Select Reference Field --</option>
     </select> <br/>
-
 
     <label>Validation</label>
     <df-simple-help data-options="helpText.validation"></df-simple-help>

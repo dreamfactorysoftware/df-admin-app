@@ -54,7 +54,7 @@
 
         <select class="form-control" data-ng-if="field.type == 'reference'"
                 data-ng-model="serviceInfo.record.config[field.name]"
-                data-ng-options="option.value as option.name for option in getReferences(field.ref_table, field.ref_fields)"
+                data-ng-options="option.value as option.name for option in getReferences(field.ref_table, field.ref_field)"
                 data-ng-change="updateAffectedFields(serviceInfo.record.config[field.name], field)">
         </select>
 
