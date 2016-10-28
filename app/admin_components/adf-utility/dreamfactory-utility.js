@@ -2243,7 +2243,8 @@ angular.module('dfUtility', ['dfApplication'])
                 api: '=',
                 type: '=?',
                 prepFunc: '=?',
-                totalCount: '=totalCount'
+                totalCount: '=totalCount',
+                filter: '='
             },
             replace: true,
             templateUrl : MOD_UTILITY_ASSET_PATH + 'views/df-toolbar-paginate.html',
@@ -2259,25 +2260,23 @@ angular.module('dfUtility', ['dfApplication'])
                 }
 
                 // PUBLIC API
-                scope.getPrevious = function () {
+                scope.getPreviousTbl = function () {
 
                     if (scope._isFirstPage() || scope.isInProgress) {
                         return false;
                     } else {
 
-                        scope._getPrevious();
+                        scope._getPreviousTbl();
 
                     }
                 };
 
-                scope.getNext = function () {
+                scope.getNextTbl = function () {
 
                     if (scope._isLastPage() || scope.isInProgress) {
                         return false;
                     } else {
-
-                        scope._getNext();
-
+                        scope._getNextTbl();
                     }
                 };
 
@@ -2299,7 +2298,8 @@ angular.module('dfUtility', ['dfApplication'])
                     var params = {
                             offset: offset,
                             include_count: true
-                        }
+                    };
+
                     if(type) {
                         if(type == 'filter') {
                             params.filter = value
@@ -2308,10 +2308,9 @@ angular.module('dfUtility', ['dfApplication'])
                         }
                     }
 
-
                     return dfApplicationData.getDataSetFromServer(scope.api, {
                         params: params
-                    }).$promise
+                    }).$promise;
                 };
 
 
@@ -2332,7 +2331,6 @@ angular.module('dfUtility', ['dfApplication'])
                 };
 
                 scope._createPagesArr = function (_totalCount) {
-
 
                     scope.pagesArr = [];
 
@@ -2394,6 +2392,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                 //local function for filter detection
                 var detectFilter = function() {
+
                     // Checking if we have filters applied
                     var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : undefined;
                     if(!filterText) return false;
@@ -2407,7 +2406,7 @@ angular.module('dfUtility', ['dfApplication'])
                 }
 
                 // COMPLEX IMPLEMENTATION
-                scope._getPrevious = function () {
+                scope._getPreviousTbl = function () {
 
                     if (scope.isInProgress) return false;
 
@@ -2446,14 +2445,13 @@ angular.module('dfUtility', ['dfApplication'])
                     )
                 };
 
-                scope._getNext = function () {
+                scope._getNextTbl = function () {
 
                     if (scope.isInProgress) return false;
 
                     scope.isInProgress = true;
 
                     var offset = scope.pagesArr[scope.currentPage.value + 1].offset
-
                     var filter = detectFilter();
                     var filterFunction = filter ? scope._getDataFromServer(offset, 'filter', filter) : scope._getDataFromServer(offset);
 
@@ -2501,7 +2499,6 @@ angular.module('dfUtility', ['dfApplication'])
 
                         function(result) {
 
-                            // scope.linkedData = scope.prepFunc({dataArr: result.record});
                             scope._setCurrentPage(pageObj);
                             scope.$emit('toolbar:paginate:' + scope.type + ':update');
                         },
@@ -2535,6 +2532,25 @@ angular.module('dfUtility', ['dfApplication'])
                     scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
 
                     scope._calcPagination(newValue);
+                    scope._setCurrentPage(scope.pagesArr[0]);
+                });
+
+                var watchFilter = scope.$watch('filter', function(newValue, oldValue) {
+
+                    if (!newValue) return false;
+
+                    var arr = [ "first_name", "last_name", "name", "email" ];
+                    var filterString = arr.map(function(item) {
+                        return '(' + item + ' like "%' + scope.filter + '%")'
+                    }).join(' or ');
+
+                    var filteredData = scope._getDataFromServer(0, 'filter', filterString);
+
+                    filteredData.then(function(response){
+                        scope.totalCount = response.meta.count;
+                    });
+
+                    scope._calcPagination(scope.api);
                     scope._setCurrentPage(scope.pagesArr[0]);
                 });
 
@@ -2595,13 +2611,11 @@ angular.module('dfUtility', ['dfApplication'])
                     )
                 });
 
-                //scope.$on('toolbar:paginate:' + scope.api + ':delete', function (e) {
                 scope.$on('toolbar:paginate:' + scope.type + ':delete', function (e) {
 
                     // are we currently updating the model.
                     // yes.
                     if (scope.isInProgress) return;
-
 
                     // set up vars
                     var curOffset = scope.currentPage.offset,

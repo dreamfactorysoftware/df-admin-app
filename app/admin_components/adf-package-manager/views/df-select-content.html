@@ -21,14 +21,19 @@
     <div class="col-xs-6">
 
         <df-section-toolbar data-ng-hide="selectedNameLabel == ''">
-            <df-table-paginate data-api="selectedName" data-type="'package'" data-total-count="totalCount" style="margin-top: -1px" id="paginatecontrol"></df-table-paginate>
-            <div style="margin-left: 200px; margin-top: 3px">
+
+            <df-table-paginate data-api="selectedName" data-type="'package'" data-total-count="totalCount" id="paginatecontrol" data-filter="search.text"></df-table-paginate>
+
+            <div style="margin-left: 100px">
+                <input type="text" data-ng-model="search.text" class="df-search-box" placeholder="Search">
+
                 <label>
                     <input type="checkbox" data-ng-checked="contentControls.selectAll" data-ng-model="contentControls.selectAll" />
                     {{selectedNameLabel}}
                 </label>
             </div>
             <input type="hidden" id="totalCount" value="{{totalCount}}">
+
         </df-section-toolbar>
 
         <div class="panel" data-ng-hide="selectedNameLabel == ''">
@@ -38,7 +43,10 @@
                     <tbody>
                         <tr data-ng-repeat="component in selectedNameData" data-ng-class="component.__dfUI.selected ? 'info' : ''">
                             <td>
-                                <input type="checkbox" data-ng-checked="component.__dfUI.selected" data-ng-model="component.__dfUI.selected" />
+                                <input type="checkbox" data-ng-checked="component.__dfUI.selected" data-ng-model="component.__dfUI.selected"  ng-disabled="checkboxDisable" />
+                            </td>
+                            <td ng-if="selectedName === 'user'">
+                                {{component.record.first_name}} {{component.record.last_name}}
                             </td>
                             <td>
                                 {{component.record.display_label}}
