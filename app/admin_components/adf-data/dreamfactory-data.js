@@ -96,10 +96,6 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
 
         $scope.__services__ = [];
-        angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db'}), function (serviceData) {
-
-            $scope.__services__.push(serviceData);
-        });
 
         $scope.selected = {
             service: null,
@@ -114,6 +110,15 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
             childTableAttachPoint: '#child-table-attach'
         };
 
+
+        $scope.init = function() {
+
+            angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db'}), function (serviceData) {
+
+                $scope.__services__.push(serviceData);
+            });
+        }
+
         $scope.$watchCollection('selected', function (newValue, oldValue) {
 
             var options = {
@@ -126,4 +131,14 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
             $scope.options = options;
         });
+
+        $scope.$watchCollection(function () {
+            return dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db'});
+        }, function (newValue, oldValue) {
+
+            if (!newValue) return;
+
+            $scope.init();
+        });
+
     }]);
