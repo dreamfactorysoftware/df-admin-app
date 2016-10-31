@@ -1362,7 +1362,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
 
-                scope.allowedConfigFormats = ['json','js','php'];
+
+                scope.allowedConfigFormats = '.json,.js,.php,.py,.python,.yaml,.yml';
+                scope.allowedConfigGitFormats = ['json','js','php','py','python','yaml','yml'];
                 scope.serviceTypeConfig = 'configmodal';
 
                 scope.isArray = angular.isArray;
@@ -1988,10 +1990,38 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 });
 
+                var watchSelectedSchema = scope.$watch('selectedSchema', function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    switch (newValue.name) {
+                        case 'nodejs':
+                            scope.allowedConfigFormats = '.js';
+                            scope.allowedConfigGitFormats = ['js'];
+                            break;
+                        case 'php':
+                            scope.allowedConfigFormats = '.php';
+                            scope.allowedConfigGitFormats = ['php'];
+                            break;
+                        case 'python':
+                            scope.allowedConfigFormats = '.py,.python';
+                            scope.allowedConfigGitFormats = ['py','python'];
+                            break;
+                        case 'v8js':
+                            scope.allowedConfigFormats = '.js';
+                            scope.allowedConfigGitFormats = ['js'];
+                            break;
+                        default:
+                            scope.allowedConfigFormats = '.json,.js,.php,.yaml,.yml';
+                            scope.allowedConfigGitFormats = ['json','js','php','yaml','yml'];
+                    }
+                });
+
                 scope.$on('$destroy', function (e) {
 
                     watchService();
                     watchEmailProvider();
+                    watchSelectedSchema();
                 });
 
                 // HELP
