@@ -138,7 +138,9 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
             if (!newValue) return;
 
-            $scope.init();
+            if ($scope.__services__.length === 0) {
+                $scope.init();
+            }
         });
 
     }]);
