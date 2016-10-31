@@ -19,61 +19,103 @@
     <input class="form-control" type="text" data-ng-model="relation.record.description"/>
     <br/>
 
-    <label>Type&nbsp;&nbsp;</label>
-    <input class="form-control" type="text" data-ng-model="relation.record.type" data-ng-disabled="true"/>
-    <br/>
-
     <div class="checkbox">
         <label>
             <input type="checkbox" data-ng-model="relation.record.always_fetch"/>
             Always Fetch</label>
     </div>
 
+    <label>Type</label>
+    <df-simple-help data-options="helpText.type"></df-simple-help>
+    <select data-ng-options="type.value as type.name for type in typeOptions" class="form-control"
+            data-ng-model="relation.record.type" data-ng-disabled="!relation.record.is_virtual"></select>
+    <br/>
+
     <div class="checkbox">
         <label>
             <input type="checkbox" data-ng-disabled="true" data-ng-model="relation.record.is_virtual"/>
-            Virtual Foreign Key</label>
+            Virtual Relationship</label>
     </div>
 
-    <div class="checkbox">
-        <label>
-            <input type="checkbox" data-ng-disabled="true" data-ng-model="relation.record.is_foreign_service"/>
-            Foreign Reference Service</label>
-    </div>
+    <span data-ng-init="_loadFields()"></span>
+
+    <label>Field</label>
+    <select data-ng-disabled="!relation.record.is_virtual"
+            class="form-control"
+            data-ng-model="relation.record.field"
+            data-ng-options="o.name as o.name for o in fields">
+        <option value="">-- Select Field --</option>
+    </select> <br/>
 
     <label>Reference Service</label>
-    <input class="form-control" type="text" data-ng-model="relation.record.ref_service" data-ng-disabled="true"/>
+    <select data-ng-disabled="!relation.record.is_virtual"
+            class="form-control"
+            data-ng-change="changeReferenceService()"
+            data-ng-model="relation.record.ref_service_id"
+            data-ng-options="o.id as o.label for o in refServices">
+        <option value="">-- Select Reference Service --</option>
+    </select>
     <br/>
+
+    <span data-ng-init="_loadReferenceTables()"></span>
 
     <label>Reference Table</label>
-    <input class="form-control" type="text" data-ng-model="relation.record.ref_table" data-ng-disabled="true"/>
-    <br/>
+    <select data-ng-disabled="!relation.record.is_virtual"
+            class="form-control"
+            data-ng-change="_loadReferenceFields()"
+            data-ng-model="relation.record.ref_table"
+            data-ng-options="o.name as o.name for o in refTables">
+        <option value="">-- Select Reference Table --</option>
+    </select> <br/>
+
+    <span data-ng-init="_loadReferenceFields()"></span>
 
     <label>Reference Field</label>
-    <input class="form-control" type="text" data-ng-model="relation.record.ref_fields" data-ng-disabled="true"/>
-    <br/>
-
-    <div class="checkbox">
-        <label>
-            <input type="checkbox" data-ng-disabled="true" data-ng-model="relation.record.is_foreign_junction_service"/>
-            Foreign Junction Service</label>
-    </div>
+    <select data-ng-disabled="!relation.record.is_virtual || !relation.record.ref_table"
+            class="form-control"
+            data-ng-model="relation.record.ref_field"
+            data-ng-options="o.name as o.name for o in refFields">
+        <option value="">-- Select Reference Field --</option>
+    </select> <br/>
 
     <label>Junction Service</label>
-    <input class="form-control" type="text" data-ng-model="relation.record.junction_service" data-ng-disabled="true"/>
+    <select data-ng-disabled="!relation.record.is_virtual"
+            class="form-control"
+            data-ng-change="changeJunctionService()"
+            data-ng-model="relation.record.junction_service_id"
+            data-ng-options="o.id as o.label for o in refServices">
+        <option value="">-- Select Junction Service --</option>
+    </select>
     <br/>
+
+    <span data-ng-init="_loadJunctionTables()"></span>
 
     <label>Junction Table</label>
-    <input class="form-control" type="text" data-ng-model="relation.record.junction_table" data-ng-disabled="true"/>
-    <br/>
+    <select data-ng-disabled="!relation.record.is_virtual"
+            class="form-control"
+            data-ng-change="_loadJunctionFields()"
+            data-ng-model="relation.record.junction_table"
+            data-ng-options="o.name as o.name for o in junctionTables">
+        <option value="">-- Select Junction Table --</option>
+    </select> <br/>
+
+    <span data-ng-init="_loadJunctionFields()"></span>
 
     <label>Junction Field</label>
-    <input class="form-control" type="text" data-ng-model="relation.record.junction_field" data-ng-disabled="true"/>
-    <br/>
+    <select data-ng-disabled="!relation.record.is_virtual || !relation.record.junction_table"
+            class="form-control"
+            data-ng-model="relation.record.junction_field"
+            data-ng-options="o.name as o.name for o in junctionFields">
+        <option value="">-- Select Junction Field --</option>
+    </select> <br/>
 
     <label>Junction Reference Field</label>
-    <input class="form-control" type="text" data-ng-model="relation.record.junction_ref_field" data-ng-disabled="true"/>
-    <br/>
+    <select data-ng-disabled="!relation.record.is_virtual || !relation.record.junction_table"
+            class="form-control"
+            data-ng-model="relation.record.junction_ref_field"
+            data-ng-options="o.name as o.name for o in junctionFields">
+        <option value="">-- Select Junction Reference Field --</option>
+    </select> <br/>
 
 
     <div class="row df-btn-row" style="padding-bottom: 20px">
