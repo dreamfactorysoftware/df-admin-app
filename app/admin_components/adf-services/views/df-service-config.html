@@ -18,12 +18,11 @@
 
             <div data-ng-if="field.type == 'text' && field.name == 'content'">
                 <label>Upload a script file</label>
-                <!--input type="file" id="input" onclick="this.value = null;" onchange="angular.element(this).scope().$parent.handleFiles(this.files)"-->
                 <div>
-                <label class="btn btn-default btn-file btn-sm">
-                    Select Desktop File... <input type="file" style="display: none;" accept=".json,.yml,.yaml" onclick="this.value = null;" onchange="angular.element(this).scope().handleFiles(this.files)" ng-model="filename">
-                </label>
-                <button type="button" class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShowConfig()">Select GitHub File...</button>
+                  <label class="btn btn-default btn-file btn-sm">
+                      Select Desktop File... <input type="file" style="display: none;" accept="{{allowedConfigFormats}}" onclick="this.value = null;" onchange="angular.element(this).scope().handleFiles(this.files)" ng-model="filename">
+                  </label>
+                  <button type="button" class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShowConfig()">Select GitHub File...</button>
                 </div>
             </div>
         </div>
@@ -208,4 +207,4 @@
 
 </div>
 
-<df-github-modal editor="editor" accept="allowedConfigFormats" target="serviceTypeConfig"></df-github-modal>
+<df-github-modal editor="editor" accept="allowedConfigGitFormats" target="serviceTypeConfig"></df-github-modal>
