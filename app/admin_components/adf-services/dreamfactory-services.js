@@ -239,8 +239,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             scope._prepareServiceDefinitionData();
                             break;
                         default:
-                            delete scope.service.record.doc;
-                            delete scope.service.recordCopy.doc;
+                            scope._prepareServiceDefinitionData();
+                            //delete scope.service.record.doc;
+                            //delete scope.service.recordCopy.doc;
                             break;
                     }
                 };
@@ -2557,7 +2558,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
 
                         default:
-                            scope.isEditable = false;
+                            scope.isEditable = true;
                     }
                 };
 
@@ -2653,7 +2654,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
 
                         default:
-                            scope.isEditable = false;
+                            scope.isEditable = true;
                     }
                 })
 
