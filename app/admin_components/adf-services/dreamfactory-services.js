@@ -246,7 +246,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope._trimRequestDataObj = function (requestObj) {
-                    if (requestObj.data.config.hasOwnProperty('options_ctrl'))
+
+                    if (requestObj.data.hasOwnProperty.call(config, 'options_ctrl'))
                         delete requestObj.data.config.options_ctrl;
 
                     return requestObj;
@@ -257,7 +258,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         requestObj = requestObj.resource;
                     }
 
-                    if (!requestObj.config.hasOwnProperty('options'))
+                    if (!requestObj.hasOwnProperty.call(config, 'options'))
                         return requestObj;
 
                     if (requestObj.config.options && requestObj.config.options.hasOwnProperty('ssl'))
@@ -300,12 +301,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                           data.config[item.name][arrItem.key] = arrItem.value;
                         });
                     }
-                    // convert key, value pair array to object
-                    scope.selectedSchema.config_schema.forEach(function(item) {
-                        if (item.type.indexOf('object') > -1 && data.config[item.name] && data.config[item.name].length) {
-                            convert(item);
-                        }
-                    });
+
+                    if (scope.selectedSchema.hasOwnProperty('config_schema') && scope.selectedSchema.config_schema !== null) {
+                        // convert key, value pair array to object
+                        scope.selectedSchema.config_schema.forEach(function(item) {
+                            if (item.type.indexOf('object') > -1 && data.config[item.name] && data.config[item.name].length) {
+                                convert(item);
+                            }
+                        });
+                    }
 
                     return data;
                 };
@@ -1157,6 +1161,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         scope.decorateSchema();
                     }
 
+
                     // We set this to null and then during the _renderServiceFields function
                     // a storage type will be assigned
                     scope._storageType = null;
@@ -1442,17 +1447,20 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         angular.extend(obj, item)
                     });
 
-                    // Set default dfServiceValues
-                    scope.selectedSchema.config_schema.forEach(function (schema) {
+                    if (scope.selectedSchema.hasOwnProperty('config_schema') && scope.selectedSchema.config_schema !== null) {
 
-                        if (schema.default) {
-                            scope.serviceInfo.record.config[schema.name] = scope.serviceInfo.record.config[schema.name] || schema.default;
+                        // Set default dfServiceValues
+                        scope.selectedSchema.config_schema.forEach(function (schema) {
 
-                        } else if (schema.name === "content" && scope.selectedSchema.group === "Custom") {
-                            scope.serviceInfo.record.config["content"] = scope.serviceInfo.record.config["content"] || "";
-                        }
+                            if (schema.default) {
+                                scope.serviceInfo.record.config[schema.name] = scope.serviceInfo.record.config[schema.name] || schema.default;
 
-                    });
+                            } else if (schema.name === "content" && scope.selectedSchema.group === "Custom") {
+                                scope.serviceInfo.record.config["content"] = scope.serviceInfo.record.config["content"] || "";
+                            }
+
+                        });
+                    }
                 };
 
                 scope.getReferences = function (key, valueField) {
@@ -1977,6 +1985,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     // it may make sense to do so in this case.)
                     scope._renderServiceFields(scope.serviceInfo.record.type);
 
+
                 });
 
                 scope.$on('$destroy', function (e) {
@@ -2497,7 +2506,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             link: function (scope, elem, attrs) {
 
                 scope.isEditorClean = true;
-                scope.isEditable = false;
+                scope.isEditable = true;
                 scope.currentEditor = null;
                 scope.currentFile = null;
                 scope.hideGutter = true;
@@ -2506,6 +2515,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.serviceType = 'definition';
 
                 scope._changeDefinitionView = function() {
+
                     switch (scope.serviceInfo.record.type) {
 
                         case 'rws':
@@ -2628,7 +2638,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.currentEditor.focus();
                     $(window).trigger('resize');
                 })
-
 
                 $(window).on('resize', function () {
 
