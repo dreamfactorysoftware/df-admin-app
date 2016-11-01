@@ -1089,7 +1089,7 @@ angular.module('dfTable', ['dfUtility'])
 
                 scope._checkExportValue = function (dataObj) {
 
-                    return dataObj[scope.exportField.ref_fields] === scope._exportValue[scope.exportField.ref_fields];
+                    return dataObj[scope.exportField.ref_field] === scope._exportValue[scope.exportField.ref_field];
                 };
 
                 scope._prepareSchema = function (data) {
@@ -1874,7 +1874,7 @@ angular.module('dfTable', ['dfUtility'])
 
                         var requestDataObj = {};
 
-                        requestDataObj['params'] = {filter: scope.exportField.ref_fields + ' = ' + scope.parentRecord[scope.exportField.name]};
+                        requestDataObj['params'] = {filter: scope.exportField.ref_field + ' = ' + scope.parentRecord[scope.exportField.name]};
 
                         scope._getRecordsFromServer(requestDataObj).then(
                             function (result) {
@@ -2079,12 +2079,12 @@ angular.module('dfTable', ['dfUtility'])
                     }
 
                     // Some external force(revert!) has set the parent value to something else.  Go get that record
-                    if ((!scope._exportValue && newValue[scope.exportField.name]) || (scope._exportValue[scope.exportField.ref_fields] !== newValue[scope.exportField.name])) {
+                    if ((!scope._exportValue && newValue[scope.exportField.name]) || (scope._exportValue[scope.exportField.ref_field] !== newValue[scope.exportField.name])) {
 
                         var requestDataObj = {};
 
                         requestDataObj['params'] = {
-                            filter: scope.exportField.ref_fields + ' = ' + newValue[scope.exportField.name],
+                            filter: scope.exportField.ref_field + ' = ' + newValue[scope.exportField.name],
                             offset: 0
                         };
 
@@ -2205,7 +2205,7 @@ angular.module('dfTable', ['dfUtility'])
                             while (!found && i < scope.record.length) {
 
                                 var record = scope.record[i];
-                                if (record[scope.exportField.ref_fields] === newValue[scope.exportField.ref_fields]) {
+                                if (record[scope.exportField.ref_field] === newValue[scope.exportField.ref_field]) {
 
                                     scope._setExportState(scope.record[i], true);
                                     found = true;
@@ -2220,7 +2220,7 @@ angular.module('dfTable', ['dfUtility'])
                             while (!found && i < scope.record.length) {
 
                                 var record = scope.record[i];
-                                if (record[scope.exportField.ref_fields] === oldValue[scope.exportField.ref_fields]) {
+                                if (record[scope.exportField.ref_field] === oldValue[scope.exportField.ref_field]) {
 
                                     scope._setExportState(scope.record[i], false);
                                     found = true;
@@ -2231,7 +2231,7 @@ angular.module('dfTable', ['dfUtility'])
                     }
                     // If we clicked on the same record or passed in the same record some how
                     // this will short circuit.  No need to go any further
-                    if (scope.parentRecord[scope.exportField.name] === newValue[scope.exportField.ref_fields]) {
+                    if (scope.parentRecord[scope.exportField.name] === newValue[scope.exportField.ref_field]) {
 
                         if (newValue) scope._setExportState(newValue, true);
                         if (oldValue) scope._setExportState(oldValue, false);
@@ -2256,7 +2256,7 @@ angular.module('dfTable', ['dfUtility'])
                     }
 
                     // Assign proper value from obj to ref field on parent
-                    scope.parentRecord[scope.exportField.name] = newValue[scope.exportField.ref_fields];
+                    scope.parentRecord[scope.exportField.name] = newValue[scope.exportField.ref_field];
 
                     // Set the state of incoming and outgoing objects
                     scope._setExportState(oldValue, false);
@@ -2961,7 +2961,7 @@ angular.module('dfTable', ['dfUtility'])
                             exportValueOn: true
                         };
 
-                        scope.relatedOptions.defaultFields[scope.field.ref_fields] = true;
+                        scope.relatedOptions.defaultFields[scope.field.ref_field] = true;
                         break;
 
                    /* case 'datetime':
@@ -3152,7 +3152,7 @@ angular.module('dfTable', ['dfUtility'])
                         table: newValue.ref_table,
                         url: INSTANCE_URL + '/api/v2/' + scope._setSystemService(newValue.ref_table) + '/_table/' + scope._parseSystemTableName(newValue.ref_table),
                         params: {
-                            filter: newValue.ref_fields + ' = ' + scope.childTableParentRecord[newValue.field]
+                            filter: newValue.ref_field + ' = ' + scope.childTableParentRecord[newValue.field]
                         }
                     };
 

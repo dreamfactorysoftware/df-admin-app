@@ -1546,7 +1546,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                 var watchIsEditable = scope.$watch('isEditable', function (newValue, oldValue) {
 
-                  console.log('watchIsEditable = ' + newValue);
+
                   scope.editor.setOptions({
                       readOnly: false,
                       highlightActiveLine: true,
