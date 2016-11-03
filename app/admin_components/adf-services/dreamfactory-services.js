@@ -134,15 +134,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "mutable": true,
                         "deletable": true,
                         "config": {},
-                        "doc": [
-                            {
-                                content: {
-                                    "paths": {},
-                                    "definitions": {}
-                                },
-                                format: 0
-                            }
-                        ]
+                        "doc": {
+                            content: {
+                                "paths": {},
+                                "definitions": {}
+                            },
+                            format: 0
+                        }
                     };
 
                     serviceData = serviceData || newService;
@@ -229,21 +227,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope._prepareServiceInfoData();
                     scope._prepareServiceConfigData();
-
-                    switch (scope.service.record.type) {
-                        case 'rws':
-                        case 'nodejs':
-                        case 'php':
-                        case 'python':
-                        case 'v8js':
-                            scope._prepareServiceDefinitionData();
-                            break;
-                        default:
-                            scope._prepareServiceDefinitionData();
-                            //delete scope.service.record.doc;
-                            //delete scope.service.recordCopy.doc;
-                            break;
-                    }
+                    scope._prepareServiceDefinitionData();
                 };
 
                 scope._trimRequestDataObj = function (requestObj) {

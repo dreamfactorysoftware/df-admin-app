@@ -1882,7 +1882,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                     return dfApplicationData.getDataSetFromServer(scope.api, {
                         params: params
-                    }).$promise
+                    }).$promise;
                 };
 
 
@@ -2236,7 +2236,6 @@ angular.module('dfUtility', ['dfApplication'])
     // Used for manage section pagination
     .directive('dfTablePaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$location', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $location) {
 
-
         return {
             restrict: 'E',
             scope: {
@@ -2247,7 +2246,8 @@ angular.module('dfUtility', ['dfApplication'])
                 filter: '='
             },
             replace: true,
-            templateUrl : MOD_UTILITY_ASSET_PATH + 'views/df-toolbar-paginate.html',
+            templateUrl : MOD_UTILITY_ASSET_PATH + 'views/df-paginate-table.html',
+
             link: function (scope, elem, attrs) {
 
                 scope.totalCount = 0;
@@ -2294,7 +2294,7 @@ angular.module('dfUtility', ['dfApplication'])
                 // PRIVATE API
 
                 // Data
-                scope._getDataFromServer = function(offset, type, value) {
+                scope._getDataFromServerTbl = function(offset, type, value) {
                     var params = {
                             offset: offset,
                             include_count: true
@@ -2316,7 +2316,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                 // Pagination
                 scope._calcTotalPages = function (totalCount, numPerPage) {
-
+                    scope.$parent.totalCountInit.value = totalCount
                     return Math.ceil(totalCount / numPerPage);
                 };
 
@@ -2415,7 +2415,7 @@ angular.module('dfUtility', ['dfApplication'])
                     var offset = scope.pagesArr[scope.currentPage.value - 1].offset
 
                     var filter = detectFilter();
-                    var filterFunction = filter ? scope._getDataFromServer(offset, 'filter', filter) : scope._getDataFromServer(offset);
+                    var filterFunction = filter ? scope._getDataFromServerTbl(offset, 'filter', filter) : scope._getDataFromServerTbl(offset);
 
                     filterFunction.then(
 
@@ -2453,7 +2453,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                     var offset = scope.pagesArr[scope.currentPage.value + 1].offset
                     var filter = detectFilter();
-                    var filterFunction = filter ? scope._getDataFromServer(offset, 'filter', filter) : scope._getDataFromServer(offset);
+                    var filterFunction = filter ? scope._getDataFromServerTbl(offset, 'filter', filter) : scope._getDataFromServerTbl(offset);
 
                     filterFunction.then(
 
@@ -2493,7 +2493,7 @@ angular.module('dfUtility', ['dfApplication'])
                     scope.isInProgress = true;
 
                     var filter = detectFilter();
-                    var filterFunction = filter ? scope._getDataFromServer(pageObj.offset, 'filter', filter) : scope._getDataFromServer(pageObj.offset);
+                    var filterFunction = filter ? scope._getDataFromServerTbl(pageObj.offset, 'filter', filter) : scope._getDataFromServerTbl(pageObj.offset);
 
                     filterFunction.then(
 
@@ -2535,25 +2535,6 @@ angular.module('dfUtility', ['dfApplication'])
                     scope._setCurrentPage(scope.pagesArr[0]);
                 });
 
-                var watchFilter = scope.$watch('filter', function(newValue, oldValue) {
-
-                    if (!newValue) return false;
-
-                    var arr = [ "first_name", "last_name", "name", "email" ];
-                    var filterString = arr.map(function(item) {
-                        return '(' + item + ' like "%' + scope.filter + '%")'
-                    }).join(' or ');
-
-                    var filteredData = scope._getDataFromServer(0, 'filter', filterString);
-
-                    filteredData.then(function(response){
-                        scope.totalCount = response.meta.count;
-                    });
-
-                    scope._calcPagination(scope.api);
-                    scope._setCurrentPage(scope.pagesArr[0]);
-                });
-
                 // This is fired on $destroy in controllers that use this directive
                 scope.$on('toolbar:paginate:' + scope.type + ':reset', function (e) {
 
@@ -2566,7 +2547,6 @@ angular.module('dfUtility', ['dfApplication'])
                     // are we currently updating the model.
                     // yes.
                     if (scope.isInProgress) return false;
-
 
                     // We are about to update our data model.
                     // Block any more calls until we are done.
@@ -2582,6 +2562,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                             // reset everything.
                             scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+
                             scope._calcPagination(scope.api);
                             // scope.linkedData = scope.prepFunc({dataArr: result.record});
                             scope._setCurrentPage(scope.pagesArr[0]);
@@ -2681,7 +2662,9 @@ angular.module('dfUtility', ['dfApplication'])
                         }
                     )
                 })
+
             }
+
         }
     }])
 
