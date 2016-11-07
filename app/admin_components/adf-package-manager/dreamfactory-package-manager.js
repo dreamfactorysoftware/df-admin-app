@@ -1129,7 +1129,18 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                     }
                                 }
 
-                                payload['service']['system'][tableData[key]['name']] = selectedExports;
+                                if (payload['service']['system'].hasOwnProperty([tableData[key]['name']])) {
+
+                                    angular.forEach(selectedExports, function(value, key) {
+                                        if (this.indexOf(value) === -1) {
+                                            this.push(value);
+                                        }
+                                    }, payload['service']['system'][tableData[key]['name']]);
+                                }
+                                else {
+                                    payload['service']['system'][tableData[key]['name']] = selectedExports;
+                                }
+
                             }
                             else if (tableData[key]['type']['group'] === 'Database') {
                                 selectedExports = tableData[key]['data'].map(function(d) { return d['record']['name']; });
