@@ -1367,7 +1367,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                             params: {
                                 offset: offset
                             }
-                        }).$promise
+                        }).$promise;
                     };
 
                     // Pagination
