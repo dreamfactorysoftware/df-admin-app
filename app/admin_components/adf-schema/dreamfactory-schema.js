@@ -137,7 +137,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         var tempObj = {};
 
         angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db,mongodb'}), function (serviceData) {
-            
+
             tempObj[serviceData.name] = new Service(serviceData);
         });
 
@@ -970,7 +970,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         path: scope.tableData.currentService.name + '/_schema'
                     };
 
-
                     scope._saveTableToServer(requestDataObj).then(
                         function (result) {
 
@@ -1487,7 +1486,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             restrict: 'E',
             scope: {
                 relationData: '=',
-                currentTable: '='
+                currentTable: '=',
+                schemaData: '&'
             },
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-relation-details.html',
             link: function (scope, elem, attrs) {
@@ -1523,6 +1523,43 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
                 };
 
+                var Service = function (schemaData) {
+
+                    function getSchemaComponents(array) {
+
+                        var service = [];
+
+                        angular.forEach(array, function (component) {
+
+                            // setup object to be pushed onto services
+                            var componentObj = {
+                                __dfUI: {
+                                    newTable: false
+                                },
+                                name: component.name,
+                                label: component.label
+                            };
+
+                            service.push(componentObj);
+                        });
+
+                        return service;
+                    }
+
+                    return {
+                        __dfUI: {
+                            unfolded: false
+                        },
+                        name: schemaData.name,
+                        label: schemaData.label,
+                        components: getSchemaComponents(schemaData.components),
+                        updateComponents: function (array) {
+
+                            this.components = getSchemaComponents(array);
+                        }
+                    }
+                };
+
                 scope.typeOptions = [
                     {name: "Belongs To", value: "belongs_to"},
                     {name: "Has Many", value: "has_many"},
@@ -1535,6 +1572,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope.refFields = null;
                 scope.junctionTables = null;
                 scope.junctionFields = null;
+                scope.schemaManagerServiceData = null;
 
                 // PUBLIC API
                 scope.closeRelation = function (noConfirm) {
@@ -1567,13 +1605,18 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 // PRIVATE API
                 scope._loadFields = function () {
 
+                    if (scope.currentTable === null || scope.$parent.table.__dfUI.newTable === true) {
+                        scope.fields = scope.$parent.table.record.field
+                        return;
+                    }
+
                     $http.get(INSTANCE_URL + '/api/v2/' + scope.relationData.currentService.name + '/_schema/' + scope.currentTable + '/_field/').then(
                         function (result) {
 
                             scope.fields = result.data.resource;
                         },
                         function (reject) {
-
+                            /*
                             var messageOptions = {
 
                                 module: 'Api Error',
@@ -1583,7 +1626,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             };
 
                             dfNotify.error(messageOptions);
+                            */
 
+                            scope.fields = scope.$parent.table.record.field;
                         }
                     )
 
@@ -1591,10 +1636,12 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope._getServiceNameFromId = function (id) {
                     if (id) {
+                      if (scope.refServices !== undefined) {
                         for (var i = 0; i < scope.refServices.length; i++) {
                             if (scope.refServices[i].id === id) {
                                 return scope.refServices[i].name;
                             }
+                        }
                         }
                     }
 
@@ -1698,6 +1745,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         return;
                     }
 
+                    if (scope.relation.record.junction_table === null) return;
+
                     var ref_service_name = scope._getServiceNameFromId(scope.relation.record.junction_service_id);
 
                     $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/' + scope.relation.record.junction_table).then(
@@ -1734,6 +1783,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         method: 'PATCH',
                         data: recordObj
                     })
+
+                    scope.closeRelation();
                 };
 
 
@@ -1805,6 +1856,34 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     } else {
                         scope.junctionFields = null;
                     }
+                });
+
+                scope.$watch('schemaData', function(newValue) {
+
+                    if (!newValue) return;
+
+                    var tempObj = {};
+
+                    angular.forEach(newValue, function(serviceData) {
+
+                    tempObj[serviceData.name] = new Service(serviceData);
+                  });
+
+                    scope.schemaManagerServiceData = tempObj;
+                });
+
+                var watchServiceComponents = scope.$watchCollection(function() {return dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db,mongodb'})}, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    var tempObj = {};
+
+                    angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db,mongodb'}), function (serviceData) {
+
+                        tempObj[serviceData.name] = new Service(serviceData);
+                    });
+
+                    scope.schemaManagerServiceData = tempObj;
                 });
 
                 scope.helpText = {

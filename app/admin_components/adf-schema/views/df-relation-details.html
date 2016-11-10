@@ -1,7 +1,7 @@
 <div class="form-group">
     <label>Name</label>
     <span class="text-muted">The relation name used by the API.</span>
-    <input class="form-control" type="text" data-ng-model="relation.record.name" data-ng-disabled="true"/>
+    <input class="form-control" type="text" data-ng-model="relation.record.name" data-ng-disabled="!relation.record.is_virtual"/>
     <br/>
 
     <label>Alias</label>
@@ -52,9 +52,16 @@
             class="form-control"
             data-ng-change="changeReferenceService()"
             data-ng-model="relation.record.ref_service_id"
-            data-ng-options="o.id as o.label for o in refServices">
+            data-ng-options="value as value.label for (key, value) in schemaManagerServiceData">
         <option value="">-- Select Reference Service --</option>
     </select>
+    <!--select data-ng-disabled="!relation.record.is_virtual"
+            class="form-control"
+            data-ng-change="changeReferenceService()"
+            data-ng-model="relation.record.ref_service_id"
+            data-ng-options="o.id as o.label for o in refServices">
+        <option value="">-- Select Reference Service --</option>
+    </select-->
     <br/>
 
     <span data-ng-init="_loadReferenceTables()"></span>
@@ -117,17 +124,26 @@
         <option value="">-- Select Junction Reference Field --</option>
     </select> <br/>
 
-
     <div class="row df-btn-row" style="padding-bottom: 20px">
         <div class="col-xs-12">
-            <button type="button" class="btn btn-primary" data-ng-click="saveRelation()"
-                    ng-hide="$parent.table.__dfUI.newTable">Save
+            <button type="button"
+                class="btn btn-primary"
+                data-ng-click="saveRelation(); closeRelation(true)"
+                ng-hide="relation.record.is_virtual">
+                Save
             </button>
-            <button type="button" class="btn btn-default" data-ng-click="closeRelation($parent.table.__dfUI.newTable)">
-                Cancel
+            <button type="button"
+                class="btn btn-primary"
+                data-ng-click="addRelation(); closeRelation(true)"
+                ng-hide="!relation.record.is_virtual">
+                Add
+            </button>
+            <button type="button"
+                class="btn btn-default"
+                data-ng-click="closeRelation($parent.table.__dfUI.newTable)">
+                Close
             </button>
         </div>
     </div>
-
 
 </div>
