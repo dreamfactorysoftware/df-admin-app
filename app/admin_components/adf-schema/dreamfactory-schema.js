@@ -196,7 +196,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             }
 
             // If we have a bound table and that table has been modified
-            if ($scope.bindTable !== null && !dfObjectService.compareObjectsAsJson($scope.bindTable.record, $scope.bindTable.recordCopy)) {
+            if ($scope.bindTable !== null && !dfObjectService.compareObjectsAsJson($scope.bindTable.record, $scope.bindTable.recordCopy) && $scope.bindTable.__dfUI.newTable === true) {
 
                 // Do you want to continue without saving
                 if (dfNotify.confirm('You have unsaved changes.  Continue without saving?')) {
@@ -543,9 +543,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-table-details.html',
             controller: function($scope) {
 
-              this.removeField = function () {
-                  $scope.table.record.field.pop();
-              }
+                this.removeField = function () {
+
+                    $scope.table.record.field.pop();
+                }
             },
 
             link: function (scope, elem, attrs) {
@@ -796,11 +797,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 // COMPLEX IMPLEMENTATION
                 scope._editField = function (fieldData) {
+                  scope.table.__dfUI.newField = false;
 
                     scope.currentEditField = new ManagedFieldData(fieldData);
                 };
 
                 scope._addField = function () {
+
+                    scope.table.__dfUI.newField = true;
                     scope.table.record.field.push({});
                     scope.currentEditField = new ManagedFieldData(scope.table.record.field[scope.table.record.field.length - 1]);
                 };
@@ -1152,6 +1156,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
 
                     scope.$watch(function () {
+
                         return scope.editor.session.$annotations;
                     }, function () {
                         listener();
@@ -1177,8 +1182,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.$on('update:managedtable', function (e) {
 
-                    // scope.table = new Table(scope.table.record);
-
+                     scope.table = new Table(scope.table.record);
                 })
             }
         }
@@ -1276,26 +1280,32 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     if (!dfObjectService.compareObjectsAsJson(scope.field.record, scope.field.recordCopy)) {
 
-                        var confirmRes = dfNotify.confirmNoSave();
-
-                        if (!noConfirm && confirmRes) {//dfNotify.confirmNoSave()) {
-                          // Undo changes to field record object
-                          dfObjectService.mergeObjects(scope.field.recordCopy, scope.field.record)
+                        if (!noConfirm && dfNotify.confirmNoSave()) {
 
                           // Remove the temporary field inserted in the table
-                          dfTableDetailsCtrl.removeField();
-                          scope._closeField();
+                          if (angular.equals(scope.field.recordCopy, {})) {
+                              dfTableDetailsCtrl.removeField();
+                          }
+                          // Undo changes to field record object
+                          scope.field.record = angular.copy(scope.field.recordCopy);
+                          //dfObjectService.deepMergeObjects(scope.field.recordCopy, scope.field.record);
                         }
+
+                        scope._closeField();
                     }
                     else {
-                        dfTableDetailsCtrl.removeField();
+
+                        if (angular.equals(scope.field.record, {})) {
+                            dfTableDetailsCtrl.removeField();
+                        }
+
                         scope._closeField();
                     }
                 };
 
-                scope.saveField = function () {
+                scope.saveField = function (newTable) {
 
-                    scope._saveField();
+                    scope._saveField(newTable);
                 }
 
                 scope.changeForeignKey = function () {
@@ -1382,7 +1392,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope.fieldData = null;
                 };
 
-                scope._saveField = function () {
+                scope._saveField = function (newTable) {
+
+                    newTable = newTable || false;
+
+                    if (newTable === true) return;
 
                     scope._saveFieldToServer().then(
                         function (result) {
@@ -1397,8 +1411,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             dfNotify.success(messageOptions);
 
                             // Reset field object
-                            scope.field = new Field(scope.field.record);
-
+                            //scope.field = new Field();
+                            if (scope.field !== null) {
+                                scope.field = new Field(scope.field.record);
+                            }
                             // Notify the Managed table object that it's record has changed.
                             scope.$emit('update:managedtable');
 
@@ -1416,7 +1432,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             };
 
                             dfNotify.error(messageOptions);
-
                         }
                     );
                 };
@@ -1590,9 +1605,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope._closeRelation();
                 };
 
-                scope.saveRelation = function () {
+                scope.saveRelation = function (newTable) {
 
-                    scope._saveRelation();
+                    scope._saveRelation(newTable);
                 }
 
                 scope.changeReferenceService = function () {
@@ -1795,7 +1810,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope.relationData = null;
                 };
 
-                scope._saveRelation = function () {
+                scope._saveRelation = function (newTable) {
+
+                    newTable = newTable || false;
+
+                    if (newTable === true) return;
 
                     scope._saveRelationToServer().then(
                         function (result) {
