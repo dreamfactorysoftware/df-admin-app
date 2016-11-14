@@ -227,7 +227,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope._prepareServiceInfoData();
                     scope._prepareServiceConfigData();
-                    scope._prepareServiceDefinitionData();
+
+                    if (scope.service.record.type !== 'rws' && scope.service.record.type !== 'script') {
+
+                        delete scope.service.record.service_doc_by_service_id;
+                        delete scope.service.recordCopy.service_doc_by_service_id;
+                    }
+                    else {
+                        scope._prepareServiceDefinitionData();
+                    }
+
                 };
 
                 scope._trimRequestDataObj = function (requestObj) {
@@ -2521,7 +2530,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             link: function (scope, elem, attrs) {
 
                 scope.isEditorClean = true;
-                scope.isEditable = true;
+                scope.isEditable = false;
                 scope.currentEditor = null;
                 scope.currentFile = null;
                 scope.hideGutter = true;
@@ -2542,7 +2551,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
 
                         default:
-                            scope.isEditable = true;
+                            scope.isEditable = false;
                     }
                 };
 
@@ -2638,7 +2647,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
 
                         default:
-                            scope.isEditable = true;
+                            scope.isEditable = false;
                     }
                 })
 
