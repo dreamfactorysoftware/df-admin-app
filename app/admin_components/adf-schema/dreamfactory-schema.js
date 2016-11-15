@@ -607,13 +607,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 }
 
 
-                scope.table = null;
+                //scope.table = null;
                 scope.currentEditField = null;
                 scope.currentEditRelation = null;
                 scope.viewMode = 'table';
                 scope.editor = null;
                 scope.isEditorClean = true;
                 scope.isEditable = true;
+
 
 
                 // PUBLIC API
@@ -797,8 +798,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 // COMPLEX IMPLEMENTATION
                 scope._editField = function (fieldData) {
-                  scope.table.__dfUI.newField = false;
 
+                    scope.table.__dfUI.newField = false;
                     scope.currentEditField = new ManagedFieldData(fieldData);
                 };
 
@@ -1274,6 +1275,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.refTables = null;
                 scope.refFields = null;
+                //scope.fieldData = null;
 
                 // PUBLIC API
                 scope.closeField = function (noConfirm) {
@@ -1376,20 +1378,19 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope._saveFieldToServer = function () {
 
                     var recordObj = angular.copy(scope.field.record);
+                    var service = scope.$parent.$parent.currentService.name;
 
                     return $http({
-                        url: INSTANCE_URL + '/api/v2/' + scope.fieldData.currentService.name + '/_schema/' + scope.currentTable + '/_field/' + recordObj.name,
+                        url: INSTANCE_URL + '/api/v2/' + service + '/_schema/' + scope.currentTable + '/_field/' + recordObj.name,
                         method: 'PATCH',
                         data: recordObj
                     })
                 };
 
-
                 // COMPLEX IMPLEMENTATION
                 scope._closeField = function () {
-
-                    scope.field = null;
                     scope.fieldData = null;
+                    scope.$parent.$parent.getTable();
                 };
 
                 scope._saveField = function (newTable) {
@@ -1793,8 +1794,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         related: [angular.copy(scope.relation.record)]
                     };
 
+                    var service = scope.$parent.$parent.currentService.name;
+
                     return $http({
-                        url: INSTANCE_URL + '/api/v2/' + scope.relationData.currentService.name + '/_schema/' + scope.currentTable,
+                        url: INSTANCE_URL + '/api/v2/' + service + '/_schema/' + scope.currentTable,
                         method: 'PATCH',
                         data: recordObj
                     })
@@ -1806,8 +1809,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 // COMPLEX IMPLEMENTATION
                 scope._closeRelation = function () {
 
-                    scope.relation = null;
                     scope.relationData = null;
+                    scope.$parent.$parent.getTable();
                 };
 
                 scope._saveRelation = function (newTable) {
