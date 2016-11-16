@@ -232,6 +232,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         delete scope.service.record.service_doc_by_service_id;
                         delete scope.service.recordCopy.service_doc_by_service_id;
+                        scope.service.record.doc = {};
+                        scope.service.recordCopy.doc = {};
                     }
                     else {
                         scope._prepareServiceDefinitionData();

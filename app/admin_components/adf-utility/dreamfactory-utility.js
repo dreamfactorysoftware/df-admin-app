@@ -1546,14 +1546,13 @@ angular.module('dfUtility', ['dfApplication'])
 
                 var watchIsEditable = scope.$watch('isEditable', function (newValue, oldValue) {
 
+                    scope.editor.setOptions({
+                        readOnly: !newValue,
+                        highlightActiveLine: true,
+                        highlightGutterLine: true
+                    });
 
-                  scope.editor.setOptions({
-                      readOnly: false,
-                      highlightActiveLine: true,
-                      highlightGutterLine: true
-                  })
-                  scope.editor.renderer.$cursorLayer.element.style.opacity=100;
-
+                    scope.editor.renderer.$cursorLayer.element.style.opacity=100;
                 });
 
 
