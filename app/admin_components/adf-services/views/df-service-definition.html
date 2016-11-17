@@ -5,7 +5,8 @@
             <label>Select Format</label>
             <select class="form-control"
                     data-ng-model="serviceDefinitionFormat"
-                    data-ng-change="changeDefinitionFormat()">
+                    data-ng-change="changeDefinitionFormat()"
+                    ng-disabled="!isEditable">
                 <option value="0" selected="selected">JSON</option>
                 <option value="1">YAML</option>
             </select>
@@ -14,10 +15,10 @@
         <div class="form-group ng-scope">
             <label>Upload a script file</label>
             <div>
-            <label class="btn btn-default btn-file btn-sm">
-                Select Desktop File... <input type="file" style="display: none;" accept=".json,.yml,.yaml" onclick="this.value = null;" onchange="angular.element(this).scope().handleDefinitionFiles(this.files)" ng-model="filename">
+            <label class="btn btn-default btn-file btn-sm" ng-disabled="!isEditable">
+                Select Desktop File... <input type="file" style="display: none;" accept=".json,.yml,.yaml" onclick="this.value = null;" onchange="angular.element(this).scope().handleDefinitionFiles(this.files)" ng-model="filename" ng-disabled="!isEditable">
             </label>
-            <button type="button" class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShowDef()">Select GitHub File...</button>
+            <button type="button" class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShowDef()" ng-disabled="!isEditable">Select GitHub File...</button>
             </div>
         </div>
 

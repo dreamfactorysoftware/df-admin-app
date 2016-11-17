@@ -134,13 +134,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "mutable": true,
                         "deletable": true,
                         "config": {},
-                        "doc": {
-                            content: {
-                                "paths": {},
-                                "definitions": {}
-                            },
-                            format: 0
-                        }
+                        "doc": ''
                     };
 
                     serviceData = serviceData || newService;
@@ -228,17 +222,22 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope._prepareServiceInfoData();
                     scope._prepareServiceConfigData();
 
-                    if (scope.service.record.type !== 'rws' && scope.service.record.type !== 'script') {
+                    switch (scope.service.record.type) {
 
-                        delete scope.service.record.service_doc_by_service_id;
-                        delete scope.service.recordCopy.service_doc_by_service_id;
-                        scope.service.record.doc = {};
-                        scope.service.recordCopy.doc = {};
-                    }
-                    else {
-                        scope._prepareServiceDefinitionData();
-                    }
+                        case 'rws':
+                        case 'nodejs':
+                        case 'php':
+                        case 'python':
+                        case 'v8js':
+                            scope._prepareServiceDefinitionData();
+                            break;
 
+                        default:
+                            delete scope.service.record.service_doc_by_service_id;
+                            delete scope.service.recordCopy.service_doc_by_service_id;
+                            scope.service.record.doc = null;
+                            scope.service.recordCopy.doc = null;
+                    }
                 };
 
                 scope._trimRequestDataObj = function (requestObj) {
@@ -537,13 +536,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 // Refreshes the editor when switching tabs
                 scope.refreshEditor = function() {
-                    scope.currentEditor.renderer.updateText();
 
-                    var aceElement = $('div[id^="ide"]');
-                    var editor = ace.edit(aceElement[0].id);
+                    if (scope.currentEditor !== null) {
+                        scope.currentEditor.renderer.updateText();
 
-                    editor.resize(true);
-                    editor.focus();
+                        var aceElement = $('div[id^="ide"]');
+                        var editor = ace.edit(aceElement[0].id);
+
+                        editor.resize(true);
+                        editor.focus();
+                    }
                 };
 
 
@@ -591,6 +593,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     serviceDef: {
                         title: 'Service Definition Overview',
                         text: 'For Remote Services and Scripts, you can specify a definition of the service below. Refer to the <a target="_blank" href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md" title="Link to Swagger">OpenAPI docs</a> for details, or build and export your own from <a target="_blank" href="http://editor.swagger.io/#/" title="Link to Swagger Editor">here</a>.'
+                    },
+                    serviceDefReadOnly: {
+                        title: 'Service Definition Overview',
+                        text: 'The service definition for this service type is pre-defined and can not be edited.'
                     }
                 }
             }
@@ -2558,7 +2564,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope._prepareServiceDefinitionData = function () {
-                    if (scope.service.record.doc) {
+
+                    if (scope.currentEditor === null) {
+                      scope.service.record.doc = null;
+                      return;
+                    }
+
+                    if (scope.currentEditor.session.getValue() === "") {
+                        scope.service.record.doc = null;
+                    }
+                    else {
                         scope.service.record.doc = scope.service.record.doc || {};
                         scope.service.record.doc.content = scope.currentEditor.session.getValue();
                         scope.service.record.doc.format = parseInt(scope.serviceDefinitionFormat);
@@ -2624,7 +2639,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     if (newValue.record.hasOwnProperty('doc') && newValue.record.doc) {
                         if(!newValue.record.doc.content) {
-                            scope.currentFile = { paths: {}, definitions: {} };
+                            scope.currentFile = '';
                         } else {
                             if (newValue.record.doc.format === 0) {
                                 scope.currentFile = angular.fromJson(newValue.record.doc.content);
@@ -2636,7 +2651,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             }
                         }
                     } else {
-                        scope.currentFile = {paths: {}, definitions: {}};
+                        scope.currentFile = '';
                     }
 
                     switch (newValue.record.type) {
