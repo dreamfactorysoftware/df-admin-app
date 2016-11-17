@@ -137,7 +137,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
         $scope.$parent.title = 'Packages';
         $scope.totalPaginationCount = 0;
 
-        dfApplicationData.loadApi(['environment', 'package', 'service_type', 'service', 'role', 'app', 'admin', 'user']);
+        dfApplicationData.loadApi(['environment', 'package', 'service_type', 'service', 'role', 'app', 'admin', 'user', 'email_template', 'cors', 'lookup']);
 
         // Set module links
         $scope.links = [

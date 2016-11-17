@@ -1052,9 +1052,15 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     limit: 100
                 },
                 config: {},
-                email_template: {},
-                lookup: {},
-                cors: {},
+                email_template: {
+                    include_count: true
+                },
+                lookup: {
+                    include_count: true
+                },
+                cors: {
+                    include_count: true
+                },
                 event: {
                     scriptable: true
                 }
