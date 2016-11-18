@@ -1557,6 +1557,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 __dfUI: {
                                     newTable: false
                                 },
+                                id: component.id,
                                 name: component.name,
                                 label: component.label
                             };
@@ -1571,6 +1572,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         __dfUI: {
                             unfolded: false
                         },
+                        id: schemaData.id,
                         name: schemaData.name,
                         label: schemaData.label,
                         components: getSchemaComponents(schemaData.components),
@@ -1588,12 +1590,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 ];
 
                 scope.fields = null;
-                scope.refServices = dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db,mongodb'});
+                scope.refServices = null;
                 scope.refTables = null;
                 scope.refFields = null;
                 scope.junctionTables = null;
                 scope.junctionFields = null;
-                scope.schemaManagerServiceData = null;
 
                 // PUBLIC API
                 scope.closeRelation = function (noConfirm) {
@@ -1614,6 +1615,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope.saveRelation = function (newTable) {
 
                     scope._saveRelation(newTable);
+                    scope._closeRelation();
                 }
 
                 scope.changeReferenceService = function () {
@@ -1663,7 +1665,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 return scope.refServices[i].name;
                             }
                         }
-                        }
+                      }
+
+                      return null;
                     }
 
                     return scope.relationData.currentService.name;
@@ -1889,28 +1893,18 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     if (!newValue) return;
 
-                    var tempObj = {};
-
-                    angular.forEach(newValue, function(serviceData) {
-
-                    tempObj[serviceData.name] = new Service(serviceData);
-                  });
-
-                    scope.schemaManagerServiceData = tempObj;
+                    scope.refServices = newValue;
                 });
 
-                var watchServiceComponents = scope.$watchCollection(function() {return dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db,mongodb'})}, function (newValue, oldValue) {
+                var watchServiceComponents = scope.$watchCollection(
+                    function() {
+                      return dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db,mongodb'})
+                    },
+                    function (newValue, oldValue) {
 
-                    if (!newValue) return;
+                      if (!newValue) return;
 
-                    var tempObj = {};
-
-                    angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db,mongodb'}), function (serviceData) {
-
-                        tempObj[serviceData.name] = new Service(serviceData);
-                    });
-
-                    scope.schemaManagerServiceData = tempObj;
+                      scope.refServices = dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db,mongodb'});
                 });
 
                 scope.helpText = {
@@ -2009,7 +2003,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 {
                                     "name": "complete",
                                     "label": "Complete",
-                                    "type": "boolean"
+                                    "type": "boolean",
+                                    "default": false
                                 }
                             ]
                         }

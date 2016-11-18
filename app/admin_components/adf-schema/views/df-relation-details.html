@@ -1,6 +1,6 @@
 <div class="form-group">
     <label>Name</label>
-    <span class="text-muted">The relation name used by the API. It will be auto-generated.</span>
+    <span class="text-muted">The auto-generated relation name used by the API.</span>
     <input class="form-control" type="text" data-ng-model="relation.record.name" data-ng-disabled="true"/>
     <br/>
 
@@ -45,23 +45,17 @@
             data-ng-model="relation.record.field"
             data-ng-options="o.name as o.name for o in fields">
         <option value="">-- Select Field --</option>
-    </select> <br/>
+    </select>
+    <br/>
 
     <label>Reference Service</label>
     <select data-ng-disabled="!relation.record.is_virtual"
             class="form-control"
             data-ng-change="changeReferenceService()"
             data-ng-model="relation.record.ref_service_id"
-            data-ng-options="value as value.label for (key, value) in schemaManagerServiceData">
-        <option value="">-- Select Reference Service --</option>
-    </select>
-    <!--select data-ng-disabled="!relation.record.is_virtual"
-            class="form-control"
-            data-ng-change="changeReferenceService()"
-            data-ng-model="relation.record.ref_service_id"
             data-ng-options="o.id as o.label for o in refServices">
         <option value="">-- Select Reference Service --</option>
-    </select-->
+    </select>
     <br/>
 
     <span data-ng-init="_loadReferenceTables()"></span>
@@ -73,7 +67,8 @@
             data-ng-model="relation.record.ref_table"
             data-ng-options="o.name as o.name for o in refTables">
         <option value="">-- Select Reference Table --</option>
-    </select> <br/>
+    </select>
+    <br/>
 
     <span data-ng-init="_loadReferenceFields()"></span>
 
@@ -83,7 +78,8 @@
             data-ng-model="relation.record.ref_field"
             data-ng-options="o.name as o.name for o in refFields">
         <option value="">-- Select Reference Field --</option>
-    </select> <br/>
+    </select>
+    <br/>
 
     <label>Junction Service</label>
     <select data-ng-disabled="!relation.record.is_virtual"
@@ -104,7 +100,8 @@
             data-ng-model="relation.record.junction_table"
             data-ng-options="o.name as o.name for o in junctionTables">
         <option value="">-- Select Junction Table --</option>
-    </select> <br/>
+    </select>
+    <br/>
 
     <span data-ng-init="_loadJunctionFields()"></span>
 
@@ -114,7 +111,8 @@
             data-ng-model="relation.record.junction_field"
             data-ng-options="o.name as o.name for o in junctionFields">
         <option value="">-- Select Junction Field --</option>
-    </select> <br/>
+    </select>
+    <br/>
 
     <label>Junction Reference Field</label>
     <select data-ng-disabled="!relation.record.is_virtual || !relation.record.junction_table"
@@ -122,26 +120,21 @@
             data-ng-model="relation.record.junction_ref_field"
             data-ng-options="o.name as o.name for o in junctionFields">
         <option value="">-- Select Junction Reference Field --</option>
-    </select> <br/>
+    </select>
+    <br/>
 
     <div class="row df-btn-row" style="padding-bottom: 20px">
         <div class="col-xs-12">
             <button type="button"
                 class="btn btn-primary"
-                data-ng-click="saveRelation(); closeRelation(true)"
-                ng-hide="relation.record.is_virtual">
+                data-ng-click="saveRelation();"
+                ng-hide="$parent.table.__dfUI.newTable">
                 Save
-            </button>
-            <button type="button"
-                class="btn btn-primary"
-                data-ng-click="saveRelation($parent.table.__dfUI.newTable); closeRelation(true)"
-                ng-hide="!relation.record.is_virtual">
-                Add
             </button>
             <button type="button"
                 class="btn btn-default"
                 data-ng-click="closeRelation($parent.table.__dfUI.newTable)">
-                Close
+                Cancel
             </button>
         </div>
     </div>
