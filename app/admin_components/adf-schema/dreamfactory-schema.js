@@ -504,6 +504,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             watchCurrentEditTable();
         });
 
+        $scope.$on('refresh:table', function (e, resource) {
+
+            $scope.refreshService(true);
+        });
+
         $scope.$on('update:components', function (e, resource) {
 
             $scope.currentService.components.push({
@@ -711,7 +716,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         method: 'POST',
                         url: INSTANCE_URL + '/api/v2/' + requestDataObj.path + '?fields=*',
                         data: {"resource": [requestDataObj.data]}
-                    })
+                    });
                 };
 
                 scope._updateTableToServer = function (requestDataObj) {
@@ -1369,7 +1374,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             };
 
                             dfNotify.error(messageOptions);
-
                         }
                     )
 
@@ -1381,10 +1385,15 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     var service = scope.$parent.$parent.currentService.name;
 
                     return $http({
-                        url: INSTANCE_URL + '/api/v2/' + service + '/_schema/' + scope.currentTable + '/_field/' + recordObj.name,
+                        url: INSTANCE_URL + '/api/v2/' + service + '/_schema/' + scope.currentTable + '/' + recordObj.name,
                         method: 'PATCH',
                         data: recordObj
-                    })
+                    }).then(
+                        function (result) {
+                            // Refresh the table
+                            scope.$emit('refresh:table');
+                        }
+                    );
                 };
 
                 // COMPLEX IMPLEMENTATION
@@ -1416,10 +1425,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             if (scope.field !== null) {
                                 scope.field = new Field(scope.field.record);
                             }
-                            // Notify the Managed table object that it's record has changed.
-                            scope.$emit('update:managedtable');
-
-
                         },
 
                         function (reject) {
