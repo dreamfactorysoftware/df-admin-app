@@ -2886,7 +2886,7 @@
                 "type": "string",
                 "description": "For foreign keys, the referenced table name."
             },
-            "ref_fields": {
+            "ref_field": {
                 "type": "string",
                 "description": "For foreign keys, the referenced table field name."
             },

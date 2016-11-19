@@ -13,27 +13,31 @@
                     <option value="">-- No Names Selected --</option>
                 </select>
             </div>
-            <div class="form-group">
-                <button df-export-package type="button" class="btn btn-primary" data-ng-click="addToPackage()">Add to Package</button>
-            </div>
         </form>
     </div>
     <div class="col-xs-6">
-        <div class="panel panel-default" data-ng-hide="selectedNameLabel == ''">
-            <div class="panel-heading">
-                <div class="checkbox" style="margin-left: -9px;">
-                    <label>
-                        <input type="checkbox" data-ng-checked="selectAll" data-ng-model="selectAll" />
-                        {{selectedNameLabel}}
-                    </label>
-                </div>
+
+        <df-section-toolbar data-ng-hide="selectedNameLabel == ''">
+
+            <df-table-paginate data-api="selectedName" data-type="'package'"  data-total-count="totalCount" id="paginatecontrol" data-filter="search.text"></df-table-paginate>
+
+            <div style="margin-left: 100px">
+                <input type="text" data-ng-model="search.text" class="df-search-box" placeholder="Search">
             </div>
+            <input type="hidden" id="totalCount" value="{{totalCount}}">
+        </df-section-toolbar>
+
+        <div class="panel" data-ng-hide="selectedNameLabel == ''">
+
             <div style="height: 150px; overflow-x:scroll; overflow: -moz-scrollbars-vertical;" class="package-export-table">
             	<table class="table table-hover table-condensed table-striped table-bordered">
                     <tbody>
                         <tr data-ng-repeat="component in selectedNameData" data-ng-class="component.__dfUI.selected ? 'info' : ''">
                             <td>
-                                <input type="checkbox" data-ng-checked="component.__dfUI.selected" data-ng-model="component.__dfUI.selected" />
+                                <input type="checkbox" data-ng-checked="component.__dfUI.selected" data-ng-model="component.__dfUI.selected"  ng-disabled="checkboxDisable" />
+                            </td>
+                            <td ng-if="selectedName === 'user'">
+                                {{component.record.first_name}} {{component.record.last_name}}
                             </td>
                             <td>
                                 {{component.record.display_label}}
@@ -41,6 +45,11 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <div class="form-group" style="margin-top: 25px">
+                <button df-export-package type="button" class="btn btn-primary" data-ng-click="addToPackage(false)">Add to Package</button>
+                <input type="button" df-export-package type="button" class="btn btn-primary" data-ng-click="addToPackage(true)" value="Add All ({{totalCountInit.value}})">
             </div>
         </div>
     </div>

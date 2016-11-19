@@ -66,7 +66,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         elem = element;
 
                     if (visible)
-                        $(elem).modal("show");                     
+                        $(elem).modal("show");
                     else
                         $(elem).modal("hide");
                 }
@@ -93,14 +93,14 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             scope: {},
             controller: [ "$scope", function($scope) {
                 var panes = $scope.panes = [];
-         
+
                 $scope.select = function(pane) {
                     angular.forEach(panes, function(pane) {
                         pane.selected = false;
                     });
                     pane.selected = true;
                 }
-         
+
                 this.addPane = function(pane) {
                     if (panes.length == 0) $scope.select(pane);
                         panes.push(pane);
@@ -135,8 +135,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
     })
     .controller('PackageCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
         $scope.$parent.title = 'Packages';
+        $scope.totalPaginationCount = 0;
 
-        dfApplicationData.loadApi(['environment', 'package', 'service_type', 'service', 'role', 'app', 'admin', 'user']);
+        dfApplicationData.loadApi(['environment', 'package', 'service_type', 'service', 'role', 'app', 'admin', 'user', 'email_template', 'cors', 'lookup']);
 
         // Set module links
         $scope.links = [
@@ -203,7 +204,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             },
                             data: {
                                 files: scope.file,
-                            }, 
+                            },
                             transformRequest: function (data, headersGetter) {
                                 var formData = new FormData();
 
@@ -218,9 +219,16 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             }
                         })
                         .success(function (data) {
-                            
+
                             if (data.hasOwnProperty('success')) {
                                 if (data.success == true) {
+
+                                    var apis = ['app', 'admin', 'user', 'role', 'service'];
+
+                                    angular.forEach(apis, function (value, key) {
+                                        dfApplicationData.getApiData(value, null, true);
+                                    });
+
                                     var messageOptions = {
                                         module: 'Package Manager',
                                         provider: 'dreamfactory',
@@ -232,19 +240,13 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                                     scope.packageImportPassword = '';
                                     angular.element("input[type='file']").val(null);
-
-                                    var apis = dfAvailableApis.getApis();
-
-                                    angular.forEach(apis.apis, function (value, key) { 
-                                        dfApplicationData.fetchFromApi(value);
-                                    });
                                 }
 
                                 if (data.success == false) {
                                     /*
                                     scope.importModalHeadline = 'Packages';
                                     scope.importModalBody = {
-                                        head: 'Package import failed.', 
+                                        head: 'Package import failed.',
                                         content: data.log.notice
                                     }
 
@@ -263,7 +265,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                                     $timeout(function () {
                                         alert(msg);
-                                    }); 
+                                    });
                                 }
                             }
                         })
@@ -310,7 +312,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfSelectContent', ['MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', 'dfAvailableApis', 'dfNotify', function (MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData, dfAvailableApis, dfNotify) {
+    .directive('dfSelectContent', ['$http', '$timeout', 'MOD_PACKAGE_MANAGER_ASSET_PATH', 'INSTANCE_URL', 'dfApplicationData', 'dfAvailableApis', 'dfNotify', function ($http, $timeout, MOD_PACKAGE_MANAGER_ASSET_PATH, INSTANCE_URL, dfApplicationData, dfAvailableApis, dfNotify) {
 
         return {
             restrict: 'E',
@@ -319,8 +321,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             link: function (scope, elem, attrs) {
 
                 scope.loading = true;
-                scope.selectAll = false;
-                scope.selectType = '';
                 scope.selectName = 'disabled';
                 scope.selectedNameLabel = '';
                 scope.selectedNameType = '';
@@ -328,6 +328,33 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 scope.tableData = [];
                 scope.rawPackageData = {};
                 scope.types = [];
+                scope.users = [];
+                scope.selectedUsers = [];
+                scope.checkboxDisable = false;
+                scope.selectedType = {};
+
+                scope.paginationData = [];
+                scope.paginationDataRequest = {};
+                scope.isDataLoading = false;
+                scope.limit = 20;
+
+                scope.filterText = '';
+                scope.search = {};
+                scope.selectAll = false;
+                scope.totalCountInit = {value: 0};
+
+                var tempFilterText = '';
+                var filterTextTimeout;
+
+                var ManagedData = function (data) {
+
+                    return {
+                        __dfUI: {
+                            selected: false
+                        },
+                        record: data
+                    }
+                };
 
                 var TableData = function(tableData) {
 
@@ -343,10 +370,11 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     var env = angular.copy(dfApplicationData.getApiData('environment'));
                     scope.enablePassword = env['platform']['secured_package_export'];
+                    scope.limit = env['config']['db']['max_records_returned'];
 
                     var apis = dfAvailableApis.getApis();
 
-                    angular.forEach(apis.apis, function (value, key) { 
+                    angular.forEach(apis.apis, function (value, key) {
                         dfApplicationData.fetchFromApi(value);
                     });
 
@@ -360,11 +388,11 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         scope.rawPackageData = angular.copy(dfApplicationData.getApiData('package'));
 
-                        angular.forEach(scope.rawPackageData['service'], function (manifestValue, manifestKey) { 
+                        angular.forEach(scope.rawPackageData['service'], function (manifestValue, manifestKey) {
                             if (typeof manifestValue === 'object') {
-                                
+
                                 if (manifestKey === 'system') {
-                                    angular.forEach(manifestValue, function (subManifestValue, subManifestKey) { 
+                                    angular.forEach(manifestValue, function (subManifestValue, subManifestKey) {
                                         var _typeExists = scope.types.filter(function( obj ) {
                                             return obj.name == 'system';
                                         });
@@ -376,31 +404,33 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 }
                                 else {
                                     var _serviceTypes = angular.copy(dfApplicationData.getApiData('service_type'));
-                                    var _services = angular.copy(dfApplicationData.getApiData('service')); 
+                                    var _services = angular.copy(dfApplicationData.getApiData('service'));
 
                                     var _service = _services.filter(function( obj ) {
                                         return obj.name == manifestKey;
                                     });
 
-                                    angular.forEach(_service, function (value, key) { 
-                                        var type = _serviceTypes.filter(function( obj ) {
-                                            return obj.name == value.type;
+                                    if (_serviceTypes) {
+                                        angular.forEach(_service, function (value, key) {
+                                            var type = _serviceTypes.filter(function( obj ) {
+                                                return obj.name == value.type;
+                                            });
+
+                                            var _typeObj = {
+                                                name: type[0].name,
+                                                label: type[0].label,
+                                                group: type[0].group
+                                            };
+
+                                            var _typeExists = scope.types.filter(function( obj ) {
+                                                return obj.name == _typeObj.name;
+                                            });
+
+                                            if (!_typeExists.length) {
+                                                scope.types.push(_typeObj);
+                                            }
                                         });
-
-                                        var _typeObj = {
-                                            name: type[0].name, 
-                                            label: type[0].label, 
-                                            group: type[0].group
-                                        };
-
-                                        var _typeExists = scope.types.filter(function( obj ) {
-                                            return obj.name == _typeObj.name;
-                                        });
-
-                                        if (!_typeExists.length) {
-                                            scope.types.push(_typeObj);
-                                        }
-                                    });
+                                    }
                                 }
                             }
                         });
@@ -408,59 +438,146 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     });
                 }
 
-                scope.addToPackage = function() {
-                    var searchSelected = scope.selectedNameData.map(function(d) { return d['__dfUI']['selected']; });                    
+                scope.addToPackage = function (selectAll) {
+                    var searchSelected = scope.selectedNameData.map(function(d) { return d['__dfUI']['selected']; });
 
-                    if ((searchSelected.indexOf(true) > -1) && 
-                        (scope.selectedType !== undefined) && 
-                        (scope.selectedName !== undefined)) {
+                    scope.paginationDataRequest['totalCount'] = $('#totalCount').val();
+                    scope.paginationDataRequest['offset'] = 0;
 
-                        var _type = scope.selectedType.label;
+                    if (((searchSelected.indexOf(true) > -1) &&
+                        (scope.selectedType !== undefined) &&
+                        (scope.selectedName !== undefined)) ||
+                        (selectAll === true)) {
+
+                        var _type = scope.selectedType;
                         var _name = scope.selectedName.charAt(0).toUpperCase() + scope.selectedName.substring(1);
+                        var _nameOrg = scope.selectedName;
 
                         var descr = [];
                         var toRemove= [];
                         var includeFiles = [];
 
-                        angular.forEach(scope.selectedNameData, function (value, key) {
-                            if (scope.selectedNameData[key]['__dfUI']['selected'] === true) {
-                                descr.push(scope.selectedNameData[key]['record']['display_label']);
-                                
-                                if (scope.selectedNameData[key]['record'].hasOwnProperty('storage_service_id')) {
-                                    includeFiles.push({
-                                        storage_service_id: scope.selectedNameData[key]['record']['storage_service_id'], 
-                                        storage_container: scope.selectedNameData[key]['record']['storage_container']
-                                    })
-                                }
+                        var selectAllExists = false;
+
+                        if (selectAll) {
+
+                            scope.isDataLoading = true;
+                            scope.paginationDataRequest['type'] = scope.selectedType;
+                            scope.paginationDataRequest['name'] = scope.selectedName;
+
+                            var tableRemoveArray = [];
+
+                            if (scope.tableData.length) {
+
+                                angular.forEach(scope.tableData, function (value, key) {
+
+                                    if (value.name === scope.selectedName && value.type.name === scope.selectedType.name) {
+                                        var comp = 'all ' + value.name + 's selected';
+                                        if (comp === value.descr.toLowerCase()) {
+                                            selectAllExists = true;
+                                        }
+                                        else {
+
+                                          tableRemoveArray.push(key);
+                                        }
+                                    }
+                                });
+                            }
+
+                            if (!selectAllExists) {
+                                tableRemoveArray.reverse();
+                                angular.forEach(tableRemoveArray, function (value, key) {
+                                    scope.removeRow(value);
+                                })
+
+                                getPaginatedData(scope.selectedName, 0, scope.limit, scope.search.text);
                             }
                             else {
-                                toRemove.push(key);
+                                alert('The selected ' + scope.selectedName + '(s) have already been added to the package');
                             }
-                        });
+                        }
+                        else {
+                            if (scope.tableData.length) {
 
-                        toRemove.reverse();
-                        angular.forEach(toRemove, function (value, key) {
-                            scope.selectedNameData.splice(value, 1);
-                        });
+                                angular.forEach(scope.tableData, function (value, key) {
 
-                        scope.tableData.push({
-                            type: scope.selectedType,
-                            name: scope.selectedName,
-                            data: scope.selectedNameData,
-                            descr: descr.join(',')
-                        })
+                                    if (value.name === scope.selectedName && value.type.name === scope.selectedType.name) {
 
-                        if (scope.selectedName == 'app') {
-                            scope.addAppFiles(includeFiles)
+                                        var comp = 'all ' + value.name + 's selected';
+                                        if (comp === value.descr.toLowerCase()) {
+                                            selectAllExists = true;
+                                        }
+                                    }
+                                });
+                            }
+
+                            if (!selectAllExists) {
+
+                                angular.forEach(scope.selectedNameData, function (value, key) {
+
+                                    if (scope.selectedNameData[key]['__dfUI']['selected'] === true) {
+                                        descr.push(scope.selectedNameData[key]['record']['display_label']);
+
+                                        if (scope.selectedNameData[key]['record'].hasOwnProperty('storage_service_id')) {
+                                            includeFiles.push({
+                                                storage_service_id: scope.selectedNameData[key]['record']['storage_service_id'],
+                                                storage_container: scope.selectedNameData[key]['record']['storage_container']
+                                            })
+                                        }
+                                    }
+                                    else {
+                                        toRemove.push(key);
+                                    }
+                                });
+
+                                var selectedArray = angular.copy(scope.selectedNameData);
+                                toRemove.reverse();
+                                angular.forEach(toRemove, function (value, key) {
+                                    selectedArray.splice(value, 1);
+                                });
+
+                                scope.tableData.push({
+                                    type: scope.selectedType,
+                                    name: scope.selectedName,
+                                    data: selectedArray,
+                                    descr: descr.join(',')
+                                });
+
+                                angular.forEach(scope.selectedNameData, function (value, key) {
+                                    scope.selectedNameData[key]['__dfUI']['selected'] = false;
+                                });
+                            }
+                            else {
+                               alert('The selected ' + scope.selectedName + '(s) have already been added to the package');
+                            }
                         }
 
+                        if (scope.selectedName == 'app') {
+
+                            var filesExists = false;
+
+                            angular.forEach(scope.tableData, function (value, key) {
+
+                                var searchRes = includeFiles.find(function (obj) {
+                                    return obj.storage_container === value.descr;
+                                })
+
+                                if (searchRes) {
+                                    filesExists = true;
+                                }
+                            });
+
+                            if (!filesExists)
+                                scope.addAppFiles(includeFiles)
+                        }
+/*
                         scope.names = [];
-                        scope.selectedType = '';
+                        scope.selectedType = {};
                         scope.selectedName = '';
                         scope.selectedNameLabel = '';
                         scope.selectedNameData = [];
-                        scope.selectAll = false;
-
+                        scope.checkboxDisable = false;
+*/
                     }
                     else {
                         var messageOptions = {
@@ -472,6 +589,71 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         dfNotify.error(messageOptions);
                     }
+                }
+
+                scope.changeFilter = function (searchStr) {
+
+                    $timeout(function() {
+                        // if searchStr is still the same..
+                        // go ahead and retrieve the data
+                        if (searchStr === scope.filterText || !scope.filterText) {
+
+                            scope.filterText = scope.filterText || null;
+                            return;
+                        }
+                    }, 1000);
+                };
+
+                if(elem.find('input')[0]) {
+                    elem.find('input')[0].focus();
+                }
+
+                var getPaginatedData = function(name, offset, limit, filter) {
+
+                    offset = offset || '';
+                    limit = limit || '';
+                    filter = filter || '';
+
+                    var arr = [];
+
+                    switch (scope.selectedName) {
+                      case 'user':
+                        arr = [ "first_name", "last_name", "name", "email" ];
+                        break;
+                      case 'service':
+                        arr = [ "name" ];
+                        break;
+                      case 'app':
+                        arr = [ "name" ];
+                        break;
+                      case 'admin':
+                        arr = [ "first_name", "last_name", "name", "email" ];
+                        break;
+                    }
+
+                    var filterString = arr.map(function(item) {
+                        return '(' + item + ' like "%' + filter + '%")'
+                    }).join(' or ');
+
+                    $http({
+                        method: 'GET',
+                        url: INSTANCE_URL + '/api/v2/system/' + name + '?offset=' + offset + '&limit=' + limit + '&filter=' + filterString,
+                    })
+                    .success(function (data) {
+
+                        if (data.hasOwnProperty('resource')) {
+
+                            var resourceArray = data.resource;
+                            scope.paginationData = scope.paginationData.concat(resourceArray);
+                        }
+                        else {
+                            scope.isDataLoading = false;
+                        }
+                    })
+                    .error(function (data, status) {
+
+                        console.log(response);
+                    });
                 }
 
                 scope.addAppFiles = function(fileObj) {
@@ -511,51 +693,28 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     scope.tableData.splice(row, 1)
                 }
 
-                var watchSelectedType = scope.$watch('selectedType', function (newValue, oldValue) {
-
-                    if (!newValue) return;
-
-                    if (newValue.label === 'Loading...') return;
-
-                    
-                    var _names = [];
-                    scope.names = [];
-                    scope.selectedName = '';
-                    scope.selectedNameLabel = '';
-
-                    if (newValue.label === 'System') {
-                        angular.forEach(scope.rawPackageData['service']['system'], function (manifestValue, manifestKey) {
-                            _names.push(manifestKey);
-                        });
+                scope._getPageDataFromServer = function(offset, type, value) {
+                    var params = {
+                            offset: offset,
+                            include_count: true
+                        }
+                    if(type) {
+                        if(type == 'filter') {
+                            params.filter = value
+                        } else {
+                            params.type = value
+                        }
                     }
-                    else {
-                        var _serviceTypes = angular.copy(dfApplicationData.getApiData('service_type'));
-                        var _services = angular.copy(dfApplicationData.getApiData('service')); 
 
-                        var _service = _serviceTypes.filter(function( obj ) {
-                            return obj.label == newValue.label;
-                        });
+                    return dfApplicationData.getDataSetFromServer(scope.selectedName, {
+                        params: params
+                    }).$promise;
+                };
 
-                        var _availServices = _services.filter(function( obj ) {
-                            return obj.type == _service[0].name;
-                        });
-
-                        angular.forEach(_availServices, function (value, key) { 
-                            if (_names.indexOf(value.name) === -1) {
-                                _names.push(value.name);                                
-                            }
-                        });
-                    }
-                    
-                    scope.names = _names;
-                    scope.selectedNameLabel = '';
-                });
-
-                var watchSelectedName = scope.$watch('selectedName', function (newValue, oldValue) {
-
-                    if (!newValue) return;
-
+                scope.loadTable = function (newValue, filter) {
                     var apiName = '';
+
+                    if (!scope.selectedType.hasOwnProperty('group')) return;
 
                     if (scope.selectedType.group === 'System') {
                         switch (newValue) {
@@ -574,26 +733,83 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         scope.selectedNameData = '';
 
-                        var dataArray = angular.copy(dfApplicationData.getApiData(newValue));
+                        var dataArray = [];
 
-                        var nameData = [];
+                        if (filter === null) {
 
-                        if (newValue === 'event_script') {
-                            var dataArray = angular.copy(scope.rawPackageData['service']['system'])
-                                angular.forEach(dataArray['event_script'], function (value, key) {
-                                    nameData.push(new TableData({display_label: value}));
+                            dataArray = angular.copy(dfApplicationData.getApiData(newValue));
+
+                            var nameData = [];
+
+                            if (newValue === 'event_script') {
+                                var dataArray = angular.copy(scope.rawPackageData['service']['system'])
+                                    angular.forEach(dataArray['event_script'], function (value, key) {
+                                        nameData.push(new TableData({display_label: value}));
+                                    });
+                            }
+                            else {
+                                angular.forEach(dataArray, function (value, key) {
+                                    dataArray[key]['display_label'] = dataArray[key][apiName];
+                                    nameData.push(new TableData(dataArray[key]));
                                 });
+                            }
+
+                            scope.selectedNameData = nameData;
+                            scope.selectedNameLabel = 'Select All';
+                            scope.selectedNameType = '';
+
+                            scope.users = nameData;
                         }
                         else {
-                            angular.forEach(dataArray, function (value, key) {
-                                dataArray[key]['display_label'] = dataArray[key][apiName];
-                                nameData.push(new TableData(dataArray[key]));
+
+                            var arr = [];
+
+                            switch (scope.selectedName) {
+                              case 'user':
+                                arr = [ "first_name", "last_name", "name", "email" ];
+                                break;
+                              case 'service':
+                                arr = [ "name" ];
+                                break;
+                              case 'app':
+                                arr = [ "name" ];
+                                break;
+                              case 'admin':
+                                arr = [ "first_name", "last_name", "name", "email" ];
+                                break;
+                            }
+
+                            var filterString = arr.map(function(item) {
+                                return '(' + item + ' like "%' + filter + '%")'
+                            }).join(' or ');
+
+                            scope._getPageDataFromServer(0, 'filter', filterString).then(function(response){
+
+                                scope.totalCount = response.meta.count;
+                                //scope.totalCountInitvalue = response.meta.count;
+                                dataArray = response.resource;
+
+                                var nameData = [];
+
+                                if (newValue === 'event_script') {
+                                    var dataArray = angular.copy(scope.rawPackageData['service']['system'])
+                                        angular.forEach(dataArray['event_script'], function (value, key) {
+                                            nameData.push(new TableData({display_label: value}));
+                                        });
+                                }
+                                else {
+                                    angular.forEach(dataArray, function (value, key) {
+                                        dataArray[key]['display_label'] = dataArray[key][apiName];
+                                        nameData.push(new TableData(dataArray[key]));
+                                    });
+                                }
+
+                                scope.selectedNameData = nameData;
+                                scope.selectedNameLabel = 'Select All';
+                                scope.selectedNameType = '';
+                                scope.users = nameData;
                             });
                         }
-
-                        scope.selectedNameData = nameData;
-                        scope.selectedNameLabel = 'Select Item(s) to Export';
-                        scope.selectedNameType = '';
                     }
                     else {
                         var _serviceTypes = angular.copy(dfApplicationData.getApiData('service_type'));
@@ -666,7 +882,141 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 scope.selectedNameLabel = 'Select Item(s) to Export';
                             }
                         });
-                    }                
+                    }
+                };
+
+
+                scope.$on('toolbar:paginate:package:update', function (e) {
+
+                    var _users = [];
+
+                    angular.forEach(dfApplicationData.getApiData(scope.selectedName), function (user) {
+
+                        var tmp = user;
+                        tmp['display_label'] = tmp.email;
+
+                        var _user = new ManagedData(user);
+
+                        var i = 0;
+
+                        while (i < scope.selectedUsers.length) {
+
+                            if (scope.selectedUsers[i] === _user.record.id) {
+
+                                _user.__dfUI.selected = true;
+                                break;
+                            }
+
+                            i++
+                        }
+
+                        _users.push(_user);
+                    });
+
+                    scope.users = _users;
+                    scope.selectedNameData = _users;
+                });
+
+                var watchPaginationData = scope.$watch('paginationData', function(newValue, oldValue) {
+
+                    // Expect newValue to be an array
+                    if (!newValue.length) return;
+
+                    if (scope.paginationData.length < scope.paginationDataRequest.totalCount) {
+
+                        scope.paginationDataRequest.totalCount = scope.paginationData.length;
+                        scope.paginationDataRequest.offset += scope.limit;
+
+                        getPaginatedData(scope.paginationDataRequest.name, scope.paginationDataRequest.offset, scope.limit, scope.search.text);
+                    }
+                    else {
+
+                        scope.isDataLoading = false;
+                    }
+                })
+
+                var watchIsDataLoading = scope.$watch('isDataLoading', function(newValue, oldValue) {
+
+                    if (newValue === false && oldValue === true) {
+
+                        var _type = scope.paginationDataRequest.type;
+                        var _name = scope.paginationDataRequest.name.charAt(0).toUpperCase() + scope.paginationDataRequest.name.substring(1);
+                        var _nameOrg = scope.paginationDataRequest.name;
+
+                        scope.tableData.push({
+                            type: _type,
+                            name: _nameOrg,
+                            data: scope.paginationData,
+                            descr: 'All ' + _name + 's Selected'
+                        })
+
+                        scope.paginationData = [];
+                        scope.paginationDataRequest = {};
+                    }
+                })
+
+                var watchSearchText = scope.$watch('search.text', function (newValue) {
+
+                    if (filterTextTimeout) $timeout.cancel(filterTextTimeout);
+
+                    tempFilterText = newValue;
+
+                    filterTextTimeout = $timeout(function() {
+
+                        scope.loadTable(scope.selectedName, tempFilterText);
+                    }, 500);
+                })
+
+                var watchSelectedType = scope.$watch('selectedType', function (newValue, oldValue) {
+
+                    if (newValue === {}) return;
+
+                    if (!newValue.hasOwnProperty('label')) return;
+
+                    if (newValue.label === 'Loading...') return;
+
+                    var _names = [];
+                    scope.names = [];
+                    scope.selectedName = '';
+                    scope.selectedNameLabel = '';
+
+                    if (newValue.label === 'System') {
+
+                        angular.forEach(scope.rawPackageData['service']['system'], function (manifestValue, manifestKey) {
+                            _names.push(manifestKey);
+                        });
+                    }
+                    else {
+
+                        var _serviceTypes = angular.copy(dfApplicationData.getApiData('service_type'));
+                        var _services = angular.copy(dfApplicationData.getApiData('service'));
+
+                        if (_serviceTypes) {
+                            var _service = _serviceTypes.filter(function( obj ) {
+                                return obj.label == newValue.label;
+                            });
+
+                            var _availServices = _services.filter(function( obj ) {
+                                return obj.type == _service[0].name;
+                            });
+
+                            angular.forEach(_availServices, function (value, key) {
+                                if (_names.indexOf(value.name) === -1) {
+                                    _names.push(value.name);
+                                }
+                            });
+                        }
+                    }
+
+                    scope.names = _names;
+                    scope.selectedNameLabel = '';
+                });
+
+                var watchSelectedName = scope.$watch('selectedName', function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    scope.loadTable(newValue, null);
                 });
 
                 var watchEnvironmentData = scope.$watchCollection(function () {
@@ -676,20 +1026,15 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     if (!newValue) return;
 
                     scope.init();
-
                 });
 
                 scope.$on('$destroy', function (e) {
                     watchEnvironmentData();
                     watchSelectedType();
                     watchSelectedName();
-                });
-
-                scope.$watch('selectAll', function(newValue, oldValue) {
-                    if(!scope.selectedNameData) return;
-                    scope.selectedNameData.forEach(function(service) {
-                        service.__dfUI.selected = newValue;
-                    });
+                    watchSearchText();
+                    watchIsDataLoading();
+                    watchPaginationData();
                 });
             }
         }
@@ -728,8 +1073,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         return obj.group == 'File';
                     });
 
-                    var searchTypes = _service.map(function(d) { return d['name']; });                    
-                    var _services = angular.copy(dfApplicationData.getApiData('service')); 
+                    var searchTypes = _service.map(function(d) { return d['name']; });
+                    var _services = angular.copy(dfApplicationData.getApiData('service'));
                     var _folderNames = [];
                     angular.forEach(_services, function (value, key) {
                         if (searchTypes.indexOf(value.type) > -1) {
@@ -738,10 +1083,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     });
 
                     scope.folders = _folderNames
-
                     scope.selectedFolder = 'files';
                 }
-
 
 
                 // PUBLIC API
@@ -777,10 +1120,27 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                     selectedExports = tableData[key]['data'].map(function(d) { return d['record']['display_label']; });
                                 }
                                 else {
-                                    selectedExports = tableData[key]['data'].map(function(d) { return d['record']['id']; });
+
+                                    if (tableData[key]['data'][0].hasOwnProperty('record')){
+                                        selectedExports = tableData[key]['data'].map(function(d) { return d['record']['id']; });
+                                    }
+                                    else {
+                                        selectedExports = tableData[key]['data'].map(function(d) { return d['id']; });
+                                    }
                                 }
 
-                                payload['service']['system'][tableData[key]['name']] = selectedExports;
+                                if (payload['service']['system'].hasOwnProperty([tableData[key]['name']])) {
+
+                                    angular.forEach(selectedExports, function(value, key) {
+                                        if (this.indexOf(value) === -1) {
+                                            this.push(value);
+                                        }
+                                    }, payload['service']['system'][tableData[key]['name']]);
+                                }
+                                else {
+                                    payload['service']['system'][tableData[key]['name']] = selectedExports;
+                                }
+
                             }
                             else if (tableData[key]['type']['group'] === 'Database') {
                                 selectedExports = tableData[key]['data'].map(function(d) { return d['record']['name']; });
@@ -811,39 +1171,14 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 };
 
                 // COMPLEX IMPLEMENTATION
+
                 scope._exportPackage = function () {
 
                     $http({
                         method: 'POST',
                         url: INSTANCE_URL + '/api/v2/system/package',
                         data: payload
-                        /*
-                        headers: {
-                            'X-DreamFactory-API-Key': ADMIN_API_KEY
-                            'X-DreamFactory-Session-Token': undefined
-                        }
-                        */
                     }).then(function successCallback(response) {
-                        /*
-                        var messageOptions = {
-                            module: 'Package Manager',
-                            provider: 'dreamfactory',
-                            type: 'success',
-                            message: 'The package has been exported.'
-                        }
-
-                        dfNotify.success(messageOptions);
-                        */
-                        /*
-                        scope.exportModalHeadline = 'Packages';
-                        scope.exportModalBody = {
-                            head: 'The package has been exported.', 
-                            content: 'The path to the exported package is: ',
-                            download: response.data.path
-                        }
-
-                        scope.showExportDialog = true;
-                        */
 
                         var msg = 'The package has been exported.\n\n' +
                             'The path to the exported package is: \n' +
@@ -851,29 +1186,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         $timeout(function () {
                             alert(msg);
-                        }); 
+                        });
 
                     }, function errorCallback(response) {
-                        /*
-                        var messageOptions = {
-                            module: 'Package Manager',
-                            provider: 'dreamfactory',
-                            type: 'error',
-                            message: 'An error occurred. Please check selections and export folder.'
-                        }
-
-                        dfNotify.error(messageOptions);
-                        */
-                        /*
-                        scope.exportModalHeadline = 'Packages';
-                        scope.exportModalBody = {
-                            head: 'An error occurred!', 
-                            content: response.data.error.message,
-                            download: ''
-                        }
-
-                        scope.showExportDialog = true;
-                        */
 
                         var msg = 'An error occurred!\n\n' +
                             'Reason:\n' +
@@ -881,7 +1196,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         $timeout(function () {
                             alert(msg);
-                        }); 
+                        });
                     });
                 }
 
@@ -891,11 +1206,10 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     scope.packagePassword = '';
 
                     scope.names = [];
-                    scope.selectedType = '';
+                    scope.selectedType = {};
                     scope.selectedName = '';
                     scope.selectedNameLabel = '';
                     scope.selectedNameData = [];
-                    scope.selectAll = false;
                 }
 
 
