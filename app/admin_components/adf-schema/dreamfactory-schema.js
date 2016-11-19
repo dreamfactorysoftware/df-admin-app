@@ -1809,9 +1809,15 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         url: INSTANCE_URL + '/api/v2/' + service + '/_schema/' + scope.currentTable,
                         method: 'PATCH',
                         data: recordObj
-                    })
+                    }).then(
+                        function (result) {
 
-                    scope.closeRelation();
+                            // Refresh the table
+                            scope.$emit('refresh:table');
+                        }
+                    );
+
+                    scope._closeRelation();
                 };
 
 
@@ -1842,11 +1848,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                             // Reset relation object
                             scope.relation = new Relation(scope.relation.record);
-
-                            // Notify the Managed table object that it's record has changed.
-                            scope.$emit('update:managedtable');
-
-
                         },
 
                         function (reject) {
