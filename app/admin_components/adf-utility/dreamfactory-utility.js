@@ -2324,7 +2324,7 @@ angular.module('dfUtility', ['dfApplication'])
                     return {
                         number: _pageNum + 1,
                         value: _pageNum,
-                        offset: _pageNum * dfApplicationPrefs.getPrefs().data[scope.api].limit,
+                        offset: (_pageNum) ? _pageNum * dfApplicationPrefs.getPrefs().data[scope.api].limit : 0,
                         stopPropagation: false
                     }
                 };
@@ -2383,6 +2383,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                     if (scope.totalCount == 0) {
                         scope.pagesArr.push(scope._createPageObj(0));
+                        scope.totalCountInit = {value: 0};
                         return false;
                     }
 
@@ -2528,10 +2529,17 @@ angular.module('dfUtility', ['dfApplication'])
 
                     if (!newValue) return false;
 
-                    scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
-
-                    scope._calcPagination(newValue);
-                    scope._setCurrentPage(scope.pagesArr[0]);
+                    if (scope.servicetype.group === 'System') {
+                        scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+                        scope._calcPagination(newValue);
+                        scope._setCurrentPage(scope.pagesArr[0]);
+                    }
+                    else {
+                        scope.totalCount = 0;
+                        scope.$parent.totalCountInit.value = scope.totalCount
+                        scope._calcPagination(0);
+                        scope._setCurrentPage(0);
+                    }
                 });
 
                 // This is fired on $destroy in controllers that use this directive
