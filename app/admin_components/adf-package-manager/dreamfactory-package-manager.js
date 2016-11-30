@@ -821,73 +821,74 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             return obj.label == scope.selectedType.label;
                         });
 
-                        var _type = _service[0].group;
+                        if (_service.length) {
 
-                        if (_type === undefined) return;
+                          var _type = _service[0].group;
 
-                        dfApplicationData.getServiceComponents(newValue).then(function (results) {
+                          dfApplicationData.getServiceComponents(newValue).then(function (results) {
 
-                            if (_type == 'Database') {
-                                var _tableNames = [];
-                                var prefix = '_schema/';
+                              if (_type == 'Database') {
+                                  var _tableNames = [];
+                                  var prefix = '_schema/';
 
-                                angular.forEach(results, function (table) {
-                                    if (table.indexOf(prefix) === 0) {
-                                        var name = table.slice(prefix.length);
+                                  angular.forEach(results, function (table) {
+                                      if (table.indexOf(prefix) === 0) {
+                                          var name = table.slice(prefix.length);
 
-                                        if (name != '' &&
-                                            name.indexOf('*', name.length - 1) === -1) {
-                                            name = name.slice(0, -1);
-                                            _tableNames.push(new TableData({name: name, display_label: name}));
-                                        }
-                                    }
-                                });
+                                          if (name != '' &&
+                                              name.indexOf('*', name.length - 1) === -1) {
+                                              name = name.slice(0, -1);
+                                              _tableNames.push(new TableData({name: name, display_label: name}));
+                                          }
+                                      }
+                                  });
 
-                                scope.selectedNameData = _tableNames;
-                                scope.selectedNameLabel = 'Select Schema(s) to Export';
-                            }
+                                  scope.selectedNameData = _tableNames;
+                                  scope.selectedNameLabel = 'Select Schema(s) to Export';
+                              }
 
-                            if (_type == 'File') {
-                                var _tableNames = [];
+                              if (_type == 'File') {
+                                  var _tableNames = [];
 
-                                angular.forEach(results, function (value, key) {
+                                  angular.forEach(results, function (value, key) {
 
-                                    if (value.indexOf('/') > 0) {
-                                        var segments = value.split('/');
-                                        var _exists = _tableNames.filter(function( obj ) {
-                                            return obj.record.name == segments[0];
-                                        });
+                                      if (value.indexOf('/') > 0) {
+                                          var segments = value.split('/');
+                                          var _exists = _tableNames.filter(function( obj ) {
+                                              return obj.record.name == segments[0];
+                                          });
 
-                                        if(_exists.length == 0) {
-                                            _tableNames.push(new TableData({name: segments[0], value: segments[0], display_label: segments[0]}));
-                                        }
-                                    }
-                                });
+                                          if(_exists.length == 0) {
+                                              _tableNames.push(new TableData({name: segments[0], value: segments[0], display_label: segments[0]}));
+                                          }
+                                      }
+                                  });
 
-                                scope.selectedNameData = _tableNames;
-                                scope.selectedNameLabel = 'Select Item(s) to Export';
-                            }
+                                  scope.selectedNameData = _tableNames;
+                                  scope.selectedNameLabel = 'Select Item(s) to Export';
+                              }
 
-                            if (_type == 'other') {
-                                var _tableNames = [];
+                              if (_type == 'other') {
+                                  var _tableNames = [];
 
-                                angular.forEach(results, function (value, key) {
-                                    if (value.indexOf('/') > 0) {
-                                        var segments = value.split('/');
-                                        var _exists = _tableNames.filter(function( obj ) {
-                                            return obj.record.folder == segments[0];
-                                        });
+                                  angular.forEach(results, function (value, key) {
+                                      if (value.indexOf('/') > 0) {
+                                          var segments = value.split('/');
+                                          var _exists = _tableNames.filter(function( obj ) {
+                                              return obj.record.folder == segments[0];
+                                          });
 
-                                        if(_exists.length == 0) {
-                                            _tableNames.push(new TableData({name: segments[0], value: segments[0], display_label: segments[0]}));
-                                        }
-                                    }
-                                });
+                                          if(_exists.length == 0) {
+                                              _tableNames.push(new TableData({name: segments[0], value: segments[0], display_label: segments[0]}));
+                                          }
+                                      }
+                                  });
 
-                                scope.selectedNameData = _tableNames;
-                                scope.selectedNameLabel = 'Select Item(s) to Export';
-                            }
-                        });
+                                  scope.selectedNameData = _tableNames;
+                                  scope.selectedNameLabel = 'Select Item(s) to Export';
+                              }
+                          });
+                        }
                     }
                 };
 
@@ -902,16 +903,16 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         switch (scope.selectedName) {
                             case 'user':
-                                tmp_content['display_label'] = tmp.email;
+                                tmp_content['display_label'] = tmp_content.email;
                                 break;
                             case 'admin':
-                                tmp_content['display_label'] = tmp.email;
+                                tmp_content['display_label'] = tmp_content.email;
                                 break;
                             case 'cors':
-                                tmp_content['display_label'] = tmp.origin;
+                                tmp_content['display_label'] = tmp_content.origin;
                                 break;
                             default:
-                                tmp_content['display_label'] = tmp.name;
+                                tmp_content['display_label'] = tmp_content.name;
                         }
 
 

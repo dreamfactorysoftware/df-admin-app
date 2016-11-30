@@ -2240,6 +2240,7 @@ angular.module('dfUtility', ['dfApplication'])
             scope: {
                 api: '=',
                 type: '=?',
+                servicetype: '=',
                 prepFunc: '=?',
                 totalCount: '=totalCount',
                 filter: '='
