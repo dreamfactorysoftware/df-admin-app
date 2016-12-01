@@ -635,9 +635,18 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         return '(' + item + ' like "%' + filter + '%")'
                     }).join(' or ');
 
+                    var url = '';
+
+                    if (scope.selectedType.group === 'System') {
+                        url = INSTANCE_URL + '/api/v2/system/' + name + '?offset=' + offset + '&limit=' + limit + '&filter=' + filterString
+                    }
+                    else {
+                        url = INSTANCE_URL + '/api/v2/' + name + '?offset=' + offset + '&limit=' + limit + '&filter=' + filterString
+                    }
+
                     $http({
                         method: 'GET',
-                        url: INSTANCE_URL + '/api/v2/system/' + name + '?offset=' + offset + '&limit=' + limit + '&filter=' + filterString,
+                        url: url,
                     })
                     .success(function (data) {
 
@@ -652,7 +661,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     })
                     .error(function (data, status) {
 
-                        console.log(response);
+                        console.log('[' + status + '] ' + JSON.stringify(data));
                     });
                 }
 
