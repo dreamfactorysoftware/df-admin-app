@@ -1081,7 +1081,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfExportPackage', ['INSTANCE_URL', 'ADMIN_API_KEY', 'UserDataService', 'dfApplicationData', 'dfSystemData', 'dfNotify', '$http', '$window', '$timeout', function (INSTANCE_URL, ADMIN_API_KEY, UserDataService, dfApplicationData, dfSystemData, dfNotify, $http, $window, $timeout) {
+    .directive('dfExportPackage', ['INSTANCE_URL', 'ADMIN_API_KEY', 'UserDataService', 'dfApplicationData', 'dfSystemData', 'dfNotify', '$http', '$window', '$timeout', '$cookieStore', function (INSTANCE_URL, ADMIN_API_KEY, UserDataService, dfApplicationData, dfSystemData, dfNotify, $http, $window, $timeout, $cookieStore) {
 
         return {
 
@@ -1092,9 +1092,12 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                 scope.selectedFolder = '';
                 scope.subFolderName = '';
+                scope.showDownload = false;
+                scope.fileName = '';
                 scope.secured = false;
                 scope.packagePassword = '';
 
+                var exportPath = '';
                 var payload = {};
 
                 scope.folderInit = function() {
@@ -1113,8 +1116,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         }
                     });
 
-                    scope.folders = _folderNames
                     scope.selectedFolder = 'files';
+                    scope.folders = _folderNames
                 }
 
 
@@ -1132,7 +1135,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             password: scope.packagePassword,
                             storage: {
                                 name: scope.selectedFolder,
-                                folder: scope.subFolderName
+                                folder: scope.subFolderName,
+                                filename: scope.fileName
                             },
                             service: {
                                 system: {
@@ -1210,10 +1214,22 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         url: INSTANCE_URL + '/api/v2/system/package',
                         data: payload
                     }).then(function successCallback(response) {
+                        exportPath = response.data.path;
+                        scope.showDownload = true;
+                        var path = response.data.path;
+                        path = path.replace('api/v2/', '');
 
-                        var msg = 'The package has been exported.\n\n' +
+                        var msg = 'The package has been exported. Click the Download button to download the file.\n\n' +
                             'The path to the exported package is: \n' +
-                            response.data.path + '\n';
+                            path + '\n';
+
+                        if(response.data.is_public === false){
+                            var subFolder = (scope.subFolderName === '')? '__EXPORTS' : scope.subFolderName;
+                            msg += '\nYour exported file is not publicly accessible. '+
+                                'Please edit your "'+scope.selectedFolder+'" service configuration to '+
+                                'put "'+subFolder+'" under "Public Path" in order to make this '+
+                                'exported file publicly accessible/downloadable.'
+                        }
 
                         $timeout(function () {
                             alert(msg);
@@ -1231,10 +1247,22 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     });
                 }
 
+                scope.exportDownload = function()
+                {
+                    var cookie = $cookieStore.get('CurrentUserObj');
+                    var session_token = cookie.session_id;
+                    if(exportPath !== ''){
+                        window.location.href = exportPath + '?session_token='+session_token;
+                    }
+                }
+
                 scope.exportClear = function() {
                     scope.tableData = [];
                     scope.subFolderName = '';
+                    scope.showDownload = false;
+                    scope.fileName = '';
                     scope.packagePassword = '';
+                    exportPath = '';
 
                     scope.names = [];
                     scope.selectedType = {};
