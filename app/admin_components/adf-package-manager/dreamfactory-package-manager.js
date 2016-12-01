@@ -137,7 +137,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
         $scope.$parent.title = 'Packages';
         $scope.totalPaginationCount = 0;
 
-        dfApplicationData.loadApi(['environment', 'package', 'service_type', 'service', 'role', 'app', 'admin', 'user', 'email_template', 'cors', 'lookup']);
+        dfApplicationData.loadApi(['service_type', 'environment', 'service', 'role', 'app', 'admin', 'user', 'email_template', 'cors', 'lookup', 'package']);
 
         // Set module links
         $scope.links = [
@@ -748,6 +748,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                     });
                             }
                             else {
+
                                 angular.forEach(dataArray, function (value, key) {
                                     dataArray[key]['display_label'] = dataArray[key][apiName];
                                     nameData.push(new TableData(dataArray[key]));
@@ -814,88 +815,108 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     else {
                         var _serviceTypes = angular.copy(dfApplicationData.getApiData('service_type'));
 
+                        if (_serviceTypes === undefined) return;
+
                         var _service = _serviceTypes.filter(function( obj ) {
                             return obj.label == scope.selectedType.label;
                         });
 
-                        var _type = _service[0].group;
+                        if (_service.length) {
 
-                        dfApplicationData.getServiceComponents(newValue).then(function (results) {
+                          var _type = _service[0].group;
 
-                            if (_type == 'Database') {
-                                var _tableNames = [];
-                                var prefix = '_schema/';
+                          dfApplicationData.getServiceComponents(newValue).then(function (results) {
 
-                                angular.forEach(results, function (table) {
-                                    if (table.indexOf(prefix) === 0) {
-                                        var name = table.slice(prefix.length);
+                              if (_type == 'Database') {
+                                  var _tableNames = [];
+                                  var prefix = '_schema/';
 
-                                        if (name != '' &&
-                                            name.indexOf('*', name.length - 1) === -1) {
-                                            name = name.slice(0, -1);
-                                            _tableNames.push(new TableData({name: name, display_label: name}));
-                                        }
-                                    }
-                                });
+                                  angular.forEach(results, function (table) {
+                                      if (table.indexOf(prefix) === 0) {
+                                          var name = table.slice(prefix.length);
 
-                                scope.selectedNameData = _tableNames;
-                                scope.selectedNameLabel = 'Select Schema(s) to Export';
-                            }
+                                          if (name != '' &&
+                                              name.indexOf('*', name.length - 1) === -1) {
+                                              name = name.slice(0, -1);
+                                              _tableNames.push(new TableData({name: name, display_label: name}));
+                                          }
+                                      }
+                                  });
 
-                            if (_type == 'File') {
-                                var _tableNames = [];
+                                  scope.selectedNameData = _tableNames;
+                                  scope.selectedNameLabel = 'Select Schema(s) to Export';
+                              }
 
-                                angular.forEach(results, function (value, key) {
-                                    if (value.indexOf('/') > 0) {
-                                        var segments = value.split('/');
-                                        var _exists = _tableNames.filter(function( obj ) {
-                                            return obj.record.name == segments[0];
-                                        });
+                              if (_type == 'File') {
+                                  var _tableNames = [];
 
-                                        if(_exists.length == 0) {
-                                            _tableNames.push(new TableData({name: segments[0], value: segments[0], display_label: segments[0]}));
-                                        }
-                                    }
-                                });
+                                  angular.forEach(results, function (value, key) {
 
-                                scope.selectedNameData = _tableNames;
-                                scope.selectedNameLabel = 'Select Item(s) to Export';
-                            }
+                                      if (value.indexOf('/') > 0) {
+                                          var segments = value.split('/');
+                                          var _exists = _tableNames.filter(function( obj ) {
+                                              return obj.record.name == segments[0];
+                                          });
 
-                            if (_type == 'other') {
-                                var _tableNames = [];
+                                          if(_exists.length == 0) {
+                                              _tableNames.push(new TableData({name: segments[0], value: segments[0], display_label: segments[0]}));
+                                          }
+                                      }
+                                  });
 
-                                angular.forEach(results, function (value, key) {
-                                    if (value.indexOf('/') > 0) {
-                                        var segments = value.split('/');
-                                        var _exists = _tableNames.filter(function( obj ) {
-                                            return obj.record.folder == segments[0];
-                                        });
+                                  scope.selectedNameData = _tableNames;
+                                  scope.selectedNameLabel = 'Select Item(s) to Export';
+                              }
 
-                                        if(_exists.length == 0) {
-                                            _tableNames.push(new TableData({name: segments[0], value: segments[0], display_label: segments[0]}));
-                                        }
-                                    }
-                                });
+                              if (_type == 'other') {
+                                  var _tableNames = [];
 
-                                scope.selectedNameData = _tableNames;
-                                scope.selectedNameLabel = 'Select Item(s) to Export';
-                            }
-                        });
+                                  angular.forEach(results, function (value, key) {
+                                      if (value.indexOf('/') > 0) {
+                                          var segments = value.split('/');
+                                          var _exists = _tableNames.filter(function( obj ) {
+                                              return obj.record.folder == segments[0];
+                                          });
+
+                                          if(_exists.length == 0) {
+                                              _tableNames.push(new TableData({name: segments[0], value: segments[0], display_label: segments[0]}));
+                                          }
+                                      }
+                                  });
+
+                                  scope.selectedNameData = _tableNames;
+                                  scope.selectedNameLabel = 'Select Item(s) to Export';
+                              }
+                          });
+                        }
                     }
                 };
 
 
                 scope.$on('toolbar:paginate:package:update', function (e) {
 
-                    var _users = [];
+                    var _contents = [];
 
-                    angular.forEach(dfApplicationData.getApiData(scope.selectedName), function (user) {
+                    angular.forEach(dfApplicationData.getApiData(scope.selectedName), function (content) {
 
-                        var tmp = user;
-                        tmp['display_label'] = tmp.email;
+                        var tmp_content = content;
 
-                        var _user = new ManagedData(user);
+                        switch (scope.selectedName) {
+                            case 'user':
+                                tmp_content['display_label'] = tmp_content.email;
+                                break;
+                            case 'admin':
+                                tmp_content['display_label'] = tmp_content.email;
+                                break;
+                            case 'cors':
+                                tmp_content['display_label'] = tmp_content.origin;
+                                break;
+                            default:
+                                tmp_content['display_label'] = tmp_content.name;
+                        }
+
+
+                        var _content = new ManagedData(tmp_content);
 
                         var i = 0;
 
@@ -910,11 +931,11 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             i++
                         }
 
-                        _users.push(_user);
+                        _contents.push(_content);
                     });
 
-                    scope.users = _users;
-                    scope.selectedNameData = _users;
+                    scope.users = _contents;
+                    scope.selectedNameData = _contents;
                 });
 
                 var watchPaginationData = scope.$watch('paginationData', function(newValue, oldValue) {
@@ -1006,6 +1027,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 }
                             });
                         }
+
                     }
 
                     scope.names = _names;

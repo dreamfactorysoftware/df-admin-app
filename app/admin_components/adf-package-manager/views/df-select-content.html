@@ -19,7 +19,7 @@
 
         <df-section-toolbar data-ng-hide="selectedNameLabel == ''">
 
-            <df-table-paginate data-api="selectedName" data-type="'package'"  data-total-count="totalCount" id="paginatecontrol" data-filter="search.text"></df-table-paginate>
+            <df-table-paginate data-api="selectedName" data-servicetype="selectedType" data-type="'package'"  data-total-count="totalCount" id="paginatecontrol" data-filter="search.text"></df-table-paginate>
 
             <div style="margin-left: 100px">
                 <input type="text" data-ng-model="search.text" class="df-search-box" placeholder="Search">
@@ -36,7 +36,7 @@
                             <td>
                                 <input type="checkbox" data-ng-checked="component.__dfUI.selected" data-ng-model="component.__dfUI.selected"  ng-disabled="checkboxDisable" />
                             </td>
-                            <td ng-if="selectedName === 'user'">
+                            <td ng-if="selectedName === 'user' || selectedName === 'admin'">
                                 {{component.record.first_name}} {{component.record.last_name}}
                             </td>
                             <td>
@@ -49,7 +49,7 @@
 
             <div class="form-group" style="margin-top: 25px">
                 <button df-export-package type="button" class="btn btn-primary" data-ng-click="addToPackage(false)">Add to Package</button>
-                <input type="button" df-export-package type="button" class="btn btn-primary" data-ng-click="addToPackage(true)" value="Add All ({{totalCountInit.value}})">
+                <input type="button" df-export-package type="button" class="btn btn-primary" data-ng-click="addToPackage(true)" value="Add All {{totalCountInit.value !== 0 ? '(' + totalCountInit.value + ')' : ''}}">
             </div>
         </div>
     </div>
