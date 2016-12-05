@@ -725,6 +725,12 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     if (!scope.selectedType.hasOwnProperty('group')) return;
 
+                    if(newValue && newValue.indexOf('[unavailable]') !== -1) {
+                        alert('You have selected a service that is currently unavailable/unreachable. ' +
+                            'Please check DreamFactory log or client console for error details.')
+                        newValue = newValue.replace(" [unavailable]", "").trim();
+                    }
+
                     if (scope.selectedType.group === 'System') {
                         switch (newValue) {
                             case 'user':
@@ -835,7 +841,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                           var _type = _service[0].group;
 
                           dfApplicationData.getServiceComponents(newValue).then(function (results) {
-
                               if (_type == 'Database') {
                                   var _tableNames = [];
                                   var prefix = '_schema/';
@@ -1032,7 +1037,11 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                             angular.forEach(_availServices, function (value, key) {
                                 if (_names.indexOf(value.name) === -1) {
-                                    _names.push(value.name);
+                                    var __name = value.name;
+                                    if(scope.rawPackageData['service'][__name] && scope.rawPackageData['service'][__name]['reachable'] === false){
+                                        __name = __name + ' [unavailable]';
+                                    }
+                                    _names.push(__name);
                                 }
                             });
                         }
