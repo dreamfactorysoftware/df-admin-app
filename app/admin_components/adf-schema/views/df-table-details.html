@@ -50,14 +50,32 @@
                 </button>
             </div>
 
+            <!--df-table-fields data-table-data="table.record.field"></df-table-fields-->
+
             <table class="table table-condensed table-hover table-striped table-bordered">
                 <th></th>
-                <th>Name</th>
-                <th>Alias</th>
-                <th>Type</th>
-                <th>Required</th>
+                <th ng-click="sortBy('name')">
+                    Name
+                    <span ng-show="propertyName == 'name' && !reverse" class="fa fa-caret-down"></span>
+                    <span ng-show="propertyName == 'name' && reverse" class="fa fa-caret-up"></span>
+                </th>
+                <th ng-click="sortBy('alias')">
+                    Alias
+                    <span ng-show="propertyName == 'alias' && !reverse" class="fa fa-caret-down"></span>
+                    <span ng-show="propertyName == 'alias' && reverse" class="fa fa-caret-up"></span>
+                </th>
+                <th ng-click="sortBy('type')">
+                    Type
+                    <span ng-show="propertyName == 'type' && !reverse" class="fa fa-caret-down"></span>
+                    <span ng-show="propertyName == 'type' && reverse" class="fa fa-caret-up"></span>
+                </th>
+                <th ng-click="sortBy('required')">
+                    Required
+                    <span ng-show="propertyName == 'required' && !reverse" class="fa fa-caret-down"></span>
+                    <span ng-show="propertyName == 'required' && reverse" class="fa fa-caret-up"></span>
+                </th>
 
-                <tr data-ng-repeat="field in table.record.field | orderBy:'name' track by $index ">
+                <tr data-ng-repeat="field in table.record.field | orderBy:propertyName:reverse track by $index ">
                     <td>
                         <button type="button" class="btn btn-default btn-xs" data-ng-click="deleteField(field)"
                                 title="Delete field"><i class="fa fa-fw fa-trash"></i></button>
