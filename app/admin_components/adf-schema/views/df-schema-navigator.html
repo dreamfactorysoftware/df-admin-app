@@ -27,9 +27,9 @@
 
     <div class="col-xs-12 form-group">
         <div class="well well-sm">
-            <button class="btn btn-default btn-sm" data-ng-click="addByJson()" type="button" data-ng-disabled="!currentService" title="Upload schema defined as JSON">Upload JSON</button>
-            <button class="btn btn-default btn-sm" data-ng-click="addTable()" type="button" data-ng-disabled="!currentService" title="Create a new table">Create</button>
-            <button class="btn btn-default btn-sm" data-ng-click="deleteTable()" type="button" data-ng-disabled="!currentService" title="Drop selected table">Drop</button>
+            <button class="btn btn-default btn-sm" data-ng-click="navigationSelect('json')" type="button" data-ng-disabled="!currentService" title="Upload schema defined as JSON">Upload JSON</button>
+            <button class="btn btn-default btn-sm" data-ng-click="navigationSelect('create')" type="button" data-ng-disabled="!currentService" title="Create a new table">Create</button>
+            <button class="btn btn-default btn-sm" data-ng-click="navigationSelect('remove')" type="button" data-ng-disabled="!currentService" title="Drop selected table">Drop</button>
         </div>
     </div>
 </div>
