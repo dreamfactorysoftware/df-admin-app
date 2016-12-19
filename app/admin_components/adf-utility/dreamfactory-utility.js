@@ -829,6 +829,78 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // Used anywhere a admin/user has the ability to select what REST verbs to allow
+    .directive('dfMultiPicklist', [
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
+
+            return {
+                restrict: 'E',
+                scope: {
+                    selectedOptions: '=?',
+                    cols: '=?',
+                    description: '=?',
+                    size: '@',
+                    options: '=?'
+                },
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-multi-picklist.html',
+                link: function (scope, elem, attrs) {
+                    scope.description = true;
+                    scope.width = 50;
+                    scope._init = function(){
+                        angular.forEach(scope.options, function (option) {
+                            option.active = false;
+                        });
+                        if(!scope.cols){
+                            scope.cols = 3;
+                        }
+                        scope.width = (100/(scope.cols*1))-3;
+                    }
+                    scope._init();
+
+                    scope._toggleOptionState = function (nameStr, event) {
+                        event.stopPropagation();
+                        var selected = [];
+                        angular.forEach(scope.options, function (option) {
+                             if (option.name === nameStr) {
+                                 option.active = !option.active;
+                                 if(option.active) {
+                                     selected.push(option.name);
+                                 }
+
+                                 angular.forEach(scope.selectedOptions, function(so){
+                                     if(so !== nameStr){
+                                         selected.push(so);
+                                     }
+                                 });
+
+                                 scope.selectedOptions = selected;
+                                 return;
+                             }
+                        });
+                    };
+
+                    scope.$watch('selectedOptions', function (n, o) {
+                        if (n == null && n == undefined) return false;
+
+                        angular.forEach(scope.options, function (option) {
+
+                            if (n.indexOf(option.name)!==-1) {
+                                option.active = true;
+                            } else {
+                                option.active = false;
+                            }
+                        });
+                    });
+
+                    elem.css({
+                        'display': 'inline-block', 'position': 'relative'
+                    });
+
+                }
+            }
+        }
+    ])
+
+    // Used anywhere a admin/user has the ability to select what REST verbs to allow
     .directive('dfVerbPicker', [
         'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
 

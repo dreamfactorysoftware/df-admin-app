@@ -57,6 +57,13 @@
                 data-ng-change="updateAffectedFields(serviceInfo.record.config[field.name], field)">
         </select>
 
+        <df-multi-picklist data-ng-if="field.type == 'multi_picklist'"
+                           data-cols="field.columns"
+                           data-ng-model="serviceInfo.record.config[field.name]"
+                           data-selected-options="serviceInfo.record.config[field.name]"
+                           data-options="field.values">
+        </df-multi-picklist>
+
         <div class="panel panel-default" data-ng-if="field.type.indexOf('array') > -1">
             <div class="form-group" data-ng-if="!isArray(field.items)">
                 <table class="table table-hover table-striped field-list">

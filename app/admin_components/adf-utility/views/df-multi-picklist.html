@@ -1,0 +1,8 @@
+<fieldset style="all:inherit; border: 2px solid #d3d3d3; padding:8px; border-radius:5px">
+        <div class="checkbox" ng-repeat='option in options' style="display: inline-block; width:{{width}}%; margin-top: 0; margin-bottom: 0;">
+            <label>
+                <input type="checkbox" data-ng-click="_toggleOptionState(option.name, $event)"  data-ng-model="option.active" data-ng-checked="option.active">
+                <span>{{option.label}}</span>
+            </label>
+        </div>
+</fieldset>
