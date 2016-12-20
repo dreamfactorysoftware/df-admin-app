@@ -1,0 +1,21 @@
+<div class="btn-group">
+    <button type="button"
+            data-ng-model="selected"
+            class="btn btn-default dropdown-toggle"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false">
+        {{selectedLabel || 'Select one'}}
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" >
+        <li class="dropdown-submenu" ng-repeat="group in options">
+            <a tabindex="-1">{{group.label}}</a>
+            <ul class="dropdown-menu">
+                <li data-ng-repeat="groupmember in group.items">
+                    <a href="" data-ng-click="selectItem(groupmember)">{{groupmember.label}}</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>

@@ -828,7 +828,45 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
-    // Used anywhere a admin/user has the ability to select what REST verbs to allow
+    .directive('dfGroupedPicklist', [
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
+
+            return {
+                restrict: 'E',
+                scope: {
+                    selected: '=?',
+                    options: '=?'
+                },
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-grouped-picklist.html',
+                link: function (scope, elem, attrs) {
+                    scope.selectedLabel = false;
+                    scope.selectItem = function (item) {
+                        scope.selected = item.name;
+                    };
+
+                    scope.$watch('selected', function (n, o) {
+                        if (n == null && n == undefined) return false;
+
+                        angular.forEach(scope.options, function (option) {
+                            if(option.items) {
+                                angular.forEach(option.items, function(item){
+                                    if(n === item.name){
+                                        scope.selectedLabel = item.label;
+                                    }
+                                })
+                            }
+                        });
+                    });
+
+                    elem.css({
+                        'display': 'inline-block', 'position': 'relative'
+                    });
+
+                }
+            }
+        }
+    ])
+
     .directive('dfMultiPicklist', [
         'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
 
@@ -837,14 +875,13 @@ angular.module('dfUtility', ['dfApplication'])
                 scope: {
                     selectedOptions: '=?',
                     cols: '=?',
-                    description: '=?',
-                    size: '@',
-                    options: '=?'
+                    options: '=?',
+                    legend: '=?'
                 },
                 templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-multi-picklist.html',
                 link: function (scope, elem, attrs) {
-                    scope.description = true;
                     scope.width = 50;
+                    scope.allSelected = false;
                     scope._init = function(){
                         angular.forEach(scope.options, function (option) {
                             option.active = false;
@@ -855,6 +892,17 @@ angular.module('dfUtility', ['dfApplication'])
                         scope.width = (100/(scope.cols*1))-3;
                     }
                     scope._init();
+
+                    scope._toggleSelectAll = function(event){
+                        event.stopPropagation();
+                        var selected = [];
+                        angular.forEach(scope.options, function (option) {
+                            if(!scope.allSelected) {
+                                selected.push(option.name);
+                            }
+                        });
+                        scope.selectedOptions = selected;
+                    }
 
                     scope._toggleOptionState = function (nameStr, event) {
                         event.stopPropagation();
