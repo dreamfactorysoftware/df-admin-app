@@ -159,17 +159,17 @@
             <button type="button"
                 class="btn btn-primary"
                 ng-hide="!$parent.table.__dfUI.newField"
-                data-ng-click="saveField($parent.table.__dfUI.newTable); closeField(true)">
+                data-ng-click="saveField($parent.table.__dfUI.newField); closeField(true)">
                 Add
             </button>
             <button type="button"
                 class="btn btn-primary"
                 ng-hide="$parent.table.__dfUI.newField"
-                data-ng-click="updField(field.__dfUI.newTable); closeField(true)">
+                data-ng-click="updField(field.__dfUI.newField);">
                 Save
             </button>
             <button type="button" class="btn btn-default" data-ng-click="closeField(false)">
-                Cancel
+                Close
             </button>
         </div>
     </div>

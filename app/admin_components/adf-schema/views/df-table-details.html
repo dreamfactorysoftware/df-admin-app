@@ -43,68 +43,7 @@
             </div>
 
             <df-table-fields></df-table-fields>
-            <!--df-table-fields data-table-data="table.record.field"></df-table-fields-->
-
-            <!--table class="table table-condensed table-hover table-striped table-bordered">
-                <th></th>
-                <th ng-click="sortBy('name')">
-                    Name
-                    <span ng-show="propertyName == 'name' && !reverse" class="fa fa-caret-down"></span>
-                    <span ng-show="propertyName == 'name' && reverse" class="fa fa-caret-up"></span>
-                </th>
-                <th ng-click="sortBy('alias')">
-                    Alias
-                    <span ng-show="propertyName == 'alias' && !reverse" class="fa fa-caret-down"></span>
-                    <span ng-show="propertyName == 'alias' && reverse" class="fa fa-caret-up"></span>
-                </th>
-                <th ng-click="sortBy('type')">
-                    Type
-                    <span ng-show="propertyName == 'type' && !reverse" class="fa fa-caret-down"></span>
-                    <span ng-show="propertyName == 'type' && reverse" class="fa fa-caret-up"></span>
-                </th>
-                <th ng-click="sortBy('required')">
-                    Required
-                    <span ng-show="propertyName == 'required' && !reverse" class="fa fa-caret-down"></span>
-                    <span ng-show="propertyName == 'required' && reverse" class="fa fa-caret-up"></span>
-                </th>
-
-                <tr data-ng-repeat="field in table.record.field | orderBy:propertyName:reverse track by $index ">
-                    <td>
-                        <button type="button" class="btn btn-default btn-xs" data-ng-click="deleteField(field)"
-                                title="Delete field"><i class="fa fa-fw fa-trash"></i></button>
-                        <button type="button" class="btn btn-default btn-xs"
-                                data-ng-class="field.is_primary_key ? 'btn-warning' : ''"
-                                data-ng-click="setPrimaryKey(field)" title="Set primary key"><i
-                                class="fa fa-fw fa-key"></i></button>
-                    </td>
-                    <td data-ng-click="editField(field)">{{field.name}}</td>
-                    <td data-ng-click="editField(field)">{{field.alias}}</td>
-                    <td data-ng-click="editField(field)">{{field.type}}</td>
-                    <td data-ng-click="editField(field)">{{field.required}}</td>
-                </tr>
-            </table-->
-
             <df-table-relationships></df-table-relationships>
-
-            <!--table class="table table-condensed table-hover table-striped table-bordered">
-                <th></th>
-                <th>Name</th>
-                <th>Alias</th>
-                <th>Type</th>
-                <th>Virtual</th>
-
-                <tr data-ng-repeat="relation in table.record.related | orderBy:'name' track by $index ">
-                    <td>
-                        <button type="button" class="btn btn-default btn-xs"
-                                data-ng-if="relation.is_virtual" data-ng-click="deleteRelation(relation)"
-                                title="Delete Relation"><i class="fa fa-fw fa-trash"></i></button>
-                    </td>
-                    <td data-ng-click="editRelation(relation)">{{relation.name}}</td>
-                    <td data-ng-click="editRelation(relation)">{{relation.alias}}</td>
-                    <td data-ng-click="editRelation(relation)">{{relation.type}}</td>
-                    <td data-ng-click="editRelation(relation)">{{relation.is_virtual}}</td>
-                </tr>
-            </table-->
         </div>
 
         <div data-ng-show="viewMode === 'json'" class="row">
@@ -120,7 +59,7 @@
             <div class="col-xs-12">
 
                 <button data-ng-if="table.__dfUI.newTable" type="button" class="btn btn-primary save-schema-btn"
-                        data-ng-click="saveTable()">Save
+                        data-ng-click="saveTable()">Close
                 </button>
                 <button data-ng-if="table.__dfUI.newTable" type="button" class="btn btn-default"
                         data-ng-click="clearTable()">Cancel
@@ -129,7 +68,7 @@
                         data-ng-click="updateTable()">Save
                 </button>
                 <button data-ng-if="!table.__dfUI.newTable" type="button" class="btn btn-default"
-                        data-ng-click="closeTable()">Cancel
+                        data-ng-click="closeTable()">Close
                 </button>
             </div>
         </div>
