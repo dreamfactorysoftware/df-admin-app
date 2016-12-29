@@ -557,7 +557,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
     }])
 
 
-    .factory('tableManager', ['INSTANCE_URL', '$http', '$q', 'Table', 'StateService', function(INSTANCE_URL, $http, $q, Table, StateService) {
+    .factory('tableManager', ['INSTANCE_URL', '$http', '$q', 'Table', 'StateService', 'dfNotify', function(INSTANCE_URL, $http, $q, Table, StateService, dfNotify) {
         var tableManager = {
             _pool: {},
             _retrieveInstance: function(tableName, tableData) {
@@ -672,20 +672,47 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             },
             deleteTable: function(params) {
 
+
+
+                return this._delete(params);
+                //return this._delete(params);
+
+                /*
                 //$http.delete(INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table);
                 var deferred = $q.defer();
 
                 this._delete(params)
                 .success(function (response) {
 
+                    var messageOptions = {
+                        module: 'Schema',
+                        type: 'success',
+                        provider: 'dreamfactory',
+                        message: 'Table deleted successfully.'
+                    };
+
+                    dfNotify.success(messageOptions);
+
                     deferred.resolve(response);
                 })
                 .error(function (reject) {
 
+                  var messageOptions = {
+
+                      module: 'Api Error',
+                      type: 'error',
+                      provider: 'dreamfactory',
+                      message: reject.error.message
+                  };
+
+                  dfNotify.success(messageOptions);
+
                   deferred.reject(reject);
+
                 });
 
                 return deferred.promise;
+                */
             }
         };
         return tableManager;
@@ -726,7 +753,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 return {
                     __dfUI: {
-                        newField: !(fieldObj.type !== undefined)
+                        newField: !tableObj ? true : false //!(fieldObj.type !== undefined)
                     },
                     record: angular.copy(fieldObj || {}),
                     recordCopy: angular.copy(fieldObj || {}),
@@ -1124,12 +1151,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
     .controller('SchemaCtrl', ['INSTANCE_URL', '$scope', '$http', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'ServiceListService', 'ServiceModel', 'Table', 'TableDataModel', 'TableDat', function (INSTANCE_URL, $scope, $http, $q, dfApplicationData, dfNotify, dfObjectService, ServiceListService, ServiceModel, Table, TableDataModel, TableDat) {
 
-
-      //var test = dfTableEditViewCtrl.tester('werwer');
-      //console.log(test);
-
-
-
         // Set Title in parent
         $scope.$parent.title = 'Schema';
 
@@ -1460,7 +1481,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
     }])
 
 
-    .directive('dfTableTemplate', ['MOD_SCHEMA_ASSET_PATH', '$timeout', 'NavigationService', 'Table', 'TableDataModel', 'TableDat', 'FieldDat', function (MOD_SCHEMA_ASSET_PATH, $timeout, NavigationService, Table, TableDataModel, TableDat, FieldDat) {
+    .directive('dfTableTemplate', ['MOD_SCHEMA_ASSET_PATH', '$q', '$timeout', 'NavigationService', 'Table', 'TableDataModel', 'TableDat', 'FieldDat', function (MOD_SCHEMA_ASSET_PATH, $q, $timeout, NavigationService, Table, TableDataModel, TableDat, FieldDat) {
 
         return {
             restrict: 'E',
@@ -1503,11 +1524,23 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.$on('table:delete', function(event, args) {
 
-                    ctrl.childCtrl['table_edit'].deleteTable(args);
+                    //console.log(ctrl.childCtrl['table_edit'].deleteTable(args));
 
-                    NavigationService.setStep('empty');
+                    ctrl.childCtrl['table_edit'].deleteTable(args).then(
+                      function () {
+
+                        NavigationService.setStep('empty');
+                        //scope.showCreateView = true;
+                        scope.selView = NavigationService.getStep();
+                      },
+                      function () {
+
+                      }
+                    );
+
+                    //NavigationService.setStep('empty');
                     //scope.showCreateView = true;
-                    scope.selView = NavigationService.getStep();
+                    //scope.selView = NavigationService.getStep();
                 });
 
                 scope.$on('table:create:form', function(event, args) {
@@ -1536,7 +1569,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope.selView = NavigationService.getStep();
                     //scope.currentService = 0;
                     //scope.currentTable = '';
-                    //console.log('qqq');
                     //ctrl.childCtrl['table_edit'].speak('test123')
                 });
 
@@ -1547,10 +1579,13 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope.selView = NavigationService.getStep();
                     //scope.currentService = 0;
                     //scope.currentTable = '';
-                    //console.log('qqq');
                     //ctrl.childCtrl['table_edit'].speak('test123')
                 });
 
+                scope.$on('table:navigation1:close', function(event, args) {
+                    NavigationService.setStep('empty');
+                    scope.selView = NavigationService.getStep();
+                });
 
 
                 scope.$on('table:navigation:edit', function(event, args) {
@@ -1573,7 +1608,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope.selView = NavigationService.getStep();
                     //scope.currentService = 0;
                     //scope.currentTable = '';
-                    //console.log('qqq');
                     //ctrl.childCtrl['table_edit'].speak('test123')
                 });
 
@@ -1735,7 +1769,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
       }])
 
 
-      .directive('dfTableEditView', ['INSTANCE_URL', 'MOD_SCHEMA_ASSET_PATH', 'NavigationService', 'Table', 'TableDataModel', '$http', 'dfNotify', 'TableDat', 'tableManager', 'TableObj', 'dfObjectService', 'dfApplicationData', 'StateService', function (INSTANCE_URL, MOD_SCHEMA_ASSET_PATH, NavigationService, Table, TableDataModel, $http, dfNotify, TableDat, tableManager, TableObj, dfObjectService, dfApplicationData, StateService) {
+      .directive('dfTableEditView', ['INSTANCE_URL', 'MOD_SCHEMA_ASSET_PATH', '$q', 'NavigationService', 'Table', 'TableDataModel', '$http', 'dfNotify', 'TableDat', 'tableManager', 'TableObj', 'dfObjectService', 'dfApplicationData', 'StateService', function (INSTANCE_URL, MOD_SCHEMA_ASSET_PATH, $q, NavigationService, Table, TableDataModel, $http, dfNotify, TableDat, tableManager, TableObj, dfObjectService, dfApplicationData, StateService) {
         var childNumber = 1;
         return {
             restrict: 'E',
@@ -1795,12 +1829,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 ctrl.deleteTable = function (obj) {
 
                     if (dfNotify.confirm('Are you sure you want to drop table ' + obj.table + '?')) {
-                        $scope._deleteTable(obj);
+                        return $scope._deleteTable(obj);
                     }
                 };
 
 
                 $scope._deleteTable = function (obj) {
+
+                    var deferred = $q.defer();
 
                     var requestDataObj = {
                         table: obj.table,
@@ -1833,8 +1869,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 i++
                             }
 
-                            console.log(currentService);
-
                             $scope.table.currentService = currentService;
 
                             dfApplicationData.updateServiceComponentsLocal($scope.table.currentService);
@@ -1845,6 +1879,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             $scope.reset();
 
                             dfNotify.success(messageOptions);
+
+                            deferred.resolve();
                         },
                         function (reject) {
 
@@ -1857,8 +1893,12 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             };
 
                             dfNotify.error(messageOptions);
+
+                            deferred.reject();
                         }
                     )
+
+                    return deferred.promise;
                 };
 
 
@@ -3791,20 +3831,12 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-schema-navigator.html',
             link: function (scope, elem, attrs) {
 
+
                 scope.serviceSelect = function() {
 
-                    if (scope.currentService == null) {
+                    scope.$broadcast('table:navigation1:close', false);
 
-                        NavigationService.setStep('empty');
-                        scope.selView = NavigationService.getStep();
-                        scope.$broadcast('table:navigation:close', false);
-
-                        scope.table = null;
-                        scope.tableData = null;
-                        scope.currentEditField = null;
-                        scope.currentEditRelation = null;
-                    }
-
+                    scope.currentTable = null;
                     StateService.set('dfservice', scope.currentService);
                     TableListService.getTableList();
                 }
