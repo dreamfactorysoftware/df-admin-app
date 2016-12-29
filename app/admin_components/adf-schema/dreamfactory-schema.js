@@ -1216,9 +1216,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         db_type: null,
                         default: null,
                         fixed_length: false,
+                        is_aggregate: false,
                         is_foreign_key: false,
                         is_primary_key: false,
                         is_unique: false,
+                        is_virtual: false,
                         label: null,
                         length: null,
                         name: null,
@@ -1264,8 +1266,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     {name: "user_id_on_update", value: "user_id_on_update"},
                     {name: "timestamp", value: "timestamp"},
                     {name: "timestamp_on_create", value: "timestamp_on_create"},
-                    {name: "timestamp_on_update", value: "timestamp_on_update"},
-                    {name: "virtual", value: "virtual"}
+                    {name: "timestamp_on_update", value: "timestamp_on_update"}
                 ];
 
                 scope.returnTypeOptions = [
@@ -1477,15 +1478,19 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     },
                     db_function: {
                         title: 'DB Function',
-                        text: 'Enter a db function like max(fieldname) or concat(field1, \'.\', field2)'
+                        text: 'Enter a db function like max(fieldname) or concat(field1, \'.\', field2). Supported DB functions to apply to this field. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Database_Functions" target="_blank">here</a> for more info.'
+                    },
+                    virtual_field: {
+                        title: 'Virtual Field',
+                        text: 'Is this field virtual, backed by a database function, i.e. not an actual column in the database table. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Validations" target="_blank">here</a> for more info.'
+                    },
+                    aggregate_field: {
+                        title: 'Aggregate Field',
+                        text: 'Does this virtual field represent an aggregating function? If true, this field must be requested by name and will not be returned in requests by default. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Validations" target="_blank">here</a> for more info.'
                     },
                     validation: {
                         title: 'Validation',
                         text: 'A JSON object detailing required validations, if any. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Validations" target="_blank">here</a> for more info.'
-                    },
-                    'aggregate_db_unction': {
-                        title: 'Aggregate DB Function',
-                        text: 'Supported DB functions to apply to this field. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Database_Functions" target="_blank">here</a> for more info.'
                     }
                 };
 

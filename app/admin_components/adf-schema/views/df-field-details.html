@@ -15,6 +15,21 @@
     <input class="form-control" type="text" data-ng-model="field.record.label"/>
     <br/>
 
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" data-ng-model="field.record.is_virtual"/>
+            Is Virtual?</label>
+        <df-simple-help data-options="helpText.virtual_field"></df-simple-help>
+    </div>
+
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" data-ng-disabled="!field.record.is_virtual"
+                   data-ng-model="field.record.is_aggregate"/>
+            Is Aggregate?</label>
+        <df-simple-help data-options="helpText.aggregate_field"></df-simple-help>
+    </div>
+
     <label>Type</label>
     <df-simple-help data-options="helpText.type"></df-simple-help>
     <select data-ng-options="type.value as type.name for type in typeOptions" class="form-control"
@@ -22,7 +37,7 @@
 
     <label>Database Type</label>
     <df-simple-help data-options="helpText.database_type"></df-simple-help>
-    <input class="form-control" data-ng-disabled="field.record.type != ''" type="text"
+    <input class="form-control" data-ng-disabled="field.record.type != '' || field.record.is_virtual" type="text"
            data-ng-model="field.record.db_type"/>
     <br/>
 
@@ -128,22 +143,8 @@
 
     <label>DB Function</label>
     <df-simple-help data-options="helpText.db_function"></df-simple-help>
-    <input class="form-control" type="text" ng-model="field.record.db_function.function">
-    <br/>
-
-    <label>DB Function Return Type</label>
-    <select data-ng-options="type.value as type.name for type in returnTypeOptions" class="form-control"
-            data-ng-model="field.record.db_function.type"></select>
-    <br/>
-
-    <div class="checkbox">
-
-        <label>
-            <input type="checkbox" data-ng-model="field.record.db_function.aggregate"/>
-            <strong>Aggregate DB Function?</strong>
-        </label>
-        <df-simple-help data-options="helpText.aggregate_db_unction"></df-simple-help>
-    </div>
+    <textarea json-edit="field.record.db_function" rows="5" cols="10" class="form-control"></textarea>
+    <!--<input class="form-control" type="text" ng-model="field.record.db_function.function">-->
     <br/>
 
     <div data-ng-show="field.record.type === 'string' || field.record.type === 'integer'">

@@ -56,6 +56,8 @@
                 <th>Alias</th>
                 <th>Type</th>
                 <th>Required</th>
+                <th>Virtual</th>
+                <th>Aggregate</th>
 
                 <tr data-ng-repeat="field in table.record.field | orderBy:'name' track by $index ">
                     <td>
@@ -70,6 +72,8 @@
                     <td data-ng-click="editField(field)">{{field.alias}}</td>
                     <td data-ng-click="editField(field)">{{field.type}}</td>
                     <td data-ng-click="editField(field)">{{field.required}}</td>
+                    <td data-ng-click="editField(field)">{{field.is_virtual}}</td>
+                    <td data-ng-click="editField(field)">{{field.is_aggregate}}</td>
                 </tr>
             </table>
 
