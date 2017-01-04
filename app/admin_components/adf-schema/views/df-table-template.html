@@ -1,9 +1,13 @@
 <div>
     <!--df-table-view-json data-selected-view="selView"></df-table-view-json-->
+
     <df-table-edit-view data-selected-view="selView" ng-show="selView === 'edit'"></df-table-edit-view>
     <df-table-create-view data-selected-view="selView" ng-show="selView === 'create'"></df-table-create-view>
-    <df-field-details data-field-data="fieldEditData" data-selected-view="selView" ng-show="selView === 'field'"></df-field-details>
+    <df-field-details data-field-data="fieldEditData" data-selected-view="selView" data-current-table="currentTable" ng-show="selView === 'field'"></df-field-details>
+    <!--df-relation-details data-relation-data="relationEditData" data-selected-view="selView" data-current-table="currentTable" ng-show="selView === 'relation'"></df-relation-details-->
     <div ng-show="selView === 'empty' || selView === undefined">
         No Table selected
     </div>
+    <df-upload-schema data-selected-view="selView" ng-show="selView === 'upload'"></df-table-edit-view>
+
 </div>

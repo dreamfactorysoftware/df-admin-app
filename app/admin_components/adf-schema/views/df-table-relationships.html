@@ -1,3 +1,4 @@
+
 <div class="form-group well well-sm">
     <label>Relationships</label>
     <button type="button" class="btn btn-default btn-sm" data-ng-click="addRelation()"
@@ -13,7 +14,7 @@
     <th>Type</th>
     <th>Virtual</th>
 
-    <tr data-ng-repeat="relation in relationshipTableData | orderBy:'name' track by $index ">
+    <tr data-ng-repeat="relation in relationTableData | orderBy:'name' track by $index ">
         <td>
             <button type="button" class="btn btn-default btn-xs"
                     data-ng-if="relation.is_virtual" data-ng-click="deleteRelation(relation)"
