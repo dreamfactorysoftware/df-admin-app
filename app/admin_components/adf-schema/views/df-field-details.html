@@ -141,11 +141,43 @@
     <textarea json-edit="field.record.validation" rows="5" cols="10" class="form-control"></textarea>
     <br/>
 
-    <label>DB Function</label>
-    <df-simple-help data-options="helpText.db_function"></df-simple-help>
-    <textarea json-edit="field.record.db_function" rows="5" cols="10" class="form-control"></textarea>
-    <!--<input class="form-control" type="text" ng-model="field.record.db_function.function">-->
-    <br/>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            DB Function Use <df-simple-help data-options="dfSimpleHelp.dbFunctionUse"></df-simple-help>
+        </div>
+        <div class="panel-body">
+            <label>Assign Database Function To Uses Of This Field</label>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="col-xs-2">
+                        <label>Uses</label>
+                    </div>
+                    <div class="col-xs-3">
+                        <label>Function</label>
+                    </div>
+                    <div class="col-xs-1" >
+                        <label>
+                            <button type="button" class="btn btn-default btn-sm" data-ng-click="addDbFunctionUse()"
+                                    title="Add new DB function use">
+                                <i class="fa fa-plus fa-fw"></i>
+                            </button>
+                        </label>
+
+                    </div>
+                </div>
+            </div>
+
+            <ul class="list-group">
+                <li class="list-group-item" data-ng-repeat="function_use in field.record.db_function track by $index">
+                    <df-function-use data-function-use="function_use" data-index="$index"></df-function-use>
+                </li>
+            </ul>
+            <p ng-show="field.record.db_function.length === 0">
+                No DB functions are assigned to this field. Click the add button to apply one.
+            </p>
+
+        </div>
+    </div>
 
     <div data-ng-show="field.record.type === 'string' || field.record.type === 'integer'">
         <label>Picklist</label>

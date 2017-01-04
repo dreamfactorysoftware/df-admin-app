@@ -1328,6 +1328,17 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
                 };
 
+                scope.addDbFunctionUse = function () {
+
+                    scope._addDbFunctionUse();
+                };
+
+                scope.removeDbFunctionUse = function (objIndex) {
+
+                    scope._removeDbFunctionUse(objIndex);
+                };
+
+
                 // PRIVATE API
                 scope._loadReferenceTables = function () {
 
@@ -1441,6 +1452,17 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             dfNotify.error(messageOptions);
                         }
                     );
+                };
+
+                scope._addDbFunctionUse = function () {
+
+                    scope.field.record.db_function.push({'use': [], 'function': ''});
+                };
+
+                scope._removeDbFunctionUse = function (objIndex) {
+                    if (scope.field.record.db_function[objIndex]) {
+                        scope.field.record.db_function.splice(objIndex, 1);
+                    }
                 };
 
                 // WATCHERS
@@ -2139,6 +2161,20 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope.$parent.currentUploadSchema = null;
 
                 }
+            }
+        }
+    }])
+
+    .directive('dfFunctionUse', ['MOD_SCHEMA_ASSET_PATH', function (MOD_SCHEMA_ASSET_PATH) {
+
+        return {
+            restrict: 'E',
+            scope: {
+                functionUse: '=?',
+                index: '=?'
+            },
+            templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-function-use.html',
+            link: function (scope, elem, attrs) {
             }
         }
     }])

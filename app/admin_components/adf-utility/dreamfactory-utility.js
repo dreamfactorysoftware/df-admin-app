@@ -1220,6 +1220,130 @@ angular.module('dfUtility', ['dfApplication'])
         }
     ])
 
+    // Used anywhere a admin/user has the ability to select what REST verbs to allow
+    .directive('dfDbFunctionUsePicker', [
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
+
+            return {
+                restrict: 'E',
+                scope: {
+                    allowedUses: '=?',
+                    description: '=?',
+                    size: '@'
+                },
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-db-function-use-picker.html',
+                link: function (scope, elem, attrs) {
+
+                    scope.uses = {
+                        SELECT: {name: 'SELECT', active: false, description: " (get)"},
+                        FILTER: {name: 'FILTER', active: false, description: ' (get)'},
+                        INSERT: {name: 'INSERT', active: false, description: ' (post)'},
+                        UPDATE: {name: 'UPDATE', active: false, description: ' (patch)'}
+                    };
+
+                    scope.btnText = 'None Selected';
+                    scope.description = true;
+
+                    scope._setDbFunctionUseState = function (nameStr, stateBool) {
+                        if (scope.uses.hasOwnProperty(scope.uses[nameStr].name)) {
+                            scope.uses[nameStr].active = stateBool;
+                        }
+                    };
+
+                    scope._toggleDbFunctionUseState = function (nameStr, event) {
+                        event.stopPropagation();
+
+                        if (scope.uses.hasOwnProperty(scope.uses[nameStr].name)) {
+                            scope.uses[nameStr].active = !scope.uses[nameStr].active;
+                        }
+
+                        scope.allowedUses = [];
+
+                        angular.forEach(
+                            scope.uses, function (_obj) {
+                                if (_obj.active) {
+                                    scope.allowedUses.push(_obj.name);
+                                }
+
+                            }
+                        );
+                    };
+
+                    scope._isDbFunctionUseActive = function (nameStr) {
+
+                        return scope.uses[nameStr].active
+                    };
+
+                    scope._setButtonText = function () {
+
+                        var uses = [];
+
+                        angular.forEach(scope.uses, function (useObj) {
+
+                            if (useObj.active) {
+                                uses.push(useObj.name);
+                            }
+
+                        })
+
+                        scope.btnText = '';
+
+                        var max = 1;
+                        if (uses.length == 0) {
+                            scope.btnText = 'None Selected';
+
+                        } else if (uses.length > 0 && uses.length <= max) {
+
+                            angular.forEach(
+                                uses, function (_value, _index) {
+                                    if (scope._isDbFunctionUseActive(_value)) {
+                                        if (_index != uses.length - 1) {
+                                            scope.btnText +=
+                                                (
+                                                    _value + ', '
+                                                );
+                                        } else {
+                                            scope.btnText += _value
+                                        }
+                                    }
+                                }
+                            )
+
+                        } else if (uses.length > max) {
+                            scope.btnText = uses.length + ' Selected';
+                        }
+                    };
+
+                    scope.$watch('allowedUses', function (newValue, oldValue) {
+
+                        if (!newValue) {
+                            return false;
+                        }
+
+                        Object.keys(scope.uses).forEach(function (key) {
+                            scope._setDbFunctionUseState(key, false);
+                        });
+
+                        angular.forEach(
+                            scope.allowedUses, function (_value, _index) {
+
+                                scope._setDbFunctionUseState(_value, true);
+                            }
+                        );
+
+                        scope._setButtonText();
+
+                    });
+
+                    elem.css({
+                        'display': 'inline-block', 'position': 'relative'
+                    });
+
+                }
+            }
+        }
+    ])
+
     // Displays select box for dreamfactory services
     .directive('dfServicePicker', [
         'MOD_UTILITY_ASSET_PATH', 'INSTANCE_URL', '$http', function (MOD_UTILITY_ASSET_PATH, INSTANCE_URL, $http) {
