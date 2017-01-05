@@ -1,16 +1,5 @@
 
     <div data-ng-show="(currentCreateField === null) && (currentCreateRelation === null)">
-        <div data-ng-show="!table.__dfUI.newTable" class="form-group well well-sm">
-            <button type="button" class="btn btn-default btn-sm" data-ng-click="toggleViewMode()"
-                    title="Switch between table and JSON view modes">
-                <span data-ng-if="viewMode === 'table'">JSON</span>
-                <span data-ng-if="viewMode === 'json'">Table</span>
-            </button>
-            <button type="button" data-ng-if="viewMode === 'json'" class="btn btn-default btn-sm"
-                    data-ng-click="checkJSON()" title="Validate JSON">Validate
-            </button>
-        </div>
-
         <div data-ng-show="viewMode === 'table'">
             <div class="form-group">
                 <label>Table Name</label>
