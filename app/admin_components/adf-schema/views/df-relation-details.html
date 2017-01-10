@@ -1,4 +1,3 @@
-
 <div class="form-group">
     <label>Name</label>
     <span class="text-muted">The auto-generated relation name used by the API.</span>
@@ -83,7 +82,7 @@
     <br/>
 
     <label>Junction Service</label>
-    <select data-ng-disabled="!relation.record.is_virtual"
+    <select data-ng-disabled="!relation.record.is_virtual || (relation.record.type !== 'many_many')"
             class="form-control"
             data-ng-change="changeJunctionService()"
             data-ng-model="relation.record.junction_service_id"
@@ -95,7 +94,7 @@
     <span data-ng-init="_loadJunctionTables()"></span>
 
     <label>Junction Table</label>
-    <select data-ng-disabled="!relation.record.is_virtual"
+    <select data-ng-disabled="!relation.record.is_virtual || (relation.record.type !== 'many_many')"
             class="form-control"
             data-ng-change="_loadJunctionFields()"
             data-ng-model="relation.record.junction_table"
@@ -107,7 +106,7 @@
     <span data-ng-init="_loadJunctionFields()"></span>
 
     <label>Junction Field</label>
-    <select data-ng-disabled="!relation.record.is_virtual || !relation.record.junction_table"
+    <select data-ng-disabled="!relation.record.is_virtual || !relation.record.junction_table || (relation.record.type !== 'many_many')"
             class="form-control"
             data-ng-model="relation.record.junction_field"
             data-ng-options="o.name as o.name for o in junctionFields">
@@ -116,7 +115,7 @@
     <br/>
 
     <label>Junction Reference Field</label>
-    <select data-ng-disabled="!relation.record.is_virtual || !relation.record.junction_table"
+    <select data-ng-disabled="!relation.record.is_virtual || !relation.record.junction_table || (relation.record.type !== 'many_many')"
             class="form-control"
             data-ng-model="relation.record.junction_ref_field"
             data-ng-options="o.name as o.name for o in junctionFields">

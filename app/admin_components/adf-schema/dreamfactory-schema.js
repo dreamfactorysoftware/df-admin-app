@@ -80,12 +80,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         }
 
 
-        function getServices() {
+        function getServices(forceRefresh) {
+
+            forceRefresh = forceRefresh || false;
 
             if (services.length > 0) return services;
 
             var serviceArray = [];
-            serviceArray = dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db,mongodb'});
+            serviceArray = dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db,mongodb'}, forceRefresh);
 
             if (serviceArray !== undefined) services = serviceArray;
 
@@ -152,7 +154,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         module: 'Schema',
                         type: 'error',
                         provider: 'dreamfactory',
-                        message: reject
+                        message: reject.error.message
                     };
 
                     dfNotify.error(messageOptions);
@@ -251,7 +253,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                       module: 'Api Error',
                       type: 'error',
                       provider: 'dreamfactory',
-                      message: reject
+                      message: reject.error.message
                   };
 
                   dfNotify.success(messageOptions);
@@ -261,16 +263,19 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 return deferred.promise;
             },
-            getImageUrl: function(width, height) {
-                return 'our/image/service/' + this.book.id + '/width/height';
+            _saveField: function (params, fieldData) {
+
+                var data = {
+                    resource: [
+                        fieldData
+                    ]
+                };
+
+                return $http.post(INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_field', data)
             },
-            isAvailable: function() {
-                if (!this.table.stores || this.table.stores.length === 0) {
-                    return false;
-                }
-                return this.table.stores.some(function(store) {
-                    return store.quantity > 0;
-                });
+            _updateRelations: function (params) {
+
+
             }
         };
         return Table;
@@ -281,6 +286,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         var tableManager = {
             _pool: {},
             _retrieveInstance: function(tableName, tableData) {
+                if (!tableName) return false;
                 var instance = this._pool[tableName];
 
                 if (instance) {
@@ -293,6 +299,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 return instance;
             },
             _search: function(tableName) {
+
                 return this._pool[tableName];
             },
             _load: function(params, deferred) {
@@ -398,6 +405,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     } else {
 
                         table = scope._retrieveInstance(tableData.record.name, tableData.record);
+
+
                     }
                 }
 
@@ -408,13 +417,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope._retrieveInstance(tableData);
             },
-            setField: function (tableName, fieldData) {
+            setField: function (tableName, fieldData, saveToServer) {
 
                 var table = this._search(tableName);
 
-
-
-                //if (table.hasOwnProperty('field')) {
                 if (table !== undefined) {
 
                     var index = table.field.findIndex(function (obj) {
@@ -431,6 +437,16 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
 
                     table.field[index] = fieldData.record;
+
+                    if (saveToServer) {
+
+                        var params = {
+                            service: StateService.get('dfservice').name,
+                            table: tableName
+                        }
+
+                        table._saveField(params, fieldData.record);
+                    }
                 }
                 else {
 
@@ -454,6 +470,58 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             deleteTable: function(params) {
 
                 return this._delete(params);
+            },
+
+
+
+            _saveRelation: function (params, relationData) {
+
+                var data = {
+                    resource: [
+                        relationData//scope.relation.record
+                    ]
+                };
+
+                return $http.post(INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_related', data);
+            },
+            saveRelation: function (params, relationData) {
+
+              return this._saveRelation(params, relationData);
+            },
+
+
+
+            _deleteRelation: function (params) {
+
+                return $http.delete(INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_related/' + params.relation);
+            },
+            deleteRelation: function (params) {
+
+              return this._deleteRelation(params);
+            },
+
+
+
+            updateRelations: function (params) {
+
+                var table = this._search(params.table);
+
+                //var relations =
+
+
+                return $http.get(INSTANCE_URL + '/api/v2/' + params.service.name + '/_schema/' + params.table + '/_related')
+                    .success(function(relationData) {
+
+                    table.related = relationData.resource;
+
+                    table.setData(table);
+
+                    })
+                    .error(function() {
+
+
+                    });
+
             },
             clearPool: function() {
                 this._clearPool();
@@ -1003,7 +1071,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         module: 'Api Error',
                         type: 'error',
                         provider: 'dreamfactory',
-                        message: reject
+                        message: reject.error.message
                     };
 
                     dfNotify.error(messageOptions);
@@ -1015,7 +1083,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         $scope._addByJson = function () {
 
             $scope.currentUploadSchema = true;
-
         };
 
         // WATCHERS
@@ -1039,12 +1106,12 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             //watchSchemaManagerData();
             watchServiceComponents();
-            watchCurrentEditTable();
+            //watchCurrentEditTable();
         });
 
         $scope.$on('refresh:table', function (e, resource) {
 
-            $scope.refreshService(true);
+            //$scope.refreshService(true);
         });
 
         $scope.$on('update:components', function (e, resource) {
@@ -1076,7 +1143,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
     }])
 
 
-    .directive('dfTableTemplate', ['MOD_SCHEMA_ASSET_PATH', '$q', '$timeout', 'NavigationService', 'Table', 'TableDataModel', 'FieldObj', 'RelationObj', 'StateService', function (MOD_SCHEMA_ASSET_PATH, $q, $timeout, NavigationService, Table, TableDataModel, FieldObj, RelationObj, StateService) {
+    .directive('dfTableTemplate', ['MOD_SCHEMA_ASSET_PATH', '$q', '$timeout', 'NavigationService', 'Table', 'TableDataModel', 'FieldObj', 'RelationObj', 'StateService', 'ServiceListService', 'tableManager', function (MOD_SCHEMA_ASSET_PATH, $q, $timeout, NavigationService, Table, TableDataModel, FieldObj, RelationObj, StateService, ServiceListService, tableManager) {
 
         return {
             restrict: 'E',
@@ -1114,175 +1181,109 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             link: function (scope, elem, attrs, ctrl) {
 
 
+                scope.$on('reload', function(event, args) {
+                    scope.selView = 'empty';
+                })
 
-                scope.$on('table:delete', function(event, args) {
-                    ctrl.childCtrl['table_edit'].deleteTable(args).then(
-                        function () {
-                          //scope.showCreateView = true;
-                          scope.selView = 'empty';
-                        },
-                        function () {
 
-                        }
-                    );
-                });
 
-                scope.$on('table:create:form', function(event, args) {
-                    //NavigationService.setStep('create');
-                    scope.showCreateView = true;
-                    scope.selView = 'create';
-                    ctrl.childCtrl['table_create'].getEmpty(args);
-                });
 
-                scope.$on('table:create:upload', function(event, args) {
-                    //NavigationService.setStep('upload');
-                    scope.showUploadView = true;
-                    scope.selView = 'upload';
-                    ctrl.childCtrl['table_upload'].setDefault();
-                });
+                scope.$on('table', function(event, args) {
 
-                scope.$on('table:edit', function(event, args) {
-
-                    if (args.table !== null) {
-                        //NavigationService.setStep('edit');
-                        scope.showCreateView = true;
-                        scope.selView = 'edit';
-                        ctrl.childCtrl['table_edit'].getTable(args);
+                    switch (args.notify) {
+                        case 'delete':
+                            ctrl.childCtrl['table_edit'].deleteTable(args).then(
+                                function () {
+                                    scope.selView = 'empty';
+                                },
+                                function () {}
+                            );
+                            break;
+                        case 'create:form':
+                            scope.selView = 'create';
+                            ctrl.childCtrl['table_create'].getEmpty(args);
+                            break;
+                        case 'create:upload':
+                            scope.selView = 'upload';
+                            ctrl.childCtrl['table_upload'].setDefault();
+                            break;
+                        case 'edit':
+                            if (args.table !== null) {
+                                scope.selView = 'edit';
+                                ctrl.childCtrl['table_edit'].getTable(args);
+                            }
+                            else {
+                                scope.selView = 'empty';
+                            }
+                            break;
+                        case 'close':
+                            scope.selView = 'empty';
+                            break;
                     }
-                    else {
-                        //NavigationService.setStep('empty');
-                        scope.selView = 'empty';
+                });
+
+                scope.$on('field', function(event, args) {
+
+                    switch (args.notify) {
+                        case 'new:create':
+                            args.value.newTable = true;
+                            scope.newTable = true;
+                            scope.selView = 'field';
+                            scope.fieldEditData = new FieldObj();
+                            scope.tableStatus = args.newTable;
+                            ctrl.childCtrl['field_create'].setTableObj(args);
+                            break;
+                        case 'edit:create':
+                            args.value.newTable = false
+                            scope.newTable = false;
+                            scope.selView = 'field';
+                            scope.fieldEditData = new FieldObj();
+                            scope.tableStatus = args.newTable;
+
+                            var obj = {
+                                newTable: scope.newTable,
+                                value: new FieldObj()
+                            }
+
+                            ctrl.childCtrl['field_create'].setTableObj(obj);
+                            break;
+                        case 'new:close':
+                            scope.selView = 'create';
+                            break;
+                        case 'edit:close':
+                            scope.selView = 'edit';
+                            ctrl.childCtrl['table_create'].getEmpty();
+                            break;
+                        case 'edit':
+                            scope.selView = 'field';
+                            scope.fieldEditData = args.value.field;
+                            break;
+                    }
+
+                });
+
+                scope.$on('relation', function(event, args) {
+
+                    switch (args.notify) {
+                        case 'create':
+                            scope.selView = 'relation';
+                            scope.relationEditData = new RelationObj();
+                            break;
+                        case 'edit':
+                            NavigationService.setStep('relation');
+                            scope.selView = 'relation';
+                            scope.relationEditData = args.value.relation;
+                            break;
+                        case 'close':
+                            scope.selView = 'edit';
+                            ctrl.childCtrl['table_edit'].updateRelations(args.selected);
+                            break;
                     }
                 });
 
-                scope.$on('table:upload:close', function(event, args) {
-                    //NavigationService.setStep('empty');
-                    scope.selView = 'edit';
-                    ctrl.childCtrl['table_edit'].getTable(args);
-
-
-
-                });
-
-                scope.$on('table:create:close', function(event, args) {
-                    //NavigationService.setStep('empty');
-                    scope.selView = 'empty';
-                });
-
-                scope.$on('table:delete:close', function(event, args) {
-                    //NavigationService.setStep('empty');
-                    scope.selView = 'empty';
-                });
-
-                scope.$on('table:edit:close', function(event, args) {
-                    //NavigationService.setStep('empty');
-                    scope.selView = 'empty';
-                });
-
-                scope.$on('table:navigation1:close', function(event, args) {
-                    //NavigationService.setStep('empty');
-                    scope.selView = 'empty';
-                });
-
-
-                scope.$on('table:navigation:edit', function(event, args) {
-                    //NavigationService.setStep('edit');
-                    scope.showEditView = true;
-                    scope.selView = 'edit';
-                });
-
-                scope.$on('table:navigation:create', function(event, args) {
-                    //NavigationService.setStep('create');
-                    scope.showCreateView = true;
-                    scope.selView = 'create';
-                });
 
                 scope.$on('table:navigation:close', function(event, args) {
-                    //NavigationService.setStep('empty');
                     scope.selView = 'empty';
-                });
-
-                scope.$on('table:navigation:field:edit', function(event, args) {
-                    //NavigationService.setStep('field');
-                    scope.showFieldView = true;
-                    scope.selView = 'field';
-                    scope.fieldEditData = args.value.field;
-                });
-
-                scope.$on('table:navigation:field:create', function(event, args) {
-
-                    //NavigationService.setStep('field');
-                    scope.showFieldView = true;
-                    scope.selView = 'field';
-                    scope.fieldEditData = new FieldObj();
-                    ctrl.childCtrl['field_create'].setTableObj(args);
-                });
-
-                scope.$on('table:create:field:create', function(event, args) {
-                    args.value.newTable = true
-                    //NavigationService.setStep('field');
-                    scope.showFieldView = true;
-                    scope.newTable = true;
-                    scope.selView = 'field';
-                    scope.fieldEditData = new FieldObj();
-                    ctrl.childCtrl['field_create'].setTableObj(args);
-                });
-
-                scope.$on('table:edit:field:create', function(event, args) {
-                    args.value.newTable = false
-                    //NavigationService.setStep('field');
-                    scope.newTable = false;
-                    scope.showFieldView = true;
-                    scope.selView = 'field';
-                    scope.fieldEditData = new FieldObj();
-                    ctrl.childCtrl['field_create'].setTableObj(args);
-                });
-
-
-                scope.$on('table:create:field:close', function(event, args) {
-                    //NavigationService.setStep('edit');
-                    scope.showEditView = true;
-                    scope.selView = 'create';
-
-                    var obj = {
-                        table: StateService.get('dftable'),
-                        service: StateService.get('dfservice').name
-                    }
-                    ctrl.childCtrl['table_create'].getCached(obj);
-                });
-
-                scope.$on('table:edit:field:close', function(event, args) {
-                    //NavigationService.setStep('edit');
-                    scope.showEditView = true;
-                    scope.selView = 'edit';
-
-                    var obj = {
-                        table: StateService.get('dftable'),
-                        service: StateService.get('dfservice').name
-                    }
-                    ctrl.childCtrl['table_create'].getEmpty();
-                });
-
-
-                scope.$on('table:navigation:relation:edit', function(event, args) {
-                    NavigationService.setStep('relation');
-                    scope.showRelationView = true;
-                    scope.selView = 'relation';
-                    scope.relationEditData = args.value.relation;
-                });
-
-                scope.$on('table:navigation:relation:create', function(event, args) {
-
-                    //NavigationService.setStep('relation');
-                    scope.showFieldView = true;
-                    scope.selView = 'relation';
-                      scope.relationEditData = new RelationObj();
-                });
-
-                scope.$on('table:navigation:relation:close', function(event, args) {
-                    //NavigationService.setStep('edit');
-                    scope.showEditView = true;
-                    scope.selView = 'edit';
                 });
             }
         }
@@ -1347,6 +1348,27 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 // PUBLIC API
                 scope.saveTable = function () {
+
+                    var tableList = StateService.get('dfservice').components;
+
+                    var index = tableList.findIndex(function (element, index, array) {
+                        return ((element.name === scope.table.record.name) || (element.label === scope.table.record.label));
+                    })
+
+                    if (index !== -1) {
+
+                        var messageOptions = {
+
+                            module: 'Validation Error',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: 'The name/label already exists'
+                        };
+
+                        dfNotify.error(messageOptions);
+
+                        return;
+                    }
 
                     scope._saveTable();
                 }
@@ -1418,7 +1440,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             module: 'Api Error',
                             type: 'error',
                             provider: 'dreamfactory',
-                            message: errMsg
+                            message: errMsg.error.message
                         };
 
                         dfNotify.error(messageOptions);
@@ -1436,7 +1458,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
 
                     scope.table = null;
-                    scope.$emit('table:create:close', false);
+                    scope.$emit('table', {notify: 'close'});
                     scope.currentEditField = null;
                     scope.currentEditRelation = null;
 
@@ -1446,7 +1468,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
       }])
 
 
-      .directive('dfTableEditView', ['INSTANCE_URL', 'MOD_SCHEMA_ASSET_PATH', '$q', 'NavigationService', 'Table', 'TableDataModel', '$http', 'dfNotify', 'tableManager', 'TableObj', 'dfObjectService', 'dfApplicationData', 'StateService', function (INSTANCE_URL, MOD_SCHEMA_ASSET_PATH, $q, NavigationService, Table, TableDataModel, $http, dfNotify, tableManager, TableObj, dfObjectService, dfApplicationData, StateService) {
+      .directive('dfTableEditView', ['INSTANCE_URL', 'MOD_SCHEMA_ASSET_PATH', '$q', 'NavigationService', 'Table', 'TableDataModel', '$http', 'dfNotify', 'tableManager', 'TableObj', 'dfObjectService', 'dfApplicationData', 'StateService', 'ServiceListService', function (INSTANCE_URL, MOD_SCHEMA_ASSET_PATH, $q, NavigationService, Table, TableDataModel, $http, dfNotify, tableManager, TableObj, dfObjectService, dfApplicationData, StateService, ServiceListService) {
         var childNumber = 1;
         return {
             restrict: 'E',
@@ -1495,16 +1517,18 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 newTable: false
                             },
                             record: tables,
-                            recordCopy: tables,
+                            recordCopy: angular.copy(tables),
                             currentService: service.service
                         };
                     })
                 }
 
-                ctrl.updateTable = function (obj) {
-                    //console.log(StateService.get('dfservice'));
-                    //console.log(StateService.get('dftable'));
-                    //console.log(obj);
+
+                ctrl.updateRelations = function (obj) {
+
+                    tableManager.updateRelations(obj).then(function(tables) {
+
+                    })
                 }
 
 
@@ -1571,7 +1595,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject
+                                message: reject.error.message
                             };
 
                             dfNotify.error(messageOptions);
@@ -1593,6 +1617,31 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.updTable = function () {
 
+                    var tableList = StateService.get('dfservice').components;
+
+                    var index = tableList.findIndex(function (element, index, array) {
+                        return ((element.label === scope.table.record.label) && (element.name !== scope.table.record.name));
+                    })
+
+                    if (index !== -1) {
+
+                        var messageOptions = {
+
+                            module: 'Validation Error',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: 'The name/label already exists'
+                        };
+
+                        dfNotify.error(messageOptions);
+
+                        return;
+                    }
+
+                    scope._updTable();
+                }
+
+                scope._updTable = function () {
                     scope.currentService = StateService.get('dfservice');
 
                     scope.table.currentService = {
@@ -1635,6 +1684,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         };
 
                         dfNotify.success(messageOptions);
+
+                        scope._closeTable();
                     })
                     .error(function (errMsg) {
 
@@ -1655,7 +1706,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.closeTable = function () {
 
-                    //scope.$emit('table:navigation:close', false);
                     scope._closeTable();
                 }
 
@@ -1783,16 +1833,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.$on('table:navigation:edit', function(event, args) {
 
-                    NavigationService.setStep('edit');
-
                     scope.currentService = args.value.service;
-
                     scope.showEditView = true;
-                    scope.selView = NavigationService.getStep();
-
+                    scope.selView = 'edit';
                     scope.currentTable = args.value;
                     scope.lastTable = angular.copy(scope.currentTable);
-
                     scope._getTable(args.value);
                 });
 
@@ -1855,10 +1900,20 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             link: function (scope, elem, attrs) {
 
-                scope.addField = function (newTable) {
+                scope.tableStatus = null;
 
+
+                scope.addField = function (newTable) {
+/*
                     if (scope.$parent.table.__dfUI.newTable) {
                         tableManager.setTable(scope.$parent.table, false);
+                    }
+*/
+
+                    scope.tableStatus = newTable.__dfUI.newTable;
+
+                    if (newTable.__dfUI.newTable) {
+                        tableManager.setTable(newTable, false);
                     }
 
                     NavigationService.setStep('field');
@@ -1870,6 +1925,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     var naviObj = {
                         type: 'field',
+                        newTable: newTable.__dfUI.newTable,
+                        notify: null,
                         value: {
                             table: scope.$parent.table.record.name,
                             service: StateService.get('dfservice').name
@@ -1879,11 +1936,16 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     StateService.set('dftable', scope.$parent.table.record.name)
 
                     if (scope.$parent.table.__dfUI.newTable) {
-                        scope.$emit('table:create:field:create', naviObj);
+                        naviObj.notify = 'new:create';
+                        scope.$emit('field', naviObj);
+                        //scope.$emit('table:create:field:create', naviObj);
                     }
                     else {
-                        scope.$emit('table:edit:field:create', naviObj);
+                        naviObj.notify = 'edit:create';
+                        scope.$emit('field', naviObj);
+                        //scope.$emit('table:edit:field:create', naviObj);
                     }
+
                 }
 
                 scope.editField = function (field) {
@@ -1897,13 +1959,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     var naviObj = {
                         type: 'field',
+                        notify: 'edit',
                         value: {
                             field: field,
                             table: scope.currentTable
                         }
                     }
 
-                    scope.$emit('table:navigation:field:edit', naviObj);
+                    scope.$emit('field', naviObj);
                 }
 
                 scope.deleteField = function (field) {
@@ -1921,117 +1984,83 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                       field: field.name
                     };
 
-                    tableManager.deleteField(params).then(function(result) {
+                    tableManager.deleteField(params)
+                    .success(function () {
 
-                        tableManager.getTable(params).then(function(tables) {
+                        var i = 0;
+                        while (i < scope.$parent.table.record.field.length) {
 
-                            var tableFields = tables.field;
+                            if (scope.$parent.table.record.field[i].name === field.name) {
+                                scope.$parent.table.record.field.splice(i, 1);
+                                break;
+                            }
 
-                            var fieldIndex = tableFields.findIndex(function (element, index, array) {
+                            i++;
+                        }
+                    })
+                    .error(function (reject) {
 
-                                return element.name === field.name;
-                            })
+                        var messageOptions = {
+                            module: 'Schema',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: reject.error.message
+                        };
 
-                            tableFields.splice(fieldIndex, 1);
-
-                            tables.field = tableFields;
-
-                            //tableManager.setTable(tables, false);
-                            //tableManager.setTable(new TableObj(tables));
-
-                            scope.$emit('table:fields:update', new TableObj(tables));
-                        });
-
-                    });
-/*
-
-*/
-
-/*
-                    tableManager.getTable(params).then(function(tables) {
-
-                        var tableFields = tables.field;
-
-                        var fieldIndex = tableFields.findIndex(function (element, index, array) {
-
-                            return element.name === field.name;
-                        })
-
-                        tableFields.splice(fieldIndex, 1);
-
-                        tables.field = tableFields;
-
-                        tableManager.setTable(tables, false);
-                        //tableManager.setTable(new TableObj(tables));
-
-                        scope.$emit('table:fields:update', new TableObj(tables));
-                    });
-*/
+                        dfNotify.error(messageOptions);
+                    })
                 }
 
                 scope.setPrimaryField = function (field) {
 
-                    var params = {
-                        service: StateService.get('dfservice'),
-                        table: StateService.get('dftable')
-                    };
+                    var tableFields = scope.$parent.table.record.field;
 
-                    tableManager.getTable(params).then(function(tables) {
+                    var fieldIndex = tableFields.findIndex(function (element, index, array) {
 
-                        var tableFields = tables.field;
+                        return element.name === field.name;
+                    })
 
-                        var fieldIndex = tableFields.findIndex(function (element, index, array) {
+                    var primaryKeyName = null;
 
-                            return element.name === field.name;
-                        })
+                    for (var i = 0; i < tableFields.length; i++) {
+                        if (tableFields[i].name === field.name) {
 
-                        var primaryKeyName = null;
-
-                        for (var i = 0; i < tableFields.length; i++) {
-                            if (tableFields[i].name === field.name) {
-                                tableFields[i].is_primary_key = true;
-                                primaryKeyName = field.name;
-                            }
-                            else {
-                                tableFields[i].is_primary_key = false;
-                                tables.primary_key = null;
-                            }
+                            tableFields[i].is_primary_key = true;
+                            primaryKeyName = field.name;
                         }
+                        else {
+                            tableFields[i].is_primary_key = false;
+                            scope.$parent.table.record.primary_key = null;
+                        }
+                    }
 
-                        tables.field = tableFields;
-                        tables.primary_key = primaryKeyName;
+                    scope.$parent.table.record.field = tableFields;
+                    scope.$parent.table.record.primary_key = primaryKeyName;
 
-                        tableManager.setTable(tables, false);
-
-                        scope.$emit('table:fields:update', new TableObj(tables));
-
-                    });
+                    scope.$emit('table:fields:update', new TableObj(scope.$parent.table.record));
 
                 }
 
                 // Populate Fields table
                 scope.fieldTableData = [];
-                scope.relationTableData = [];
+                //scope.relationTableData = [];
 
                 var fieldDataSubscribe = scope.$watch('tableData', function(newValue, oldValue) {
 
                     scope.fieldTableData = newValue;
-                    scope.relationTableData = newValue;
+                    //scope.relationTableData = newValue;
                 });
 
-                scope.$watch('currentTable', function(newValue, oldValue) {
-
-                    //console.log(newValue);
-                });
 
                 scope.$on('$destroy', function () {
                     fieldDataSubscribe();
                 });
+
             }
         }
     }])
 
-    .directive('dfTableRelationships', ['MOD_SCHEMA_ASSET_PATH', 'NavigationService', function (MOD_SCHEMA_ASSET_PATH, NavigationService) {
+    .directive('dfTableRelationships', ['MOD_SCHEMA_ASSET_PATH', 'NavigationService', 'dfNotify', 'tableManager', 'StateService', function (MOD_SCHEMA_ASSET_PATH, NavigationService, dfNotify, tableManager, StateService) {
 
         return {
             restrict: 'E',
@@ -2058,9 +2087,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                   NavigationService.setStep('relation');
 
-                  scope.viewMode = 'field';
+                  scope.viewMode = 'relation';
                   //scope.currentService = args.value.service;
-                  scope.showFieldView = true;
+                  //scope.showFieldView = true;
                   scope.selView = NavigationService.getStep();
 
   /*
@@ -2071,10 +2100,66 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                       }
                   }
   */
-                  scope.$emit('table:navigation:relation:create', {});
+                  scope.$emit('relation', {notify: 'create'});
 
                 }
 
+
+                scope.deleteRelation = function (relationData) {
+
+                    if (dfNotify.confirm('Are you sure you want to delete relationship ' + relationData.name + '?')) {
+
+                        scope._deleteRelation(relationData);
+                    }
+                };
+
+                scope._deleteRelation = function (relation) {
+
+                      var params = {
+                          service: StateService.get('dfservice').name,
+                          table: StateService.get('dftable'),
+                          relation: relation.name
+                      }
+
+                      var relations = scope.$parent.table.record.related;
+
+                      tableManager.deleteRelation(params)
+                      .success(function (result) {
+
+                          var i = 0;
+                          while (i < scope.$parent.table.record.related.length) {
+
+                              if (scope.$parent.table.record.related[i].name === relation.name) {
+                                  scope.$parent.table.record.related.splice(i, 1);
+                                  break;
+                              }
+
+                              i++;
+                          }
+
+                      })
+                      .error(function (reject) {
+
+                          var messageOptions = {
+                              module: 'Schema',
+                              type: 'error',
+                              provider: 'dreamfactory',
+                              message: reject.error.message
+                          };
+
+                          dfNotify.error(messageOptions);
+                      })
+
+                  };
+
+                  scope._deleteRelationFromTableOnServer = function (requestDataObj) {
+
+                      return $http({
+                          method: 'DELETE',
+                          url: INSTANCE_URL + '/api/v2/' + requestDataObj.path
+                      })
+
+                  };
 
                 scope.editRelation = function (relation) {
 
@@ -2087,13 +2172,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     var naviObj = {
                         type: 'relation',
+                        notify: 'edit',
                         value: {
                             relation: relation,
                             table: scope.currentTable
                         }
                     }
 
-                    scope.$emit('table:navigation:relation:edit', naviObj);
+                    scope.$emit('relation', naviObj);
                 }
 
 
@@ -2109,6 +2195,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope.$on('$destroy', function () {
                     relationshipDataSubscribe();
                 });
+
             }
         }
     }])
@@ -2130,16 +2217,32 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 $scope.currentTableObj = null;
 
+                $scope.initField = new FieldObj();
+
+                $scope.isNewTable = null;
+
+
                 var ctrl = this;
 
+                ctrl.initFieldValue = 'qwe';
+
                 ctrl.setTableObj = function (obj) {
+
+                    $scope.isNewTable = obj.newTable;
 
                     tableManager.getTable(obj.value).then(function (result) {
 
                         $scope.currentTableObj = result;
                         //$scope.field = new FieldObj(result);
+                        //$scope.field = new FieldObj();
                     })
                 }
+
+                ctrl.loadInitValue = function (value) {
+
+                    $scope.initField = value;
+                }
+
             },
             link: function (scope, elem, attrs, ctrls) {
 
@@ -2149,142 +2252,121 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 parentCtrl.register('field_create', childCtrl);
 
 
-              scope.field = null;
+                scope.typeOptions = FieldOptions.typeOptions;
+                scope.returnTypeOptions = FieldOptions.returnTypeOptions;
+                scope.helpText = FieldOptions.helpText
 
-              scope.typeOptions = FieldOptions.typeOptions;
-              scope.returnTypeOptions = FieldOptions.returnTypeOptions;
-              scope.helpText = FieldOptions.helpText
+                scope.fieldTableData = '';
 
-              scope.fieldTableData = '';
+                scope.updField = function (value) {
 
-              scope.updField = function (value) {
+                    scope.parentTable = StateService.get('dftable');
 
-                  scope.parentTable = StateService.get('dftable'); //scope.$parent.$parent.currentTable;
+    /*
+                    tableManager.getTable(scope.field.record.name).then(function (result) {
+                        //console.log(result);
+                    })
+    */
 
-/*
-                  tableManager.getTable(scope.field.record.name).then(function (result) {
-                      //console.log(result);
-                  })
-*/
+                    if (scope.currentTableObj) {
 
-                  if (scope.currentTableObj) {
+                      tableManager.setField(scope.currentTableObj, scope.field, !scope.tableStatus);
+                      //tableManager.getField(scope.field.record.name, scope.currentTableObj);
+                    }
+                    else {
 
-                    tableManager.setField(scope.currentTableObj, scope.field);
-                    //tableManager.getField(scope.field.record.name, scope.currentTableObj);
+                        if (scope.tableStatus) {
+
+                        }
+                        else {
+                            tableManager.setField(scope.parentTable, scope.field, !scope.tableStatus);
+                        }
+
+
+                        tableManager.setField(scope.parentTable, scope.field, !scope.tableStatus);
+                        //tableManager.getField(scope.field.record.name, scope.parentTable);
+                    }
+                    scope.field.recordCopy = angular.copy(scope.field.record)
+
+                    scope._closeField();
+                }
+
+
+                scope.closeField = function (noConfirm) {
+
+                    if (!dfObjectService.compareObjectsAsJson(scope.field.record, scope.field.recordCopy)) {
+
+                        if (!noConfirm && !dfNotify.confirmNoSave()) {
+                            return false;
+                        }
+
+                        // Undo changes to related record object
+                        dfObjectService.mergeObjects(scope.field.recordCopy, scope.field.record)
+                    }
+
+                    scope._closeField();
+                };
+
+
+                scope._closeField = function () {
+
+                  if (scope.tableStatus) {
+
+                    var obj = {
+                        notify: 'new:close',
+                        field: scope.field
+                    }
+
+                    scope.$emit('field', obj);
                   }
                   else {
 
-                      tableManager.setField(scope.parentTable, scope.field);
-                      //tableManager.getField(scope.field.record.name, scope.parentTable);
+                    var obj = {
+                        notify: 'edit:close',
+                        field: scope.field
+                    }
+
+                    scope.$emit('field', obj);
                   }
-                  scope.field.recordCopy = angular.copy(scope.field.record)
-              }
-
-
-              scope.closeField = function (noConfirm) {
-
-                  if (!dfObjectService.compareObjectsAsJson(scope.field.record, scope.field.recordCopy)) {
-
-                      if (!noConfirm && !dfNotify.confirmNoSave()) {
-                          return false;
-                      }
-
-                      // Undo changes to related record object
-                      dfObjectService.mergeObjects(scope.field.recordCopy, scope.field.record)
-                  }
-
-                  scope._closeField();
-              };
-
-
-              scope._closeField = function () {
-
-                if (scope.tableStatus) {
-
-                  scope.$emit('table:create:field:close', scope.field);
+                    //scope.$emit('table:navigation:field:close', scope.field);
                 }
-                else {
-                  scope.$emit('table:edit:field:close', scope.field);
+
+                scope._updateOnServer = function (table) {
+
+                    var deferred = $q.defer();
+                    var result = tableManager.setTable(table);
+                    if (result) {
+                        deferred.resolve(result);
+                    } else {
+                        deferred.reject(result);
+                    }
+                    return deferred.promise;
                 }
-                  //scope.$emit('table:navigation:field:close', scope.field);
-              }
 
+                var watchFieldData = scope.$watch('fieldData', function (newValue, oldValue) {
 
+                    if (!newValue) return;
 
-
-
-
-              scope._updateOnServer = function (table) {
-
-                  var deferred = $q.defer();
-                  var result = tableManager.setTable(table);
-                  if (result) {
-                      deferred.resolve(result);
-                  } else {
-                      deferred.reject(result);
-                  }
-                  return deferred.promise;
-              }
-
-
-
-
-
-              var watchFieldData = scope.$watch('selectedView1', function (newValue, oldValue) {
-
-                  if (!newValue) return;
-
-                  if (newValue === 'field') {
-
-
-                  }
-
-
-              });
-
-
-
-
-              var watchFieldData = scope.$watch('fieldData', function (newValue, oldValue) {
-
-                  if (!newValue) return;
-
-                  if (newValue.hasOwnProperty('__dfUI')) {
-                      scope.field = newValue;
-                  }
-                  else {
-                      scope.field = new FieldObj(newValue);
-                  }
-
-/*
-                  if (!newValue.record.ref_table) {
-                      scope.refFields = null;
-                  }
-
-                  var params = {
-                      service: StateService.get('dfservice'),
-                      table: StateService.get('dftable')
-                  };
-
-                  tableManager.getTable(params).then(function(tables) {
-                      //$scope.books = books
-                  });
-*/
-              });
-
+                    if (newValue.hasOwnProperty('__dfUI')) {
+                        scope.field = newValue;
+                    }
+                    else {
+                        scope.field = new FieldObj(newValue);
+                    }
+                    //watchFieldData();
+                });
 
                 // MESSAGES
                 scope.$on('$destroy', function (e) {
 
                     watchFieldData();
                 });
-
             }
-
         }
     }])
 
-    .directive('dfRelationDetails', ['MOD_SCHEMA_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfNotify', 'dfObjectService', 'dfApplicationData', 'StateService', 'RelationObj', function (MOD_SCHEMA_ASSET_PATH, INSTANCE_URL, $http, dfNotify, dfObjectService, dfApplicationData, StateService, RelationObj) {
+
+    .directive('dfRelationDetails', ['MOD_SCHEMA_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfNotify', 'dfObjectService', 'dfApplicationData', 'StateService', 'RelationObj', 'ServiceListService', 'tableManager', function (MOD_SCHEMA_ASSET_PATH, INSTANCE_URL, $http, dfNotify, dfObjectService, dfApplicationData, StateService, RelationObj, ServiceListService, tableManager) {
 
           return {
             restrict: 'E',
@@ -2297,8 +2379,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             link: function (scope, elem, attrs) {
 
               scope.relation = null;
-
-
 
               scope.updField = function (value) {
 
@@ -2322,7 +2402,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                       tables.field = tableFields;
 
                       scope._updateOnServer(tables).then(function (result) {
-                          //console.log(result);
+
                       })
                   });
                 }
@@ -2330,9 +2410,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
               scope.closeField = function (value) {
 
-                  //console.log('closeField ' + value);
               }
-
 
               scope._updateOnServer = function (table) {
 
@@ -2345,38 +2423,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                   }
                   return deferred.promise;
               }
-/*
-                var Relation = function (relationData) {
 
-                    var _new = {
-                        alias: null,
-                        always_fetch: false,
-                        description: null,
-                        field: null,
-                        is_virtual: true,
-                        junction_field: null,
-                        junction_ref_field: null,
-                        junction_service_id: null,
-                        junction_table: null,
-                        label: null,
-                        name: null,
-                        ref_field: null,
-                        ref_service_id: null,
-                        ref_table: null,
-                        type: null
-                    };
-
-                    relationData = relationData || _new;
-
-                    return {
-                        __dfUI: {
-                            newRelation: relationData.type == null
-                        },
-                        record: relationData,
-                        recordCopy: angular.copy(relationData)
-                    }
-                };
-*/
                 var Service = function (schemaData) {
 
                     function getSchemaComponents(array) {
@@ -2448,7 +2495,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope.saveRelation = function (newTable) {
 
                     scope._saveRelation(newTable);
-                    scope._closeRelation();
+                    //scope._closeRelation();
                 }
 
                 scope.changeReferenceService = function () {
@@ -2460,17 +2507,19 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 // PRIVATE API
                 scope._loadFields = function () {
+
+                  scope._loadReferenceServices();
 /*
                     if (scope.currentTable === null || scope.$parent.table.__dfUI.newTable === true) {
                         scope.fields = scope.$parent.table.record.field
                         return;
                     }
 */
-                    //$http.get(INSTANCE_URL + '/api/v2/' + scope.relationData.currentService.name + '/_schema/' + scope.currentTable + '/_field/').then(
-                    $http.get(INSTANCE_URL + '/api/v2/' + StateService.get('dfservice').name + '/_schema/' + StateService.get('dftable')).then(
+                    $http.get(INSTANCE_URL + '/api/v2/' + StateService.get('dfservice').name + '/_schema/' + StateService.get('dftable') + '/_field/').then(
+
                         function (result) {
 
-                            scope.fields = result.data.field;
+                            scope.fields = result.data.resource;
                         },
                         function (reject) {
 
@@ -2479,7 +2528,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject
+                                message: reject.error.message
                             };
 
                             dfNotify.error(messageOptions);
@@ -2504,8 +2553,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                       return null;
                     }
 
-                    return StateService.get('dfservice');//scope.relationData.currentService.name;
+                    return StateService.get('dfservice');
                 };
+
+                scope._loadReferenceServices = function () {
+
+                    scope.refServices = ServiceListService.getServices();
+                }
+
 
                 scope._loadReferenceTables = function () {
 
@@ -2523,7 +2578,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject
+                                message: reject.error.message
                             };
 
                             dfNotify.error(messageOptions);
@@ -2553,7 +2608,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject
+                                message: reject.error.message
                             };
 
                             dfNotify.error(messageOptions);
@@ -2588,7 +2643,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject
+                                message: reject.error.message
                             };
 
                             dfNotify.error(messageOptions);
@@ -2620,7 +2675,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject
+                                message: reject.error.message
                             };
 
                             dfNotify.error(messageOptions);
@@ -2630,35 +2685,21 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 };
 
 
-                scope._saveRelationToServer = function () {
-
-                    var recordObj = {
-                        related: [angular.copy(scope.relation.record)]
-                    };
-
-                    var service = scope.$parent.$parent.currentService.name;
-
-                    return $http({
-                        url: INSTANCE_URL + '/api/v2/' + service + '/_schema/' + scope.currentTable,
-                        method: 'PATCH',
-                        data: recordObj
-                    }).then(
-                        function (result) {
-
-                            // Refresh the table
-                            scope.$emit('refresh:table');
-                        }
-                    );
-
-                    scope._closeRelation();
-                };
-
-
                 // COMPLEX IMPLEMENTATION
                 scope._closeRelation = function () {
 
-                    scope.relationData = null;
-                    scope.$parent.$parent.getTable();
+                  //  scope.relationData = null;
+                    //scope.$parent.$parent.getTable();
+
+                    var params = {
+                        notify: 'close',
+                        selected: {
+                            service: StateService.get('dfservice'),
+                            table: StateService.get('dftable')
+                        }
+                    }
+
+                    scope.$emit('relation', params);
                 };
 
                 scope._saveRelation = function (newTable) {
@@ -2667,36 +2708,28 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     if (newTable === true) return;
 
-                    scope._saveRelationToServer().then(
-                        function (result) {
+                    var params = {
+                        service: StateService.get('dfservice').name,
+                        table: StateService.get('dftable')
+                    }
 
-                            var messageOptions = {
-                                module: 'Schema',
-                                type: 'success',
-                                provider: 'dreamfactory',
-                                message: 'Relation saved.'
-                            };
+                    tableManager.saveRelation(params, scope.relation.record)
 
-                            dfNotify.success(messageOptions);
+                    .success(function () {
+                        scope._closeRelation();
+                    })
+                    .error(function (reject) {
 
-                            // Reset relation object
-                            scope.relation = new Relation(scope.relation.record);
-                        },
+                      var messageOptions = {
 
-                        function (reject) {
+                          module: 'Api Error',
+                          type: 'error',
+                          provider: 'dreamfactory',
+                          message: reject.error.message
+                      };
 
-
-                            var messageOptions = {
-                                module: 'Schema',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            };
-
-                            dfNotify.error(messageOptions);
-
-                        }
-                    );
+                      dfNotify.success(messageOptions);
+                    });
                 };
 
                 // WATCHERS
@@ -2733,32 +2766,23 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         scope.junctionFields = null;
                     }
 
-                    /*
-                    if (!scope.fields) {
-                        scope._loadFields();
-                    }
-                    if (newValue.record.ref_table) {
-                        scope._loadReferenceTables();
-                        scope._loadReferenceFields();
-                    } else {
-                        scope.refFields = null;
-                    }
-                    if (newValue.record.junction_table) {
-                        scope._loadJunctionTables();
-                        scope._loadJunctionFields();
-                    } else {
-                        scope.junctionFields = null;
-                    }
-                    */
-
                 });
 
                 scope.$watch('schemaData', function(newValue) {
 
                     if (!newValue) return;
 
-                    scope.refServices = newValue;
+                    //scope.refServices = newValue;
                 });
+
+
+
+                // MESSAGES
+                scope.$on('$destroy', function (e) {
+
+                    watchRelationData();
+                });
+
 
                 scope.helpText = {
                     'is_virtual': {
@@ -2768,11 +2792,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 };
 
 
-                // MESSAGES
-                scope.$on('$destroy', function (e) {
-
-                    watchRelationData();
-                });
 
             }
         }
@@ -2791,7 +2810,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     tableManager.clearPool();
 
-                    scope.$broadcast('table:navigation1:close', false);
+                    scope.$broadcast('table', {notify: 'close'});
 
                     scope.currentTable = null;
                     StateService.set('dfservice', scope.currentService);
@@ -2802,6 +2821,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     var naviObj = {
                         type: selected,
+                        notify: 'create:' + selected,
                         value: {
                             service: scope.currentService.name
                         }
@@ -2809,33 +2829,43 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     scope.currentTable = '';
 
-                    scope.$broadcast('table:create:' + selected, naviObj);
+                    //scope.$broadcast('table:create:' + selected, naviObj);
+                    scope.$broadcast('table', naviObj);
                 }
 
                 scope.deleteTable = function () {
 
                     var params = {
                         table: scope.currentTable,
-                        service: scope.currentService
+                        service: scope.currentService,
+                        notify: 'delete'
                     }
 
-                    scope.$broadcast('table:delete', params);
+                    scope.$broadcast('table', params);
+                    //scope.$broadcast('table:delete', params);
                 };
 
                 scope.tableSelect = function(test) {
 
                   var params = {
                       table: scope.currentTable,
-                      service: scope.currentService.name
+                      service: scope.currentService.name,
+                      notify: 'edit'
                   }
 
                     StateService.set('dftable', scope.currentTable);
 
-                    scope.$broadcast('table:edit', params);
+                    scope.$broadcast('table', params);
                 };
 
                 scope.reload = function() {
-                    ServiceListService.getServices();
+
+                  tableManager.clearPool();
+                  scope.selView = 'empty';
+                  scope.currentService = null;
+                  scope.currentTable = null;
+                  ServiceListService.getServices(true);
+                  scope.$broadcast('reload');
                 }
 
                 scope.$on('table:navigation:select', function (event, args) {
@@ -2845,10 +2875,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                         var params = {
                             table: args.table,
-                            service: args.service
+                            service: args.service,
+                            notify: 'edit'
                         }
 
-                        scope.$broadcast('table:edit', params);
+                        scope.$broadcast('table', params);
                     }
                 });
 
@@ -2906,7 +2937,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 ctrl.setDefault = function () {
 
                     $scope.uploadSchemaData = SchemaJSONData.schemaJSON;
-                    //console.log(service);
                 }
             },
             link: function (scope, elem, attrs, ctrls) {
@@ -2974,6 +3004,29 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
 
                 scope.uploadSchema = function () {
+
+                    var editorData = angular.fromJson(scope.uploadEditor.getValue());
+
+                    var tableList = StateService.get('dfservice').components;
+
+                    var index = tableList.findIndex(function (element, index, array) {
+                        return ((element.name === editorData.resource[0].name) || (element.label === editorData.resource[0].label));
+                    })
+
+                    if (index !== -1) {
+
+                        var messageOptions = {
+
+                            module: 'Validation Error',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: 'The name/label already exists'
+                        };
+
+                        dfNotify.error(messageOptions);
+
+                        return;
+                    }
 
                     scope._uploadSchema();
                 };
@@ -3055,7 +3108,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject
+                                message: reject.error.message
                             };
 
 
@@ -3083,7 +3136,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         }
                     }
 
-                    scope.$emit('table:create:close', {});
+                    scope.$emit('table', {notify: 'close'});
                 }
             }
         }

@@ -29,7 +29,8 @@
         <span ng-show="propertyName == 'required' && !reverse" class="fa fa-caret-down"></span>
         <span ng-show="propertyName == 'required' && reverse" class="fa fa-caret-up"></span>
     </th>
-    <tr data-ng-repeat="field in fieldTableData | orderBy:propertyName:reverse track by $index ">
+    <!--tr data-ng-repeat="field in fieldTableData | orderBy:propertyName:reverse track by $index "-->
+    <tr data-ng-repeat="field in $parent.table.record.field | orderBy:propertyName:reverse track by $index ">
         <td>
             <button type="button" class="btn btn-default btn-xs" data-ng-click="deleteField(field)"
                     title="Delete field"><i class="fa fa-fw fa-trash"></i></button>
