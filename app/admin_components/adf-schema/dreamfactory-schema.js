@@ -4,7 +4,6 @@
 angular.module('dfSchema', ['ngRoute', 'dfUtility'])
     .constant('MOD_SCHEMA_ROUTER_PATH', '/schema')
     .constant('MOD_SCHEMA_ASSET_PATH', 'admin_components/adf-schema/')
-
     .config(['$routeProvider', 'MOD_SCHEMA_ROUTER_PATH', 'MOD_SCHEMA_ASSET_PATH',
         function ($routeProvider, MOD_SCHEMA_ROUTER_PATH, MOD_SCHEMA_ASSET_PATH) {
             $routeProvider
@@ -399,7 +398,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         if(saveToServer) {
                           return table.update({
                               service: StateService.get('dfservice').name,
-                              table: StateService.get('dftable')
+                              table: tableName
                           });
                         }
                     } else {
@@ -478,11 +477,21 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 var data = {
                     resource: [
-                        relationData//scope.relation.record
+                        relationData.record
                     ]
                 };
 
-                return $http.post(INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_related', data);
+                if (relationData.__dfUI.newRelation) {
+                    return $http.post(INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_related', data);
+                }
+                else {
+
+                    return $http({
+                      method: 'PATCH',
+                      url: INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_related',
+                      data: data
+                    })
+                }
             },
             saveRelation: function (params, relationData) {
 
@@ -1231,7 +1240,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             scope.selView = 'field';
                             scope.fieldEditData = new FieldObj();
                             scope.tableStatus = args.newTable;
-                            ctrl.childCtrl['field_create'].setTableObj(args);
                             break;
                         case 'edit:create':
                             args.value.newTable = false
@@ -1239,13 +1247,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             scope.selView = 'field';
                             scope.fieldEditData = new FieldObj();
                             scope.tableStatus = args.newTable;
-
-                            var obj = {
-                                newTable: scope.newTable,
-                                value: new FieldObj()
-                            }
-
-                            ctrl.childCtrl['field_create'].setTableObj(obj);
                             break;
                         case 'new:close':
                             scope.selView = 'create';
@@ -1330,7 +1331,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 newTable: true
                             },
                             record: tables,
-                            recordCopy: tables,
+                            recordCopy: angular.copy(tables),
                             currentService: service.service
                         };
                     })
@@ -1685,7 +1686,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                         dfNotify.success(messageOptions);
 
-                        scope._closeTable();
+                        scope.table.recordCopy = angular.copy(scope.table.record);
                     })
                     .error(function (errMsg) {
 
@@ -1699,9 +1700,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                         dfNotify.error(messageOptions);
                     })
-
-
-
                 };
 
                 scope.closeTable = function () {
@@ -1721,7 +1719,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     scope.table = null;
 
-                    scope.$emit('table:navigation:close', false);
+                    var closeObj = {
+                        service: StateService.get('dfservice')
+                    };
+
+                    scope.$emit('table:navigation:close', closeObj);
                 };
 
 
@@ -1916,11 +1918,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         tableManager.setTable(newTable, false);
                     }
 
-                    NavigationService.setStep('field');
-
                     scope.viewMode = 'field';
                     scope.showFieldView = true;
-                    scope.selView = NavigationService.getStep();
+                    scope.selView = 'field';
 
 
                     var naviObj = {
@@ -2215,33 +2215,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-field-details.html',
             controller: function ($scope) {
 
-                $scope.currentTableObj = null;
-
-                $scope.initField = new FieldObj();
-
                 $scope.isNewTable = null;
 
-
                 var ctrl = this;
-
-                ctrl.initFieldValue = 'qwe';
-
-                ctrl.setTableObj = function (obj) {
-
-                    $scope.isNewTable = obj.newTable;
-
-                    tableManager.getTable(obj.value).then(function (result) {
-
-                        $scope.currentTableObj = result;
-                        //$scope.field = new FieldObj(result);
-                        //$scope.field = new FieldObj();
-                    })
-                }
-
-                ctrl.loadInitValue = function (value) {
-
-                    $scope.initField = value;
-                }
 
             },
             link: function (scope, elem, attrs, ctrls) {
@@ -2250,7 +2226,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 var  parentCtrl = ctrls[1];
 
                 parentCtrl.register('field_create', childCtrl);
-
 
                 scope.typeOptions = FieldOptions.typeOptions;
                 scope.returnTypeOptions = FieldOptions.returnTypeOptions;
@@ -2262,30 +2237,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     scope.parentTable = StateService.get('dftable');
 
-    /*
-                    tableManager.getTable(scope.field.record.name).then(function (result) {
-                        //console.log(result);
-                    })
-    */
+                    tableManager.setField(scope.parentTable, scope.field, !scope.tableStatus);
 
-                    if (scope.currentTableObj) {
-
-                      tableManager.setField(scope.currentTableObj, scope.field, !scope.tableStatus);
-                      //tableManager.getField(scope.field.record.name, scope.currentTableObj);
-                    }
-                    else {
-
-                        if (scope.tableStatus) {
-
-                        }
-                        else {
-                            tableManager.setField(scope.parentTable, scope.field, !scope.tableStatus);
-                        }
-
-
-                        tableManager.setField(scope.parentTable, scope.field, !scope.tableStatus);
-                        //tableManager.getField(scope.field.record.name, scope.parentTable);
-                    }
                     scope.field.recordCopy = angular.copy(scope.field.record)
 
                     scope._closeField();
@@ -2415,7 +2368,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
               scope._updateOnServer = function (table) {
 
                   var deferred = $q.defer();
-                  var result = tableManager.setTable(table);
+                  var result = tableManager.setTable(table, true);
                   if (result) {
                       deferred.resolve(result);
                   } else {
@@ -2713,7 +2666,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         table: StateService.get('dftable')
                     }
 
-                    tableManager.saveRelation(params, scope.relation.record)
+                    tableManager.saveRelation(params, scope.relation)
 
                     .success(function () {
                         scope._closeRelation();
@@ -2845,7 +2798,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     //scope.$broadcast('table:delete', params);
                 };
 
-                scope.tableSelect = function(test) {
+                scope.tableSelect = function(obj) {
 
                   var params = {
                       table: scope.currentTable,
@@ -2861,11 +2814,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope.reload = function() {
 
                   tableManager.clearPool();
-                  scope.selView = 'empty';
-                  scope.currentService = null;
-                  scope.currentTable = null;
-                  ServiceListService.getServices(true);
-                  scope.$broadcast('reload');
+                  scope.tableSelect();
                 }
 
                 scope.$on('table:navigation:select', function (event, args) {
@@ -2885,7 +2834,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.$on('table:navigation:close', function(event, args) {
 
-                    scope.currentService = 0;
+                    scope.currentService = args.service;
                     scope.currentTable = '';
                 });
             }
