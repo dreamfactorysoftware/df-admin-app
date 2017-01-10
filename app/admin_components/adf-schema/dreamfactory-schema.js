@@ -1224,15 +1224,15 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         label: null,
                         length: null,
                         name: null,
+                        picklist: null,
                         precision: null,
-                        ref_field: '',
-                        ref_table: '',
+                        ref_field: null,
+                        ref_table: null,
                         required: false,
                         scale: 0,
                         supports_multibyte: false,
                         type: null,
-                        validation: null,
-                        value: []
+                        validation: null
                     };
 
                     fieldData = fieldData || _new;
@@ -1455,13 +1455,18 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 };
 
                 scope._addDbFunctionUse = function () {
+                    if (!scope.field.record.db_function) {
+                        scope.field.record.db_function = [];
+                    }
 
                     scope.field.record.db_function.push({'use': [], 'function': ''});
                 };
 
                 scope._removeDbFunctionUse = function (objIndex) {
-                    if (scope.field.record.db_function[objIndex]) {
-                        scope.field.record.db_function.splice(objIndex, 1);
+                    if (scope.field.record.db_function) {
+                        if (scope.field.record.db_function[objIndex]) {
+                            scope.field.record.db_function.splice(objIndex, 1);
+                        }
                     }
                 };
 
@@ -1500,7 +1505,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     },
                     db_function: {
                         title: 'DB Function',
-                        text: 'Enter a db function like max(fieldname) or concat(field1, \'.\', field2). Supported DB functions to apply to this field. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Database_Functions" target="_blank">here</a> for more info.'
+                        text: 'Enter valid syntax for a database function supported by this database vendor, like upper(fieldname), max(fieldname) or concat(field1, \'.\', field2), to apply to this field for various operations. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Database_Functions" target="_blank">here</a> for more info.'
                     },
                     virtual_field: {
                         title: 'Virtual Field',
