@@ -1,0 +1,10 @@
+<div class="saml-auth-providers">
+    <div class="panel panel-default" data-ng-if="samls.length !== 0">
+        <div class="panel-heading">SAML 2.0 Login</div>
+        <div class="panel-body">
+            <span style="margin-right:10px" ng-repeat="(key, val) in samls">
+                <a href="/api/v2/{{val.path}}">{{val.label}}</a>
+            </span>
+        </div>
+    </div>
+</div>

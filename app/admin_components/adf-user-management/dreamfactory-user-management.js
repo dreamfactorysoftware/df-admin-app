@@ -1378,6 +1378,22 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             }
     }])
 
+    .directive('dreamfactorySamlAuthProviders', ['MODUSRMNGR_ASSET_PATH', '_dfObjectService', 'UserDataService', 'UserEventsService', 'SystemConfigDataService',
+        function(MODUSRMNGR_ASSET_PATH, _dfObjectService, UserDataService, UserEventsService, SystemConfigDataService) {
+
+            return {
+
+                restrict: 'E',
+                replace: true,
+                templateUrl: MODUSRMNGR_ASSET_PATH + 'views/saml-auth-providers.html',
+                scope: false,
+                link: function(scope, elem, attrs) {
+                    scope.systemConfig = SystemConfigDataService.getSystemConfig();
+                    scope.samls = scope.systemConfig.authentication.saml;
+                }
+            }
+        }])
+
     // Enter confirmation code page
     .directive('dreamfactoryConfirmUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$location', '$http', '_dfObjectService', '_dfStringService', 'UserDataService', 'UserEventsService', 'SystemConfigDataService',
         function(MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $location, $http, _dfObjectService, _dfStringService, UserDataService, UserEventsService, SystemConfigDataService) {
