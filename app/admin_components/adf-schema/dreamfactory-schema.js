@@ -226,41 +226,12 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             },
             update: function(params) {
 
-                return $http.put(INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table, this);
-            },
-            update1: function(params, data) {
-                var deferred = $q.defer();
-
-                $http.put(INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table, this)
-                .success(function () {
-
-                    var messageOptions = {
-                        module: 'Schema',
-                        type: 'success',
-                        provider: 'dreamfactory',
-                        message: 'Table saved successfully.'
-                    };
-
-                    dfNotify.success(messageOptions);
-
-                    deferred.resolve(true);
+                //return $http.put(INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table, this);
+                return $http({
+                  method: 'PATCH',
+                  url: INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table,
+                  data: this
                 })
-                .error(function (reject) {
-
-                  var messageOptions = {
-
-                      module: 'Api Error',
-                      type: 'error',
-                      provider: 'dreamfactory',
-                      message: reject.error.message
-                  };
-
-                  dfNotify.success(messageOptions);
-
-                  deferred.reject();
-                });
-
-                return deferred.promise;
             },
             _saveField: function (params, fieldData) {
 
