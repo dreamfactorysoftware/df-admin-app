@@ -1390,6 +1390,9 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 link: function(scope, elem, attrs) {
                     scope.systemConfig = SystemConfigDataService.getSystemConfig();
                     scope.samls = scope.systemConfig.authentication.saml;
+                    scope.loginWithProvider = function (providerData) {
+                        window.top.location.href = '/api/v2/' + providerData;
+                    }
                 }
             }
         }])
