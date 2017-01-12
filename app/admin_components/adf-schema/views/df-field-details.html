@@ -15,6 +15,22 @@
     <input class="form-control" type="text" data-ng-model="field.record.label"/>
     <br/>
 
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" data-ng-model="field.record.is_virtual"/>
+            Is Virtual?</label>
+        <df-simple-help data-options="helpText.virtual_field"></df-simple-help>
+    </div>
+
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" data-ng-disabled="!field.record.is_virtual"
+                   data-ng-model="field.record.is_aggregate"/>
+            Is Aggregate?</label>
+        <df-simple-help data-options="helpText.aggregate_field"></df-simple-help>
+    </div>
+    <br/>
+
     <label>Type</label>
     <df-simple-help data-options="helpText.type"></df-simple-help>
     <select data-ng-options="type.value as type.name for type in typeOptions" class="form-control"
