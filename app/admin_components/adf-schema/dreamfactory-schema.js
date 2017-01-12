@@ -613,12 +613,15 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
               db_type: null,
               default: null,
               fixed_length: false,
+              is_aggregate: false,
               is_foreign_key: false,
               is_primary_key: false,
               is_unique: false,
+              is_virtual: false,
               label: null,
               length: null,
               name: null,
+              picklist: null,
               precision: null,
               ref_field: '',
               ref_table: '',
@@ -641,7 +644,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 },
                 record: fieldData1,
                 recordCopy: angular.copy(fieldData1),
-                //currentService: currentService
           }
         }
     })
@@ -771,8 +773,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             {name: "user_id_on_update", value: "user_id_on_update"},
             {name: "timestamp", value: "timestamp"},
             {name: "timestamp_on_create", value: "timestamp_on_create"},
-            {name: "timestamp_on_update", value: "timestamp_on_update"},
-            {name: "virtual", value: "virtual"}
+            {name: "timestamp_on_update", value: "timestamp_on_update"}
         ];
 
         this.returnTypeOptions = [
@@ -808,7 +809,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             },
             db_function: {
                 title: 'DB Function',
-                text: 'Enter a db function like max(fieldname) or concat(field1, \'.\', field2)'
+                text: 'Enter valid syntax for a database function supported by this database vendor, like upper(fieldname), max(fieldname) or concat(field1, \'.\', field2), to apply to this field for various operations. See <a href="http://wiki.dreamfactory.com/DreamFactory/Features/Database/Schema#Database_Functions" target="_blank">here</a> for more info.'
             },
             validation: {
                 title: 'Validation',
