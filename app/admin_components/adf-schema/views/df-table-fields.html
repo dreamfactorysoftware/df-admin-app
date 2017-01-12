@@ -2,7 +2,7 @@
 <div class="form-group well well-sm">
     <label>Fields</label>
     <button type="button" class="btn btn-default btn-sm" data-ng-click="addField($parent.table)" title="Add field"
-            data-ng-disabled="viewMode === 'json'">
+            data-ng-disabled="viewMode === 'json' || $parent.table.record.name === null">
         Add Field
     </button>
 </div>
