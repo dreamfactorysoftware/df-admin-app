@@ -2,7 +2,7 @@
     <label>Name</label>
     <df-simple-help data-options="helpText.name"></df-simple-help>
     <input class="form-control" type="text" data-ng-model="field.record.name"
-           data-ng-disabled="!field.__dfUI.newField"/>
+           data-ng-disabled="!field.__dfUI.newField && !tableStatus"/>
     <br/>
 
     <label>Alias</label>
