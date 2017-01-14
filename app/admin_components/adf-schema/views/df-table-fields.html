@@ -2,7 +2,7 @@
 <div class="form-group well well-sm">
     <label>Fields</label>
     <button type="button" class="btn btn-default btn-sm" data-ng-click="addField($parent.table)" title="Add field"
-            data-ng-disabled="viewMode === 'json' || $parent.table.record.name === null">
+            data-ng-disabled="viewMode === 'json'">
         Add Field
     </button>
 </div>
@@ -24,6 +24,16 @@
         <span ng-show="propertyName == 'type' && !reverse" class="fa fa-caret-down"></span>
         <span ng-show="propertyName == 'type' && reverse" class="fa fa-caret-up"></span>
     </th>
+    <th ng-click="sortBy('type')">
+        Virtual
+        <span ng-show="propertyName == 'is_virtual' && !reverse" class="fa fa-caret-down"></span>
+        <span ng-show="propertyName == 'is_virtual' && reverse" class="fa fa-caret-up"></span>
+    </th>
+    <th ng-click="sortBy('type')">
+        Aggregate
+        <span ng-show="propertyName == 'is_aggregate' && !reverse" class="fa fa-caret-down"></span>
+        <span ng-show="propertyName == 'is_aggregate' && reverse" class="fa fa-caret-up"></span>
+    </th>
     <th ng-click="sortBy('required')">
         Required
         <span ng-show="propertyName == 'required' && !reverse" class="fa fa-caret-down"></span>
@@ -42,6 +52,8 @@
         <td data-ng-click="editField(field)">{{field.name}}</td>
         <td data-ng-click="editField(field)">{{field.alias}}</td>
         <td data-ng-click="editField(field)">{{field.type}}</td>
+        <td data-ng-click="editField(field)">{{field.is_virtual}}</td>
+        <td data-ng-click="editField(field)">{{field.is_aggregate}}</td>
         <td data-ng-click="editField(field)">{{field.required}}</td>
     </tr>
 </table>
