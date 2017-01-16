@@ -1077,7 +1077,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         $scope.$on('$destroy', function (e) {
 
             watchServiceComponents();
-
         });
 
         $scope.$on('refresh:table', function (e, resource) {
