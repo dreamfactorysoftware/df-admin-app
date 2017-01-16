@@ -57,6 +57,14 @@
                 data-ng-change="updateAffectedFields(serviceInfo.record.config[field.name], field)">
         </select>
 
+        <df-multi-picklist data-ng-if="field.type == 'multi_picklist'"
+                           data-cols="field.columns"
+                           data-legend="field.legend"
+                           data-ng-model="serviceInfo.record.config[field.name]"
+                           data-selected-options="serviceInfo.record.config[field.name]"
+                           data-options="field.values">
+        </df-multi-picklist>
+
         <div class="panel panel-default" data-ng-if="field.type.indexOf('array') > -1">
             <div class="form-group" data-ng-if="!isArray(field.items)">
                 <table class="table table-hover table-striped field-list">
@@ -140,6 +148,10 @@
                                     data-ng-options="option.name as option.label for option in part.values"
                                     data-ng-click="updateAffectedFields(serviceInfo.record.config[field.name], field)">
                             </select>
+                            <df-grouped-picklist data-ng-if="part.type == 'grouped_picklist'"
+                                                 data-options="part.values"
+                                                 data-selected="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]">
+                            </df-grouped-picklist>
                             <df-verb-picker data-ng-if="part.type == 'verb_mask'"
                                             data-allowed-verb-mask="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
                                             data-size="">
