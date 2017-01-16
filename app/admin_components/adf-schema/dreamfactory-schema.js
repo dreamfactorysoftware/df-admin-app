@@ -1076,9 +1076,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         // MESSAGES
         $scope.$on('$destroy', function (e) {
 
-            //watchSchemaManagerData();
             watchServiceComponents();
-            //watchCurrentEditTable();
+
         });
 
         $scope.$on('refresh:table', function (e, resource) {
