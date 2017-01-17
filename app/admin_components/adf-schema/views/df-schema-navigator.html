@@ -4,12 +4,12 @@
 
         <div class="row">
             <div class="col-xs-10">
-                <select class="form-control" data-ng-model="currentService" data-ng-options="value as value.label for (key, value) in schemaManagerData" data-ng-change="refreshService(false)">
+                <select class="form-control" data-ng-model="currentService" data-ng-options="value as value.label for (key, value) in schemaManagerData" data-ng-change="serviceSelect()">
                     <option value="">-- Select Service --</option>
                 </select>
             </div>
             <div class="col-xs-2">
-                <button class="btn btn-default pull-right" data-ng-click="refreshService(true)" type="button" data-ng-disabled="!currentService" title="Refresh service">
+                <button class="btn btn-default pull-right" data-ng-click="reload()" type="button" data-ng-disabled="!currentService" title="Refresh service">
                     <i class="fa fa-refresh fa-fw"></i>
                 </button>
             </div>
@@ -19,7 +19,7 @@
     <div class="col-xs-12 form-group">
         <label>Table</label>
 
-        <select id="table-select" class="form-control" data-ng-model="currentTable" data-ng-change="getTable()" data-ng-disabled="!currentService"
+        <select id="table-select" class="form-control" data-ng-model="currentTable" data-ng-change="tableSelect(currentTable)" data-ng-disabled="!currentService"
                 data-ng-options="table.name as table.label for table in currentService.components | orderBy:'name'">
             <option value="">-- Select Table --</option>
         </select>
@@ -27,9 +27,9 @@
 
     <div class="col-xs-12 form-group">
         <div class="well well-sm">
-            <button class="btn btn-default btn-sm" data-ng-click="addByJson()" type="button" data-ng-disabled="!currentService" title="Upload schema defined as JSON">Upload JSON</button>
-            <button class="btn btn-default btn-sm" data-ng-click="addTable()" type="button" data-ng-disabled="!currentService" title="Create a new table">Create</button>
-            <button class="btn btn-default btn-sm" data-ng-click="deleteTable()" type="button" data-ng-disabled="!currentService" title="Drop selected table">Drop</button>
+            <button class="btn btn-default btn-sm" data-ng-click="navigationSelect('upload')" type="button" data-ng-disabled="!currentService" title="Upload schema defined as JSON">Upload JSON</button>
+            <button class="btn btn-default btn-sm" data-ng-click="navigationSelect('form')" type="button" data-ng-disabled="!currentService" title="Create a new table">Create</button>
+            <button class="btn btn-default btn-sm" data-ng-click="deleteTable()" type="button" data-ng-disabled="!currentService || !currentTable" title="Drop selected table">Drop</button>
         </div>
     </div>
 </div>
