@@ -1,17 +1,10 @@
 <div class="row">
     <div class="col-xs-12">
-        <div data-ng-show="currentEditTable ">
-            <!--df-table-details data-table-data="currentEditTable" data-bind-table="bindTable"></df-table-details-->
-            <!--df-table-template></df-table-template-->
-        </div>
+        <div data-ng-show="currentEditTable "></div>
         <df-table-template></df-table-template>
 
         <div data-ng-if="currentUploadSchema">
             <df-upload-schema></df-upload-schema>
         </div>
-
-        <!--div data-ng-show="!currentEditTable && !currentUploadSchema">
-            <p>No Table selected</p>
-        </div-->
     </div>
 </div>
