@@ -225,12 +225,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 var data = {
                     resource: [
-                        fieldData
+                        fieldData.record
                     ]
                 };
 
+                var verb = fieldData.__dfUI.newField ? 'POST' : 'PATCH';
+
                 return $http({
-                  method: 'PATCH',
+                  method: verb,
                   url: INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_field',
                   data: data
                 });
@@ -407,7 +409,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             table: tableName
                         }
 
-                        return table._saveField(params, fieldData.record);
+                        return table._saveField(params, fieldData);
                     }
                 }
                 else {
