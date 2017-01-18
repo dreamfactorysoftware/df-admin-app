@@ -1,0 +1,28 @@
+
+<div class="form-group well well-sm">
+    <label>Relationships</label>
+    <button type="button" class="btn btn-default btn-sm" data-ng-click="addRelation()"
+            title="Add virtual relationship" data-ng-disabled="(viewMode === 'json') || $parent.table.__dfUI.newTable">
+        Add Virtual Relationship
+    </button>
+</div>
+
+<table class="table table-condensed table-hover table-striped table-bordered">
+    <th></th>
+    <th>Name</th>
+    <th>Alias</th>
+    <th>Type</th>
+    <th>Virtual</th>
+
+    <tr data-ng-repeat="relation in relationTableData | orderBy:'name' track by $index ">
+        <td>
+            <button type="button" class="btn btn-default btn-xs"
+                    data-ng-if="relation.is_virtual" data-ng-click="deleteRelation(relation)"
+                    title="Delete Relation"><i class="fa fa-fw fa-trash"></i></button>
+        </td>
+        <td data-ng-click="editRelation(relation)">{{relation.name}}</td>
+        <td data-ng-click="editRelation(relation)">{{relation.alias}}</td>
+        <td data-ng-click="editRelation(relation)">{{relation.type}}</td>
+        <td data-ng-click="editRelation(relation)">{{relation.is_virtual}}</td>
+    </tr>
+</table>

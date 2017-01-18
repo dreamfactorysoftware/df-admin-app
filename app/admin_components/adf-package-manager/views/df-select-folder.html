@@ -7,7 +7,9 @@
 		<div class="form-inline">
 			<select class="form-control" data-ng-model="selectedFolder" data-ng-options="folder as folder for folder in folders" data-ng-required="true"></select>
 		    <label for=""> / </label>
-		    <input class="form-control" data-ng-model="subFolderName" placeholder="Folder Name (Optional)" id="nofillfolder" autocomplete="nope" />
+		    <input class="form-control" data-ng-model="subFolderName" placeholder="__EXPORTS" id="nofillfolder" autocomplete="nope" />
+			<label for=""> / </label>
+			<input class="form-control" data-ng-model="fileName" placeholder="File Name (Optional)" id="nofilename" autocomplete="nope" />
 		    </div>
 		</div>
 	</div>
@@ -27,6 +29,7 @@
 	    <div class="col-xs-1"> </div>
 	    <div class="col-xs-11">
 	        <button df-export-package type="button" class="btn btn-primary" data-ng-click="exportPackage()">Export</button>
+			<button ng-if="showDownload" type="button" class="btn btn-success" data-ng-click="exportDownload()">Download</button>
 	        <button df-export-package type="button" class="btn btn-default" data-ng-click="exportClear()">Clear</button>
 	    </div>
 	</div>

@@ -828,6 +828,126 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
+    .directive('dfGroupedPicklist', [
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
+
+            return {
+                restrict: 'E',
+                scope: {
+                    selected: '=?',
+                    options: '=?'
+                },
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-grouped-picklist.html',
+                link: function (scope, elem, attrs) {
+                    scope.selectedLabel = false;
+                    scope.selectItem = function (item) {
+                        scope.selected = item.name;
+                    };
+
+                    scope.$watch('selected', function (n, o) {
+                        if (n == null && n == undefined) return false;
+
+                        angular.forEach(scope.options, function (option) {
+                            if(option.items) {
+                                angular.forEach(option.items, function(item){
+                                    if(n === item.name){
+                                        scope.selectedLabel = item.label;
+                                    }
+                                })
+                            }
+                        });
+                    });
+
+                    elem.css({
+                        'display': 'inline-block', 'position': 'relative'
+                    });
+
+                }
+            }
+        }
+    ])
+
+    .directive('dfMultiPicklist', [
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
+
+            return {
+                restrict: 'E',
+                scope: {
+                    selectedOptions: '=?',
+                    cols: '=?',
+                    options: '=?',
+                    legend: '=?'
+                },
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-multi-picklist.html',
+                link: function (scope, elem, attrs) {
+                    scope.width = 50;
+                    scope.allSelected = false;
+                    scope._init = function(){
+                        angular.forEach(scope.options, function (option) {
+                            option.active = false;
+                        });
+                        if(!scope.cols){
+                            scope.cols = 3;
+                        }
+                        scope.width = (100/(scope.cols*1))-3;
+                    }
+                    scope._init();
+
+                    scope._toggleSelectAll = function(event){
+                        event.stopPropagation();
+                        var selected = [];
+                        angular.forEach(scope.options, function (option) {
+                            if(!scope.allSelected) {
+                                selected.push(option.name);
+                            }
+                        });
+                        scope.selectedOptions = selected;
+                    }
+
+                    scope._toggleOptionState = function (nameStr, event) {
+                        event.stopPropagation();
+                        var selected = [];
+                        angular.forEach(scope.options, function (option) {
+                             if (option.name === nameStr) {
+                                 option.active = !option.active;
+                                 if(option.active) {
+                                     selected.push(option.name);
+                                 }
+
+                                 angular.forEach(scope.selectedOptions, function(so){
+                                     if(so !== nameStr){
+                                         selected.push(so);
+                                     }
+                                 });
+
+                                 scope.selectedOptions = selected;
+                                 return;
+                             }
+                        });
+                    };
+
+                    scope.$watch('selectedOptions', function (n, o) {
+                        if (n == null && n == undefined) return false;
+
+                        angular.forEach(scope.options, function (option) {
+
+                            if (n.indexOf(option.name)!==-1) {
+                                option.active = true;
+                            } else {
+                                option.active = false;
+                            }
+                        });
+                    });
+
+                    elem.css({
+                        'display': 'inline-block', 'position': 'relative'
+                    });
+
+                }
+            }
+        }
+    ])
+
     // Used anywhere a admin/user has the ability to select what REST verbs to allow
     .directive('dfVerbPicker', [
         'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
@@ -1094,6 +1214,130 @@ angular.module('dfUtility', ['dfApplication'])
                             'display': 'inline-block', 'position': 'absolute'
                         }
                     );
+
+                }
+            }
+        }
+    ])
+
+    // Used anywhere a admin/user has the ability to select what REST verbs to allow
+    .directive('dfDbFunctionUsePicker', [
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
+
+            return {
+                restrict: 'E',
+                scope: {
+                    allowedUses: '=?',
+                    description: '=?',
+                    size: '@'
+                },
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-db-function-use-picker.html',
+                link: function (scope, elem, attrs) {
+
+                    scope.uses = {
+                        SELECT: {name: 'SELECT', active: false, description: " (get)"},
+                        FILTER: {name: 'FILTER', active: false, description: ' (get)'},
+                        INSERT: {name: 'INSERT', active: false, description: ' (post)'},
+                        UPDATE: {name: 'UPDATE', active: false, description: ' (patch)'}
+                    };
+
+                    scope.btnText = 'None Selected';
+                    scope.description = true;
+
+                    scope._setDbFunctionUseState = function (nameStr, stateBool) {
+                        if (scope.uses.hasOwnProperty(scope.uses[nameStr].name)) {
+                            scope.uses[nameStr].active = stateBool;
+                        }
+                    };
+
+                    scope._toggleDbFunctionUseState = function (nameStr, event) {
+                        event.stopPropagation();
+
+                        if (scope.uses.hasOwnProperty(scope.uses[nameStr].name)) {
+                            scope.uses[nameStr].active = !scope.uses[nameStr].active;
+                        }
+
+                        scope.allowedUses = [];
+
+                        angular.forEach(
+                            scope.uses, function (_obj) {
+                                if (_obj.active) {
+                                    scope.allowedUses.push(_obj.name);
+                                }
+
+                            }
+                        );
+                    };
+
+                    scope._isDbFunctionUseActive = function (nameStr) {
+
+                        return scope.uses[nameStr].active
+                    };
+
+                    scope._setButtonText = function () {
+
+                        var uses = [];
+
+                        angular.forEach(scope.uses, function (useObj) {
+
+                            if (useObj.active) {
+                                uses.push(useObj.name);
+                            }
+
+                        })
+
+                        scope.btnText = '';
+
+                        var max = 1;
+                        if (uses.length == 0) {
+                            scope.btnText = 'None Selected';
+
+                        } else if (uses.length > 0 && uses.length <= max) {
+
+                            angular.forEach(
+                                uses, function (_value, _index) {
+                                    if (scope._isDbFunctionUseActive(_value)) {
+                                        if (_index != uses.length - 1) {
+                                            scope.btnText +=
+                                                (
+                                                    _value + ', '
+                                                );
+                                        } else {
+                                            scope.btnText += _value
+                                        }
+                                    }
+                                }
+                            )
+
+                        } else if (uses.length > max) {
+                            scope.btnText = uses.length + ' Selected';
+                        }
+                    };
+
+                    scope.$watch('allowedUses', function (newValue, oldValue) {
+
+                        if (!newValue) {
+                            return false;
+                        }
+
+                        Object.keys(scope.uses).forEach(function (key) {
+                            scope._setDbFunctionUseState(key, false);
+                        });
+
+                        angular.forEach(
+                            scope.allowedUses, function (_value, _index) {
+
+                                scope._setDbFunctionUseState(_value, true);
+                            }
+                        );
+
+                        scope._setButtonText();
+
+                    });
+
+                    elem.css({
+                        'display': 'inline-block', 'position': 'relative'
+                    });
 
                 }
             }
