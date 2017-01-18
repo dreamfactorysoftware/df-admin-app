@@ -219,7 +219,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                   method: 'PATCH',
                   url: INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table,
                   data: this
-                })
+                });
             },
             _saveField: function (params, fieldData) {
 
@@ -229,7 +229,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     ]
                 };
 
-                return $http.post(INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_field', data)
+                return $http({
+                  method: 'PATCH',
+                  url: INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_field',
+                  data: data
+                });
             },
             _updateRelations: function (params) {
 
@@ -866,184 +870,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             }
         ];
 
-        // Bind this to the dfTableDetails directive so we have
-        // access to the edit obj in the table values.  Not for access
-        // but just so we can check if it has been modified
-        $scope.bindTable = null;
-
         $scope.currentService = null;
         $scope.currentTable = null;
-        $scope.lastTable = '';
-
-        $scope.activeComponent = null;
-
         $scope.currentEditTable = null;
-        $scope.currentUploadSchema = null;
-
-
-        // PUBLIC API
-        $scope.addTable = function () {
-
-            // Check if we have unsaved changed before continuing
-            if ($scope.currentUploadSchema && !$scope.uploadIsEditorClean) {
-
-                if (!dfNotify.confirm('You have unsaved changes.  Continue without saving?')) {
-
-                    return;
-                }
-
-                $scope.currentUploadSchema = null;
-            }
-
-            // If we have a bound table and that table has been modified
-            else if ($scope.bindTable !== null && !dfObjectService.compareObjectsAsJson($scope.bindTable.record, $scope.bindTable.recordCopy)) {
-
-                // Do you want to continue without saving
-                if (!dfNotify.confirm('You have unsaved changes.  Continue without saving?')) {
-
-                    // Yes
-                    return;
-                }
-
-                $scope.currentEditTable = null;
-            }
-
-
-            $scope._addTable();
-        };
-
-        $scope.getTable = function () {
-
-            if ($scope.currentUploadSchema && !$scope.uploadIsEditorClean) {
-
-                if (!dfNotify.confirm('You have unsaved changes.  Continue without saving?')) {
-
-                    $scope.currentTable = angular.copy($scope.lastTable);
-                    return;
-                }
-            }
-
-            // If we have a bound table and that table has been modified
-            if ($scope.bindTable !== null && !dfObjectService.compareObjectsAsJson($scope.bindTable.record, $scope.bindTable.recordCopy) && $scope.bindTable.__dfUI.newTable === true) {
-
-                // Do you want to continue without saving
-                if (dfNotify.confirm('You have unsaved changes.  Continue without saving?')) {
-
-                    // Yes
-                    $scope.lastTable = angular.copy($scope.currentTable);
-                    $scope._getTable($scope.currentTable);
-                }
-                else {
-
-                    $scope.currentTable = angular.copy($scope.lastTable);
-                }
-            }
-            else {
-
-                $scope.lastTable = angular.copy($scope.currentTable);
-                $scope._getTable($scope.currentTable);
-            }
-
-        };
-
-        $scope.addByJson = function () {
-
-
-            // If we have a bound table and that table has been modified
-            if ($scope.bindTable !== null && !dfObjectService.compareObjectsAsJson($scope.bindTable.record, $scope.bindTable.recordCopy)) {
-
-                // Do you want to continue without saving
-                if (dfNotify.confirm('You have unsaved changes.  Continue without saving?')) {
-
-                    // Yes
-                    $scope.lastTable = '';
-                    $scope.currentEditTable = null;
-                }
-                else {
-
-                    return;
-                }
-
-            }
-
-            $scope.currentEditTable = null;
-            $scope._addByJson();
-
-        };
-
-        // PRIVATE API
-        $scope._getTableFromServer = function (requestDataObj) {
-
-            return $http({
-                method: 'GET',
-                url: INSTANCE_URL + '/api/v2/' + $scope.currentService.name + '/_schema/' + requestDataObj.name + '?refresh=true',
-                params: {
-                    refresh: true
-                }
-
-            });
-        };
-
-        $scope._saveSchemaToServer = function (requestDataObj) {
-
-            return $http({
-                method: 'POST',
-                url: INSTANCE_URL + '/api/v2/' + $scope.currentService.name + '/_schema',
-                data: requestDataObj.data
-            })
-        };
-
-        // COMPLEX IMPLEMENTATION
-        $scope._addTable = function () {
-
-            $scope.currentEditTable = new TableObj(null, $scope.currentService);
-
-            TableDataModel.setTableModel(new TableObj(null, $scope.currentService));
-
-            $scope.currentTable = '';
-        };
-
-        $scope._getTable = function (table) {
-
-            if (!table) {
-                $scope.currentTable = null;
-                $scope.currentEditTable = null;
-                return;
-            }
-
-
-            var requestDataObj = {
-                name: table
-            };
-
-
-            $scope._getTableFromServer(requestDataObj).then(
-                function (result) {
-
-                    $scope.currentUploadSchema = null;
-                    $scope.currentEditTable = new TableObj(result.data, $scope.currentService);
-                    TableDataModel.setTableModel(new TableObj(result.data, $scope.currentService));
-                },
-                function (reject) {
-
-                    var messageOptions = {
-
-                        module: 'Api Error',
-                        type: 'error',
-                        provider: 'dreamfactory',
-                        message: reject.error.message
-                    };
-
-                    dfNotify.error(messageOptions);
-
-                }
-            )
-        };
-
-        $scope._addByJson = function () {
-
-            $scope.currentUploadSchema = true;
-        };
+        $scope.lastTable = '';
 
         // WATCHERS
         var watchServiceComponents = $scope.$watchCollection(function() {return ServiceListService.getServices()}, function (newValue, oldValue) {
