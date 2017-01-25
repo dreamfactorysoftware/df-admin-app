@@ -57,7 +57,7 @@
                                     </div>
 
                                 </td>
-                                <td id="apps_table_row_{{obj.record.id}}" data-ng-click="editApp(obj.record)" data-ng-repeat="value in obj.record | orderAndShowValue : fields track by $index">{{value}}</td>
+                                <td id="apps_table_row_{{$index}}_{{obj.record.id}}" data-ng-click="editApp(obj.record)" data-ng-repeat="value in obj.record | orderAndShowValue : fields track by $index">{{value}}</td>
                             </tr>
                             </tbody>
                         </table>
