@@ -109,7 +109,7 @@
                     <!-- Assign a Role -->
                     <div class="form-group">
                         <label>Assign a Default Role</label><df-simple-help data-options="dfHelp.assignRole"></df-simple-help>
-                        <select class="form-control" data-ng-model="selectedRoleId" data-ng-options="role.id as role.name for role in roles">
+                        <select id="apps_details_role" class="form-control" data-ng-model="selectedRoleId" data-ng-options="role.id as role.name for role in roles">
                             <option value="">-- No Role Selected --</option>
                         </select>
                     </div>
