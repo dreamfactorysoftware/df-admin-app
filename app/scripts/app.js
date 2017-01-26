@@ -40,7 +40,7 @@ angular
     ])
 
     // Set application version number
-    .constant('APP_VERSION', '2.5')
+    .constant('APP_VERSION', '2.5.1')
 
     // Set global url for this application
     .constant('INSTANCE_URL', '')
@@ -52,6 +52,7 @@ angular
     .config(['$httpProvider', 'ADMIN_API_KEY', function($httpProvider, ADMIN_API_KEY) {
 
         $httpProvider.defaults.headers.common['X-Dreamfactory-API-Key'] = ADMIN_API_KEY;
+        $httpProvider.defaults.headers.delete = {'Content-Type': 'application/json;charset=utf-8'};
     }])
 
     // Configure main app routing rules

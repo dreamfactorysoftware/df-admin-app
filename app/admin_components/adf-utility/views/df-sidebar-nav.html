@@ -2,7 +2,7 @@
 
     <!-- Regular side bar menu shown on medium/large -->
     <ul class="nav nav-pills nav-stacked visible-md visible-lg">
-        <li data-ng-repeat="link in links" data-ng-class="link.active ? 'active' : ''" data-ng-click="setActiveView(link)"><a>{{link.label}}</a></li>
+        <li id="{{link.label}}" data-ng-repeat="link in links" data-ng-class="link.active ? 'active' : ''" data-ng-click="setActiveView(link)"><a id="{{link.label}}">{{link.label}}</a></li>
     </ul>
 
 
@@ -17,12 +17,10 @@
                 <button class="btn btn-default btn-xs" data-ng-click="closeMenu()">Cancel</button>
             </div>
             <ul class="list-group">
-                <li class="list-group-item" data-ng-repeat="link in links" data-ng-class="link.active ? 'active' : ''" data-ng-click="setActiveView(link)"><a>{{link.label}}</a></li>
+                <li id="{{link.label}}" class="list-group-item" data-ng-repeat="link in links" data-ng-class="link.active ? 'active' : ''" data-ng-click="setActiveView(link)"><a id="{{link.label}}">{{link.label}}</a></li>
             </ul>
         </div>
     </div>
 
     <div id="sidebar-nav-flyout-mask" class="mask"></div>
 </div>
-
-
