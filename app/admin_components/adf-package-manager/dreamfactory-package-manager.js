@@ -55,6 +55,28 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
     .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
     }])
+
+
+    .service('convertGroupTexts', function () {
+
+        this.groups = {
+            "System": "",
+            "API Doc": "",
+            "Event": "All events selected",
+            "File": "All folders selected",
+            "Email": "All emails selected",
+            "Script": "All scripts selected",
+            "LDAP": "All LDAPs selected",
+            "Remote Service": "All remote services selected",
+            "Database": "All schemas selected",
+            "Log": "All folders selected",
+            "Notification": "All notifications selected",
+            "OAuth": "All OAuths selected",
+            "User": "All users selected"
+        };
+    })
+
+
     .directive("modalShow", function ($parse) {
         return {
             restrict: "A",
@@ -313,7 +335,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             }
         }
     }])
-    .directive('dfSelectContent', ['$http', '$timeout', 'MOD_PACKAGE_MANAGER_ASSET_PATH', 'INSTANCE_URL', 'dfApplicationData', 'dfAvailableApis', 'dfNotify', function ($http, $timeout, MOD_PACKAGE_MANAGER_ASSET_PATH, INSTANCE_URL, dfApplicationData, dfAvailableApis, dfNotify) {
+    .directive('dfSelectContent', ['$http', '$timeout', 'MOD_PACKAGE_MANAGER_ASSET_PATH', 'INSTANCE_URL', 'dfApplicationData', 'dfAvailableApis', 'dfNotify', 'convertGroupTexts', function ($http, $timeout, MOD_PACKAGE_MANAGER_ASSET_PATH, INSTANCE_URL, dfApplicationData, dfAvailableApis, dfNotify, convertGroupTexts) {
 
         return {
             restrict: 'E',
@@ -343,6 +365,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 scope.search = {};
                 scope.selectAll = false;
                 scope.totalCountInit = {value: 0};
+                scope.totalCount = 0;
+                scope.totalCounts = {value: 0};
 
                 var tempFilterText = '';
                 var filterTextTimeout;
@@ -473,8 +497,10 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 angular.forEach(scope.tableData, function (value, key) {
 
                                     if (value.name === scope.selectedName && value.type.name === scope.selectedType.name) {
-                                        var comp = 'all ' + value.name + 's selected';
-                                        if (comp === value.descr.toLowerCase()) {
+
+                                        if ((value.descr === convertGroupTexts.groups[_type.group]) ||
+                                            (_type.group === 'System' && value.descr === 'All ' + value.name + 's selected')) {
+
                                             selectAllExists = true;
                                         }
                                         else {
@@ -494,7 +520,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 getPaginatedData(scope.selectedName, 0, scope.limit, scope.search.text);
                             }
                             else {
-                                alert('The selected ' + scope.selectedName + '(s) have already been added to the package');
+                                alert('Selection has already been added to the package');
                             }
                         }
                         else {
@@ -504,8 +530,13 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                                     if (value.name === scope.selectedName && value.type.name === scope.selectedType.name) {
 
-                                        var comp = 'all ' + value.name + 's selected';
-                                        if (comp === value.descr.toLowerCase()) {
+                                        var searchData = value.data.find(function (obj) {
+                                            return obj.descr === scope.selectedNameData[key]['record']['display_label'];
+                                        });
+
+                                        if ((value.descr === convertGroupTexts.groups[_type.group]) ||
+                                            (_type.group === 'System' && value.descr === 'All ' + value.name + 's selected')) {
+
                                             selectAllExists = true;
                                         }
                                     }
@@ -513,18 +544,46 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             }
 
                             if (!selectAllExists) {
+                                var rejectedData = [];
 
                                 angular.forEach(scope.selectedNameData, function (value, key) {
 
                                     if (scope.selectedNameData[key]['__dfUI']['selected'] === true) {
-                                        descr.push(scope.selectedNameData[key]['record']['display_label']);
 
-                                        if (scope.selectedNameData[key]['record'].hasOwnProperty('storage_service_id')) {
-                                            includeFiles.push({
-                                                storage_service_id: scope.selectedNameData[key]['record']['storage_service_id'],
-                                                storage_container: scope.selectedNameData[key]['record']['storage_container']
+                                        var findDublicate = scope.tableData.find(function (obj) {
+                                            return obj.name === scope.selectedName && obj.type.name === scope.selectedType.name;
+                                        });
+
+                                        var isDublicate = false;
+
+                                        if (findDublicate !== undefined) {
+                                            angular.forEach(findDublicate.data, function (val, k) {
+                                                var valueArray = Object.values(val);
+                                                if (valueArray.indexOf(scope.selectedNameData[key]['record']['display_label']) > -1) {
+                                                    isDublicate = true;
+                                                }
                                             })
                                         }
+
+                                        var searchData = scope.tableData.find(function (obj) {
+                                            return obj.descr === scope.selectedNameData[key]['record']['display_label'];
+                                        });
+
+                                        if (!searchData && !isDublicate) {
+
+                                            descr.push(scope.selectedNameData[key]['record']['display_label']);
+
+                                            if (scope.selectedNameData[key]['record'].hasOwnProperty('storage_service_id')) {
+                                                includeFiles.push({
+                                                    storage_service_id: scope.selectedNameData[key]['record']['storage_service_id'],
+                                                    storage_container: scope.selectedNameData[key]['record']['storage_container']
+                                                })
+                                            }
+                                          }
+                                          else {
+                                            rejectedData.push(scope.selectedNameData[key]['record']['display_label']);
+                                            toRemove.push(key);
+                                          }
                                     }
                                     else {
                                         toRemove.push(key);
@@ -537,19 +596,26 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                     selectedArray.splice(value, 1);
                                 });
 
-                                scope.tableData.push({
-                                    type: scope.selectedType,
-                                    name: scope.selectedName,
-                                    data: selectedArray,
-                                    descr: descr.join(',')
-                                });
+                                if (selectedArray.length) {
+
+                                    scope.tableData.push({
+                                        type: scope.selectedType,
+                                        name: scope.selectedName,
+                                        data: selectedArray,
+                                        descr: descr.join(',')
+                                    });
+                                }
 
                                 angular.forEach(scope.selectedNameData, function (value, key) {
                                     scope.selectedNameData[key]['__dfUI']['selected'] = false;
                                 });
+
+                                if (rejectedData.length) {
+                                    alert('The following selection was already added to the package: ' + rejectedData.join(', '))
+                                }
                             }
                             else {
-                               alert('The selected ' + scope.selectedName + '(s) have already been added to the package');
+                               alert('Selection has already been added to the package');
                             }
                         }
 
@@ -560,16 +626,18 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             angular.forEach(scope.tableData, function (value, key) {
 
                                 var searchRes = includeFiles.find(function (obj) {
-                                    return obj.storage_container === value.descr;
+                                    return ((obj.storage_container === value.data[0].record.storage_container) &&
+                                      (obj.storage_container !== null));
                                 })
 
-                                if (searchRes) {
+                                if (searchRes !== undefined) {
                                     filesExists = true;
                                 }
                             });
 
-                            if (!filesExists)
+                            if (filesExists) {
                                 scope.addAppFiles(includeFiles)
+                            }
                         }
 /*
                         scope.names = [];
@@ -640,6 +708,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     if (scope.selectedType.group === 'System') {
                         url = INSTANCE_URL + '/api/v2/system/' + name + '?offset=' + offset + '&limit=' + limit + '&filter=' + filterString
+                    }
+                    else if (scope.selectedType.group === 'Database') {
+                        url = INSTANCE_URL + '/api/v2/' + name + '/_table?offset=' + offset + '&limit=' + limit + '&filter=' + filterString
                     }
                     else {
                         url = INSTANCE_URL + '/api/v2/' + name + '?offset=' + offset + '&limit=' + limit + '&filter=' + filterString
@@ -803,6 +874,10 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             scope._getPageDataFromServer(0, 'filter', filterString).then(function(response){
 
                                 scope.totalCount = response.meta.count;
+                                scope.totalCounts.value = response.meta.count;
+
+                                scope.$broadcast('update:pagination', scope.totalCount);
+
                                 //scope.totalCountInitvalue = response.meta.count;
                                 dataArray = response.resource;
 
@@ -978,12 +1053,25 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         var _type = scope.paginationDataRequest.type;
                         var _name = scope.paginationDataRequest.name.charAt(0).toUpperCase() + scope.paginationDataRequest.name.substring(1);
                         var _nameOrg = scope.paginationDataRequest.name;
+                        var _description = convertGroupTexts.groups[_type.group];
+
+                        if (_type.group === 'System') {
+                            _description = 'All ' + _name.toLowerCase() + 's selected';
+                        }
+
+                        if (scope.search.text) {
+                            _description = _description.replace('All', scope.paginationData.length)
+
+                            if (scope.paginationData.length === 1) {
+                                _description = _description.replace('s selected', ' selected')
+                            }
+                        }
 
                         scope.tableData.push({
                             type: _type,
                             name: _nameOrg,
                             data: scope.paginationData,
-                            descr: 'All ' + _name + 's Selected'
+                            descr: _description
                         })
 
                         scope.paginationData = [];
@@ -998,7 +1086,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     tempFilterText = newValue;
 
                     filterTextTimeout = $timeout(function() {
-
                         scope.loadTable(scope.selectedName, tempFilterText);
                     }, 500);
                 })
@@ -1188,11 +1275,26 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                             }
                             else if (tableData[key]['type']['group'] === 'Database') {
-                                selectedExports = tableData[key]['data'].map(function(d) { return d['record']['name']; });
+
+                                selectedExports = tableData[key]['data'].map(function(d) {
+                                    if (d.hasOwnProperty('record')) {
+                                        return d['record']['name'];
+                                      }
+                                      else {
+                                          return d['name'];
+                                      }
+                                });
                                 payload['service'][tableData[key]['name']] = {'_schema': selectedExports};
                             }
                             else if (tableData[key]['type']['group'] === 'File') {
-                                selectedExports = tableData[key]['data'].map(function(d) { return d['record']['value']; });
+                                selectedExports = tableData[key]['data'].map(function(d) {
+                                    if (d.hasOwnProperty('record')) {
+                                        return d['record']['value'];
+                                    }
+                                    else {
+                                        return d['name'];
+                                    }
+                                });
                                 payload['service'][tableData[key]['name']] = selectedExports;
                             }
                             else {

@@ -2210,6 +2210,7 @@ angular.module('dfUtility', ['dfApplication'])
                 var detectFilter = function() {
                     // Checking if we have filters applied
                     var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : undefined;
+
                     if(!filterText) return false;
 
                     var arr = [ "first_name", "last_name", "name", "email" ];
@@ -2639,7 +2640,8 @@ angular.module('dfUtility', ['dfApplication'])
                 var detectFilter = function() {
 
                     // Checking if we have filters applied
-                    var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : undefined;
+                    var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : scope.filter || undefined;
+
                     if(!filterText) return false;
 
                     var arr = [ "first_name", "last_name", "name", "email" ];
@@ -2704,6 +2706,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                         function(result) {
                             scope.linkedData = scope.prepFunc({dataArr: result.record});
+
                             scope._nextPage();
                             if (scope.type !== undefined) {
                                 scope.$emit('toolbar:paginate:' + scope.type + ':update');
@@ -2769,6 +2772,13 @@ angular.module('dfUtility', ['dfApplication'])
                 };
 
                 // WATCHERS
+
+                scope.$on('update:pagination', function(event, count) {
+                    scope.totalCount = count;
+                    scope.$parent.totalCountInit.value = {value: count};
+                    scope._calcPagination(scope.api);
+                    scope._setCurrentPage(0);
+                });
 
                 var watchApi = scope.$watch('api', function(newValue, oldValue) {
 
