@@ -266,15 +266,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 }
 
                                 if (data.success == false) {
-                                    /*
-                                    scope.importModalHeadline = 'Packages';
-                                    scope.importModalBody = {
-                                        head: 'Package import failed.',
-                                        content: data.log.notice
-                                    }
-
-                                    scope.showImportDialog = true;
-                                    */
 
                                     var notice = '';
 
@@ -515,7 +506,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 tableRemoveArray.reverse();
                                 angular.forEach(tableRemoveArray, function (value, key) {
                                     scope.removeRow(value);
-                                })
+                                });
 
                                 getPaginatedData(scope.selectedName, 0, scope.limit, scope.search.text);
                             }
@@ -569,15 +560,18 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                             return obj.descr === scope.selectedNameData[key]['record']['display_label'];
                                         });
 
-                                        if (!searchData && !isDublicate) {
+                                        if (searchData === undefined && !isDublicate) {
 
                                             descr.push(scope.selectedNameData[key]['record']['display_label']);
 
                                             if (scope.selectedNameData[key]['record'].hasOwnProperty('storage_service_id')) {
-                                                includeFiles.push({
-                                                    storage_service_id: scope.selectedNameData[key]['record']['storage_service_id'],
-                                                    storage_container: scope.selectedNameData[key]['record']['storage_container']
-                                                })
+
+                                                if (scope.selectedNameData[key]['record']['storage_service_id'] !== null) {
+                                                    includeFiles.push({
+                                                        storage_service_id: scope.selectedNameData[key]['record']['storage_service_id'],
+                                                        storage_container: scope.selectedNameData[key]['record']['storage_container']
+                                                    });
+                                                }
                                             }
                                           }
                                           else {
@@ -626,27 +620,24 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             angular.forEach(scope.tableData, function (value, key) {
 
                                 var searchRes = includeFiles.find(function (obj) {
-                                    return ((obj.storage_container === value.data[0].record.storage_container) &&
-                                      (obj.storage_container !== null));
+
+                                    var searchRow = value.data.find(function (o) {
+
+                                        return (obj.storage_container === o.record.storage_container || obj.storage_container === o.record.name)
+                                    });
+
+                                    return searchRow;
                                 })
 
                                 if (searchRes !== undefined) {
                                     filesExists = true;
                                 }
-                            });
 
-                            if (filesExists) {
-                                scope.addAppFiles(includeFiles)
-                            }
+                                if (filesExists) {
+                                    scope.addAppFiles(includeFiles)
+                                }
+                            });
                         }
-/*
-                        scope.names = [];
-                        scope.selectedType = {};
-                        scope.selectedName = '';
-                        scope.selectedNameLabel = '';
-                        scope.selectedNameData = [];
-                        scope.checkboxDisable = false;
-*/
                     }
                     else {
                         var messageOptions = {
@@ -1055,6 +1046,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         var _nameOrg = scope.paginationDataRequest.name;
                         var _description = convertGroupTexts.groups[_type.group];
 
+                        var includeFiles = [];
+                        var filesExists = false;
+
                         if (_type.group === 'System') {
                             _description = 'All ' + _name.toLowerCase() + 's selected';
                         }
@@ -1067,12 +1061,61 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             }
                         }
 
+                        if (_nameOrg == 'app') {
+                            angular.forEach(scope.selectedNameData, function (value, key) {
+
+                                if (scope.selectedNameData[key]['record'].hasOwnProperty('storage_service_id')) {
+
+                                    if (scope.selectedNameData[key]['record']['storage_service_id'] !== null) {
+
+                                        includeFiles.push({
+                                            storage_service_id: scope.selectedNameData[key]['record']['storage_service_id'],
+                                            storage_container: scope.selectedNameData[key]['record']['storage_container']
+                                        });
+                                    }
+                                }
+                            });
+
+                            angular.forEach(scope.tableData, function (value, key) {
+
+                                var qwe = null;
+
+                                var searchRes = includeFiles.find(function (obj) {
+                                    var result = false;
+
+                                    if (value.type.group === 'File') {
+
+                                        result = value.data.find(function (rec) {
+                                            return obj.storage_container === rec.name;
+                                        });
+                                    }
+
+                                    if (value.type.group === 'System') {
+
+                                        result = value.data.find(function (rec) {
+                                            return obj.storage_container === rec.name;
+                                        });
+                                    }
+
+                                    return ((obj.storage_container !== null) && result);
+                                })
+
+                                if (searchRes !== undefined) {
+                                    filesExists = true;
+                                }
+                            });
+
+                            if (!filesExists) {
+                                scope.addAppFiles(includeFiles)
+                            }
+                        }
+
                         scope.tableData.push({
                             type: _type,
                             name: _nameOrg,
                             data: scope.paginationData,
                             descr: _description
-                        })
+                        });
 
                         scope.paginationData = [];
                         scope.paginationDataRequest = {};
@@ -1133,7 +1176,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 }
                             });
                         }
-
                     }
 
                     scope.names = _names;
