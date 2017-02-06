@@ -9,7 +9,7 @@
     <div data-ng-show="systemConfig.invite_email_service_id">
         <div class="checkbox">
             <label>
-                <input type="checkbox" data-ng-model="inviteUserOnCreate" data-ng-checked="inviteUserOnCreate" />
+                <input id="users_details_basic_sendinvite_new" type="checkbox" data-ng-model="inviteUserOnCreate" data-ng-checked="inviteUserOnCreate" />
                 Send Email Invitation
             </label>
 
@@ -19,9 +19,8 @@
 
         <!-- Active when editing a user -->
 <div data-ng-show="!newApp">
-    <div data-ng-if="user.record.confirmed"><p>Confirmed</p></div>
+    <div data-ng-if="user.record.confirmed"><p id="users_details_basic_confirmed">Confirmed</p></div>
     <div data-ng-if="!user.record.confirmed">
-        <button type="button" class="btn btn-default" data-ng-click="invite()"><i class="icon-envelope"></i> Send Invite</button>
+        <button id="users_details_basic_sendinvite_edit" type="button" class="btn btn-default" data-ng-click="invite()"><i class="icon-envelope"></i> Send Invite</button>
     </div>
 </div>
-
