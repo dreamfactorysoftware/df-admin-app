@@ -867,6 +867,36 @@ angular.module('dfUtility', ['dfApplication'])
         }
     ])
 
+    .directive('dfFileCertificate', [
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
+            return {
+                restrict: 'E',
+                scope: {
+                    selected: '=?'
+                },
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-file-certificate.html',
+                link: function (scope, elem, attrs){
+                    var fileInput = elem.find('input');
+
+                    fileInput.bind("change", function(event){
+                        var file = event.target.files[0];
+                        var reader = new FileReader();
+                        reader.onload = function (readerEvt) {
+                            var string = readerEvt.target.result;
+                            scope.selected = string;
+                            scope.$apply();
+                        };
+                        reader.readAsBinaryString(file);
+                    });
+
+                    elem.css({
+                        'display': 'inline-block', 'position': 'relative'
+                    });
+                }
+            }
+        }
+    ])
+
     .directive('dfMultiPicklist', [
         'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
 

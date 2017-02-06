@@ -57,6 +57,10 @@
                 data-ng-change="updateAffectedFields(serviceInfo.record.config[field.name], field)">
         </select>
 
+        <df-file-certificate data-ng-if="field.type == 'file_certificate'"
+                           data-selected="serviceInfo.record.config[field.name]">
+        </df-file-certificate>
+
         <df-multi-picklist data-ng-if="field.type == 'multi_picklist'"
                            data-cols="field.columns"
                            data-legend="field.legend"
