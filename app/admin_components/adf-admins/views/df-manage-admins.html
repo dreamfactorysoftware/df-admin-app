@@ -91,22 +91,22 @@
                                     <td style="width: 80px">
                                         <div class="checkbox" style="margin: 0">
                                             <label>
-                                                <input type="checkbox" data-ng-checked="obj.__dfUI.selected" data-ng-click="setSelected(obj)" />
+                                                <input id="admins_table_row_{{$index}}_{{obj.record.id}}" type="checkbox" data-ng-checked="obj.__dfUI.selected" data-ng-click="setSelected(obj)" />
                                                 <div class="btn-group btn-group-xs">
-                                                    <button type="button" class="btn btn-default" data-ng-click="deleteAdmin(obj)" title="Delete admin"><i class="fa fa-trash"></i></button>
+                                                    <button id="admins_table_row_{{$index}}_{{obj.record.id}}" type="button" class="btn btn-default" data-ng-click="deleteAdmin(obj)" title="Delete admin"><i class="fa fa-trash"></i></button>
                                                 </div>
                                             </label>
                                         </div>
                                     </td>
                                     <!-- Auto build table based on fieldorderobj in directive -->
                                     <!-- <td data-ng-click="editAdmin(obj.record)" data-ng-repeat="value in obj.record | orderAndShowValue : fields track by $index">{{value}}</td>-->
-                                    <td data-ng-click="editAdmin(obj.record)">{{obj.record.id}}</td>
-                                    <td data-ng-click="editAdmin(obj.record)">{{obj.record.email}}</td>
-                                    <td data-ng-click="editAdmin(obj.record)">{{obj.record.name}}</td>
-									<td data-ng-click="editAdmin(obj.record)">{{obj.record.first_name}}</td>
-									<td data-ng-click="editAdmin(obj.record)">{{obj.record.last_name}}</td>
-                                    <td data-ng-click="editAdmin(obj.record)">{{obj.record.is_active}}</td>
-                                    <td data-ng-click="editAdmin(obj.record)">{{obj.record.confirm_msg}}</td>
+                                    <td id="admins_table_row_{{$index}}_{{obj.record.id}}" data-ng-click="editAdmin(obj.record)">{{obj.record.id}}</td>
+                                    <td id="admins_table_row_{{$index}}_{{obj.record.id}}" data-ng-click="editAdmin(obj.record)">{{obj.record.email}}</td>
+                                    <td id="admins_table_row_{{$index}}_{{obj.record.id}}" data-ng-click="editAdmin(obj.record)">{{obj.record.name}}</td>
+									                  <td id="admins_table_row_{{$index}}_{{obj.record.id}}" data-ng-click="editAdmin(obj.record)">{{obj.record.first_name}}</td>
+									                  <td id="admins_table_row_{{$index}}_{{obj.record.id}}" data-ng-click="editAdmin(obj.record)">{{obj.record.last_name}}</td>
+                                    <td id="admins_table_row_{{$index}}_{{obj.record.id}}" data-ng-click="editAdmin(obj.record)">{{obj.record.is_active}}</td>
+                                    <td id="admins_table_row_{{$index}}_{{obj.record.id}}" data-ng-click="editAdmin(obj.record)">{{obj.record.confirm_msg}}</td>
                                 </tr>
                                 </tbody>
                             </table>
