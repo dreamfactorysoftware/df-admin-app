@@ -20,31 +20,31 @@
                         <!-- User Email -->
                         <div class="form-group">
                             <label>Email</label>
-                            <input type="email" class="form-control" data-ng-model="user.record.email" placeholder=""/>
+                            <input id="user_details_info_email" type="email" class="form-control" data-ng-model="user.record.email" placeholder=""/>
                         </div>
 
                         <!-- User First Name -->
                         <div class="form-group">
                             <label>First Name</label>
-                            <input type="text" class="form-control" data-ng-model="user.record.first_name" placeholder="" />
+                            <input id="user_details_info_firstname" type="text" class="form-control" data-ng-model="user.record.first_name" placeholder="" />
                         </div>
 
                         <!-- User Last Name -->
                         <div class="form-group">
                             <label>Last Name</label>
-                            <input type="text" class="form-control" data-ng-model="user.record.last_name" placeholder="" />
+                            <input id="user_details_info_lastname" type="text" class="form-control" data-ng-model="user.record.last_name" placeholder="" />
                         </div>
 
                         <!-- User Display Name -->
                         <div class="form-group">
                             <label>Display Name</label>
-                            <input type="text" class="form-control" data-ng-model="user.record.name" placeholder=""  />
+                            <input id="user_details_info_displayname" type="text" class="form-control" data-ng-model="user.record.name" placeholder=""  />
                         </div>
 
                         <!-- User Phone -->
                         <div class="form-group">
                             <label>Phone</label>
-                            <input type="text" class="form-control" data-ng-model="user.record.phone" placeholder=""  />
+                            <input id="user_details_info_phone" type="text" class="form-control" data-ng-model="user.record.phone" placeholder=""  />
                         </div>
 
                     </div>
@@ -63,7 +63,7 @@
                         <div data-ng-show="newUser">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="sendEmailOnCreate" data-ng-checked="sendEmailOnCreate"/>
+                                    <input id="user_details_info_invite" type="checkbox" data-ng-model="sendEmailOnCreate" data-ng-checked="sendEmailOnCreate"/>
                                     Send Email Invitation
                                 </label>
                             </div>
@@ -74,7 +74,7 @@
                         <div class="form-group">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="user.record.is_active" />
+                                    <input id="user_details_info_active" type="checkbox" data-ng-model="user.record.is_active" />
                                     Active
                                 </label>
                             </div>
@@ -101,10 +101,10 @@
                 <hr />
                 <div class="form-group">
                     <div data-ng-if="newUser">
-                        <input id="users_details_save_new" class="btn btn-default btn-primary" type="submit" value="Save" />
+                        <input id="users_details_save" class="btn btn-default btn-primary" type="submit" value="Save" />
                     </div>
                     <div data-ng-if="!newUser">
-                        <input id="users_details_save_edit" class="btn btn-default btn-primary" type="submit" value="Save" />
+                        <input id="users_details_save" class="btn btn-default btn-primary" type="submit" value="Save" />
                         <button id="users_details_cancel" type="button" class="btn btn-default" data-ng-click="closeUser()">Cancel</button>
                     </div>
                 </div>
