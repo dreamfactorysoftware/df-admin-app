@@ -74,6 +74,24 @@ angular.module('dfTable', ['dfUtility'])
                 '</div>\n' +
             '</div>');
     }])
+
+    .filter('typeFilter', [ function() {
+        return function (object) {
+            var array = [];
+            angular.forEach(object, function (option) {
+                if ((option.type == 'boolean') ||
+                    (option.type == 'integer') ||
+                    (option.type == 'string') ||
+                    (option.type == 'text') ||
+                    (option.type == 'float') ||
+                    (option.type == 'double') ||
+                    (option.type == 'decimal'))
+                    array.push(option);
+            });
+            return array;
+        };
+    }])
+
     .directive('dfTable', ['DF_TABLE_ASSET_PATH', '$http', '$q', '$filter', '$compile', 'dfObjectService', 'dfTableEventService', 'dfTableCallbacksService', function (DF_TABLE_ASSET_PATH, $http, $q, $filter, $compile, dfObjectService, dfTableEventService, dfTableCallbacksService) {
 
         return {
@@ -141,8 +159,24 @@ angular.module('dfTable', ['dfUtility'])
                 scope.filter = {
                     viewBy: '',
                     prop: '',
+                    props: '',
+                    type: '',
                     value: null
                 };
+
+                scope.operators = {
+                    integer: ['<', '>', '='],
+                    boolean: [],
+                    string: [],
+                    text: [],
+                    float: ['<', '>', '='],
+                    double: ['<', '>', '='],
+                    decimal: ['<', '>', '='],
+                }
+
+                scope.filterType = {
+                    operator: null
+                }
 
                 scope.order = {
                     orderBy: '',
@@ -1282,6 +1316,8 @@ angular.module('dfTable', ['dfUtility'])
                     scope.filter = {
                         viewBy: schemaDataObj.field[0].name || '',
                         prop: schemaDataObj.field[0].name || '',
+                        type: schemaDataObj.field[0].type || '',
+                        props: schemaDataObj.field[0],
                         value: null
                     };
                 };
@@ -1293,7 +1329,33 @@ angular.module('dfTable', ['dfUtility'])
 
                 scope._createFilterParams = function () {
 
-                    return scope.filter.prop + ' like "%' + scope.filter.value + '%"';
+                    var param = '';
+
+                    switch (scope.filter.prop.type) {
+                        case 'boolean':
+                            param = scope.filter.prop.name + ' = ' + scope.filter.value;
+                            break;
+                        case 'text':
+                            param = scope.filter.prop.name + ' like "%' + scope.filter.value + '%"';
+                            break;
+                        case 'string':
+                            param = scope.filter.prop.name + ' like "%' + scope.filter.value + '%"';
+                            break;
+                        case 'integer':
+                            param = scope.filter.prop.name + ' ' + scope.filterType.operator + ' '  + scope.filter.value;
+                            break;
+                        case 'float':
+                            param = scope.filter.prop.name + ' ' + scope.filterType.operator + ' '  + scope.filter.value;
+                            break;
+                        case 'double':
+                            param = scope.filter.prop.name + ' ' + scope.filterType.operator + ' '  + scope.filter.value;
+                            break;
+                        case 'decimal':
+                            param = scope.filter.prop.name + ' ' + scope.filterType.operator + ' '  + scope.filter.value;
+                            break;
+                    }
+
+                    return param;
                 };
 
                 scope._unsetFilterInOptions = function () {
@@ -1724,7 +1786,6 @@ angular.module('dfTable', ['dfUtility'])
                             return false;
                         }
                     }
-
 
                     scope._unsetFilterInOptions();
                     scope._unsetOrderInOptions();
@@ -2292,6 +2353,21 @@ angular.module('dfTable', ['dfUtility'])
                     })
                 });
 
+                var watchPropType = scope.$watch('filter.prop.type ', function (newValue, oldValue) {
+
+                    if (!newValue) return false;
+
+                    if (newValue === 'boolean') {
+                        scope.filter.value = 'TRUE';
+                    }
+                    else if ((newValue === 'text') || (newValue === 'string')) {
+                        scope.filter.value = null;
+                    }
+                    else {
+                        scope.filter.value = null;
+                        scope.filterType.operator = '<';
+                    }
+                });
 
                 // MESSAGES
 
@@ -3232,6 +3308,3 @@ angular.module('dfTable', ['dfUtility'])
             }
         }
     }]);
-
-
-
