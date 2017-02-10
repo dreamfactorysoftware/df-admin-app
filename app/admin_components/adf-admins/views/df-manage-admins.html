@@ -91,9 +91,9 @@
                                     <td style="width: 80px">
                                         <div class="checkbox" style="margin: 0">
                                             <label>
-                                                <input id="admins_table_row_{{$index}}_{{obj.record.id}}" type="checkbox" data-ng-checked="obj.__dfUI.selected" data-ng-click="setSelected(obj)" />
+                                                <input id="admins_table_row_checkbox_{{$index}}_{{obj.record.id}}" type="checkbox" data-ng-checked="obj.__dfUI.selected" data-ng-click="setSelected(obj)" />
                                                 <div class="btn-group btn-group-xs">
-                                                    <button id="admins_table_row_{{$index}}_{{obj.record.id}}" type="button" class="btn btn-default" data-ng-click="deleteAdmin(obj)" title="Delete admin"><i class="fa fa-trash"></i></button>
+                                                    <button id="admins_table_row_delete_{{$index}}_{{obj.record.id}}" type="button" class="btn btn-default" data-ng-click="deleteAdmin(obj)" title="Delete admin"><i class="fa fa-trash"></i></button>
                                                 </div>
                                             </label>
                                         </div>
