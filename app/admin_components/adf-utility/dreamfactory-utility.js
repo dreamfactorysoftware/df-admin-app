@@ -4063,7 +4063,7 @@ angular.module('dfUtility', ['dfApplication'])
 
         function parseDreamfactoryError (errorDataObj) {
 
-            var i, error = "";
+            var result, error, resource, message;
 
             // If the exception type is a string we don't need to go any further
             // This was thrown explicitly by the module due to a module error
@@ -4072,18 +4072,37 @@ angular.module('dfUtility', ['dfApplication'])
 
                 // store the error
                 // and we're done
-                error = errorDataObj;
+                result = errorDataObj;
 
                 // the exception is not a string
                 // let's assume it came from the server
             } else {
 
-                // add the message from the error obj to the error store
-                error += errorDataObj.data.error.message;
-            }
+                // parse the message from the error obj
+                // if single batch error use error.context.resource[0].message
+                // if not batch or multi batch error use top level error
+                result = "The server returned an unkown error.";
+                if (errorDataObj.data) {
+                    if (error = errorDataObj.data.error) {
+                        if (!error.context) {
+                            if (message = error.message) {
+                                result = message;
+                            }
+                        } else {
+                            resource = error.context.resource;
+                            error = error.context.error;
+                            if (error && resource && error.length === 1 && resource.length === 1) {
+                                if (message = resource[0].message) {
+                                    result = message;
+                                }
+                            }
+                        }
+                    }
+                }
 
-            // return message to display to the user
-            return error;
+                // return message to display to the user
+                return result;
+            }
         }
 
         function parseError (error, retValue) {
