@@ -867,6 +867,45 @@ angular.module('dfUtility', ['dfApplication'])
         }
     ])
 
+    .directive('dfEventPicker', [
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
+
+            return {
+                restrict: 'E',
+                scope: {
+                    selected: '=?',
+                    options: '=?'
+                },
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-event-picker.html',
+                link: function (scope, elem, attrs) {
+                    scope.selectedLabel = false;
+                    scope.selectItem = function (item) {
+                        scope.selected = item.name;
+                    };
+
+                    scope.$watch('selected', function (n, o) {
+                        if (n == null && n == undefined) return false;
+
+                        angular.forEach(scope.options, function (option) {
+                            if(option.items) {
+                                angular.forEach(option.items, function(item){
+                                    if(n === item.name){
+                                        scope.selectedLabel = item.label;
+                                    }
+                                })
+                            }
+                        });
+                    });
+
+                    elem.css({
+                        'display': 'inline-block', 'position': 'relative'
+                    });
+
+                }
+            }
+        }
+    ])
+
     .directive('dfFileCertificate', [
         'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
             return {
