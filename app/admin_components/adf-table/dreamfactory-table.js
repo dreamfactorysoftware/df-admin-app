@@ -1806,6 +1806,7 @@ angular.module('dfTable', ['dfUtility'])
                             scope._prepareRecords(result);
                             scope._calcPagination(result);
                             scope._setCurrentPage(scope.pagesArr[0])
+                            scope.filter.prop = scope.schema.field[0]
                         },
                         function (reject) {
                             throw {
