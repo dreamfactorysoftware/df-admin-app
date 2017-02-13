@@ -1077,6 +1077,10 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         scope.users = _users;
 
+                        if (scope.users.length === 0) {
+                            scope.emptySectionOptions.active = true;
+                        }
+
                         return;
                     }
 
