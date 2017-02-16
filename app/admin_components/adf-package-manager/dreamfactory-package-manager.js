@@ -1291,7 +1291,12 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                             if (tableData[key]['type']['group'] === 'System') {
                                 if (tableData[key]['name'] === 'event_script') {
-                                    selectedExports = tableData[key]['data'].map(function(d) { return d['record']['display_label']; });
+                                    if (tableData[key]['data'][0].hasOwnProperty('record')){
+                                        selectedExports = tableData[key]['data'].map(function(d) { return d['record']['display_label']; });
+                                      }
+                                      else {
+                                          selectedExports = tableData[key]['data'].map(function(d) { return d['name']; });
+                                      }
                                 }
                                 else {
 
