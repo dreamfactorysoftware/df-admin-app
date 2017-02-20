@@ -496,6 +496,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     function (result) {
 
                         $scope.currentScriptObj = $scope.__getDataFromHttpResponse(result);
+                        $scope.currentScriptObj.__newScript = false;
                         $scope.editor.session.setValue($scope.currentScriptObj.content);
                         $scope.menuPathArr.push(scriptIdStr);
                     },
@@ -533,6 +534,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         $scope.editor.session.getUndoManager().reset();
                         $scope.editor.session.getUndoManager().markClean();
                         $scope.isEditorClean = true;
+                        $scope.currentScriptObj.__newScript = false;
 
                         // Needs to be replaced with angular messaging
                         $(function () {

@@ -107,23 +107,39 @@
 
         <div class="row" data-ng-if="filterOn">
             <div class="col-xs-12">
-
                 <div class="row">
                     <div style="display: inline;" class="form-group col-xs-12 col-md-3">
                         <label style="display:block" for="df-{{schema.name}}-table-filter-by">
                             <small>Filter By</small>
                         </label>
-                        <select class="form-control input-sm" id="df-{{schema.name}}-table-filter-by" data-ng-model="filter.prop"
-                                data-ng-options="field.name as field.label for field in schema.field">
+                        <select class="form-control input-sm" id="df-{{schema.name}}-table-filter-by" data-ng-model="filter.prop" ng-init="filter.prop = schema.field[0]"
+                                data-ng-options="field.label for field in schema.field | typeFilter">
                         </select>
                     </div>
+
+                    <div style="display: inline;" class="form-group col-xs-12 col-md-3" ng-show="operators[filter.prop.type]">
+                        <label style="display:block" for="df-{{schema.name}}-table-operator">
+                            <small>Operator</small>
+                        </label>
+                        <select class="form-control input-sm" data-ng-model="filterType.operator" id="df-{{schema.name}}-table-operator" ng-init="filterType.operator = operators[filter.prop.type][0]"
+                                data-ng-options="operator as operator for operator in operators[filter.prop.type]" ng-show="operators[filter.prop.type]">
+                        </select>
+                   </div>
 
                     <div class="col-xs-12 col-md-3">
                         <label style="display:block" for="df-{{schema.name}}-table-filter-by">
                             <small>Filter Value</small>
                         </label>
+                        <div ng-show="filter.prop.type !== 'boolean'">
                         <input style="display: inline;" class="form-control input-sm" type="text" data-ng-model="filter.value"
                                placeholder="Enter Filter Value">
+                        </div>
+                        <div ng-show="filter.prop.type === 'boolean'">
+                        <select class="form-control input-sm" data-ng-model="filter.value" ng-init="filter.value = 'TRUE'">
+                            <option value="TRUE">TRUE</option>
+                            <option value="FALSE">FALSE</option>
+                        </select>
+                        </div>
                     </div>
                     <div class="col-xs-12 col-md-3">
                         <label style="display:block" for="df-{{schema.name}}-table-filter-by">

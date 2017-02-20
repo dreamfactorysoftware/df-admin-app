@@ -57,6 +57,10 @@
                 data-ng-change="updateAffectedFields(serviceInfo.record.config[field.name], field)">
         </select>
 
+        <df-file-certificate data-ng-if="field.type == 'file_certificate'"
+                           data-selected="serviceInfo.record.config[field.name]">
+        </df-file-certificate>
+
         <df-multi-picklist data-ng-if="field.type == 'multi_picklist'"
                            data-cols="field.columns"
                            data-legend="field.legend"
@@ -152,6 +156,10 @@
                                                  data-options="part.values"
                                                  data-selected="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]">
                             </df-grouped-picklist>
+                            <df-event-picker data-ng-if="part.type == 'event_picklist'"
+                                             data-options="part.values"
+                                             data-selected="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]">
+                            </df-event-picker>
                             <df-verb-picker data-ng-if="part.type == 'verb_mask'"
                                             data-allowed-verb-mask="serviceInfo.record.config[field.name][$parent.$parent.$index][part.name]"
                                             data-size="">

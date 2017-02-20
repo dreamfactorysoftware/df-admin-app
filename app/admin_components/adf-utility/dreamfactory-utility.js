@@ -867,6 +867,75 @@ angular.module('dfUtility', ['dfApplication'])
         }
     ])
 
+    .directive('dfEventPicker', [
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
+
+            return {
+                restrict: 'E',
+                scope: {
+                    selected: '=?',
+                    options: '=?'
+                },
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-event-picker.html',
+                link: function (scope, elem, attrs) {
+                    scope.selectedLabel = false;
+                    scope.selectItem = function (item) {
+                        scope.selected = item.name;
+                    };
+
+                    scope.$watch('selected', function (n, o) {
+                        if (n == null && n == undefined) return false;
+
+                        angular.forEach(scope.options, function (option) {
+                            if(option.items) {
+                                angular.forEach(option.items, function(item){
+                                    if(n === item.name){
+                                        scope.selectedLabel = item.label;
+                                    }
+                                })
+                            }
+                        });
+                    });
+
+                    elem.css({
+                        'display': 'inline-block', 'position': 'relative'
+                    });
+
+                }
+            }
+        }
+    ])
+
+    .directive('dfFileCertificate', [
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
+            return {
+                restrict: 'E',
+                scope: {
+                    selected: '=?'
+                },
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-file-certificate.html',
+                link: function (scope, elem, attrs){
+                    var fileInput = elem.find('input');
+
+                    fileInput.bind("change", function(event){
+                        var file = event.target.files[0];
+                        var reader = new FileReader();
+                        reader.onload = function (readerEvt) {
+                            var string = readerEvt.target.result;
+                            scope.selected = string;
+                            scope.$apply();
+                        };
+                        reader.readAsBinaryString(file);
+                    });
+
+                    elem.css({
+                        'display': 'inline-block', 'position': 'relative'
+                    });
+                }
+            }
+        }
+    ])
+
     .directive('dfMultiPicklist', [
         'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
 
@@ -4033,7 +4102,7 @@ angular.module('dfUtility', ['dfApplication'])
 
         function parseDreamfactoryError (errorDataObj) {
 
-            var i, error = "";
+            var result, error, resource, message;
 
             // If the exception type is a string we don't need to go any further
             // This was thrown explicitly by the module due to a module error
@@ -4042,18 +4111,43 @@ angular.module('dfUtility', ['dfApplication'])
 
                 // store the error
                 // and we're done
-                error = errorDataObj;
+                result = errorDataObj;
 
                 // the exception is not a string
                 // let's assume it came from the server
             } else {
 
-                // add the message from the error obj to the error store
-                error += errorDataObj.data.error.message;
-            }
+                // parse the message from the error obj
+                // for batch error use error.context.resource[].message
+                // if not batch error use top level error
+                result = "The server returned an unkown error.";
+                if (errorDataObj.data) {
+                    error = errorDataObj.data.error;
+                    if (error) {
+                        // default to top level error
+                        message = error.message
+                        if (message) {
+                            result = message;
+                        }
+                        if (error.code === 1000 && error.context) {
+                            resource = error.context.resource;
+                            error = error.context.error;
+                            if (resource && error) {
+                                result = '';
+                                angular.forEach(error, function (index) {
+                                    if (result) {
+                                        result += '\n';
+                                    }
+                                    result += resource[index].message;
+                                });
+                            }
+                        }
+                    }
+                }
 
-            // return message to display to the user
-            return error;
+                // return message to display to the user
+                return result;
+            }
         }
 
         function parseError (error, retValue) {
