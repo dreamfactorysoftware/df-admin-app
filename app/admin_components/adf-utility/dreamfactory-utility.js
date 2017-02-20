@@ -295,7 +295,7 @@ angular.module('dfUtility', ['dfApplication'])
                         case '/package-manager':
                         case '/apidocs':
                         case '/downloads':
-
+                        case '/limit':
                             scope.activeLink = 'admin';
                             break;
 
@@ -3192,7 +3192,7 @@ angular.module('dfUtility', ['dfApplication'])
                     module: null
                 };
 
-                scope.moduleNames = ['Services', 'Apps', 'Roles', 'System','Users', 'Config', 'Email Templates', 'Lookup Keys', 'CORS Config', 'App Groups', 'Events', 'Current User'];
+                scope.moduleNames = ['Services', 'Apps', 'Roles', 'System','Users', 'Config', 'Email Templates', 'Lookup Keys', 'CORS Config', 'App Groups', 'Events', 'Current User', 'Limits'];
                 var loadingDots = null;
 
 

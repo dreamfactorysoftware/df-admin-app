@@ -165,6 +165,11 @@ angular.module('dreamfactoryApp')
                 name: 'package-manager',
                 label: 'Packages',
                 path: '/package-manager'
+            },
+            {
+                name: 'limit',
+                label: 'Limits',
+                path: '/limit'
             }
         ];
         $scope.componentNavOptions = {
