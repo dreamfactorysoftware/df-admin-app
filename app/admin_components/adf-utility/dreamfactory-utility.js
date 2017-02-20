@@ -4118,22 +4118,28 @@ angular.module('dfUtility', ['dfApplication'])
             } else {
 
                 // parse the message from the error obj
-                // if single batch error use error.context.resource[0].message
-                // if not batch or multi batch error use top level error
+                // for batch error use error.context.resource[].message
+                // if not batch error use top level error
                 result = "The server returned an unkown error.";
                 if (errorDataObj.data) {
-                    if (error = errorDataObj.data.error) {
-                        if (!error.context) {
-                            if (message = error.message) {
-                                result = message;
-                            }
-                        } else {
+                    error = errorDataObj.data.error;
+                    if (error) {
+                        // default to top level error
+                        message = error.message
+                        if (message) {
+                            result = message;
+                        }
+                        if (error.code === 1000 && error.context) {
                             resource = error.context.resource;
                             error = error.context.error;
-                            if (error && resource && error.length === 1 && resource.length === 1) {
-                                if (message = resource[0].message) {
-                                    result = message;
-                                }
+                            if (resource && error) {
+                                result = '';
+                                angular.forEach(error, function (index) {
+                                    if (result) {
+                                        result += '\n';
+                                    }
+                                    result += resource[index].message;
+                                });
                             }
                         }
                     }
