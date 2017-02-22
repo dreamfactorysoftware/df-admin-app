@@ -8,8 +8,6 @@
 
 		<ul class="nav nav-tabs" data-role="tablist">
 			<li class="active"><a showtab href="#basic" id="basic-tab">Basic</a></li>
-			<li><a showtab href="#roles" id="roles-tab">Roles</a></li>
-			<li><a showtab href="#lookupkeys" id="lookupkeys-tab" data-ng-class="lookupKeysError ? 'df-tab-has-error' : ''">Lookup Keys</a></li>
 		</ul>
 
 		<div class="tab-content" style="margin-top: 20px">
@@ -49,7 +47,7 @@
 						<!-- limit Phone -->
 						<div class="form-group" ng-hide="$parent.hidden.services">
 							<label>Service</label>
-								<select class="form-control" data-ng-model="currentEditLimit.record.service"
+								<select class="form-control" data-ng-model="currentEditLimit.record.service_id"
 								ng-options="service.name for service in services track by service.id"	>
 									<option value="" >Please Select...</option>
 								</select>
@@ -95,8 +93,7 @@
 						<!-- limit Confirmed -->
 						<div data-ng-show="!newLimit">
 							<div class="form-group">
-								<label>Confirmation</label><df-simple-help data-options="dfHelp.limitConfirmation"></df-simple-help>
-								<df-confirm-limit></df-confirm-limit>
+
 							</div>
 							<hr />
 						</div>
@@ -107,11 +104,6 @@
 				</div>
 			</div>
 
-			<div id="roles" class="tab-pane">
-			</div>
-
-			<div id="lookupkeys" class="tab-pane">
-			</div>
 		</div>
 
 		<div class="row">

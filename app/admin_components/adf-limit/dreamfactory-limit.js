@@ -288,6 +288,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 scope.limitCache;
 
 
+
+
                 // PUBLIC API
 
                 scope.editLimit = function (limit) {
@@ -302,10 +304,23 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     }
                 };
 
+                scope.resetCounter = function (limit) {
+                    if (dfNotify.confirm("Clear counter for " + limit.record.name + "?")) {
+                        scope._deleteLimitCache(limit);
+                    }
+                };
+
                 scope.deleteSelectedLimits = function () {
 
                     if (dfNotify.confirm("Delete selected limits?")) {
                         scope._deleteSelectedLimits();
+                    }
+                };
+
+                scope.resetSelectedLimits = function () {
+
+                    if (dfNotify.confirm("Reset selected limits?")) {
+                        scope._resetSelectedLimits();
                     }
                 };
 
@@ -325,6 +340,32 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 scope._deleteFromServer = function (requestDataObj) {
 
                     return dfApplicationData.deleteApiData('limit', requestDataObj).$promise;
+                };
+
+                scope._deleteCacheFromServer = function (requestDataObj) {
+                    return dfApplicationData.deleteApiData('limit_cache', requestDataObj).$promise;
+                };
+
+                scope._updateLimitCacheData = function (){
+                    /* Enrich limits with limit cache data */
+                    if(angular.isObject(scope.limitCache)){
+
+                        /* Precalc percentage */
+                        angular.forEach(scope.limitCache, function(value, key){
+                            if(value.attempts > 0){
+                                value.percent = (value.attempts / value.max) * 100;
+                            } else {
+                                value.percent = 0;
+                            }
+                        });
+
+                        angular.forEach(scope.limits, function(value){
+                            var limitId = value.record.id;
+                            value.record.cacheData = scope.limitCache.filter(function(obj){
+                                return (obj.id == limitId);
+                            })[0];
+                        });
+                    }
                 };
 
 
@@ -356,17 +397,14 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 };
 
-                scope._deleteLimit = function (limit) {
-
-
+                scope._deleteLimitCache = function (limit){
                     var requestDataObj = {
                         params: {
                             id: limit.record.id
                         }
                     };
 
-
-                    scope._deleteFromServer(requestDataObj).then(
+                    scope._deleteCacheFromServer(requestDataObj).then(
                         function (result) {
 
                             // notify success
@@ -374,22 +412,14 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                                 module: 'Limits',
                                 type: 'success',
                                 provider: 'dreamfactory',
-                                message: 'Limit successfully deleted.'
+                                message: 'Limit counter successfully reset.'
                             };
 
+                            limit.record.cacheData.attempts = 0;
+                            limit.record.cacheData.percent = 0;
                             dfNotify.success(messageOptions);
 
-                            // Was this user previously selected before
-                            // we decided to remove them individually
-                            if (user.__dfUI.selected) {
 
-                                // This will remove the user from the selected
-                                // user array
-                                scope.setSelected(limit);
-
-                            }
-
-                            scope.$broadcast('toolbar:paginate:limit:delete');
                         },
 
                         function (reject) {
@@ -410,6 +440,60 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     )
                 };
 
+                scope._deleteLimit = function (limit) {
+
+
+                    var requestDataObj = {
+                        params: {
+                            id: limit.record.id
+                        }
+                    };
+
+
+                    scope._deleteFromServer(requestDataObj).then(
+                        function (result) {
+
+                        // notify success
+                        var messageOptions = {
+                            module: 'Limits',
+                            type: 'success',
+                            provider: 'dreamfactory',
+                            message: 'Limit successfully deleted.'
+                        };
+
+                        dfNotify.success(messageOptions);
+
+                        // Was this user previously selected before
+                        // we decided to remove them individually
+                        if (limit.__dfUI.selected) {
+
+                            // This will remove the user from the selected
+                            // user array
+                            scope.setSelected(limit);
+
+                        }
+
+                        scope.$broadcast('toolbar:paginate:limit:delete');
+                    },
+
+                    function (reject) {
+
+                        var messageOptions = {
+                            module: 'Api Error',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: reject
+                        };
+
+                        dfNotify.error(messageOptions);
+                    }
+                    ).finally(
+                        function () {
+
+                        }
+                    )
+                };
+
                 scope._orderOnSelect = function (fieldObj) {
 
                     var orderedBy = scope.order.orderBy;
@@ -422,16 +506,16 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     }
                 };
 
-                scope._setSelected = function (user) {
+                scope._setSelected = function (limit) {
 
 
                     var i = 0;
 
                     while (i < scope.selectedLimits.length) {
 
-                        if (user.record.id === scope.selectedLimits[i]) {
+                        if (limit.record.id === scope.selectedLimits[i]) {
 
-                            user.__dfUI.selected = false;
+                            limit.__dfUI.selected = false;
                             scope.selectedLimits.splice(i, 1);
                             return;
                         }
@@ -439,9 +523,64 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         i++
                     }
 
-                    user.__dfUI.selected = true;
+                    limit.__dfUI.selected = true;
                     scope.selectedLimits.push(limit.record.id);
 
+                };
+
+                scope._resetSelectedLimits = function () {
+                    var requestDataObj = {
+                        params: {
+                            ids: scope.selectedLimits.join(','),
+                            rollback: true
+                        }
+                    };
+
+                    scope._deleteCacheFromServer(requestDataObj).then(
+                        function (result) {
+
+                            // notify success
+                            var messageOptions = {
+                                module: 'Limits',
+                                type: 'success',
+                                provider: 'dreamfactory',
+                                message: 'Limit counters successfully reset.'
+                            };
+
+                            /* Iterate over the selected limits to reset the progress bars */
+                            angular.forEach(scope.selectedLimits, function(value){
+                                scope.limits.filter(function(obj){
+                                    if(obj.record.id == value){
+                                         obj.record.cacheData.attempts = 0;
+                                         obj.record.cacheData.percent = 0;
+                                    }
+                                });
+                            });
+
+
+                            //limit.record.cacheData.attempts = 0;
+                            //limit.record.cacheData.percent = 0;
+                            dfNotify.success(messageOptions);
+
+
+                        },
+
+                        function (reject) {
+
+                            var messageOptions = {
+                                module: 'Api Error',
+                                provider: 'dreamfactory',
+                                type: 'error',
+                                message: reject
+                            };
+
+                            dfNotify.error(messageOptions);
+                        }
+                    ).finally(
+                        function () {
+
+                        }
+                    );
                 };
 
                 scope._deleteSelectedLimits = function () {
@@ -469,7 +608,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             scope.selectedLimits = [];
 
 
-                            scope.$broadcast('toolbar:paginate:limit:reset');
+                            //scope.$broadcast('toolbar:paginate:limit:reset');
                         },
 
                         function (reject) {
@@ -508,7 +647,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
 
                         scope.limits = _limits;
-
+                        scope._updateLimitCacheData();
                         return;
                     }
 
@@ -530,12 +669,12 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     var _limits = [];
 
                     var limitData = dfApplicationData.getApiData('limit');
-
                     angular.forEach(limitData, function (limit) {
                         _limits.push(new ManagedLimit(limit));
                     });
 
                     scope.limits = _limits;
+                    scope._updateLimitCacheData();
 
                     return;
                 });
@@ -569,11 +708,13 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     });
 
                     scope.limits = _limits;
+
                 });
 
                 scope.$on('$destroy', function (e) {
                     watchLimits();
-                    scope.$broadcast('toolbar:paginate:limit:reset');
+                    //scope.$broadcast('toolbar:paginate:limit:reset');
+
                 });
 
                 scope.$watch('$viewContentLoaded',
@@ -600,17 +741,9 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 $rootScope.$on("limit_cache", function  (){
 
                     scope.limitCache = dfApplicationData.getApiData('limit_cache');
+                    scope._updateLimitCacheData();
 
-                    /* Enrich limits with limit cache data */
-                    if(angular.isObject(scope.limitCache)){
-                        angular.forEach(scope.limits, function(value, key){
-                            var limitId = value.record.id;
-                            value.record.cacheData = scope.limitCache.filter(function(obj){
-                                return (obj.id == limitId);
-                            })[0];
-                        });
-                        console.log(scope.limits);
-                    }
+
                 });
 
                 $rootScope.$on("service", function  () {
@@ -695,6 +828,10 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     scope.currentEditLimit = new Limit();
                 }
 
+                scope.apps = dfApplicationData.getApiData('app');
+                scope.services = dfApplicationData.getApiData('service');
+                scope.roles = dfApplicationData.getApiData('role');
+                scope.users = dfApplicationData.getApiData('user');
 
                 // PUBLIC API
                 scope.saveLimit = function () {
@@ -793,9 +930,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         }
                     ).finally(
                             function() {
-
-                                 console.log('User save finally');
-                            }
+                                $scope.activeView = scope.links[0];
+                                scope.currentEditLimit.record = {};                            }
                         )
                 };
 
@@ -853,8 +989,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                             dfNotify.success(messageOptions);
                             scope.currentEditLimit.record = {};
-
-                     
 
                         },
                         function (reject) {
