@@ -421,6 +421,10 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     scope.roles = dfApplicationData.getApiData('role');
                 });
 
+                $rootScope.$on("user", function  (){
+                    scope.$broadcast('toolbar:paginate:limit:reset');
+                });
+
                 // HELP
 
                 scope.dfHelp = {
