@@ -1063,6 +1063,14 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 },
                 event: {
                     scriptable: true
+                },
+                limit: {
+                    include_count: true,
+                    limit: 20
+                },
+                limit_cache: {
+                    include_count: true,
+                    limit: 20
                 }
             },
 

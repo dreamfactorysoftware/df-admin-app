@@ -36,7 +36,8 @@ angular
         'dfSwaggerEditor',
         'dfApiDocs',
         'dfFileManager',
-        'dfPackageManager'
+        'dfPackageManager',
+        'dfLimit'
     ])
 
     // Set application version number

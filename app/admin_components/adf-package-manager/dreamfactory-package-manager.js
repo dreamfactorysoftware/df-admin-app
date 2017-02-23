@@ -72,7 +72,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             "Log": "All folders selected",
             "Notification": "All notifications selected",
             "OAuth": "All OAuths selected",
-            "User": "All users selected"
+            "User": "All users selected",
+            "Limit": "All limits selected"
         };
     })
 
@@ -159,7 +160,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
         $scope.$parent.title = 'Packages';
         $scope.totalPaginationCount = 0;
 
-        dfApplicationData.loadApi(['service_type', 'environment', 'service', 'role', 'app', 'admin', 'user', 'email_template', 'cors', 'lookup', 'package']);
+        dfApplicationData.loadApi(['service_type', 'environment', 'service', 'role', 'app', 'admin', 'user', 'email_template', 'cors', 'lookup', 'package', 'limit']);
 
         // Set module links
         $scope.links = [
