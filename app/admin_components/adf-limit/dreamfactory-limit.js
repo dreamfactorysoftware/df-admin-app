@@ -80,6 +80,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
             });
             /* Add limits cache to limits as object, Adjust max as necessary for updates on rate */
             angular.forEach(limits, function(value){
+                /* need a zero and one for sorting purposes */
+                value.record.active = (value.record.is_active) ? 'active' : 'inactive';
                 var limitId = value.record.id;
                 value.record.cacheData = limitCache.filter(function(obj){
                     return (obj.id == limitId);
@@ -92,8 +94,9 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     } else {
                         value.record.cacheData.percent = 0;
                     }
-
                 }
+                /* For filtering and sorting, add percent to the root record */
+                value.record.percent = value.record.cacheData.percent;
             });
         }
     };
@@ -286,12 +289,12 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         active: true
                     },
                     {
-                        name: 'limit',
+                        name: 'rate',
                         label: 'Limit Rate',
                         active: true
                     },
                     {
-                        name: 'count',
+                        name: 'percent',
                         label: 'Limit Counter',
                         active: true
                     },
@@ -306,7 +309,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         active: true
                     },
                     {
-                        name: 'status',
+                        name: 'active',
                         label: 'Active',
                         active: true
                     }
