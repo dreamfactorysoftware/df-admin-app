@@ -358,6 +358,10 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     }
                 };
 
+                /**
+                 * Main table sorting function (public)
+                 * @param fieldObj
+                 */
                 scope.orderOnSelect = function (fieldObj) {
 
                     scope._orderOnSelect(fieldObj);
