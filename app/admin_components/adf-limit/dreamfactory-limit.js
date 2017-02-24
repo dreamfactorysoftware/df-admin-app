@@ -375,6 +375,12 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     scope._setSelected(limit);
                 };
 
+                scope.selectAll = function(checkStatus){
+                    angular.forEach(scope.limits, function(value){
+                        scope._setSelected(value);
+                    });
+                };
+
 
                 // PRIVATE API
 

@@ -11,7 +11,7 @@
         <df-section-toolbar>
             <df-toolbar-view-modes></df-toolbar-view-modes>
             <input type="text" data-ng-model="$parent.filterText" data-ng-change="changeFilter($parent.filterText)" class="df-search-box" placeholder="Search">
-            <div class="btn-group btn-group-sm pull-right df-btn-group">
+            <!-- <div class="btn-group btn-group-sm pull-right df-btn-group">
                 <button df-import-limits
                         type="button"
                         class="btn btn-default btn-sm"
@@ -20,7 +20,7 @@
                     <i class="fa fa-refresh"></i>
                 </button>
 
-            </div>
+            </div>-->
 
 
             <df-toolbar-paginate data-api="'limit'" ></df-toolbar-paginate>
@@ -51,7 +51,9 @@
                         <div class="panel panel-default" style="overflow-x: scroll">
                             <table class="table table-responsive table-bordered table-striped table-hover table-condensed">
                                 <thead>
-                                <th></th>
+                                <th>
+                                    <input type="checkbox"  data-ng-init="checkStatus=false" data-ng-model='checkStatus' data-ng-change="selectAll(checkStatus)" />
+                                </th>
                                 <th data-ng-class="order.orderBy === field.name ? 'df-th-selected' : ''"
                                     data-ng-click="orderOnSelect(field)"
                                     data-ng-repeat="field in fields">
