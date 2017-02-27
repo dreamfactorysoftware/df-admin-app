@@ -107,8 +107,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         $scope.$parent.title = 'Limits';
         $rootScope.isRouteLoading = true;
 
-        dfApplicationData.loadApi(['limit', 'role', 'service', 'user', 'limit_cache']);
-
+        dfApplicationData.loadApi(['system', 'limit', 'role', 'service', 'user', 'limit_cache']);
 
         // Set module links
         $scope.links = [
@@ -233,9 +232,10 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         'dfApplicationData',
         'dfApplicationPrefs',
         'dfNotify',
+        '$timeout',
         'editLimitService',
         'updateLimitCacheData',
-        function ($rootScope, MOD_LIMIT_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, editLimitService, updateLimitCacheData) {
+        function ($rootScope, MOD_LIMIT_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $timeout, editLimitService, updateLimitCacheData) {
 
         return {
             restrict: 'E',
@@ -264,6 +264,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 scope.currentViewMode = dfApplicationPrefs.getPrefs().sections.user.manageViewMode;
 
                 scope.limits = null;
+                scope.system = null;
 
                 scope.currentEditLimit = editLimitService;
 
@@ -324,7 +325,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 scope.limitCache;
 
-
+                scope.subscription_required = false;
 
 
                 // PUBLIC API
@@ -773,6 +774,24 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     scope.limitCache = dfApplicationData.getApiData('limit_cache');
                     updateLimitCacheData.mergeCacheData(scope.limits, scope.limitCache);
 
+
+                });
+
+                scope.$on("system", function  () {
+
+                    scope.system = dfApplicationData.getApiData('system');
+                    var limitEnabled = false;
+                    angular.forEach(scope.system, function(value){
+                        if(value.name == 'limit'){
+                            limitEnabled = true;
+                        }
+                    });
+                    if(!limitEnabled){
+                        scope.subscription_required = true;
+                        /* Disable ability to navigate to create */
+                        scope.links[1].path = scope.links[0].path;
+                        return;
+                    }
 
                 });
 

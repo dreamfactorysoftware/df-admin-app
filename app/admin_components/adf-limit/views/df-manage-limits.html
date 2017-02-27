@@ -201,7 +201,9 @@
     <div data-ng-show="currentEditLimit.record.name">
         <df-limit-details data-limit-data="currentEditLimit" data-new-limit="false"></df-limit-details>
     </div>
-
+    <div data-ng-if="subscription_required">
+        <br/><h4>This feature requires a product subscription.</h4> Email <a href="mailto:dspsales@dreamfactory.com" >dspsales@dreamfactory.com</a> or call +1-650-641-1800 for pricing information.
+    </div>
     <!-- Import Limit Upload File Input-->
     <input style="display: none" type="file" id="upload" file-model="uploadFile.path" />
 
