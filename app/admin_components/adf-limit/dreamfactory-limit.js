@@ -376,8 +376,20 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 };
 
                 scope.selectAll = function(checkStatus){
-                    angular.forEach(scope.limits, function(value){
-                        scope._setSelected(value);
+
+                    /*If we're deselecting all, go ahead and clear out the selectedLimits array */
+                    if(scope.selectedLimits.length && checkStatus === false){
+                        scope.selectedLimits = [];
+                    }
+                    angular.forEach(scope.limits, function(limit){
+                        //unchecking - don't need anything in selected limits
+                        if(checkStatus === false){
+                            limit.__dfUI.selected = false;
+                            scope.selectedLimits.splice(limit.record.id, 1);
+                        } else {
+                            limit.__dfUI.selected = true;
+                            scope.selectedLimits.push(limit.record.id);
+                        }
                     });
                 };
 
@@ -530,22 +542,15 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 };
 
                 scope._setSelected = function (limit) {
-
-
                     var i = 0;
-
                     while (i < scope.selectedLimits.length) {
-
                         if (limit.record.id === scope.selectedLimits[i]) {
-
                             limit.__dfUI.selected = false;
                             scope.selectedLimits.splice(i, 1);
                             return;
                         }
-
                         i++
                     }
-
                     limit.__dfUI.selected = true;
                     scope.selectedLimits.push(limit.record.id);
 
