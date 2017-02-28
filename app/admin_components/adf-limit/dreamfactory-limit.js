@@ -702,9 +702,12 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     scope.limits = _limits;
                     updateLimitCacheData.mergeCacheData(scope.limits, scope.limitCache);
-                    if (newValue.length === 0 && oldValue.length === 0) {
-                        scope.emptySectionOptions.active = true;
+                    if(angular.isDefined(newValue) && angular.isDefined(oldValue)){
+                        if (newValue.length === 0 && oldValue.length === 0) {
+                            scope.emptySectionOptions.active = true;
+                        }
                     }
+
                     return;
                 });
 
