@@ -1066,7 +1066,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 },
                 limit: {
                     include_count: true,
-                    limit: 20
+                    limit: 20,
+                    related: 'service_by_service_id,role_by_role_id,user_by_user_id'
                 },
                 limit_cache: {
                     include_count: true,

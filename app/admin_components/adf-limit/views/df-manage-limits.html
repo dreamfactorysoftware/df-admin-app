@@ -115,8 +115,9 @@
                                         </div>
                                         <div style="text-align: center;">{{ 0 + ' / ' + obj.record.rate  }}</div>
                                     </td>
-                                    <td data-ng-click="editLimit(obj.record)">{{obj.record.user_id}}</td>
-                                    <td data-ng-click="editLimit(obj.record)">{{obj.record.service_id}}</td>
+                                    <td data-ng-click="editLimit(obj.record)">{{obj.record.user_by_user_id.name}}</td>
+                                    <td data-ng-click="editLimit(obj.record)">{{obj.record.service_by_service_id.name}}</td>
+                                    <td data-ng-click="editLimit(obj.record)">{{obj.record.role_by_role_id.name }}</td>
                                     <td data-ng-click="editLimit(obj.record)">
                                         <span data-ng-if="obj.record.is_active === true" class="label label-success">Active</span>
                                         <span data-ng-if="obj.record.is_active != true" class="label label-warning">Inactive</span>
@@ -202,7 +203,7 @@
         <df-limit-details data-limit-data="currentEditLimit" data-new-limit="false"></df-limit-details>
     </div>
     <div data-ng-if="subscription_required">
-        <br/><h4>This feature requires a product subscription.</h4> Email <a href="mailto:dspsales@dreamfactory.com" >dspsales@dreamfactory.com</a> or call +1-650-641-1800 for pricing information.
+        <br/><h4>This feature requires a DreamFactory Gold product subscription.</h4> Email <a href="mailto:dspsales@dreamfactory.com" >dspsales@dreamfactory.com</a> or call +1-650-641-1800 for pricing information.
     </div>
     <!-- Import Limit Upload File Input-->
     <input style="display: none" type="file" id="upload" file-model="uploadFile.path" />

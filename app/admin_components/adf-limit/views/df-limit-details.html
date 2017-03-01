@@ -30,32 +30,29 @@
 						<!-- limit Last Name -->
 						<div class="form-group">
 							<label>Limit Type</label>
-							<select class="form-control" data-ng-model="currentEditLimit.record.type"
+							<select class="form-control" data-ng-model="currentEditLimit.record.typeObj"
 							data-ng-options="instanceType.name for instanceType in $parent.instanceTypes track by instanceType.value"
-							data-ng-change="$parent.selectType(currentEditLimit.record.type)">
+							data-ng-change="$parent.selectType(currentEditLimit.record.typeObj)">
 								<option value="" >Please Select...</option>
 							</select>
 						</div>
-						<!-- limit UserId -->
+						<div class="form-group" ng-hide="$parent.hidden.services">
+							<label>Service</label>
+							<select class="form-control" data-ng-model="currentEditLimit.record.service_by_service_id"
+									ng-options="service.name for service in services track by service.id"	>
+								<option value="" >Please Select...</option>
+							</select>
+						</div>
 						<div class="form-group" ng-hide="$parent.hidden.users">
 							<label>User</label>
-							<select class="form-control" data-ng-model="currentEditLimit.record.user_id"
+							<select class="form-control" data-ng-model="currentEditLimit.record.user_by_user_id"
 							data-ng-options="user.name for user in users track by user.id" >
 								<option value="" >Please Select...</option>
 							</select>
 						</div>
-						<!-- limit Phone -->
-						<div class="form-group" ng-hide="$parent.hidden.services">
-							<label>Service</label>
-								<select class="form-control" data-ng-model="currentEditLimit.record.service_id"
-								ng-options="service.name for service in services track by service.id"	>
-									<option value="" >Please Select...</option>
-								</select>
-						</div>
-						<!-- limit Phone -->
 						<div class="form-group" ng-hide="$parent.hidden.roles">
 							<label>Role</label>
-							<select class="form-control" data-ng-model="currentEditLimit.record.role_id"
+							<select class="form-control" data-ng-model="currentEditLimit.record.role_by_role_id"
 									ng-options="role.name for role in roles track by role.id"	>
 								<option value="" >Please Select...</option>
 							</select>
@@ -69,7 +66,7 @@
 						<!-- limit Period -->
 						<div class="form-group">
 							<label>Limit Period</label>
-								<select class="form-control" data-ng-model="currentEditLimit.record.period"
+								<select class="form-control" data-ng-model="currentEditLimit.record.periodObj"
 								ng-options="period.name for period in $parent.limitPeriods track by period.value"	>
 									<option value="" >Please Select...</option>
 								</select>
