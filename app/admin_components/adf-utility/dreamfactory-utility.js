@@ -4144,10 +4144,9 @@ angular.module('dfUtility', ['dfApplication'])
                         }
                     }
                 }
-
-                // return message to display to the user
-                return result;
             }
+            // return message to display to the user
+            return result;
         }
 
         function parseError (error, retValue) {
