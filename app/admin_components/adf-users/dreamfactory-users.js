@@ -202,6 +202,9 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         scope.userData = null;
                     }
+
+                    scope.roleToAppMap = {};
+                    scope.lookupKeys = [];
                 };
 
                 scope._prepareUserData = function () {
@@ -255,6 +258,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             scope._resetUserPasswordForm();
 
                             scope.user = new User();
+                            scope.roleToAppMap = {};
+                            scope.lookupKeys = [];
 
                         },
                         function (reject) {
