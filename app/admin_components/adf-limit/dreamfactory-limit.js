@@ -903,7 +903,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                   scope.currentEditLimit = new Limit();
                 }
 
-
                 scope.apps = dfApplicationData.getApiData('app');
                 scope.services = dfApplicationData.getApiData('service');
                 scope.roles = dfApplicationData.getApiData('role');
@@ -1183,7 +1182,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 // MESSAGES
 
                 scope.$on('$destroy', function(e) {
-
+                    scope._resetLimitDetails();
                     watchLimitData();
                     //watchAppData();
                     //watchRoleData();
