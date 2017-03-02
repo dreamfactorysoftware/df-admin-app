@@ -102,45 +102,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
     };
 
 }])
-.service('updateLimitUserData', [ function(){
-    this.mergeUserData = function(limits, users){
-        /* Enrich limits with limit user data */
-        if(angular.isObject(users)){
-            angular.forEach(limits, function(limit){
-                limit.record.user_id = users.filter(function(obj){
-                    return (obj.id == limit.record.user_id);
-                })[0];
-            });
-        }
-    };
 
-}])
-.service('updateLimitServiceData', [ function(){
-    this.mergeServiceData = function(limits, services){
-        /* Enrich limits with limit user data */
-        if(angular.isObject(services)){
-            angular.forEach(limits, function(limit){
-                limit.record.service_id = services.filter(function(obj){
-                    return (obj.id == limit.record.service_id);
-                })[0];
-            });
-        }
-    };
-
-}])
-.service('updateLimitRoleData', [ function(){
-    this.mergeRoleData = function(limits, roles){
-        /* Enrich limits with role data */
-        if(angular.isObject(roles)){
-            angular.forEach(limits, function(limit){
-                limit.record.role_id = roles.filter(function(obj){
-                    return (obj.id == limit.record.role_id);
-                })[0];
-            });
-        }
-    };
-
-}])
 .controller('LimitCtl', ['INSTANCE_URL', '$rootScope', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function (INSTANCE_URL, $rootScope, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {
 
         $scope.$parent.title = 'Limits';
@@ -195,7 +157,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         // Set empty search result message
         $scope.emptySearchResult = {
             title: 'You have no Limits that match your search criteria!',
-            text: '',
+            text: ''
         };
 
         $scope.hidden = {
@@ -274,9 +236,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         '$timeout',
         'editLimitService',
         'updateLimitCacheData',
-        'updateLimitUserData',
-        'updateLimitServiceData',
-        'updateLimitRoleData',
         function ($rootScope,
             MOD_LIMIT_ASSET_PATH,
             dfApplicationData,
@@ -284,10 +243,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
             dfNotify,
             $timeout,
             editLimitService,
-            updateLimitCacheData,
-            updateLimitUserData,
-            updateLimitServiceData,
-            updateLimitRoleData) {
+            updateLimitCacheData) {
 
         return {
             restrict: 'E',
@@ -398,6 +354,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     if (dfNotify.confirm("Delete " + limit.record.name + "?")) {
                         scope._deleteLimit(limit);
+                        /* Clear out any unwanted preselected limits */
+                        scope.selectAll(false);
                     }
                 };
 
@@ -901,7 +859,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
             restrict: 'E',
             scope: {
                 limitData: '=?',
-                newLimit: '=?',
+                newLimit: '=newLimit',
                 selectType: '=?',
                 activeView: '=?'
             },
@@ -937,12 +895,14 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 };
 
                 scope.limit = null;
+                scope.saveData = {};
 
                 scope.currentEditLimit = editLimitService;
 
                 if (scope.newLimit) {
-                    scope.currentEditLimit = new Limit();
+                  scope.currentEditLimit = new Limit();
                 }
+
 
                 scope.apps = dfApplicationData.getApiData('app');
                 scope.services = dfApplicationData.getApiData('service');
@@ -1008,13 +968,13 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 scope._saveLimit = function () {
 
                     // perform some checks on app data
-                    var saveData = scope._prepareLimitData();
+                    scope.saveData = scope._prepareLimitData();
 
                     var requestDataObj = {
                         params: {
                             fields: '*',
                         },
-                        data: saveData
+                        data: scope.saveData
                     };
 
 
@@ -1029,7 +989,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             };
 
                             dfNotify.success(messageOptions);
-                            scope.limit = new Limit();
+                            scope._updateSavedLimit(result);
 
                         },
                         function (reject) {
@@ -1046,48 +1006,18 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         }
                     ).finally(
                             function() {
-                                scope.activeView = scope.links[0];
+                                /*reset the currentEditLimit */
+                                $rootScope.$broadcast('toolbar:paginate:limit:reset');
                                 scope.currentEditLimit.record = {};
+                                scope.activeView = scope.links[0];
                             }
                         )
-                };
-
-                /**
-                 * Strips out and prepares data for saving or updating in API model.
-                 * @private
-                 */
-                scope._prepareLimitData = function () {
-                    /* This will be the save data to be returned to the model */
-                    var saveData = angular.copy(scope.currentEditLimit.record);
-
-                    if(angular.isObject(saveData.periodObj)){
-                        saveData.period = saveData.periodObj.value;
-                        delete saveData.periodObj;
-                    }
-                    if(angular.isObject(saveData.typeObj)){
-                        saveData.type = saveData.typeObj.value;
-                        delete saveData.typeObj;
-                    }
-                    if(angular.isObject(saveData.user_by_user_id)){
-                        saveData.user_id = saveData.user_by_user_id.id;
-                        delete saveData.user_by_user_id;
-                    }
-                    if(angular.isObject(saveData.role_by_role_id)){
-                        saveData.role_id = saveData.role_by_role_id.id;
-                        delete saveData.role_by_role_id;
-                    }
-                    if(angular.isObject(saveData.service_by_service_id)){
-                        saveData.service_id = saveData.service_by_service_id.id;
-                        delete saveData.service_by_service_id;
-                    }
-
-                    return saveData;
                 };
 
                 scope._updateLimit = function () {
 
                     // perform some checks on app data
-                    var saveData = scope._prepareLimitData();
+                    scope.saveData = scope._prepareLimitData();
 
                     // instead of specifing params here maybe we should
                     // set dfApplicationData to pull from the prefs to set.
@@ -1097,7 +1027,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         params: {
                             fields: '*'
                         },
-                        data: saveData
+                        data: scope.saveData
                     };
 
                     scope._updateLimitToServer(requestDataObj).then(
@@ -1111,7 +1041,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             };
 
                             dfNotify.success(messageOptions);
-                            scope.currentEditLimit.record = {};
+                            scope._updateSavedLimit(result);
 
                         },
                         function (reject) {
@@ -1126,13 +1056,100 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             dfNotify.error(messageOptions);
                         }
                     ).finally(
-                        function() {
-                            scope.activeView = scope.links[0];
+                        function(test) {
+                            /*reset the currentEditLimit */
+                            $rootScope.$broadcast('toolbar:paginate:limit:reset');
+
                             scope.currentEditLimit.record = {};
+                            scope.activeView = scope.links[0];
                         }
                     )
 
 
+                };
+
+                /**
+                 * Strips out and prepares data for saving or updating in API model. Copies currentEditLimit to preserve
+                 * objects, etc.
+                 * @private
+                 */
+                scope._prepareLimitData = function () {
+                    /* This will be the save data to be returned to the model */
+                    var saveData = angular.copy(scope.currentEditLimit.record);
+
+                    if(angular.isObject(saveData.periodObj)){
+                        saveData.period = saveData.periodObj.value;
+                    }
+                    if(angular.isObject(saveData.typeObj)){
+                        saveData.type = saveData.typeObj.value;
+                    }
+                    if(angular.isObject(saveData.user_by_user_id)){
+                        saveData.user_id = saveData.user_by_user_id.id;
+                    }
+                    if(angular.isObject(saveData.role_by_role_id)){
+                        saveData.role_id = saveData.role_by_role_id.id;
+                    }
+                    if(angular.isObject(saveData.service_by_service_id)){
+                        saveData.service_id = saveData.service_by_service_id.id;
+                    }
+
+                    delete saveData.key_text;
+                    delete saveData.cacheData;
+                    delete saveData.periodObj;
+                    delete saveData.typeObj;
+                    delete saveData.user_by_user_id;
+                    delete saveData.role_by_role_id;
+                    delete saveData.service_by_service_id;
+
+                    return saveData;
+                };
+
+                /**
+                 * This to be called after a successful limit update to place
+                 * service, role, user objects back in the limit model, updating
+                 * the table.
+                 * @private
+                 */
+                scope._updateSavedLimit = function (referenceLimit) {
+
+                    if(angular.isObject(scope.currentEditLimit.record.user_by_user_id)){
+                        referenceLimit.user_by_user_id = scope.currentEditLimit.record.user_by_user_id;
+                    }
+                    if(angular.isObject(scope.currentEditLimit.record.role_by_role_id)){
+                        referenceLimit.role_by_role_id = scope.currentEditLimit.record.role_by_role_id;
+                    }
+                    if(angular.isObject(scope.currentEditLimit.record.service_by_service_id)){
+                        referenceLimit.service_by_service_id = scope.currentEditLimit.record.service_by_service_id;
+                    }
+
+                    /* Clear out any previous object references (if any) */
+                    switch(scope.currentEditLimit.record.type) {
+                        case 'instance':
+                        case 'instance.each_user':
+                            delete referenceLimit.user_by_user_id;
+                            delete referenceLimit.role_by_role_id;
+                            delete referenceLimit.service_by_service_id;
+                            break;
+                        case 'instance.user':
+                            delete referenceLimit.role_by_role_id;
+                            delete referenceLimit.service_by_service_id;
+                            break;
+                        case 'instance.service':
+                            delete referenceLimit.user_by_user_id;
+                            delete referenceLimit.role_by_role_id;
+                            break;
+                        case 'instance.role':
+                            delete referenceLimit.user_by_user_id;
+                            delete referenceLimit.service_by_service_id;
+                            break;
+                        case 'instance.user.service':
+                            delete referenceLimit.role_by_role_id;
+                            break;
+                        case 'instance.each_user.service':
+                            delete referenceLimit.user_by_user_id;
+                            delete referenceLimit.role_by_role_id;
+                            break;
+                    }
                 };
 
                 scope._closeLimit = function () {
