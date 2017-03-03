@@ -288,11 +288,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         active: true
                     },
                     {
-                        name: 'label',
-                        label: 'Label',
-                        active: true
-                    },
-                    {
                         name: 'type',
                         label: 'Limit Type',
                         active: true
@@ -872,7 +867,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     var _limit = {
                         is_active: true,
                         key_text: null,
-                        label: null,
+                        description: null,
                         name: null,
                         period: null,
                         rate: null,

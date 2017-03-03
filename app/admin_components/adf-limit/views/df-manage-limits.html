@@ -88,7 +88,6 @@
                                     <!-- Auto build table based on fieldorderobj in directive -->
                                     <td data-ng-click="editLimit(obj.record)">{{obj.record.id}}</td>
                                     <td data-ng-click="editLimit(obj.record)">{{obj.record.name}}</td>
-                                    <td data-ng-click="editLimit(obj.record)">{{obj.record.label}}</td>
                                     <td data-ng-click="editLimit(obj.record)">{{obj.record.type}}</td>
                                     <td data-ng-click="editLimit(obj.record)">{{obj.record.rate + ' / ' + obj.record.period}}</td>
                                     <td data-ng-click="editLimit(obj.record)" ng-if="obj.record.cacheData">
@@ -166,8 +165,8 @@
                                             </div>
                                             <div class="df-thumbnail-description">
                                                 <p>
-                                                    Limit name: {{limit.record.name}}&nbsp;<br />
-                                                    Limit label: {{limit.record.label}}<br />
+                                                    Name: {{limit.record.name}}&nbsp;<br />
+                                                    Description: {{limit.record.description}}<br />
                                                     Active: <span data-ng-if="limit.record.is_active">True</span><span data-ng-if="!limit.record.is_active">False</span><br />
                                                     <!-- TODO: add some metrics -->
                                                 </p>
