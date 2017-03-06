@@ -3,6 +3,20 @@
 
 angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
+    .factory('httpRequestInterceptor', function () {
+        return {
+            request: function (config) {
+
+                config.headers['X-UA-Compatible'] = 'IE=Edge';
+
+                return config;
+            }
+        };
+    })
+
+    .config(function ($httpProvider) {
+        $httpProvider.interceptors.push('httpRequestInterceptor');
+    })
 
     .run(['$q', 'dfApplicationData', 'dfApplicationPrefs', 'dfAvailableApis', 'dfSessionStorage', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', function ($q, dfApplicationData, dfApplicationPrefs, dfAvailableApis, dfSessionStorage, UserDataService, SystemConfigDataService, $location, $rootScope) {
 
@@ -1063,6 +1077,15 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 },
                 event: {
                     scriptable: true
+                },
+                limit: {
+                    include_count: true,
+                    limit: 20,
+                    related: 'service_by_service_id,role_by_role_id,user_by_user_id'
+                },
+                limit_cache: {
+                    include_count: true,
+                    limit: 20
                 }
             },
 

@@ -36,11 +36,12 @@ angular
         'dfSwaggerEditor',
         'dfApiDocs',
         'dfFileManager',
-        'dfPackageManager'
+        'dfPackageManager',
+        'dfLimit'
     ])
 
     // Set application version number
-    .constant('APP_VERSION', '2.5.1')
+    .constant('APP_VERSION', '2.6.0')
 
     // Set global url for this application
     .constant('INSTANCE_URL', '')

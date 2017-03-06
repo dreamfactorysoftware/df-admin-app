@@ -224,6 +224,31 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
 
                 // COMPLEX IMPLEMENTATION
+
+                scope._prepareServiceAccessData = function () {
+
+                    var preppedArr = [];
+
+                    angular.forEach(scope.roleServiceAccesses, function (obj) {
+
+                        // Copy the service access obj
+                        var _obj = angular.copy(obj.record);
+
+                        // delete service obj bc it don't be needed by des server
+                        delete _obj.service;
+
+                        // Add role id
+                        // _obj.role_id = scope.role.id;
+
+                        // push all this onto a fresh array
+                        preppedArr.push(_obj);
+                    });
+
+                    // assign that array to the role obj
+                    scope.role.record.role_service_access_by_role_id = preppedArr;
+                };
+
+
                 scope._saveRole = function () {
 
                     scope._prepareRoleData();
@@ -544,7 +569,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope._removeServiceAccess(serviceAccessObjIndex);
                 };
 
-
+/*
                 // PRIVATE API
                 scope._prepareServiceAccessData = function () {
 
@@ -568,7 +593,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     // assign that array to the role obj
                     scope.role.record.role_service_access_by_role_id = preppedArr;
                 };
-
+*/
 
                 // COMPLEX IMPLEMENTATION
                 scope._addServiceAccess = function () {

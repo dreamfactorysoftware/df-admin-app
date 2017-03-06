@@ -19,7 +19,7 @@
 
         <df-section-toolbar data-ng-hide="selectedNameLabel == ''">
 
-            <df-table-paginate data-api="selectedName" data-servicetype="selectedType" data-type="'package'"  data-total-count="totalCount" id="paginatecontrol" data-filter="search.text"></df-table-paginate>
+            <df-table-paginate data-api="selectedName" data-servicetype="selectedType" data-type="'package'"  data-total-counts="totalCounts" data-total-count="totalCount" id="paginatecontrol" data-filter="search.text"></df-table-paginate>
 
             <div style="margin-left: 100px">
                 <input type="text" data-ng-model="search.text" class="df-search-box" placeholder="Search">
@@ -29,6 +29,7 @@
 
         <div class="panel" data-ng-hide="selectedNameLabel == ''">
 
+            <div  data-ng-show="selectedNameData.length === 0"><i>Nothing to export</i></div>
             <div style="height: 150px; overflow-x:scroll; overflow: -moz-scrollbars-vertical;" class="package-export-table">
             	<table class="table table-hover table-condensed table-striped table-bordered">
                     <tbody>
@@ -48,8 +49,8 @@
             </div>
 
             <div class="form-group" style="margin-top: 25px">
-                <button df-export-package type="button" class="btn btn-primary" data-ng-click="addToPackage(false)">Add to Package</button>
-                <input type="button" df-export-package type="button" class="btn btn-primary" data-ng-click="addToPackage(true)" value="Add All {{totalCountInit.value !== 0 ? '(' + totalCountInit.value + ')' : ''}}">
+                <button df-export-package type="button" class="btn btn-primary" data-ng-click="addToPackage(false)" data-ng-disabled="selectedNameData.length === 0">Add to Package</button>
+                <input type="button" df-export-package type="button" class="btn btn-primary" data-ng-click="addToPackage(true)" value="Add All {{totalCountInit.value !== 0 ? '(' + totalCountInit.value + ')' : ''}}" data-ng-disabled="selectedNameData.length === 0">
             </div>
         </div>
     </div>

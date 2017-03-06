@@ -295,7 +295,7 @@ angular.module('dfUtility', ['dfApplication'])
                         case '/package-manager':
                         case '/apidocs':
                         case '/downloads':
-
+                        case '/limit':
                             scope.activeLink = 'admin';
                             break;
 
@@ -862,6 +862,75 @@ angular.module('dfUtility', ['dfApplication'])
                         'display': 'inline-block', 'position': 'relative'
                     });
 
+                }
+            }
+        }
+    ])
+
+    .directive('dfEventPicker', [
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
+
+            return {
+                restrict: 'E',
+                scope: {
+                    selected: '=?',
+                    options: '=?'
+                },
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-event-picker.html',
+                link: function (scope, elem, attrs) {
+                    scope.selectedLabel = false;
+                    scope.selectItem = function (item) {
+                        scope.selected = item.name;
+                    };
+
+                    scope.$watch('selected', function (n, o) {
+                        if (n == null && n == undefined) return false;
+
+                        angular.forEach(scope.options, function (option) {
+                            if(option.items) {
+                                angular.forEach(option.items, function(item){
+                                    if(n === item.name){
+                                        scope.selectedLabel = item.label;
+                                    }
+                                })
+                            }
+                        });
+                    });
+
+                    elem.css({
+                        'display': 'inline-block', 'position': 'relative'
+                    });
+
+                }
+            }
+        }
+    ])
+
+    .directive('dfFileCertificate', [
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
+            return {
+                restrict: 'E',
+                scope: {
+                    selected: '=?'
+                },
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-file-certificate.html',
+                link: function (scope, elem, attrs){
+                    var fileInput = elem.find('input');
+
+                    fileInput.bind("change", function(event){
+                        var file = event.target.files[0];
+                        var reader = new FileReader();
+                        reader.onload = function (readerEvt) {
+                            var string = readerEvt.target.result;
+                            scope.selected = string;
+                            scope.$apply();
+                        };
+                        reader.readAsBinaryString(file);
+                    });
+
+                    elem.css({
+                        'display': 'inline-block', 'position': 'relative'
+                    });
                 }
             }
         }
@@ -2210,6 +2279,7 @@ angular.module('dfUtility', ['dfApplication'])
                 var detectFilter = function() {
                     // Checking if we have filters applied
                     var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : undefined;
+
                     if(!filterText) return false;
 
                     var arr = [ "first_name", "last_name", "name", "email" ];
@@ -2639,7 +2709,8 @@ angular.module('dfUtility', ['dfApplication'])
                 var detectFilter = function() {
 
                     // Checking if we have filters applied
-                    var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : undefined;
+                    var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : scope.filter || undefined;
+
                     if(!filterText) return false;
 
                     var arr = [ "first_name", "last_name", "name", "email" ];
@@ -2704,6 +2775,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                         function(result) {
                             scope.linkedData = scope.prepFunc({dataArr: result.record});
+
                             scope._nextPage();
                             if (scope.type !== undefined) {
                                 scope.$emit('toolbar:paginate:' + scope.type + ':update');
@@ -2769,6 +2841,13 @@ angular.module('dfUtility', ['dfApplication'])
                 };
 
                 // WATCHERS
+
+                scope.$on('update:pagination', function(event, count) {
+                    scope.totalCount = count;
+                    scope.$parent.totalCountInit.value = {value: count};
+                    scope._calcPagination(scope.api);
+                    scope._setCurrentPage(0);
+                });
 
                 var watchApi = scope.$watch('api', function(newValue, oldValue) {
 
@@ -3182,7 +3261,7 @@ angular.module('dfUtility', ['dfApplication'])
                     module: null
                 };
 
-                scope.moduleNames = ['Services', 'Apps', 'Roles', 'System','Users', 'Config', 'Email Templates', 'Lookup Keys', 'CORS Config', 'App Groups', 'Events', 'Current User'];
+                scope.moduleNames = ['Services', 'Apps', 'Roles', 'System','Users', 'Config', 'Email Templates', 'Lookup Keys', 'CORS Config', 'App Groups', 'Events', 'Current User', 'Limits'];
                 var loadingDots = null;
 
 
@@ -4023,7 +4102,7 @@ angular.module('dfUtility', ['dfApplication'])
 
         function parseDreamfactoryError (errorDataObj) {
 
-            var i, error = "";
+            var result, error, resource, message;
 
             // If the exception type is a string we don't need to go any further
             // This was thrown explicitly by the module due to a module error
@@ -4032,18 +4111,42 @@ angular.module('dfUtility', ['dfApplication'])
 
                 // store the error
                 // and we're done
-                error = errorDataObj;
+                result = errorDataObj;
 
                 // the exception is not a string
                 // let's assume it came from the server
             } else {
 
-                // add the message from the error obj to the error store
-                error += errorDataObj.data.error.message;
+                // parse the message from the error obj
+                // for batch error use error.context.resource[].message
+                // if not batch error use top level error
+                result = "The server returned an unkown error.";
+                if (errorDataObj.data) {
+                    error = errorDataObj.data.error;
+                    if (error) {
+                        // default to top level error
+                        message = error.message
+                        if (message) {
+                            result = message;
+                        }
+                        if (error.code === 1000 && error.context) {
+                            resource = error.context.resource;
+                            error = error.context.error;
+                            if (resource && error) {
+                                result = '';
+                                angular.forEach(error, function (index) {
+                                    if (result) {
+                                        result += '\n';
+                                    }
+                                    result += resource[index].message;
+                                });
+                            }
+                        }
+                    }
+                }
             }
-
             // return message to display to the user
-            return error;
+            return result;
         }
 
         function parseError (error, retValue) {

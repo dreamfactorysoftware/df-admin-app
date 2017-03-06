@@ -3,6 +3,7 @@
         <div>
             <div class="btn-group col-xs-3" role="group" aria-label="">
                 <select class="form-control input-sm"
+                    id="roles_details_access_service_{{$parent.$index}}"
                     data-ng-model="serviceAccess.record.service"
                     data-ng-options="service as service.name for service in $parent.services">
                 </select>
@@ -10,6 +11,7 @@
             <div class="btn-group col-xs-3" role="group" aria-label="">
                 <div data-ng-if="!serviceAccess.__dfUI.hasError">
                     <select class="form-control input-sm"
+                        id="roles_details_access_component_{{$parent.$parent.$index}}"
                         data-ng-model="serviceAccess.record.component"
                         data-ng-options="component as component for component in serviceAccess.record.service.components">
                     </select>
@@ -35,7 +37,8 @@
                 </div>
             </div>
             <div class="btn-group col-xs-1" role="group" aria-label="">
-                <button type="button" class="btn btn-default btn-sm" 
+                <button type="button" class="btn btn-default btn-sm"
+                    id="roles_details_access_removeservice_{{$parent.$index}}"
                     data-ng-click="$parent.removeServiceAccess(index)"
                     title="Remove service access" style="margin-left: 1px">
                     <i class="fa fa-trash-o fa-fw"></i>

@@ -252,6 +252,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             // probably some kind of message needs to be fired to the navigation directive
             $scope.$on('$locationChangeStart', function (e) {
 
+                if (!$scope.hasOwnProperty('systemConfig')) return;
+                
                 if (!dfObjectService.compareObjectsAsJson($scope.systemConfig.record, $scope.systemConfig.recordCopy)) {
 
                     if (!dfNotify.confirmNoSave()) {

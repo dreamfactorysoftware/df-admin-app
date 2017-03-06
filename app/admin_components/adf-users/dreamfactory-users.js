@@ -202,6 +202,9 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         scope.userData = null;
                     }
+
+                    scope.roleToAppMap = {};
+                    scope.lookupKeys = [];
                 };
 
                 scope._prepareUserData = function () {
@@ -255,6 +258,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             scope._resetUserPasswordForm();
 
                             scope.user = new User();
+                            scope.roleToAppMap = {};
+                            scope.lookupKeys = [];
 
                         },
                         function (reject) {
@@ -419,6 +424,10 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 $rootScope.$on("role", function  (){
 
                     scope.roles = dfApplicationData.getApiData('role');
+                });
+
+                $rootScope.$on("user", function  (){
+                    scope.$broadcast('toolbar:paginate:limit:reset');
                 });
 
                 // HELP
@@ -1076,6 +1085,10 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         });
 
                         scope.users = _users;
+
+                        if (scope.users.length === 0) {
+                            scope.emptySectionOptions.active = true;
+                        }
 
                         return;
                     }

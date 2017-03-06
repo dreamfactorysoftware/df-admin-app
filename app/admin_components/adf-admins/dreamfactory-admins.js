@@ -988,6 +988,10 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 });
 
+                $rootScope.$on("admin", function  (){
+                    scope.$broadcast('toolbar:paginate:admin:reset');
+                });
+
                 var watchApiData = scope.$watchCollection(function() {
 
                     return dfApplicationData.getApiData('admin');
