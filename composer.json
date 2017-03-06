@@ -32,7 +32,7 @@
     },
     "extra":             {
         "branch-alias":   {
-            "dev-develop": "2.3.x-dev"
+            "dev-develop": "2.6.x-dev"
         },
         "installer-name": "dreamfactory"
     }
