@@ -47,13 +47,13 @@
                                     <label>
                                         <input type="checkbox" data-ng-checked="obj.__dfUI.selected" data-ng-click="setSelected(obj)" />
                                         <div class="btn-group btn-group-xs">
-                                            <button type="button" class="btn btn-default" data-ng-click="deleteService(obj)" title="Delete service"><i class="fa fa-trash"></i></button>
+                                            <button id="services_table_row_delete_{{obj.record.id}}" type="button" class="btn btn-default" data-ng-click="deleteService(obj)" title="Delete service"><i class="fa fa-trash"></i></button>
                                         </div>
                                     </label>
                                 </div>
                             </div>
                         </td>
-                        <td data-ng-click="editService(obj.record)" data-ng-repeat="value in obj.record | orderAndShowValue : fields track by $index">{{value}}</td>
+                        <td id="services_table_row_{{$index}}_{{obj.record.id}}"  data-ng-click="editService(obj.record)" data-ng-repeat="value in obj.record | orderAndShowValue : fields track by $index">{{value}}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -128,4 +128,3 @@
     </div>
 
 </div>
-

@@ -9703,10 +9703,11 @@ body {
 }
 
 /* line 16, ../sass/partials/_df-dropdown-submenu.scss */
+/*
 .dropdown-submenu:hover > .dropdown-menu {
   display: block;
 }
-
+*/
 /* line 20, ../sass/partials/_df-dropdown-submenu.scss */
 .dropdown-submenu > a:after {
   display: block;
