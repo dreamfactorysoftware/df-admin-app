@@ -611,6 +611,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-info.html',
             link: function (scope, elem, attrs) {
 
+                scope.serviceArray = [];
+
                 // @TODO: Refactor to factory
                 var ServiceInfo = function (serviceInfoData) {
 
@@ -661,6 +663,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.hcv = new dfServiceValues();
 
                 dfServiceData.getServiceTypes().then(function (serviceTypes) {
+
                     scope.hcv.serviceTypes = serviceTypes;
                     if (scope.newService) {
                         scope.hcv.serviceTypes = scope.hcv.serviceTypes
@@ -676,8 +679,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         return item.name === scope.serviceInfo.record.type;
                     })[0];
 
-                    var groups = scope.hcv.serviceTypes.map(function(obj) { return obj.group; });
-                    scope.serviceGroups = groups.filter(function(v,i) { return groups.indexOf(v) == i; });
+                    var typeObj = {};
+
+                    var groups = scope.hcv.serviceTypes.map(function(obj) {
+                        if (!typeObj.hasOwnProperty(obj.group)) {
+                            typeObj[String(obj.group)] = [];
+                        }
+
+                        typeObj[String(obj.group)].push({name: obj.name, label: obj.label})
+
+                        return obj.group;
+                    });
+
+                    groups = groups.filter(function(v,i) { return groups.indexOf(v) == i; });
 
                     var sortingArray = [
                         'Database',
@@ -690,16 +704,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         'LDAP'
                     ];
 
-                    scope.serviceGroups = scope._sortArray(scope.serviceGroups, sortingArray);
-                });
+                    groups = scope._sortArray(groups, sortingArray);
 
+                    angular.forEach(groups, function (group) {
+                        scope.serviceArray.push({group_name: group, group_types: typeObj[String(group)]});
+                    });
+
+                });
 
                 scope._script = {};
                 scope.serviceInfo = {};
                 scope._storageType = {};
                 scope.sql_server_host_identifier = null;
                 scope.sql_server_db_identifier = null;
-
 
                 scope._buildFieldSet = function (fieldSetArray, append) {
 
