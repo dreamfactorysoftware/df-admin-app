@@ -1938,10 +1938,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             link: function (scope, elem, attrs, ctrls) {
 
                 var childCtrl = ctrls[0];
-                var  parentCtrl = ctrls[1];
+                var parentCtrl = ctrls[1];
 
                 parentCtrl.register('field_create', childCtrl);
-
 
                 scope.addDbFunctionUse = function () {
 
@@ -1959,61 +1958,83 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.updField = function (value) {
 
-                    scope.parentTable = null;
+                    tableManager.getTable({table: StateService.get('dftable')}).then(function (result) {
 
-                    if (!scope.tableStatus) {
-                        scope.parentTable = StateService.get('dftable');
-                    }
-                    else {
-                        scope.parentTable = '__new';
-                    }
+                        var fields = result.field;
 
-                    if (scope.field.record.name !== null && scope.field.record.type !== null) {
+                        var vals = fields.map(function(obj){
+                            return obj.name;
+                        })
 
-                        var result = tableManager.setField(scope.parentTable, scope.field, !scope.tableStatus)
+                        if ((vals.indexOf(scope.field.record.name) == -1) || (!value)) {
 
-                        if (!scope.tableStatus) {
+                            scope.parentTable = null;
 
-                            result.success(function (res) {
+                            if (!scope.tableStatus) {
+                                scope.parentTable = StateService.get('dftable');
+                            }
+                            else {
+                                scope.parentTable = '__new';
+                            }
 
-                              var messageOptions = {
+                            if (scope.field.record.name !== null && scope.field.record.type !== null) {
 
-                                  module: 'Schema',
-                                  type: 'success',
-                                  provider: 'dreamfactory',
-                                  message: 'Field saved successfully.'
-                              };
+                                var result = tableManager.setField(scope.parentTable, scope.field, !scope.tableStatus)
 
-                              dfNotify.success(messageOptions);
-                            })
-                            .error(function (reject) {
+                                if (!scope.tableStatus) {
+
+                                    result.success(function (res) {
+
+                                      var messageOptions = {
+
+                                          module: 'Schema',
+                                          type: 'success',
+                                          provider: 'dreamfactory',
+                                          message: 'Field saved successfully.'
+                                      };
+
+                                      dfNotify.success(messageOptions);
+                                    })
+                                    .error(function (reject) {
+
+                                        var messageOptions = {
+                                            module: 'Schema',
+                                            type: 'error',
+                                            provider: 'dreamfactory',
+                                            message: 'Failed to save field'
+                                        };
+
+                                        dfNotify.error(messageOptions);
+                                    });
+                                }
+
+                                scope.field.recordCopy = angular.copy(scope.field.record)
+
+                                scope._closeField();
+                            }
+                            else {
 
                                 var messageOptions = {
                                     module: 'Schema',
                                     type: 'error',
                                     provider: 'dreamfactory',
-                                    message: 'Failed to save field'
+                                    message: 'Name and type are required fields'
                                 };
 
                                 dfNotify.error(messageOptions);
-                            });
+                            }
                         }
+                        else {
+                            var messageOptions = {
+                                module: 'Schema',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: 'The field name already exists'
+                            };
 
-                        scope.field.recordCopy = angular.copy(scope.field.record)
-
-                        scope._closeField();
-                    }
-                    else {
-
-                        var messageOptions = {
-                            module: 'Schema',
-                            type: 'error',
-                            provider: 'dreamfactory',
-                            message: 'Name and type are required fields'
-                        };
-
-                        dfNotify.error(messageOptions);
-                    }
+                            dfNotify.error(messageOptions);
+                        }
+                    })
                 }
 
 
