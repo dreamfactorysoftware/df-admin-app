@@ -621,6 +621,9 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         });
                     }
+                    else {
+                        scope.lookupKeys = [];
+                    }
                 });
 
                 var watchSameKeys = scope.$watch('sameKeys', function (newValue, oldValue) {
