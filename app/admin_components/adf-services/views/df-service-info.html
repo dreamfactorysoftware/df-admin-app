@@ -5,7 +5,7 @@
     <df-simple-help data-options="dfSimpleHelp.serviceType"></df-simple-help><br/>
 
     <div class="dropdown" data-ng-if="newService">
-        <button id="services_info_type" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+        <button id="services_info_type" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" data-ng-disabled="!servicesReady">
             {{selectedSchema.label || 'Select Service Type'}}
             <span class="caret"></span>
         </button>

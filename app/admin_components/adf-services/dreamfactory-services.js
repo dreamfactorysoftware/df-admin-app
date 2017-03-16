@@ -612,6 +612,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             link: function (scope, elem, attrs) {
 
                 scope.serviceArray = [];
+                scope.servicesReady = false;
 
                 // @TODO: Refactor to factory
                 var ServiceInfo = function (serviceInfoData) {
@@ -706,10 +707,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     groups = scope._sortArray(groups, sortingArray);
 
-                    angular.forEach(groups, function (group) {
-                        scope.serviceArray.push({group_name: group, group_types: typeObj[String(group)]});
-                    });
+                    var _serviceArray = [];
 
+                    for (var i = 0; i < groups.length; i++) {
+                        _serviceArray.push({group_name: groups[i], group_types: typeObj[String(groups[i])]});
+                        if (i === groups.length - 1) {
+                            scope.servicesReady = true;
+                            scope.serviceArray = _serviceArray;
+                        }
+                    }
                 });
 
                 scope._script = {};
