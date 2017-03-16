@@ -422,11 +422,17 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
               var table = this._search(tableName);
 
               if (table.hasOwnProperty('field')) {
+
                   var index = table.field.findIndex(function (obj) {
                       return obj.name == fieldName;
                   });
 
-                  return table.field[index];
+                  if (index > -1) {
+                      return table.field[index];
+                  }
+                  else {
+                      return undefined;
+                  }
               }
 
               return null;
@@ -2019,9 +2025,23 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.updField = function (value) {
 
-                    if (value) {
+                    if (scope.tableStatus) {
 
-                        _setField();
+                        if (tableManager.getField(scope.field.record.name, '__new') === undefined) {
+
+                            _setField();
+                        }
+                        else {
+
+                            var messageOptions = {
+                                module: 'Schema',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: 'The field name already exists'
+                            };
+
+                            dfNotify.error(messageOptions);
+                        }
                     }
                     else {
 
