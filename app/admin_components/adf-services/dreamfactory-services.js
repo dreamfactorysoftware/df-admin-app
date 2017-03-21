@@ -562,6 +562,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     // We have passed in data from an existing service.  Let's create
                     // a new Service obj from that data.
                     scope.service = new Service(newValue);
+
+                    if (newValue.hasOwnProperty('label')) {
+
+                        scope.dfLargeHelp.config = {
+                            title: 'Config Overview',
+                            text: 'Specify any service-specific configuration for <b>' + newValue['label'] + '</b> below.'
+                        };
+                    }
                 });
 
 
