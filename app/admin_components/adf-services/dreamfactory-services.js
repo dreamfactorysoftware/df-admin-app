@@ -569,6 +569,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             title: 'Config Overview',
                             text: 'Specify any service-specific configuration for <b>' + newValue['label'] + '</b> below.'
                         };
+
+                        scope.dfLargeHelp.serviceDef = {
+                            title: 'Service Definition Overview',
+                            text: 'For the service <b>' + newValue['label'] + '</b> you can specify a definition below. Refer to the <a target="_blank" href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md" title="Link to Swagger">OpenAPI docs</a> for details, or build and export your own from <a target="_blank" href="http://editor.swagger.io/#/" title="Link to Swagger Editor">here</a>.'
+                        },
+                        scope.dfLargeHelp.serviceDefReadOnly = {
+                            title: 'Service Definition Overview',
+                            text: 'The service definition for <b>' + newValue['label'] + '</b>\'s service type is pre-defined and can not be edited.'
+                        }
                     }
                 });
 
