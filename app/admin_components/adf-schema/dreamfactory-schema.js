@@ -2138,6 +2138,61 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
                 };
 
+                scope._loadReferenceTables = function () {
+
+                    var ref_service_name = StateService.get('dfservice').name;
+
+                    $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/').then(
+
+                        function (result) {
+                            scope.refTables = result.data.resource;
+                        },
+
+                        function (reject) {
+
+                            var messageOptions = {
+
+                                module: 'Api Error',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            };
+
+                            dfNotify.error(messageOptions);
+                        }
+                    );
+                };
+
+                scope._loadReferenceFields = function () {
+
+                    if (!scope.field.record.ref_table) {
+                        scope.refFields = null;
+                        return;
+                    }
+
+                    var ref_service_name =  StateService.get('dfservice').name;
+
+                    $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/' + scope.field.record.ref_table).then(
+                        function (result) {
+
+                            scope.refFields = result.data.field;
+                        },
+                        function (reject) {
+
+                            var messageOptions = {
+
+                                module: 'Api Error',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            };
+
+                            dfNotify.error(messageOptions);
+
+                        }
+                    )
+                };
+
                 var watchFieldData = scope.$watch('fieldData', function (newValue, oldValue) {
 
                     if (!newValue) return;
