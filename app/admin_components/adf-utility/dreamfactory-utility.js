@@ -896,11 +896,6 @@ angular.module('dfUtility', ['dfApplication'])
                             }
                         });
                     });
-
-                    elem.css({
-                        'display': 'inline-block', 'position': 'relative'
-                    });
-
                 }
             }
         }
@@ -1043,6 +1038,36 @@ angular.module('dfUtility', ['dfApplication'])
                     scope.btnText = 'None Selected';
                     scope.description = true;
 
+                    scope.checkAll = {
+                        checked: false
+                    };
+
+                    scope._toggleSelectAll = function (event) {
+
+                        if (event !== undefined) {
+                            event.stopPropagation();
+                        }
+
+                        var verbsSet = [];
+
+                        Object.keys(scope.verbs).forEach(function(key,index) {
+                            if (scope.verbs[key].active === true) {
+                                verbsSet.push(key);
+                            }
+                        });
+
+                        if (verbsSet.length > 0) {
+                            angular.forEach(verbsSet, function (verb) {
+                                scope._toggleVerbState(verb, event);
+                            });
+                        }
+                        else {
+                            Object.keys(scope.verbs).forEach(function(key,index) {
+                                scope._toggleVerbState(key, event);
+                            });
+                        }
+                    };
+
                     scope._setVerbState = function (nameStr, stateBool) {
                         var verb = scope.verbs[nameStr];
                         if (scope.verbs.hasOwnProperty(verb.name)) {
@@ -1051,7 +1076,9 @@ angular.module('dfUtility', ['dfApplication'])
                     };
 
                     scope._toggleVerbState = function (nameStr, event) {
-                        event.stopPropagation();
+                        if (event !== undefined) {
+                            event.stopPropagation();
+                        }
 
                         if (scope.verbs.hasOwnProperty(scope.verbs[nameStr].name)) {
                             scope.verbs[nameStr].active = !scope.verbs[nameStr].active;
@@ -1065,7 +1092,6 @@ angular.module('dfUtility', ['dfApplication'])
                                 if (_obj.active) {
                                     scope.allowedVerbs.push(_obj.name);
                                 }
-
                             }
                         );
                     };
