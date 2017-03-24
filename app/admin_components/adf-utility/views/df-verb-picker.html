@@ -5,7 +5,7 @@
         </button>
         <div style="padding: 0" class="dropdown-menu list-group" role="menu">
             <div class="list-group-item" style="text-align: center">
-                <button type="button" class="btn btn-default btn-xs" data-ng-click="_toggleSelectAll($event)">Select/Unselect All</button>
+                <button type="button" class="btn btn-default btn-xs" data-ng-click="_toggleSelectAll($event)">  All/None  </button>
             </div>
             <a class="list-group-item" data-ng-click="_toggleVerbState(verb.name, $event)" data-ng-repeat="verb in verbs | dfOrderExplicit:['GET', 'POST', 'PUT', 'PATCH', 'DELETE']">
                 <div class="checkbox" style="margin-top: 0; margin-bottom: 0;">
