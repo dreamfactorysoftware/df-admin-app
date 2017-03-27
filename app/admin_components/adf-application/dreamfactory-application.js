@@ -162,7 +162,26 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
     }])
 
-    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
+    .service('AdminPrefs', function () {
+
+        var _adminPrefs = null;
+
+        function get () {
+            return _adminPrefs;
+        }
+
+        function set (value) {
+            _adminPrefs = value;
+        }
+
+        return {
+            get: get,
+            set: set
+        }
+
+    })
+
+    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'AdminPrefs', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, AdminPrefs, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
 
 
         var dfApplicationObj = {
@@ -457,13 +476,24 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }]
             };
 
-            return UserDataService.saveUserSetting(adminPreferences);
+            var prefs = UserDataService.saveUserSetting(adminPreferences);
+
+            AdminPrefs.get(prefs);
+
+            return prefs;
         }
 
         // retrieves user setting
         function _getAdminPrefs() {
 
-            return UserDataService.getUserSetting('adminPreferences', true);
+            var prefs = AdminPrefs.get();
+
+            if (prefs === null) {
+                prefs = UserDataService.getUserSetting('adminPreferences', true);
+                AdminPrefs.set(prefs);
+            }
+
+            return prefs
         }
 
         // Insert data into local model dfApplicationObj
