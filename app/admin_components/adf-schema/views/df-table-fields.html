@@ -1,7 +1,7 @@
 
 <div class="form-group well well-sm">
     <label>Fields</label>
-    <button type="button" class="btn btn-default btn-sm" data-ng-click="addField($parent.table)" title="Add field"
+    <button  id="schema_field_add" type="button" class="btn btn-default btn-sm" data-ng-click="addField($parent.table)" title="Add field"
             data-ng-disabled="viewMode === 'json'">
         Add Field
     </button>
@@ -42,18 +42,18 @@
 
     <tr data-ng-repeat="field in $parent.table.record.field | orderBy:propertyName:reverse track by $index ">
         <td>
-            <button type="button" class="btn btn-default btn-xs" data-ng-click="deleteField(field)"
+            <button id="schema_field_table_row_delete_{{$index}}" type="button" class="btn btn-default btn-xs" data-ng-click="deleteField(field)"
                     title="Delete field"><i class="fa fa-fw fa-trash"></i></button>
-            <button type="button" class="btn btn-default btn-xs"
+            <button id="schema_field_table_row_primary_{{$index}}" type="button" class="btn btn-default btn-xs"
                     data-ng-class="field.is_primary_key ? 'btn-warning' : ''"
                     data-ng-click="setPrimaryField(field)" title="Set primary key"><i
                     class="fa fa-fw fa-key"></i></button>
         </td>
-        <td data-ng-click="editField(field)">{{field.name}}</td>
-        <td data-ng-click="editField(field)">{{field.alias}}</td>
-        <td data-ng-click="editField(field)">{{field.type}}</td>
-        <td data-ng-click="editField(field)">{{field.is_virtual}}</td>
-        <td data-ng-click="editField(field)">{{field.is_aggregate}}</td>
-        <td data-ng-click="editField(field)">{{field.required}}</td>
+        <td id="schema_field_table_row_{{$index}}_name" data-ng-click="editField(field)">{{field.name}}</td>
+        <td id="schema_field_table_row_{{$index}}_alias" data-ng-click="editField(field)">{{field.alias}}</td>
+        <td id="schema_field_table_row_{{$index}}_type" data-ng-click="editField(field)">{{field.type}}</td>
+        <td id="schema_field_table_row_{{$index}}_virtual" data-ng-click="editField(field)">{{field.is_virtual}}</td>
+        <td id="schema_field_table_row_{{$index}}_aggregate" data-ng-click="editField(field)">{{field.is_aggregate}}</td>
+        <td id="schema_field_table_row_{{$index}}_required" data-ng-click="editField(field)">{{field.required}}</td>
     </tr>
 </table>
