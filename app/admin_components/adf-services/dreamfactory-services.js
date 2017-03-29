@@ -448,7 +448,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     );
 
 
-                    if (dfApplicationPrefs.getPrefs().sections.service.autoClose) {
+                    if (dfApplicationPrefs.getPrefs().settings.sections.service.autoClose) {
                         scope._resetServiceDetails();
                     }
                 };
@@ -1412,6 +1412,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.isArray = angular.isArray;
 
                 scope.customConfig = [];
+                scope.servicesReady = false;
 
                 scope.githubModalShowConfig = function () {
 
@@ -1567,6 +1568,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         return item.name === scope.serviceInfo.record.type;
                     })[0];
 
+                    scope.servicesReady = true;
 
                 });
 
@@ -2242,7 +2244,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
 
-                scope.currentViewMode = dfApplicationPrefs.getPrefs().sections.service.manageViewMode;
+                scope.currentViewMode = dfApplicationPrefs.getPrefs().settings.sections.service.manageViewMode;
 
                 scope.services = null;
 

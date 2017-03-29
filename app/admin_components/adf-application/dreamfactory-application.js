@@ -221,8 +221,14 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 api_name: apiName,
                 params: {}
             };
-            api.params = dfApplicationPrefs.getPrefs().data[apiName];
 
+            var _prefs = dfApplicationPrefs.getPrefs();
+
+            if (_prefs.valid) {
+
+                api.params = _prefs.settings.data[apiName];
+
+            }
 
             // check for and remove null value params
             _checkParams(api);
@@ -281,7 +287,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 params: {}
             };
 
-            api.params = dfApplicationPrefs.getPrefs().data['package'];
+            api.params = dfApplicationPrefs.getPrefs().settings.data['package'];
 
             // check for and remove null value params
             _checkParams(api);
@@ -311,16 +317,27 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             // Are we an admin
             if (dfApplicationObj.currentUser.is_sys_admin) {
 
-                // Get admin prefs
-                var result = _getAdminPrefs();
+                var _prefsValid = dfApplicationPrefs.getPrefs();
 
-                result = angular.fromJson(result.response);
+                if (!_prefsValid.valid && !_prefsValid.settings) {
+                    var _adminPrefs = UserDataService.getUserSetting('adminPreferences', true);
 
-                // were they retrieved successfully
-                if (result !== null && result.hasOwnProperty('application') && result.application !== null) {
+                    var _adminPrefsValue = angular.fromJson(_adminPrefs.response);
 
-                    // store them for following calls
-                    dfApplicationPrefs.setPrefs(result);
+                    if (_adminPrefs.status === 200) {
+                        var _prefs = {
+                            settings: _adminPrefsValue,
+                            valid: true
+                        }
+
+                        if (_adminPrefsValue.hasOwnProperty('application') && _adminPrefsValue.application !== null) {
+                            dfApplicationPrefs.setPrefs(_prefs);
+                        }
+                    }
+
+                    if (_adminPrefs.status === 404) {
+                        dfApplicationPrefs.setPrefs()
+                    }
                 }
             }
 
@@ -434,7 +451,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             // set up our params
             var params = options.params;
             params['api'] = api;
-            params['rollback'] = dfApplicationPrefs.getPrefs().data[api].rollback;
+            params['rollback'] = dfApplicationPrefs.getPrefs().settings.data[api].rollback;
 
             return dfSystemData.resource().delete(params, options.data, function (result) {
 
@@ -449,7 +466,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             options = options || {params: {}};
 
-            var defaults = dfApplicationPrefs.getPrefs().data[api];
+            var defaults = dfApplicationPrefs.getPrefs().settings.data[api];
 
             options.params = dfObjectService.mergeObjects(defaults, options.params);
 
@@ -476,24 +493,13 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }]
             };
 
-            var prefs = UserDataService.saveUserSetting(adminPreferences);
-
-            AdminPrefs.get(prefs);
-
-            return prefs;
+            return UserDataService.saveUserSetting(adminPreferences);
         }
 
         // retrieves user setting
         function _getAdminPrefs() {
 
-            var prefs = AdminPrefs.get();
-
-            if (prefs === null) {
-                prefs = UserDataService.getUserSetting('adminPreferences', true);
-                AdminPrefs.set(prefs);
-            }
-
-            return prefs
+            return UserDataService.getUserSetting('adminPreferences', true);
         }
 
         // Insert data into local model dfApplicationObj
@@ -763,12 +769,12 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     if(options && options.filter) {
 
                         var temp = dfApplicationPrefs.getPrefs();
-                        angular.extend(temp['data'].admin, options);
+                        angular.extend(temp.settings['data'].admin, options);
                         dfApplicationPrefs.setPrefs(temp);
                     } else {
 
                         var temp = dfApplicationPrefs.getPrefs();
-                        if(temp['data'].admin && temp['data'].admin.filter) delete temp['data'].admin.filter;
+                        if(temp.settings['data'].admin && temp.settings['data'].admin.filter) delete temp.settings['data'].admin.filter;
                         dfApplicationPrefs.setPrefs(temp);
                     }
 
@@ -795,6 +801,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                                     // make it an array
                                     options[key] = options[key].split(',');
+
                                     break;
 
                                 // it's an array do nothing
@@ -1056,91 +1063,98 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
     .service('dfApplicationPrefs', [function () {
 
         var prefs = {
+            settings: null,
+            valid: false
+        };
 
-            application: {
-                notificationSystem: {
-                    success: 'pnotify',
-                    error: 'pnotify',
-                    warn: 'pnotify'
-                }
-            },
-            data: {
-                app: {
-                    include_count: true,
-                    limit: 100,
-                    related: 'role_by_role_id'
+        var prefsDefault = {
+            settings: {
+                application: {
+                    notificationSystem: {
+                        success: 'pnotify',
+                        error: 'pnotify',
+                        warn: 'pnotify'
+                    }
                 },
-                app_group: {
-                    include_count: true,
-                    limit: 100,
-                    related: 'app_to_app_group_by_group_id'
+                data: {
+                    app: {
+                        include_count: true,
+                        limit: 100,
+                        related: 'role_by_role_id'
+                    },
+                    app_group: {
+                        include_count: true,
+                        limit: 100,
+                        related: 'app_to_app_group_by_group_id'
+                    },
+                    role: {
+                        include_count: true,
+                        related: 'role_service_access_by_role_id,role_lookup_by_role_id',
+                        limit: 100
+                    },
+                    admin: {
+                        include_count: true,
+                        limit: 20,
+                        related: 'user_lookup_by_user_id'
+                    },
+                    user: {
+                        include_count: true,
+                        limit: 20,
+                        related: 'user_lookup_by_user_id,user_to_app_to_role_by_user_id'
+                    },
+                    service: {
+                        include_count: true,
+                        include_components: true,
+                        limit: 100
+                    },
+                    config: {},
+                    email_template: {
+                        include_count: true
+                    },
+                    lookup: {
+                        include_count: true
+                    },
+                    cors: {
+                        include_count: true
+                    },
+                    event: {
+                        scriptable: true
+                    },
+                    limit: {
+                        include_count: true,
+                        limit: 20,
+                        related: 'service_by_service_id,role_by_role_id,user_by_user_id'
+                    },
+                    limit_cache: {
+                        include_count: true,
+                        limit: 20
+                    }
                 },
-                role: {
-                    include_count: true,
-                    related: 'role_service_access_by_role_id,role_lookup_by_role_id',
-                    limit: 100
-                },
-                admin: {
-                    include_count: true,
-                    limit: 20,
-                    related: 'user_lookup_by_user_id'
-                },
-                user: {
-                    include_count: true,
-                    limit: 20,
-                    related: 'user_lookup_by_user_id,user_to_app_to_role_by_user_id'
-                },
-                service: {
-                    include_count: true,
-                    include_components: true,
-                    limit: 100
-                },
-                config: {},
-                email_template: {
-                    include_count: true
-                },
-                lookup: {
-                    include_count: true
-                },
-                cors: {
-                    include_count: true
-                },
-                event: {
-                    scriptable: true
-                },
-                limit: {
-                    include_count: true,
-                    limit: 20,
-                    related: 'service_by_service_id,role_by_role_id,user_by_user_id'
-                },
-                limit_cache: {
-                    include_count: true,
-                    limit: 20
-                }
-            },
 
-            sections: {
-                app: {
-                    autoClose: false,
-                    manageViewMode: 'table'
+                sections: {
+                    app: {
+                        autoClose: false,
+                        manageViewMode: 'table'
+                    },
+                    role: {
+                        autoClose: false,
+                        manageViewMode: 'table'
+                    },
+                    admin: {
+                        autoClose: false,
+                        manageViewMode: 'table'
+                    },
+                    user: {
+                        autoClose: false,
+                        manageViewMode: 'table'
+                    },
+                    service: {
+                        autoClose: false,
+                        manageViewMode: 'table'
+                    }
                 },
-                role: {
-                    autoClose: false,
-                    manageViewMode: 'table'
-                },
-                admin: {
-                    autoClose: false,
-                    manageViewMode: 'table'
-                },
-                user: {
-                    autoClose: false,
-                    manageViewMode: 'table'
-                },
-                service: {
-                    autoClose: false,
-                    manageViewMode: 'table'
-                }
-            }
+            },
+            valid: true
         }
 
         return {
@@ -1153,8 +1167,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             setPrefs: function (data) {
 
-                prefs = data;
+                prefs = (data) ? data : prefsDefault;
             }
+
         }
     }])
 
@@ -1440,7 +1455,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         return {
                             number: _pageNum + 1,
                             value: _pageNum,
-                            offset: _pageNum * dfApplicationPrefs.getPrefs().data[scope.api].limit,
+                            offset: _pageNum * dfApplicationPrefs.getPrefs().settings.data[scope.api].limit,
                             stopPropagation: false
                         }
                     };
@@ -1503,7 +1518,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                             return false;
                         }
 
-                        scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationPrefs.getPrefs().data[newValue].limit));
+                        scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationPrefs.getPrefs().settings.data[newValue].limit));
                     };
 
 

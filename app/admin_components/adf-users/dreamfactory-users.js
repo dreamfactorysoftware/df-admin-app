@@ -333,7 +333,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             scope.user = new User(result);
 
-                            if (dfApplicationPrefs.getPrefs().sections.user.autoClose) {
+                            if (dfApplicationPrefs.getPrefs().settings.sections.user.autoClose) {
 
                                 scope.closeUser();
                             }
@@ -823,7 +823,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     path: ''
                 };
 
-                scope.currentViewMode = dfApplicationPrefs.getPrefs().sections.user.manageViewMode;
+                scope.currentViewMode = dfApplicationPrefs.getPrefs().settings.sections.user.manageViewMode;
 
                 scope.users = null;
 

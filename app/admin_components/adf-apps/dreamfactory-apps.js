@@ -372,7 +372,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                             // clean form
                             // reset app
-                            if (dfApplicationPrefs.getPrefs().sections.app.autoClose) {
+                            if (dfApplicationPrefs.getPrefs().settings.sections.app.autoClose) {
                                 scope._resetAppDetails();
                             }
 
@@ -564,7 +564,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 };
 
 
-                scope.currentViewMode = dfApplicationPrefs.getPrefs().sections.app.manageViewMode;
+                scope.currentViewMode = dfApplicationPrefs.getPrefs().settings.sections.app.manageViewMode;
 
                 scope.apps = null;
 

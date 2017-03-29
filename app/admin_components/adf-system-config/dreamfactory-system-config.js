@@ -253,7 +253,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.$on('$locationChangeStart', function (e) {
 
                 if (!$scope.hasOwnProperty('systemConfig')) return;
-                
+
                 if (!dfObjectService.compareObjectsAsJson($scope.systemConfig.record, $scope.systemConfig.recordCopy)) {
 
                     if (!dfNotify.confirmNoSave()) {
@@ -1525,8 +1525,12 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.viewModes = ['list', 'thumbnails', 'table'];
 
+                if (!dfApplicationPrefs.getPrefs().valid) {
+                    alert('Admin Preferences could not be loaded')
+                }
+
                 // Init create pref objects
-                angular.forEach(dfApplicationPrefs.getPrefs(), function (value, key) {
+                angular.forEach(dfApplicationPrefs.getPrefs().settings, function (value, key) {
 
                     scope.prefs[key] = {};
 
@@ -1655,7 +1659,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
         }
     }])
 
-    .service('SystemConfigDataService', ['INSTANCE_URL', function (INSTANCE_URL) {
+    .service('SystemConfigDataService', ['INSTANCE_URL', 'dfApplicationData',  function (INSTANCE_URL, dfApplicationData) {
 
         var systemConfig = {};
 

@@ -369,7 +369,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         }
                     );
 
-                    if (dfApplicationPrefs.getPrefs().sections.role.autoClose) {
+                    if (dfApplicationPrefs.getPrefs().settings.sections.role.autoClose) {
                         scope._resetRoleDetails();
                     }
                 };
@@ -939,7 +939,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
 
-                scope.currentViewMode = dfApplicationPrefs.getPrefs().sections.role.manageViewMode;
+                scope.currentViewMode = dfApplicationPrefs.getPrefs().settings.sections.role.manageViewMode;
 
                 scope.roles = null;
 
