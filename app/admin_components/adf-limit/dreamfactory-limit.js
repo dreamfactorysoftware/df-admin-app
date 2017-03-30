@@ -231,7 +231,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         '$rootScope',
         'MOD_LIMIT_ASSET_PATH',
         'dfApplicationData',
-        'dfApplicationPrefs',
         'dfNotify',
         '$timeout',
         'editLimitService',
@@ -239,7 +238,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         function ($rootScope,
             MOD_LIMIT_ASSET_PATH,
             dfApplicationData,
-            dfApplicationPrefs,
             dfNotify,
             $timeout,
             editLimitService,
@@ -269,7 +267,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     path: ''
                 };
 
-                scope.currentViewMode = dfApplicationPrefs.getPrefs().settings.sections.user.manageViewMode;
+                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.user.manageViewMode;
 
                 scope.limits = null;
                 scope.system = null;
@@ -441,7 +439,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     }
                     scope.selectType(scope.currentEditLimit.record.typeObj);
-                    
+
 
                 };
 
@@ -822,29 +820,27 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
     }])
 
 .directive('dfLimitDetails', [
-    'MOD_LIMIT_ASSET_PATH', 
-    'dfApplicationData', 
-    'dfApplicationPrefs', 
-    'dfNotify', 
-    'dfObjectService', 
-    'INSTANCE_URL', 
+    'MOD_LIMIT_ASSET_PATH',
+    'dfApplicationData',
+    'dfNotify',
+    'dfObjectService',
+    'INSTANCE_URL',
     '$http',
     '$cookies',
-    'UserDataService', 
-    '$cookieStore', 
+    'UserDataService',
+    '$cookieStore',
     '$rootScope',
     'editLimitService',
     'updateLimitCacheData', function(
-        MOD_LIMIT_ASSET_PATH, 
-        dfApplicationData, 
-        dfApplicationPrefs, 
-        dfNotify, 
-        dfObjectService, 
-        INSTANCE_URL, 
+        MOD_LIMIT_ASSET_PATH,
+        dfApplicationData,
+        dfNotify,
+        dfObjectService,
+        INSTANCE_URL,
         $http,
         $cookies,
-        UserDataService, 
-        $cookieStore, 
+        UserDataService,
+        $cookieStore,
         $rootScope,
         editLimitService,
         updateLimitCacheData) {

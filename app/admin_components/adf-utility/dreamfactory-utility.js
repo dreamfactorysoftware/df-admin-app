@@ -2143,7 +2143,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // Used for manage section pagination
-    .directive('dfToolbarPaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$location', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $location) {
+    .directive('dfToolbarPaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$location', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfNotify, $location) {
 
 
         return {
@@ -2235,7 +2235,7 @@ angular.module('dfUtility', ['dfApplication'])
                     return {
                         number: _pageNum + 1,
                         value: _pageNum,
-                        offset: _pageNum * dfApplicationPrefs.getPrefs().settings.data[scope.api].limit,
+                        offset: _pageNum * dfApplicationData.getAdminPrefs().settings.data[scope.api].limit,
                         stopPropagation: false
                     }
                 };
@@ -2298,7 +2298,7 @@ angular.module('dfUtility', ['dfApplication'])
                         return false;
                     }
 
-                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationPrefs.getPrefs().settings.data[newValue].limit));
+                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationData.getAdminPrefs().settings.data[newValue].limit));
                 };
 
                 //local function for filter detection
@@ -2518,7 +2518,7 @@ angular.module('dfUtility', ['dfApplication'])
                         if (scope.currentPage.number !== 1) {
 
                             // calc proper offset
-                            curOffset = scope.currentPage.offset - dfApplicationPrefs.getPrefs().settings.data[scope.api].limit
+                            curOffset = scope.currentPage.offset - dfApplicationData.getAdminPrefs().settings.data[scope.api].limit
                         }
                     }
 
@@ -2573,7 +2573,7 @@ angular.module('dfUtility', ['dfApplication'])
 
 
     // Used for manage section pagination
-    .directive('dfTablePaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$location', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $location) {
+    .directive('dfTablePaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$location', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfNotify, $location) {
 
         return {
             restrict: 'E',
@@ -2665,7 +2665,7 @@ angular.module('dfUtility', ['dfApplication'])
                     return {
                         number: _pageNum + 1,
                         value: _pageNum,
-                        offset: (_pageNum) ? _pageNum * dfApplicationPrefs.getPrefs().settings.data[scope.api].limit : 0,
+                        offset: (_pageNum) ? _pageNum * dfApplicationData.getAdminPrefs().settings.data[scope.api].limit : 0,
                         stopPropagation: false
                     }
                 };
@@ -2728,7 +2728,7 @@ angular.module('dfUtility', ['dfApplication'])
                         return false;
                     }
 
-                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationPrefs.getPrefs().settings.data[newValue].limit));
+                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationData.getAdminPrefs().settings.data[newValue].limit));
                 };
 
                 //local function for filter detection
@@ -2969,7 +2969,7 @@ angular.module('dfUtility', ['dfApplication'])
                         if (scope.currentPage.number !== 1) {
 
                             // calc proper offset
-                            curOffset = scope.currentPage.offset - dfApplicationPrefs.getPrefs().settings.data[scope.api].limit
+                            curOffset = scope.currentPage.offset - dfApplicationData.getAdminPrefs().settings.data[scope.api].limit
                         }
                     }
 
@@ -4060,7 +4060,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // Notification service
-    .service('dfNotify', ['dfApplicationPrefs', function(dfApplicationPrefs) {
+    .service('dfNotify', ['dfApplicationData', function(dfApplicationData) {
 
         var stack_topleft = {"dir1": "down", "dir2": "right", "push": "top", "firstpos1": 25, "firstpos2": 25, "spacing1": 5, spacing2: 5};
         var stack_bottomleft = {"dir1": "right", "dir2": "up", "push": "top"};
@@ -4191,7 +4191,7 @@ angular.module('dfUtility', ['dfApplication'])
 
             success: function(options) {
 
-                switch(dfApplicationPrefs.getPrefs().settings.application.notificationSystem.success) {
+                switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.success) {
 
                     case 'pnotify':
                         pnotify(options);
@@ -4218,7 +4218,7 @@ angular.module('dfUtility', ['dfApplication'])
             error: function(options) {
 
 
-                switch(dfApplicationPrefs.getPrefs().settings.application.notificationSystem.error) {
+                switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.error) {
 
                     case 'pnotify':
                         options.message = parseError(options, 'message');
@@ -4245,7 +4245,7 @@ angular.module('dfUtility', ['dfApplication'])
 
             warn: function(options) {
 
-                switch(dfApplicationPrefs.getPrefs().settings.application.notificationSystem.warn) {
+                switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.warn) {
 
                     case 'pnotify':
                         pnotify(options);
@@ -4275,7 +4275,7 @@ angular.module('dfUtility', ['dfApplication'])
 
             confirm: function (msg) {
 
-                switch(dfApplicationPrefs.getPrefs().settings.application.notificationSystem.confirm) {
+                switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.confirm) {
 
                     case 'pnotify':
                         return pnotify(options);

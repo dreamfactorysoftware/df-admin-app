@@ -162,26 +162,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
     }])
 
-    .service('AdminPrefs', function () {
-
-        var _adminPrefs = null;
-
-        function get () {
-            return _adminPrefs;
-        }
-
-        function set (value) {
-            _adminPrefs = value;
-        }
-
-        return {
-            get: get,
-            set: set
-        }
-
-    })
-
-    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'AdminPrefs', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, AdminPrefs, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
+    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
 
 
         var dfApplicationObj = {
@@ -199,7 +180,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 percent: 0
             }
         }
-
 
         // remove params with null values
         function _checkParams(options) {
@@ -227,7 +207,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             if (_prefs.valid) {
 
                 api.params = _prefs.settings.data[apiName];
-
             }
 
             // check for and remove null value params
@@ -320,24 +299,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 var _prefsValid = dfApplicationPrefs.getPrefs();
 
                 if (!_prefsValid.valid && !_prefsValid.settings) {
-                    var _adminPrefs = UserDataService.getUserSetting('adminPreferences', true);
-
-                    var _adminPrefsValue = angular.fromJson(_adminPrefs.response);
-
-                    if (_adminPrefs.status === 200) {
-                        var _prefs = {
-                            settings: _adminPrefsValue,
-                            valid: true
-                        }
-
-                        if (_adminPrefsValue.hasOwnProperty('application') && _adminPrefsValue.application !== null) {
-                            dfApplicationPrefs.setPrefs(_prefs);
-                        }
-                    }
-
-                    if (_adminPrefs.status === 404) {
-                        dfApplicationPrefs.setPrefs()
-                    }
+                    _getAdminPrefs();
                 }
             }
 
@@ -486,6 +448,13 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         // update session storage and app obj
         function _saveAdminPrefs(adminPrefs) {
 
+            var _prefs = {
+                settings: adminPrefs,
+                valid: true
+            }
+
+            dfApplicationPrefs.setPrefs(_prefs);
+
             var adminPreferences = {
                 resource:[{
                     name:"adminPreferences",
@@ -499,7 +468,36 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         // retrieves user setting
         function _getAdminPrefs() {
 
-            return UserDataService.getUserSetting('adminPreferences', true);
+            var currentPrefs = dfApplicationPrefs.getPrefs();
+
+            if (currentPrefs.settings === null) {
+
+                var _adminPrefs = UserDataService.getUserSetting('adminPreferences', true);
+
+                var _adminPrefsValue = angular.fromJson(_adminPrefs.response);
+
+                if (_adminPrefs.status === 200) {
+                    var _prefs = {
+                        settings: _adminPrefsValue,
+                        valid: true
+                    }
+
+                    if (_adminPrefsValue.hasOwnProperty('application') && _adminPrefsValue.application !== null) {
+                        dfApplicationPrefs.setPrefs(_prefs);
+                        return _prefs;
+                    }
+                }
+
+                if (_adminPrefs.status === 404) {
+                    dfApplicationPrefs.setPrefs()
+                    return dfApplicationPrefs.getPrefs();
+                }
+
+                return currentPrefs;
+            }
+            else {
+                return currentPrefs;
+            }
         }
 
         // Insert data into local model dfApplicationObj

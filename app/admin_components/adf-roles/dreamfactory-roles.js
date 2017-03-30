@@ -97,7 +97,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
         };
     }])
 
-    .directive('dfRoleDetails', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfApplicationPrefs', '$q', 'SystemConfigDataService', 'dfSystemData', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, dfApplicationPrefs, $q, SystemConfigDataService, dfSystemData) {
+    .directive('dfRoleDetails', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$q', 'SystemConfigDataService', 'dfSystemData', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, $q, SystemConfigDataService, dfSystemData) {
 
         return {
 
@@ -369,7 +369,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         }
                     );
 
-                    if (dfApplicationPrefs.getPrefs().settings.sections.role.autoClose) {
+                    if (dfApplicationData.getAdminPrefs().settings.sections.role.autoClose) {
                         scope._resetRoleDetails();
                     }
                 };
@@ -916,7 +916,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
         }
     }])
 
-    .directive('dfManageRoles', ['$rootScope', 'MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfSystemData', 'SystemConfigDataService', function ($rootScope, MOD_ROLES_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfSystemData, SystemConfigDataService) {
+    .directive('dfManageRoles', ['$rootScope', 'MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfSystemData', 'SystemConfigDataService', function ($rootScope, MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfSystemData, SystemConfigDataService) {
 
 
         return {
@@ -939,7 +939,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
 
-                scope.currentViewMode = dfApplicationPrefs.getPrefs().settings.sections.role.manageViewMode;
+                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.role.manageViewMode;
 
                 scope.roles = null;
 

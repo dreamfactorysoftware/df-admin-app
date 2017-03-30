@@ -1511,7 +1511,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             }
         }])
 
-    .directive('dfEditPreferences', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfPrefFactory', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfPrefFactory, dfNotify) {
+    .directive('dfEditPreferences', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfPrefFactory', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, dfApplicationData, dfPrefFactory, dfNotify) {
 
         return {
 
@@ -1525,12 +1525,12 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.viewModes = ['list', 'thumbnails', 'table'];
 
-                if (!dfApplicationPrefs.getPrefs().valid) {
+                if (!dfApplicationData.getAdminPrefs().valid) {
                     alert('Admin Preferences could not be loaded')
                 }
 
                 // Init create pref objects
-                angular.forEach(dfApplicationPrefs.getPrefs().settings, function (value, key) {
+                angular.forEach(dfApplicationData.getAdminPrefs().settings, function (value, key) {
 
                     scope.prefs[key] = {};
 
@@ -1598,8 +1598,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                             dfNotify.success(messageOptions);
 
-                            dfApplicationPrefs.setPrefs(requestDataObj);
-
+                            dfApplicationData.saveAdminPrefs(requestDataObj)
                         },
                         function (reject) {
 

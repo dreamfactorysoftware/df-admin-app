@@ -110,7 +110,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
         };
 
     }])
-    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfApplicationPrefs', 'dfServiceValues', '$http', 'INSTANCE_URL', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, dfApplicationPrefs, dfServiceValues, $http, INSTANCE_URL) {
+    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfServiceValues', '$http', 'INSTANCE_URL', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, dfServiceValues, $http, INSTANCE_URL) {
 
         return {
 
@@ -448,7 +448,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     );
 
 
-                    if (dfApplicationPrefs.getPrefs().settings.sections.service.autoClose) {
+                    if (dfApplicationData.getAdminPrefs().settings.sections.service.autoClose) {
                         scope._resetServiceDetails();
                     }
                 };
@@ -2223,7 +2223,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfManageServices', ['MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', function (MOD_SERVICES_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify) {
+    .directive('dfManageServices', ['MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfNotify', function (MOD_SERVICES_ASSET_PATH, dfApplicationData, dfNotify) {
 
 
         return {
@@ -2244,7 +2244,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
 
-                scope.currentViewMode = dfApplicationPrefs.getPrefs().settings.sections.service.manageViewMode;
+                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.service.manageViewMode;
 
                 scope.services = null;
 
