@@ -269,7 +269,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     path: ''
                 };
 
-                scope.currentViewMode = dfApplicationPrefs.getPrefs().sections.user.manageViewMode;
+                scope.currentViewMode = dfApplicationPrefs.getPrefs().settings.sections.user.manageViewMode;
 
                 scope.limits = null;
                 scope.system = null;
