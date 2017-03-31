@@ -202,7 +202,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 params: {}
             };
 
-            var _prefs = dfApplicationPrefs.getPrefs();
+            var _prefs = _getAdminPrefs();
 
             if (_prefs.valid) {
 
@@ -266,7 +266,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 params: {}
             };
 
-            api.params = dfApplicationPrefs.getPrefs().settings.data['package'];
+            api.params = _getAdminPrefs().settings.data['package'];
 
             // check for and remove null value params
             _checkParams(api);
@@ -296,7 +296,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             // Are we an admin
             if (dfApplicationObj.currentUser.is_sys_admin) {
 
-                var _prefsValid = dfApplicationPrefs.getPrefs();
+                var _prefsValid = _getAdminPrefs();
 
                 if (!_prefsValid.valid && !_prefsValid.settings) {
                     _getAdminPrefs();
@@ -413,7 +413,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             // set up our params
             var params = options.params;
             params['api'] = api;
-            params['rollback'] = dfApplicationPrefs.getPrefs().settings.data[api].rollback;
+            params['rollback'] = _getAdminPrefs().settings.data[api].rollback;
 
             return dfSystemData.resource().delete(params, options.data, function (result) {
 
@@ -428,7 +428,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             options = options || {params: {}};
 
-            var defaults = dfApplicationPrefs.getPrefs().settings.data[api];
+            var defaults = _getAdminPrefs().settings.data[api];
 
             options.params = dfObjectService.mergeObjects(defaults, options.params);
 
@@ -766,14 +766,14 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     if(options && options.filter) {
 
-                        var temp = dfApplicationPrefs.getPrefs();
+                        var temp = _getAdminPrefs();
                         angular.extend(temp.settings['data'].admin, options);
-                        dfApplicationPrefs.setPrefs(temp);
+                        _saveAdminPrefs(temp.settings)
                     } else {
 
-                        var temp = dfApplicationPrefs.getPrefs();
+                        var temp = _getAdminPrefs();
                         if(temp.settings['data'].admin && temp.settings['data'].admin.filter) delete temp.settings['data'].admin.filter;
-                        dfApplicationPrefs.setPrefs(temp);
+                        _saveAdminPrefs(temp.settings)
                     }
 
                     return _fetchFromApi(api);
@@ -1058,7 +1058,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
     }])
 
-    .service('dfApplicationPrefs', [function () {
+    .factory('dfApplicationPrefs', [function () {
 
         var prefs = {
             settings: null,
@@ -1453,7 +1453,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         return {
                             number: _pageNum + 1,
                             value: _pageNum,
-                            offset: _pageNum * dfApplicationPrefs.getPrefs().settings.data[scope.api].limit,
+                            offset: _pageNum * _getAdminPrefs().settings.data[scope.api].limit,
                             stopPropagation: false
                         }
                     };
@@ -1516,7 +1516,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                             return false;
                         }
 
-                        scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationPrefs.getPrefs().settings.data[newValue].limit));
+                        scope._createPagesArr(scope._calcTotalPages(scope.totalCount, _getAdminPrefs().settings.data[newValue].limit));
                     };
 
 

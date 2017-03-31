@@ -1,7 +1,8 @@
 <div>
     <div class="row">
         <div class="col-md-6">
-            <div data-ng-repeat="(key, value) in prefs">
+            <div ng-show="!prefsLoaded"><br/>Preferences could not be loaded</div>
+            <div data-ng-repeat="(key, value) in prefs" ng-show="prefsLoaded">
                 <div data-ng-if="key === 'application'">
                     <legend><h4>Application</h4></legend>
                     <div class="panel panel-default">
@@ -10,13 +11,10 @@
                                 <h4>{{key}}</h4>
                                 <div data-ng-repeat="obj in value">
                                     <div class="form-group" data-ng-if="obj.type === 'string'">
-
                                         <div>
                                             <label>{{obj.key}}</label>
                                             <select class="form-control" data-ng-model="obj.value" data-ng-options="o for o in ['pnotify', 'browserAlert', 'browserLog', 'dfModalNotify']"></select>
                                         </div>
-
-
                                     </div>
                                     <div class="form-group" data-ng-if="obj.type === 'number'">
                                         <label>{{obj.key}}</label>
@@ -95,7 +93,7 @@
 
     <div class="row df-btn-row" style="padding-bottom: 20px">
         <div class="col-xs-12">
-            <div class="btn btn-primary" data-ng-click="savePrefs()">Save</div>
+            <div class="btn btn-primary" data-ng-click="savePrefs()" ng-show="prefsLoaded">Save</div>
         </div>
     </div>
 </div>

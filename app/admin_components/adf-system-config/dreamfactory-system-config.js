@@ -1522,12 +1522,9 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
 
                 scope.prefs = {};
+                scope.prefsLoaded = dfApplicationData.getAdminPrefs().valid;
 
                 scope.viewModes = ['list', 'thumbnails', 'table'];
-
-                if (!dfApplicationData.getAdminPrefs().valid) {
-                    alert('Admin Preferences could not be loaded')
-                }
 
                 // Init create pref objects
                 angular.forEach(dfApplicationData.getAdminPrefs().settings, function (value, key) {
@@ -1588,7 +1585,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     scope._savePrefsToServer(requestDataObj).then(
                         function (result) {
 
-
                             var messageOptions = {
                                 module: 'Preferences',
                                 type: 'success',
@@ -1597,8 +1593,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             };
 
                             dfNotify.success(messageOptions);
-
-                            dfApplicationData.saveAdminPrefs(requestDataObj)
                         },
                         function (reject) {
 
@@ -1608,7 +1602,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 provider: 'dreamfactory',
                                 message: reject
                             };
-
 
                             dfNotify.error(messageOptions);
                         }

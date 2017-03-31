@@ -4191,6 +4191,8 @@ angular.module('dfUtility', ['dfApplication'])
 
             success: function(options) {
 
+                if (dfApplicationData.getAdminPrefs().settings === null) return;
+
                 switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.success) {
 
                     case 'pnotify':
@@ -4217,6 +4219,7 @@ angular.module('dfUtility', ['dfApplication'])
 
             error: function(options) {
 
+                if (dfApplicationData.getAdminPrefs().settings === null) return;
 
                 switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.error) {
 
@@ -4244,6 +4247,8 @@ angular.module('dfUtility', ['dfApplication'])
             },
 
             warn: function(options) {
+
+                if (dfApplicationData.getAdminPrefs().settings === null) return;
 
                 switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.warn) {
 
@@ -4274,6 +4279,8 @@ angular.module('dfUtility', ['dfApplication'])
             },
 
             confirm: function (msg) {
+
+                if (dfApplicationData.getAdminPrefs().settings === null) return;
 
                 switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.confirm) {
 
