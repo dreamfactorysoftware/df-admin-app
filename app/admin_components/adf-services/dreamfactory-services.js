@@ -54,24 +54,48 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
     }])
 
-    .service('dfServiceData', ['$http', '$q', 'INSTANCE_URL', function ($http, $q, INSTANCE_URL) {
+    .factory('dfServiceTypes', function () {
+
+        var service = {};
+        var _types = null;
+
+        service.setTypes = function (types) {
+            _types = types;
+        }
+
+        service.getTypes = function () {
+            return _types;
+        }
+
+        return service;
+    })
+
+    .service('dfServiceData', ['$http', '$q', 'INSTANCE_URL', 'dfServiceTypes', function ($http, $q, INSTANCE_URL, dfServiceTypes) {
         var dfServiceData = {};
 
         dfServiceData.getServiceTypes = function () {
+
             var deferred = $q.defer();
 
             // Check if service types are in cache. If yes then return them.
             // Other wise request for service types and then cache them so that
             // we do not have to request them next time.
 
+            if (dfServiceTypes.getTypes() !== null) {
+                dfServiceData.serviceTypes = dfServiceTypes.getTypes();
+                deferred.resolve(dfServiceData.serviceTypes);
+            }
+
             if (dfServiceData.serviceTypes && dfServiceData.serviceTypes.length) {
                 deferred.resolve(dfServiceData.serviceTypes);
             } else {
+
                 $http({
                     method: 'GET',
                     url: INSTANCE_URL + '/api/v2/system/service_type'
                 }).success(function (data) {
                     dfServiceData.serviceTypes = data.resource;
+                    dfServiceTypes.setTypes(data.resource)
                     deferred.resolve(dfServiceData.serviceTypes);
                 });
             }
@@ -81,7 +105,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
         return dfServiceData;
     }])
 
-    .controller('ServicesCtrl', ['$scope', 'dfApplicationData', function ($scope, dfApplicationData) {
+    .controller('ServicesCtrl', ['$scope', 'dfApplicationData', 'dfServiceData', function ($scope, dfApplicationData, dfServiceData) {
 
         $scope.$parent.title = 'Services';
 
@@ -110,6 +134,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
         };
 
     }])
+
     .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfServiceValues', '$http', 'INSTANCE_URL', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, dfServiceValues, $http, INSTANCE_URL) {
 
         return {
@@ -680,6 +705,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.serviceGroups = [];
                 scope.hcv = new dfServiceValues();
 
+
                 dfServiceData.getServiceTypes().then(function (serviceTypes) {
 
                     scope.hcv.serviceTypes = serviceTypes;
@@ -733,7 +759,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             scope.serviceArray = _serviceArray;
                         }
                     }
+
                 });
+
 
                 scope._script = {};
                 scope.serviceInfo = {};
@@ -1217,7 +1245,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 });
 
                 scope.$on('$destroy', function (e) {
-
                     watchService();
                     watchEmailProvider();
                 });
@@ -1377,7 +1404,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', '$rootScope', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache, $rootScope) {
+    .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', 'dfServiceTypes', '$compile', '$templateCache', '$rootScope', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, dfServiceTypes, $compile, $templateCache, $rootScope) {
 
 
         return {
@@ -1514,8 +1541,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     });
                 };
 
+                scope.hcv = new dfServiceValues();
 
                 scope.changeServiceType = function () {
+
                     if (!scope.serviceInfo && !scope.serviceInfo.record) {
                         return;
                     }
@@ -1530,13 +1559,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
 
                     scope._changeDefinitionView();
-                };
 
-                scope.hcv = new dfServiceValues();
 
-                dfServiceData.getServiceTypes().then(function (serviceTypes) {
-
-                    scope.hcv.serviceTypes = serviceTypes;
+                    scope.hcv.serviceTypes = dfServiceTypes.getTypes();
 
                     scope.handleFiles = function (files) {
                         if (!files) return;
@@ -1569,8 +1594,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     })[0];
 
                     scope.servicesReady = true;
-
-                });
+                };
 
 
                 scope._script = {};
