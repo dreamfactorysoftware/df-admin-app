@@ -1408,7 +1408,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 templateUrl: MODUSRMNGR_ASSET_PATH + 'views/confirmation-code.html',
                 scope: {
                     options: '=?',
-                    inErrorMsg: '=?'
+                    inErrorMsg: '=?',
+                    inviteType: '=?'
                 },
                 link: function(scope, elem, attrs) {
 
@@ -1429,6 +1430,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope.errorMsg = '';
                     scope.successMsg = '';
                     scope.confirmWaiting = false;
+                    scope.submitLabel = 'Confirm ' + scope.inviteType.charAt(0).toUpperCase() + scope.inviteType.slice(1);;
 
                     scope.user = {}
 
@@ -1493,8 +1495,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // Send confim obj to the server for...you guessed it...confirmation
                     scope._confirmUserToServer = function (requestDataObj) {
 
+                        var api = (scope.inviteType === 'user') ? 'user/password' : 'system/admin/password'
+
                         return $http({
-                            url: INSTANCE_URL + '/api/v2/user/password',
+                            url: INSTANCE_URL + '/api/v2/' + api,
                             method: 'POST',
                             params: {
                                 login: false
@@ -1502,8 +1506,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             data: requestDataObj
                         });
                     };
-
-
 
                     // COMPLEX IMPLEMENTATION
                     scope._confirm = function (userConfirmObj) {

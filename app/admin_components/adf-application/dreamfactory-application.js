@@ -1349,6 +1349,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     case '/login':
                     case '/user-invite':
+                    case '/admin-invite':
                     case '/register-confirm':
                     case '/register':
                     case '/register-complete':
