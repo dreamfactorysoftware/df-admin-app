@@ -1,3 +1,9 @@
+<style type="text/css">
+	.tooltip-arrow {
+		display:none;
+	}
+</style>
+
 <div>
 
 	<!-- Form Title -->
@@ -40,16 +46,26 @@
 						<div class="form-group" ng-hide="$parent.hidden.services">
 							<label>Service</label>
 							<select class="form-control" data-ng-model="currentEditLimit.record.service_by_service_id"
-									ng-options="service.name for service in services track by service.id"	>
+									ng-options="service.name for service in services track by service.id"
+									data-ng-change="buildResource(currentEditLimit.record.service_by_service_id)">
 								<option value="" >Please Select...</option>
 							</select>
 						</div>
+
 						<div class="form-group" ng-hide="$parent.hidden.users">
 							<label>User</label>
 							<select class="form-control" data-ng-model="currentEditLimit.record.user_by_user_id"
 							data-ng-options="user.name for user in users track by user.id" >
 								<option value="" >Please Select...</option>
 							</select>
+						</div>
+						<div class="form-group" ng-hide="$parent.hidden.endpoint">
+							<label>Endpoint</label>
+							<df-simple-help data-options="dfSimpleHelp.endpoint"></df-simple-help>
+							<div>
+								<input type="text" class="form-control" data-ng-model="currentEditLimit.record.endpoint" placeholder="" />
+							</div>
+
 						</div>
 						<div class="form-group" ng-hide="$parent.hidden.roles">
 							<label>Role</label>
@@ -71,6 +87,16 @@
 								ng-options="period.name for period in $parent.limitPeriods track by period.value"	>
 									<option value="" >Please Select...</option>
 								</select>
+						</div>
+
+						<div class="form-group" >
+							<label>Verb</label>
+							<df-simple-help data-options="dfSimpleHelp.verb"></df-simple-help>
+							<select class="form-control" data-ng-model="currentEditLimit.record.verb"
+									ng-options="verb as verb for verb in verbs"	>
+								<option value="" >Any</option>
+
+							</select>
 						</div>
 
 						  <!-- Limit Active -->
@@ -122,3 +148,9 @@
 
 	</form>
 </div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>

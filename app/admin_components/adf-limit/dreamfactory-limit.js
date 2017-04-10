@@ -108,7 +108,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         $scope.$parent.title = 'Limits';
         $rootScope.isRouteLoading = true;
 
-        dfApplicationData.loadApi(['system', 'limit', 'role', 'service', 'user', 'limit_cache']);
+        dfApplicationData.loadApi(['system', 'limit', 'role', 'service', 'user', 'limit_cache', 'event']);
 
         // Set module links
         $scope.links = [
@@ -133,7 +133,11 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
             {value: 'instance.service', name: 'Service'},
             {value: 'instance.role', name: 'Role'},
             {value: 'instance.user.service', name: 'Service by User'},
-            {value: 'instance.each_user.service', name: 'Service by Each User'}
+            {value: 'instance.each_user.service', name: 'Service by Each User'},
+            {value: 'instance.service.endpoint', name: 'Endpoint'},
+            {value: 'instance.user.service.endpoint', name: 'Endpoint by User'},
+            {value: 'instance.each_user.service.endpoint', name: 'Endpoint by Each User'},
+
         ];
 
         /* define instance Types */
@@ -163,7 +167,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         $scope.hidden = {
             users : true,
             roles : true,
-            services: true
+            services: true,
+            endpoint: true
         };
 
         $scope.selectType = function(recordType) {
@@ -173,14 +178,16 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     $scope.hidden = {
                         users : true,
                         roles : true,
-                        services: true
+                        services: true,
+                        endpoint: true
                     };
                     break;
                 case 'instance.user':
                     $scope.hidden = {
                         users : false,
                         roles : true,
-                        services: true
+                        services: true,
+                        endpoint: true
                     };
 
                     break;
@@ -188,7 +195,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     $scope.hidden = {
                         users : true,
                         roles : true,
-                        services: true
+                        services: true,
+                        endpoint: true
                     };
 
                     break;
@@ -196,28 +204,56 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     $scope.hidden = {
                         users : true,
                         roles : true,
-                        services: false
+                        services: false,
+                        endpoint: true
                     };
                     break;
                 case 'instance.role':
                     $scope.hidden = {
                         users : true,
                         roles : false,
-                        services: true
+                        services: true,
+                        endpoint: true
                     };
                     break;
                 case 'instance.user.service':
                     $scope.hidden = {
                         users : false,
                         roles : true,
-                        services: false
+                        services: false,
+                        endpoint: true
                     };
                     break;
                 case 'instance.each_user.service':
                     $scope.hidden = {
                         users : true,
                         roles : true,
-                        services: false
+                        services: false,
+                        endpoint: true
+                    };
+                    break;
+                case 'instance.service.endpoint':
+                    $scope.hidden = {
+                        users : true,
+                        roles : true,
+                        services: false,
+                        endpoint: false
+                    };
+                    break;
+                case 'instance.user.service.endpoint' :
+                    $scope.hidden = {
+                        users : false,
+                        roles : true,
+                        services: false,
+                        endpoint: false
+                    };
+                    break;
+                case 'instance.each_user.service.endpoint' :
+                    $scope.hidden = {
+                        users : true,
+                        roles : true,
+                        services: false,
+                        endpoint: false
                     };
                     break;
             }
@@ -432,6 +468,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     scope.currentEditLimit.record.periodObj = scope.limitPeriods.filter(function(obj){
                         return (obj.value == limitPeriod);
                     })[0];
+
                     if(angular.isObject(scope.users)){
                         scope.currentEditLimit.record.user_id = scope.users.filter(function(obj){
                             return (obj.id == userId);
@@ -896,8 +933,27 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 scope.apps = dfApplicationData.getApiData('app');
                 scope.services = dfApplicationData.getApiData('service');
+                scope.events = dfApplicationData.getApiData('event');
                 scope.roles = dfApplicationData.getApiData('role');
                 scope.users = dfApplicationData.getApiData('user');
+
+                scope.resources = null;
+                scope.resourceId = null;
+                scope.resourceIdLabel = null;
+
+                scope.verbs = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'];
+
+                scope.dfSimpleHelp = {
+                    verb: {
+                        title: 'Limit by Verb ',
+                        text: 'By default, all verbs will be limited unless a specific verb is selected for the limit type.'
+                    },
+                    endpoint: {
+                        title: 'Endpoint Limits ',
+                        text: 'Endpoint limits are combined with a service and follow the same conventions in the API Docs for endpoints. The endpoint created' +
+                        ' must follow a simple form, such as with db service, <strong><i>"_schema/{table_name}"</i></strong>. Anything more detailed will still filter at the table level.'
+                    }
+                };
 
                 // PUBLIC API
                 scope.saveLimit = function () {
@@ -922,17 +978,59 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     scope._closeLimit();
                 };
 
+                /** When API Endpoint is selected, need to map associative resource options */
+                scope.buildResource = function(serviceObj){
+                    var name = serviceObj.name;
+                    if(angular.isObject(scope.events)){
+                       if(scope.events.hasOwnProperty(name)){
+                            var fullResource = scope.events[name];
+                            var resourceObj = {
+
+                            };
+                            var levels = [];
+                            angular.forEach(fullResource, function(val, key){
+                                var prefixes = key.split('.');
+                                if(prefixes[1] !== undefined){
+                                    if(levels.indexOf(prefixes[1]) == -1){
+                                        levels.push(prefixes[1]);
+                                    }
+                                }
+                                if(prefixes[2] !== undefined){
+                                    if(levels.indexOf(prefixes[1] + '/' + prefixes[2]) == -1){
+                                        levels.push(prefixes[1] + '/' + prefixes[2]);
+                                    }
+                                }
+
+
+                            });
+                           scope.resources = levels;
+                        }
+                    }
+                };
+
+                /** When a user selects a resource, find any variables and supply an appropriate input */
+                scope.selectResource = function(resource){
+                    var pattern = /{(.*?)}/;
+                    var inputVariable;
+                    if(pattern.test(resource)){
+                        inputVariable = pattern.exec(resource)[1];
+                    }
+                    if(angular.isDefined(inputVariable)){
+                        scope.resourceId = inputVariable;
+                        scope.resourceIdLabel = inputVariable;
+                    }
+
+                };
+
+
+
 
                 // PRIVATE API
-
-
                 scope._saveLimitToServer = function (requestDataObj) {
-
                     return dfApplicationData.saveApiData('limit', requestDataObj).$promise;
                 };
 
                 scope._updateLimitToServer = function (requestDataObj) {
-
                     return dfApplicationData.updateApiData('limit', requestDataObj).$promise;
                 };
 
@@ -1083,6 +1181,24 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         saveData.service_id = saveData.service_by_service_id.id;
                     }
 
+                    /**
+                     * For building the endpoint
+                     */
+                    /*var pattern = /{(.*?)}/;
+
+                    if(angular.isDefined(saveData.resource)){
+                        var resourceBase = '';
+                        if(pattern.test(saveData.resource)){
+                            resourceBase += saveData.resource.replace(pattern, '');
+
+                        }
+                        if(angular.isDefined(saveData.resourceId)){
+                            resourceBase += saveData.resourceId;
+                        }
+                        saveData.endpoint = resourceBase;
+                    }
+                    */
+
                     delete saveData.key_text;
                     delete saveData.cacheData;
                     delete saveData.periodObj;
@@ -1090,6 +1206,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     delete saveData.user_by_user_id;
                     delete saveData.role_by_role_id;
                     delete saveData.service_by_service_id;
+                    delete saveData.resource;
+                    delete saveData.resourceId;
 
                     return saveData;
                 };
@@ -1202,6 +1320,13 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 $rootScope.$on("service", function  () {
 
                     scope.services = dfApplicationData.getApiData('service');
+
+                });
+
+                $rootScope.$on("event", function  () {
+
+                    scope.events = dfApplicationData.getApiData('event');
+                    console.log(scope.events);
 
                 });
 
