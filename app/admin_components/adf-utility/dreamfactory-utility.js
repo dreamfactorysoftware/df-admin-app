@@ -348,7 +348,6 @@ angular.module('dfUtility', ['dfApplication'])
             // handle updating the active link
             link: function (scope, elem, attrs) {
 
-
                 scope.activeLink = null;
 
                 scope.links = scope.options.links;
@@ -378,6 +377,15 @@ angular.module('dfUtility', ['dfApplication'])
                     scope.toggleMenu = false;
                 };
 
+
+                scope.reload = function (tab, reload) {
+
+                    if (reload) {
+                      console.log('component-nav:reload:' + tab);
+                        $rootScope.$emit('component-nav:reload:' + tab);
+                    }
+
+                };
 
 
                 // WATCHERS

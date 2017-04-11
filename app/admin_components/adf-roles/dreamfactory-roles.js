@@ -1184,8 +1184,9 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         var _roles = [];
 
                         angular.forEach(dfApplicationData.getApiData('role'), function (role) {
-
-                            _roles.push(new ManagedRole(role));
+                            if (typeof role !== 'function') {
+                                _roles.push(new ManagedRole(role));
+                            }
                         });
 
                         scope.roles = _roles;
@@ -1197,6 +1198,20 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             scope.emptySectionOptions.active = true;
                         }
                     }
+                });
+
+                $rootScope.$on('component-nav:reload:roles', function (e) {
+
+                    var _roles = [];
+
+                    angular.forEach(dfApplicationData.getApiData('role', null, true), function (role) {
+                        if (typeof role !== 'function') {
+                            _roles.push(new ManagedApp(role));
+                        }
+                    });
+
+                    scope.roles = _roles;
+
                 });
 
                 var watchApiData = scope.$watchCollection(function () {

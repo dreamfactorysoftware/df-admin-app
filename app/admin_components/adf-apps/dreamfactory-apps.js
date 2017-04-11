@@ -851,8 +851,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     var _app = [];
 
                     angular.forEach(dfApplicationData.getApiData('app'), function (app) {
-
-                        _app.push(new ManagedApp(app));
+                        if (typeof app !== 'function') {
+                            _app.push(new ManagedApp(app));
+                        }
                     });
 
                     scope.apps = _app;
@@ -862,6 +863,19 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
 
                 // MESSAGES
+                $rootScope.$on('component-nav:reload:apps', function (e) {
+
+                    var _app = [];
+
+                    angular.forEach(dfApplicationData.getApiData('app', null, true), function (app) {
+                        if (typeof app !== 'function') {
+                            _app.push(new ManagedApp(app));
+                        }
+                    });
+
+                    scope.apps = _app;
+
+                });
 
                 scope.$on('toolbar:paginate:app:update', function (e) {
 

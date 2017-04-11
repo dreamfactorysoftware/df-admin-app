@@ -1083,8 +1083,9 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         var _users = [];
 
                         angular.forEach(dfApplicationData.getApiData('user'), function (user) {
-
-                            _users.push(new ManagedUser(user));
+                            if (typeof user !== 'function') {
+                                _users.push(new ManagedUser(user));
+                            }
                         });
 
                         scope.users = _users;
@@ -1103,6 +1104,19 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             scope.emptySectionOptions.active = true;
                         }
                     }
+                });
+
+                $rootScope.$on('component-nav:reload:users', function (e) {
+
+                    var _users = [];
+
+                    angular.forEach(dfApplicationData.getApiData('user', null, true), function (user) {
+                        if (typeof user !== 'function') {
+                            _users.push(new ManagedApp(user));
+                        }
+                    });
+
+                    scope.users = _users;
                 });
 
                 var watchApiData = scope.$watchCollection(function() {

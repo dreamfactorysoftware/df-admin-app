@@ -2247,7 +2247,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfManageServices', ['MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfNotify', function (MOD_SERVICES_ASSET_PATH, dfApplicationData, dfNotify) {
+    .directive('dfManageServices', ['$rootScope', 'MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfNotify', function ($rootScope, MOD_SERVICES_ASSET_PATH, dfApplicationData, dfNotify) {
 
 
         return {
@@ -2529,13 +2529,27 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         var _services = [];
 
                         angular.forEach(scope._filterServices(dfApplicationData.getApiData('service')), function (service) {
-
-                            _services.push(new ManagedService(service));
+                            if (typeof service !== 'function') {
+                                _services.push(new ManagedService(service));
+                            }
                         });
 
                         scope.services = _services;
                         return;
                     }
+                });
+
+                $rootScope.$on('component-nav:reload:services', function (e) {
+
+                    var _services = [];
+
+                    angular.forEach(dfApplicationData.getApiData('service', null, true), function (service) {
+                        if (typeof service !== 'function') {
+                            _services.push(new ManagedApp(service));
+                        }
+                    });
+
+                    scope.services = _services;
                 });
 
                 var watchApiData = scope.$watchCollection(function () {

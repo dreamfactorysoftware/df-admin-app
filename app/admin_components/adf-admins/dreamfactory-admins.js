@@ -975,8 +975,9 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         req = dfApplicationData.getApiData('admin', {filter: filters}, true);
 
                         angular.forEach(req, function (admin) {
-
-                            _admins.push(new ManagedAdmin(admin));
+                            if (typeof admin !== 'function') {
+                                _admins.push(new ManagedAdmin(admin));
+                            }
                         });
 
                         scope.admins = _admins;
@@ -989,6 +990,11 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             scope.emptySectionOptions.active = true;
                         }
                     }
+                });
+
+                $rootScope.$on('component-nav:reload:admins', function (e) {
+
+                    scope.admins = null;
                 });
 
                 $rootScope.$on("admin", function  (){

@@ -731,6 +731,22 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     }
                 });
 
+                $rootScope.$on('component-nav:reload:limit', function (e) {
+
+                    var _limits = [];
+
+                    angular.forEach(dfApplicationData.getApiData('limit', null, true), function (limit) {
+                        if (typeof limit !== 'function') {
+                            _limits.push(new ManagedApp(limit));
+                        }
+                    });
+
+                    scope.limits = _limits;
+
+                    updateLimitCacheData.mergeCacheData(scope.limits, scope.limitCache);
+                });
+
+
                 var watchApiData = scope.$watchCollection(function () {
 
                     return dfApplicationData.getApiData('limit');
