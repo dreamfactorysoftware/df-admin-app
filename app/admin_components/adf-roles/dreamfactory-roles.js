@@ -1193,8 +1193,9 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         return;
                     }
-                    else {
-                        if (newValue.length === 0) {
+
+                    if (newValue !== null && oldValue !== null) {
+                        if (newValue.length === 0 && oldValue.length === 0) {
                             scope.emptySectionOptions.active = true;
                         }
                     }
