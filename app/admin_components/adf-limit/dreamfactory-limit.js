@@ -108,7 +108,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         $scope.$parent.title = 'Limits';
         $rootScope.isRouteLoading = true;
 
-        dfApplicationData.loadApi(['system', 'limit', 'role', 'service', 'user', 'limit_cache', 'event']);
+        dfApplicationData.loadApi(['system', 'limit', 'role', 'service', 'user', 'limit_cache']);
 
         // Set module links
         $scope.links = [
@@ -949,13 +949,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 scope.apps = dfApplicationData.getApiData('app');
                 scope.services = dfApplicationData.getApiData('service');
-                scope.events = dfApplicationData.getApiData('event');
                 scope.roles = dfApplicationData.getApiData('role');
                 scope.users = dfApplicationData.getApiData('user');
-
-                scope.resources = null;
-                scope.resourceId = null;
-                scope.resourceIdLabel = null;
 
                 scope.verbs = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'];
 
@@ -994,7 +989,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     scope._closeLimit();
                 };
 
-                /** When API Endpoint is selected, need to map associative resource options */
+                /*/!** When API Endpoint is selected, need to map associative resource options *!/
                 scope.buildResource = function(serviceObj){
                     var name = serviceObj.name;
                     if(angular.isObject(scope.events)){
@@ -1022,10 +1017,10 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                            scope.resources = levels;
                         }
                     }
-                };
+                };*/
 
                 /** When a user selects a resource, find any variables and supply an appropriate input */
-                scope.selectResource = function(resource){
+                /*scope.selectResource = function(resource){
                     var pattern = /{(.*?)}/;
                     var inputVariable;
                     if(pattern.test(resource)){
@@ -1036,10 +1031,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         scope.resourceIdLabel = inputVariable;
                     }
 
-                };
-
-
-
+                };*/
 
                 // PRIVATE API
                 scope._saveLimitToServer = function (requestDataObj) {
@@ -1222,8 +1214,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     delete saveData.user_by_user_id;
                     delete saveData.role_by_role_id;
                     delete saveData.service_by_service_id;
-                    delete saveData.resource;
-                    delete saveData.resourceId;
 
                     return saveData;
                 };
@@ -1237,13 +1227,13 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 scope._updateSavedLimit = function (referenceLimit) {
 
                     if(angular.isObject(scope.currentEditLimit.record.user_by_user_id)){
-                        referenceLimit.user_by_user_id = scope.currentEditLimit.record.user_by_user_id;
+                        referenceLimit.resource[0].user_by_user_id = scope.currentEditLimit.record.user_by_user_id;
                     }
                     if(angular.isObject(scope.currentEditLimit.record.role_by_role_id)){
-                        referenceLimit.role_by_role_id = scope.currentEditLimit.record.role_by_role_id;
+                        referenceLimit.resource[0].role_by_role_id = scope.currentEditLimit.record.role_by_role_id;
                     }
                     if(angular.isObject(scope.currentEditLimit.record.service_by_service_id)){
-                        referenceLimit.service_by_service_id = scope.currentEditLimit.record.service_by_service_id;
+                        referenceLimit.resource[0].service_by_service_id = scope.currentEditLimit.record.service_by_service_id;
                     }
 
                     /* Clear out any previous object references (if any) */
@@ -1339,12 +1329,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 });
 
-                $rootScope.$on("event", function  () {
 
-                    scope.events = dfApplicationData.getApiData('event');
-                    console.log(scope.events);
-
-                });
 
 
 
