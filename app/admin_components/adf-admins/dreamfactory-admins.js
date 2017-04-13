@@ -254,7 +254,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         data: scope.admin.record
                     };
 
-
                     scope._saveAdminToServer(requestDataObj).then(
                         function(result) {
 
@@ -952,53 +951,14 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 // WATCHERS
 
-                var watchAdmins = scope.$watch('admins', function (newValue, oldValue) {
-
-                    if (newValue == null) {
-
-                        var _admins = [];
-
-                        var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : undefined;
-
-                        var req = null;
-                        var filters = null;
-
-                        if(filterText) {
-                            var arr = [ "first_name", "last_name", "name", "email" ];
-
-                            filters = arr.map(function(item) {
-                                return '(' + item + ' like "%' + filterText + '%")'
-                            }).join(' or ');
-
-                        }
-
-                        req = dfApplicationData.getApiData('admin', {filter: filters}, true);
-
-                        angular.forEach(req, function (admin) {
-                            if (typeof admin !== 'function') {
-                                _admins.push(new ManagedAdmin(admin));
-                            }
-                        });
-
-                        scope.admins = _admins;
-                        return;
-                    }
-
-                    if (newValue !== null && oldValue !== null) {
-
-                        if (newValue.length === 0 && oldValue.length === 0) {
-                            scope.emptySectionOptions.active = true;
-                        }
-                    }
-                });
-
                 $rootScope.$on('component-nav:reload:admins', function (e) {
 
-                    scope.admins = null;
+                    dfApplicationData.getApiData('admin', null, true);
                 });
 
                 $rootScope.$on("admin", function  (){
-                    scope.$broadcast('toolbar:paginate:admin:reset');
+
+                    //scope.$broadcast('toolbar:paginate:admin:reset');
                 });
 
                 var watchApiData = scope.$watchCollection(function() {
@@ -1009,7 +969,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     var _admins = [];
 
-                    angular.forEach(dfApplicationData.getApiData('admin'), function (admin) {
+                    angular.forEach(newValue, function (admin) {
 
                         _admins.push(new ManagedAdmin(admin));
                     });
@@ -1022,35 +982,8 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 // MESSAGES
 
-                scope.$on('toolbar:paginate:admin:update', function (e) {
-
-                    var _admins = [];
-
-                    angular.forEach(dfApplicationData.getApiData('admin'), function (admin) {
-
-                        var _admin = new ManagedAdmin(admin);
-
-                        var i = 0;
-
-                        while (i < scope.selectedAdmins.length) {
-
-                            if (scope.selectedAdmins[i] === _admin.record.id) {
-
-                                _admin.__dfUI.selected = true;
-                                break;
-                            }
-
-                            i++
-                        }
-
-                        _admins.push(_admin);
-                    });
-
-                    scope.admins = _admins;
-                });
 
                 scope.$on('$destroy', function(e) {
-                    watchAdmins();
                     scope.$broadcast('toolbar:paginate:admin:reset');
                 })
 
