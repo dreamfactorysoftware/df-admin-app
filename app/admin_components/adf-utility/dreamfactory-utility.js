@@ -4154,7 +4154,7 @@ angular.module('dfUtility', ['dfApplication'])
                 // parse the message from the error obj
                 // for batch error use error.context.resource[].message
                 // if not batch error use top level error
-                result = "The server returned an unkown error.";
+                result = "The server returned an unknown error.";
                 if (errorDataObj.data) {
                     error = errorDataObj.data.error;
                     if (error) {
