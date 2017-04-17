@@ -24,11 +24,19 @@
                     <!-- Login Form -->
                     <form name="confirmationForm" data-ng-submit="confirm(user)" autocomplete="off">
 
-                        <div class="form-group">
+                        <div class="form-group" ng-show="useEmail">
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-fw fa-envelope"></i></span>
                                 <input type="email" id="df-login-email" name="df-login-email" placeholder="Enter Email"
                                        data-ng-model="user.email" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-show="useUsername">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-fw fa-user"></i></span>
+                                <input type="text" id="df-username" name="df-username" placeholder="Enter Username"
+                                       data-ng-model="user.username" class="form-control">
                             </div>
                         </div>
 

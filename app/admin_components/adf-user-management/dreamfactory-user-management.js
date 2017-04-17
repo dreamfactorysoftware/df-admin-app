@@ -128,16 +128,25 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope.adldapAvailable = (scope.adldap.length>0)? true : false;
                     scope.selectedService = null;
                     scope.rememberMe = false;
+                    var loginAttribute = scope.systemConfig.authentication.login_attribute;
 
-                    scope.userField = {
-                        icon: 'fa-envelope',
-                        text: 'Enter Email',
-                        type: 'email'
-                    };
+                    if(loginAttribute == "username"){
+                        scope.userField = {
+                            icon: 'fa-user',
+                            text: 'Enter Username',
+                            type: 'text'
+                        }
+                    } else {
+                        scope.userField = {
+                            icon: 'fa-envelope',
+                            text: 'Enter Email',
+                            type: 'email'
+                        };
+                    }
 
                     scope.rememberLogin = function(checked){
                         scope.rememberMe = checked;
-                    }
+                    };
 
                     scope.useAdLdapService = function(service){
                         scope.selectedService = service;
@@ -153,6 +162,17 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                 username: '',
                                 password: '',
                                 service: service
+                            }
+                        } else if (loginAttribute == "username") {
+                            scope.userField = {
+                                icon: 'fa-user',
+                                text: 'Enter Username',
+                                type: 'text'
+                            }
+
+                            scope.creds = {
+                                username: '',
+                                password: ''
                             }
                         } else {
                             scope.userField = {
@@ -234,13 +254,14 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                         // check if the user has entered creds or if
                         // they were supplied through a browser mechanism
-                        if(scope.selectedService){
+                        if(scope.selectedService) {
                             credsDataObj.username = $('#df-login-email').val();
                             credsDataObj.password = $('#df-login-password').val();
                             credsDataObj.service = scope.selectedService;
+                        } else if (loginAttribute == "username") {
+                            credsDataObj.username = $('#df-login-email').val();
+                            credsDataObj.password = $('#df-login-password').val();
                         } else if (credsDataObj.email === '' || credsDataObj.password === '') {
-
-
                             // They were either supplied by a browser mechanism or
                             // they weren't entered.  We use jQuery to grab the vals
                             // If they are still empty the error handler will take care of
@@ -487,9 +508,18 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 scope.securityQuestionForm = false;
                 scope.hidePasswordField = false;
                 scope.allowForeverSessions = scope.systemConfig.authentication.allow_forever_sessions;
+                var loginAttribute = scope.systemConfig.authentication.login_attribute;
+
+                scope.resetByEmail = true;
+                scope.resetByUsername = false;
+                if(loginAttribute == "username"){
+                    scope.resetByEmail = false;
+                    scope.resetByUsername = true;
+                }
 
                 scope.sq = {
                     email: null,
+                    username: null,
                     security_question: null,
                     security_answer: null,
                     new_password: null,
@@ -602,11 +632,12 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                 scope.securityQuestionForm = true;
 
                                 scope.sq.email = requestDataObj.email;
+                                scope.sq.username = (requestDataObj.username)? requestDataObj.username : null;
                                 scope.sq.security_question = result.data.security_question
                             }
                             else {
 
-                                scope.successMsg = 'A password reset email has been sent to the provided email address.';
+                                scope.successMsg = 'A password reset email has been sent to the user\'s email address.';
 
                                 // Emit a confirm message indicating that is the next step
                                 scope.$emit(scope.es.passwordResetRequestSuccess, requestDataObj.email);
@@ -632,7 +663,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                         }
                                         else {
 
-                                            scope.successMsg = 'A password reset email has been sent to the provided email address.';
+                                            scope.successMsg = 'A password reset email has been sent to the user\'s email address.';
 
                                             // Emit a confirm message indicating that is the next step
                                             scope.$emit(scope.es.passwordResetRequestSuccess, requestDataObj.email);
@@ -680,6 +711,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                             var userCredsObj = {
                                 email: reset.email,
+                                username: (reset.username)? reset.username : null,
                                 password: reset.new_password
                             }
 
@@ -753,8 +785,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
     }])
 
     // Password Reset Directive
-    .directive('dreamfactoryPasswordReset', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfNotify', '$location',
-        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, UserEventsService, _dfStringService, _dfObjectService, dfNotify, $location) {
+    .directive('dreamfactoryPasswordReset', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfNotify', '$location', 'SystemConfigDataService',
+        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, UserEventsService, _dfStringService, _dfObjectService, dfNotify, $location, SystemConfigDataService) {
 
             return {
                 restrict: 'E',
@@ -785,6 +817,14 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     scope.successMsg = '';
                     scope.errorMsg = '';
+                    var loginAttribute = SystemConfigDataService.getSystemConfig().authentication.login_attribute;
+
+                    scope.resetByEmail = true;
+                    scope.resetByUsername = false;
+                    if(loginAttribute == "username"){
+                        scope.resetByEmail = false;
+                        scope.resetByUsername = true;
+                    }
 
                     scope.resetWaiting = false;
 
@@ -796,6 +836,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                         scope.user[key] = UrlParams[key];
                     });
+                    var isAdmin = (scope.user.admin == '1')? true : false;
 
                     // PUBLIC API
 
@@ -871,15 +912,17 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                         var requestDataObj = {
                             email: credsDataObj.email,
+                            username: (credsDataObj.username)? credsDataObj.username : null,
                             code: credsDataObj.code,
                             new_password: credsDataObj.new_password
                         };
 
-                        scope._setPasswordRequest(requestDataObj, false).then(
+                        scope._setPasswordRequest(requestDataObj, isAdmin).then(
                             function (result) {
 
                                 var userCredsObj = {
                                     email: credsDataObj.email,
+                                    username: (credsDataObj.username)? credsDataObj.username : null,
                                     password: credsDataObj.new_password
                                 }
 
@@ -1206,10 +1249,15 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                     // Handle error in module
                                     var msg = "Validation failed. ";
                                     var context = reject.data.error.context;
-
-                                    angular.forEach(context, function(value, key){
-                                        msg = msg+key+': '+value+' ';
-                                    }, msg);
+                                    if(context == null){
+                                        if(reject.data && reject.data.error && reject.data.error.message){
+                                            msg = msg + reject.data.error.message;
+                                        }
+                                    } else {
+                                        angular.forEach(context, function (value, key) {
+                                            msg = msg + key + ': ' + value + ' ';
+                                        }, msg);
+                                    }
                                     scope.errorMsg = msg;
 
                                     // Throw an error
@@ -1426,11 +1474,19 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     scope.identical = true;
 
-
                     scope.errorMsg = '';
                     scope.successMsg = '';
                     scope.confirmWaiting = false;
-                    scope.submitLabel = 'Confirm ' + scope.inviteType.charAt(0).toUpperCase() + scope.inviteType.slice(1);;
+                    scope.submitLabel = 'Confirm ' + scope.inviteType.charAt(0).toUpperCase() + scope.inviteType.slice(1);
+                    var systemConfig = SystemConfigDataService.getSystemConfig();
+                    var loginAttribute = systemConfig.authentication.login_attribute;
+
+                    scope.useEmail = true;
+                    scope.useUsername = false;
+                    if(loginAttribute == "username"){
+                        scope.useEmail = false;
+                        scope.useUsername = true;
+                    }
 
                     scope.user = {}
 
@@ -1520,6 +1576,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                                 var userCreds = {
                                     email: requestDataObj.email,
+                                    username: (requestDataObj.username)? requestDataObj.username : null,
                                     password: requestDataObj.new_password
                                 }
 

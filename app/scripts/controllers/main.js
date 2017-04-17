@@ -596,7 +596,7 @@ angular.module('dreamfactoryApp')
         };
 
         $scope.registerLoginErrorMsg = '';
-
+        $scope.inviteType = 'user';
 
         // Listen for a confirmation success message
         // This returns a user credentials object which is just the email and password
