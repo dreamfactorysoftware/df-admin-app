@@ -119,7 +119,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             };
         }])
 
-    .directive('dfAdminDetails', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', function(MOD_ADMIN_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore) {
+    .directive('dfAdminDetails', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', 'SystemConfigDataService', function(MOD_ADMIN_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore, SystemConfigDataService) {
 
         return {
 
@@ -159,6 +159,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 };
 
+                scope.loginAttribute = SystemConfigDataService.getSystemConfig().authentication.login_attribute;
 
                 scope.admin = null;
 

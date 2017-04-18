@@ -1099,8 +1099,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
 
     // Register Directive.  Takes care of registering a user for our application
-    .directive('dreamfactoryRegisterUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$rootScope', '$cookieStore', '$location', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfXHRHelper',
-        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $rootScope, $cookieStore, $location, UserEventsService, _dfStringService, _dfObjectService, dfXHRHelper) {
+    .directive('dreamfactoryRegisterUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$rootScope', '$cookieStore', '$location', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfXHRHelper', 'SystemConfigDataService',
+        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $rootScope, $cookieStore, $location, UserEventsService, _dfStringService, _dfObjectService, dfXHRHelper, SystemConfigDataService) {
 
 
             return {
@@ -1131,6 +1131,15 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope.identical = true;
 
                     scope.errorMsg = '';
+
+                    scope.loginAttribute = SystemConfigDataService.getSystemConfig().authentication.login_attribute;
+
+                    // scope.usernamePlaceholder = "Choose Username (Optional, defaults to email address)";
+                    // scope.emailPlaceholder = 'Enter Email (Required for login)';
+                    // if(loginAttribute == 'username'){
+                    //     scope.usernamePlaceholder = 'Choose Username (Required for login)';
+                    //     scope.emailPlaceholder = 'Enter Email';
+                    // }
 
                     scope.user = {}
 

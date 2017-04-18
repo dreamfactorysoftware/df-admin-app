@@ -17,13 +17,13 @@
                     <div class="col-md-6">
                         <!-- Admin Username -->
                         <div class="form-group">
-                            <label>Username</label>
+                            <label>{{ (loginAttribute=='username')? 'Username (Required for login)' : 'Username (Optional, defaults to email address)'}}</label>
                             <input id="admins_details_info_username" type="text" class="form-control" data-ng-model="admin.record.username" placeholder=""/>
                         </div>
 
                         <!-- Admin Email -->
                         <div class="form-group">
-                            <label>Email</label>
+                            <label>{{ (loginAttribute=='username')? 'Email' : 'Email (Required for login)'}}</label>
                             <input id="admins_details_info_email" type="email" class="form-control" data-ng-model="admin.record.email" placeholder=""/>
                         </div>
 

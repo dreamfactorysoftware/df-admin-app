@@ -21,22 +21,22 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <i class="fa fa-fw fa-envelope"></i>
+                                    <i class="fa fa-fw fa-user"></i>
                                 </span>
-                                <input type="email" id="email" name="df-register-email" placeholder="Enter Email"
-                                       data-ng-model="user.email" class="form-control" required autocomplete="off">
+                                <input type="text" id="username" name="df-register-username" placeholder="{{ (loginAttribute=='username')? 'Choose Username (Required for login)' : 'Choose Username (Optional, defaults to email address)'}}"
+                                       data-ng-model="user.username" class="form-control" autocomplete="off">
                             </div>
-
                         </div>
 
                         <div class="form-group">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <i class="fa fa-fw fa-user"></i>
+                                    <i class="fa fa-fw fa-envelope"></i>
                                 </span>
-                                <input type="text" id="username" name="df-register-username" placeholder="Choose Username"
-                                       data-ng-model="user.username" class="form-control" autocomplete="off">
+                                <input type="email" id="email" name="df-register-email" placeholder="{{ (loginAttribute=='username')? 'Enter Email' : 'Enter Email (Required for login)'}}"
+                                       data-ng-model="user.email" class="form-control" required autocomplete="off">
                             </div>
+
                         </div>
 
                         <div class="form-group">

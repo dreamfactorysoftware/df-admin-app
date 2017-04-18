@@ -102,7 +102,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     ])
 
-    .directive('dfUserDetails', ['MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', '$rootScope', function(MOD_USER_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore, $rootScope) {
+    .directive('dfUserDetails', ['MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', '$rootScope', 'SystemConfigDataService', function(MOD_USER_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore, $rootScope, SystemConfigDataService) {
 
         return {
 
@@ -144,7 +144,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 };
 
-
+                scope.loginAttribute = SystemConfigDataService.getSystemConfig().authentication.login_attribute;
                 scope.user = null;
                 scope.roles = dfApplicationData.getApiData('role');
                 scope.apps = dfApplicationData.getApiData('app');
