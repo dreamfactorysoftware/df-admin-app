@@ -306,9 +306,10 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.user.manageViewMode;
 
                 scope.limits = null;
-                scope.system = null;
-
+                scope.limitEnabled = false;
                 scope.currentEditLimit = editLimitService;
+
+                scope.system = dfApplicationData.getApiData('system', null, true);
 
                 scope.fields = [
                     {
@@ -703,6 +704,23 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     )
                 };
 
+                scope._determineLimitsStatus = function(systemData){
+                    if(angular.isObject(systemData)){
+                        angular.forEach(systemData, function(value){
+                            if(value.name == 'limit'){
+                                scope.limitEnabled = true;
+                            }
+                        });
+                        if(!scope.limitEnabled){
+                            scope.subscription_required = true;
+                            /* Disable ability to navigate to create */
+                            scope.links[1].path = scope.links[0].path;
+                            return;
+                        }
+                    }
+
+                };
+
 
                 // WATCHERS
 
@@ -749,7 +767,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 var watchApiData = scope.$watchCollection(function () {
 
-                    return dfApplicationData.getApiData('limit');
+                    var limits =  dfApplicationData.getApiData('limit');
 
                 }, function (newValue, oldValue) {
 
@@ -850,21 +868,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 });
 
                 scope.$on("system", function  () {
-
                     scope.system = dfApplicationData.getApiData('system');
-                    var limitEnabled = false;
-                    angular.forEach(scope.system, function(value){
-                        if(value.name == 'limit'){
-                            limitEnabled = true;
-                        }
-                    });
-                    if(!limitEnabled){
-                        scope.subscription_required = true;
-                        /* Disable ability to navigate to create */
-                        scope.links[1].path = scope.links[0].path;
-                        return;
-                    }
-
+                    scope._determineLimitsStatus(scope.system)
                 });
 
 
@@ -1225,16 +1230,15 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                  * @private
                  */
                 scope._updateSavedLimit = function (referenceLimit) {
-
-                    if(angular.isObject(scope.currentEditLimit.record.user_by_user_id)){
-                        referenceLimit.resource[0].user_by_user_id = scope.currentEditLimit.record.user_by_user_id;
+                    /*if(angular.isObject(scope.currentEditLimit.record.user_by_user_id)){
+                        referenceLimit.resource.user_by_user_id = scope.currentEditLimit.record.user_by_user_id;
                     }
                     if(angular.isObject(scope.currentEditLimit.record.role_by_role_id)){
-                        referenceLimit.resource[0].role_by_role_id = scope.currentEditLimit.record.role_by_role_id;
+                        referenceLimit.resource.role_by_role_id = scope.currentEditLimit.record.role_by_role_id;
                     }
                     if(angular.isObject(scope.currentEditLimit.record.service_by_service_id)){
-                        referenceLimit.resource[0].service_by_service_id = scope.currentEditLimit.record.service_by_service_id;
-                    }
+                        referenceLimit.resource.service_by_service_id = scope.currentEditLimit.record.service_by_service_id;
+                    }*/
 
                     /* Clear out any previous object references (if any) */
                     switch(scope.currentEditLimit.record.type) {
