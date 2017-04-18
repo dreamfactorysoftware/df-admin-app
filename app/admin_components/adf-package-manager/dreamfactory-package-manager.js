@@ -162,6 +162,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
         dfApplicationData.loadApi(['service_type', 'environment', 'service', 'role', 'app', 'admin', 'user', 'email_template', 'cors', 'lookup', 'package', 'limit']);
 
+        dfApplicationData.fetchPackageFromApi();
+
         // Set module links
         $scope.links = [
             {
@@ -360,8 +362,18 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 scope.totalCount = 0;
                 scope.totalCounts = {value: 0};
 
+                scope.loadStatus = [];
+
                 var tempFilterText = '';
                 var filterTextTimeout;
+
+                scope.environmentData = angular.copy(dfApplicationData.getApiData('environment'));
+                scope.packageData = angular.copy(dfApplicationData.getApiData('package'));
+                scope.serviceData = angular.copy(dfApplicationData.getApiData('service'));
+                scope.serviceTypeData = angular.copy(dfApplicationData.getApiData('service_type'));
+
+                scope.types.push({name: '', label: 'Loading...', group: ''});
+                scope.selectedType = scope.types[0];
 
                 var ManagedData = function (data) {
 
@@ -383,6 +395,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     }
                 };
 
+
                 scope.init = function() {
 
                     var env = angular.copy(dfApplicationData.getApiData('environment'));
@@ -395,13 +408,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         dfApplicationData.fetchFromApi(value);
                     });
 
-                    scope.types.push({name: '', label: 'Loading...', group: ''});
-                    scope.selectedType = scope.types[0];
-
                     dfApplicationData.fetchPackageFromApi().then(function () {
                         scope.types = [];
                         scope.selectName = '';
-                        scope.loading = false;
 
                         scope.rawPackageData = angular.copy(dfApplicationData.getApiData('package'));
 
@@ -453,6 +462,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         });
 
                     });
+
+                    scope.loading = false;
                 }
 
                 scope.addToPackage = function (selectAll) {
@@ -1196,8 +1207,92 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     if (!newValue) return;
 
-                    scope.init();
+                    if (scope.loadStatus.indexOf('environment') === -1) {
+                        scope.loadStatus.push('environment');
+                    }
+
+                    if (
+                        (scope.loadStatus.indexOf('environment') > -1) &&
+                        (scope.loadStatus.indexOf('package') > -1) &&
+                        (scope.loadStatus.indexOf('service') > -1) &&
+                        (scope.loadStatus.indexOf('service_type') > -1)
+                    ) {
+                        watchPData();
+                        watchSData();
+                        watchSTData();
+                        scope.init();
+                    }
                 });
+
+                var watchPData = scope.$watchCollection(function () {
+                    return dfApplicationData.getApiData('package')
+                }, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    if (scope.loadStatus.indexOf('package') === -1) {
+                        scope.loadStatus.push('package');
+                    }
+
+                    if (
+                        (scope.loadStatus.indexOf('environment') > -1) &&
+                        (scope.loadStatus.indexOf('package') > -1) &&
+                        (scope.loadStatus.indexOf('service') > -1) &&
+                        (scope.loadStatus.indexOf('service_type') > -1)
+                    ) {
+                        watchPData();
+                        watchSData();
+                        watchSTData();
+                        scope.init();
+                    }
+                });
+
+                var watchSData = scope.$watchCollection(function () {
+                    return dfApplicationData.getApiData('service')
+                }, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    if (scope.loadStatus.indexOf('service') === -1) {
+                        scope.loadStatus.push('service');
+                    }
+
+                    if (
+                        (scope.loadStatus.indexOf('environment') > -1) &&
+                        (scope.loadStatus.indexOf('package') > -1) &&
+                        (scope.loadStatus.indexOf('service') > -1) &&
+                        (scope.loadStatus.indexOf('service_type') > -1)
+                    ) {
+                        watchPData();
+                        watchSData();
+                        watchSTData();
+                        scope.init();
+                    }
+                });
+
+                var watchSTData = scope.$watchCollection(function () {
+                    return dfApplicationData.getApiData('service_type')
+                }, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    if (scope.loadStatus.indexOf('service_type') === -1) {
+                        scope.loadStatus.push('service_type');
+                    }
+
+                    if (
+                        (scope.loadStatus.indexOf('environment') > -1) &&
+                        (scope.loadStatus.indexOf('package') > -1) &&
+                        (scope.loadStatus.indexOf('service') > -1) &&
+                        (scope.loadStatus.indexOf('service_type') > -1)
+                    ) {
+                        watchPData();
+                        watchSData();
+                        watchSTData();
+                        scope.init();
+                    }
+                });
+
 
                 scope.$on('$destroy', function (e) {
                     watchEnvironmentData();
