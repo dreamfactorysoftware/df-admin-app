@@ -277,6 +277,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                             // clean form
                             scope._resetRoleDetails();
+
+                            scope.$emit('sidebar-nav:view:reset');
                         },
 
                         function (reject) {
@@ -1190,6 +1192,10 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         });
 
                         scope.roles = _roles;
+
+                        if (scope.roles.length === 0) {
+                            scope.emptySectionOptions.active = true;
+                        }
 
                         return;
                     }

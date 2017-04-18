@@ -272,6 +272,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             scope.admin = new Admin();
 
+                            scope.$emit('sidebar-nav:view:reset');
                         },
                         function (reject) {
 

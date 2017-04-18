@@ -320,6 +320,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             // clean form
                             scope._resetAppDetails();
 
+                            scope.$emit('sidebar-nav:view:reset');
                         },
 
                         function (reject) {

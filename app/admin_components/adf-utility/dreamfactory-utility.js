@@ -519,6 +519,21 @@ angular.module('dfUtility', ['dfApplication'])
                 };
 
 
+                scope.$on('sidebar-nav:view:reset', function(event) {
+
+                    angular.forEach(scope.links, function(link, id) {
+                        if (id === 0) {
+                            scope.links[0].active = true;
+                        }
+                        else {
+                            scope.links[id].active = false;
+                        }
+                    })
+
+                    scope.setActiveView(scope.links[0])
+                })
+
+
                 // WATCHERS
                 scope.$watch('toggleMenu', function (n, o) {
 

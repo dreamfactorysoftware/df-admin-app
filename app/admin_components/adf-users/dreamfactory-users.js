@@ -261,6 +261,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             scope.roleToAppMap = {};
                             scope.lookupKeys = [];
 
+                            scope.$emit('sidebar-nav:view:reset');
                         },
                         function (reject) {
 

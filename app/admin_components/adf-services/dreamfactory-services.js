@@ -395,6 +395,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                             // clean form
                             scope._resetServiceDetails();
+
+                            scope.$emit('sidebar-nav:view:reset');
                         },
 
                         function (reject) {
