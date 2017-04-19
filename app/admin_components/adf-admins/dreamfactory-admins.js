@@ -455,13 +455,10 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope._sendInvite = function (adminId) {
 
                     return  $http({
-                        url: INSTANCE_URL + '/api/v2/system/admin',
+                        url: INSTANCE_URL + '/api/v2/system/admin/' + adminId,
                         method: 'PATCH',
                         params: {
                             send_invite: true
-                        },
-                        data: {
-                            id: adminId
                         }
                     })
                 };
