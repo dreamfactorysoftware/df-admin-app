@@ -86,7 +86,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             if (services.length > 0) return services;
 
             var serviceArray = [];
-            serviceArray = dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db,mongodb'}, forceRefresh);
+            serviceArray = dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,firebird,aws_redshift_db,mongodb'}, forceRefresh);
 
             if (serviceArray !== undefined) services = serviceArray;
 
