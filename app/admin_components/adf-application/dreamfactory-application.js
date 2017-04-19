@@ -690,7 +690,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 function () {
                     return true;
                 }
-            );
+            )
         }
 
 
@@ -755,13 +755,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                 options = options || null;
 
-                if (options === 'meta') {
-                    if (dfApplicationObj.apis.hasOwnProperty(api) && dfApplicationObj.apis[api].meta) {
-                        return dfApplicationObj.apis[api].meta
-                    }
-                    // dfNotify
-                }
-
                 if (forceRefresh) {
 
                     if(options && options.filter) {
@@ -779,66 +772,87 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     return _fetchFromApi(api);
                 }
 
-                // check for data
-                if (dfApplicationObj.apis.hasOwnProperty(api)) {
+                if (options === 'meta') {
+                    if (dfApplicationObj.apis.hasOwnProperty(api) && dfApplicationObj.apis[api].meta) {
+                        return dfApplicationObj.apis[api].meta
+                    }
+                    // dfNotify
+                }
+                else if (options === 'promise') {
 
-                    // Do we have any options
-                    if (options) {
-                        // we do make a temp var to hold results
-                        var result = [];
+                  var deferred = $q.defer();
 
-                        // for each key in the options object
-                        for (var key in options) {
+                  if (dfApplicationObj.apis.hasOwnProperty(api)) {
+                      if (dfApplicationObj.apis[api].resource) {
+                          deferred.resolve(dfApplicationObj.apis[api].resource);
+                      }
+                      else {
+                          deferred.resolve(dfApplicationObj.apis[api]);
+                      }
+                  }
+                  return deferred.promise;
+                }
+                else {
+                    // check for data
+                    if (dfApplicationObj.apis.hasOwnProperty(api)) {
 
-                            // determine type
-                            // we only accept strings and arrays
-                            switch (Object.prototype.toString.call(options[key])) {
+                        // Do we have any options
+                        if (options) {
+                            // we do make a temp var to hold results
+                            var result = [];
 
-                                // it's a comma delimited string
-                                case '[object String]':
+                            // for each key in the options object
+                            for (var key in options) {
 
-                                    // make it an array
-                                    options[key] = options[key].split(',');
+                                // determine type
+                                // we only accept strings and arrays
+                                switch (Object.prototype.toString.call(options[key])) {
 
-                                    break;
+                                    // it's a comma delimited string
+                                    case '[object String]':
 
-                                // it's an array do nothing
-                                case '[object Array]':
+                                        // make it an array
+                                        options[key] = options[key].split(',');
 
-                                    break;
+                                        break;
 
-                                // it's not a type we accept
-                                // throw an error
-                                default:
+                                    // it's an array do nothing
+                                    case '[object Array]':
 
+                                        break;
+
+                                    // it's not a type we accept
+                                    // throw an error
+                                    default:
+
+                                }
+
+                                // Loop through each of the objects in the api we have asked for
+                                angular.forEach(dfApplicationObj.apis[api].resource, function (obj) {
+
+                                    // Loop through each value in option prop
+                                    angular.forEach(options[key], function (value) {
+
+                                        // does the obj have that prop and does the value equal the
+                                        // current iterative value
+                                        if (obj.hasOwnProperty(key) && obj[key] === value) {
+
+                                            // yes.  add obj to result arr
+                                            result.push(obj);
+                                        }
+                                    })
+                                });
                             }
 
-                            // Loop through each of the objects in the api we have asked for
-                            angular.forEach(dfApplicationObj.apis[api].resource, function (obj) {
-
-                                // Loop through each value in option prop
-                                angular.forEach(options[key], function (value) {
-
-                                    // does the obj have that prop and does the value equal the
-                                    // current iterative value
-                                    if (obj.hasOwnProperty(key) && obj[key] === value) {
-
-                                        // yes.  add obj to result arr
-                                        result.push(obj);
-                                    }
-                                })
-                            });
+                            return result;
                         }
-
-                        return result;
-                    }
-                    else {
-
-                        // return if it exists
-                        if (dfApplicationObj.apis[api].resource)
-                            return dfApplicationObj.apis[api].resource;
-                        else
-                            return dfApplicationObj.apis[api];
+                        else {
+                            // return if it exists
+                            if (dfApplicationObj.apis[api].resource)
+                                return dfApplicationObj.apis[api].resource;
+                            else
+                                return dfApplicationObj.apis[api];
+                        }
                     }
                 }
             },
