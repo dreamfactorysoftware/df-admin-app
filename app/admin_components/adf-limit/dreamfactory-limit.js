@@ -768,7 +768,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 var watchApiData = scope.$watchCollection(function () {
 
                     var limits =  dfApplicationData.getApiData('limit');
-                    if(limits.length === 0){
+                    if(angular.isDefined(limits) && limits.length === 0){
                         scope.emptySectionOptions.active = true;
                     }
 
