@@ -755,7 +755,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     angular.forEach(dfApplicationData.getApiData('limit', null, true), function (limit) {
                         if (typeof limit !== 'function') {
-                            _limits.push(new ManagedApp(limit));
+                            _limits.push(new ManagedLimit(limit));
                         }
                     });
 
@@ -771,6 +771,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     if(angular.isDefined(limits) && limits.length === 0){
                         scope.emptySectionOptions.active = true;
                     }
+
+                    return limits;
 
                 }, function (newValue, oldValue) {
 
@@ -1236,15 +1238,15 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                  * @private
                  */
                 scope._updateSavedLimit = function (referenceLimit) {
-                    /*if(angular.isObject(scope.currentEditLimit.record.user_by_user_id)){
-                        referenceLimit.resource.user_by_user_id = scope.currentEditLimit.record.user_by_user_id;
+                    if(angular.isObject(scope.currentEditLimit.record.user_by_user_id)){
+                        referenceLimit.resource[0].user_by_user_id = scope.currentEditLimit.record.user_by_user_id;
                     }
                     if(angular.isObject(scope.currentEditLimit.record.role_by_role_id)){
-                        referenceLimit.resource.role_by_role_id = scope.currentEditLimit.record.role_by_role_id;
+                        referenceLimit.resource[0].role_by_role_id = scope.currentEditLimit.record.role_by_role_id;
                     }
                     if(angular.isObject(scope.currentEditLimit.record.service_by_service_id)){
-                        referenceLimit.resource.service_by_service_id = scope.currentEditLimit.record.service_by_service_id;
-                    }*/
+                        referenceLimit.resource[0].service_by_service_id = scope.currentEditLimit.record.service_by_service_id;
+                    }
 
                     /* Clear out any previous object references (if any) */
                     switch(scope.currentEditLimit.record.type) {
