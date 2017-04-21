@@ -864,7 +864,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
 
                 // MESSAGES
-                $rootScope.$on('component-nav:reload:apps', function (e) {
+                var onAppsNav = $rootScope.$on('component-nav:reload:apps', function (e) {
 
                     var _app = [];
 
@@ -911,6 +911,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     // Destroy watchers
                     watchApps();
                     watchApiData();
+                    onAppsNav();
                 });
 
                 scope.$watch('$viewContentLoaded',

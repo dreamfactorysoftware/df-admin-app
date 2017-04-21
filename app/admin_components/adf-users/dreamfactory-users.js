@@ -1107,7 +1107,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 });
 
-                $rootScope.$on('component-nav:reload:users', function (e) {
+                var onUsersNav = $rootScope.$on('component-nav:reload:users', function (e) {
 
                     var _users = [];
 
@@ -1170,6 +1170,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.$on('$destroy', function(e) {
                     watchUsers();
+                    onUsersNav();
                     scope.$broadcast('toolbar:paginate:user:reset');
                 });
 

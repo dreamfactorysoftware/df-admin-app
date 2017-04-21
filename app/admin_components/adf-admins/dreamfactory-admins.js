@@ -950,7 +950,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 // WATCHERS
 
-                $rootScope.$on('component-nav:reload:admins', function (e) {
+                var onAdminsNav = $rootScope.$on('component-nav:reload:admins', function (e) {
 
                     dfApplicationData.getApiData('admin', null, true);
                 });
@@ -983,6 +983,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
 
                 scope.$on('$destroy', function(e) {
+                    onAdminsNav();
                     scope.$broadcast('toolbar:paginate:admin:reset');
                 })
 

@@ -2541,7 +2541,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 });
 
-                $rootScope.$on('component-nav:reload:services', function (e) {
+                var onServicesNav = $rootScope.$on('component-nav:reload:services', function (e) {
 
                     var _services = [];
 
@@ -2604,6 +2604,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope.$on('$destroy', function (e) {
                     watchServices();
+                    onServicesNav();
                     scope.$broadcast('toolbar:paginate:service:reset');
                 })
 

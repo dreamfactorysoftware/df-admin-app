@@ -749,7 +749,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     }
                 });
 
-                $rootScope.$on('component-nav:reload:limit', function (e) {
+                var onLimitNav = $rootScope.$on('component-nav:reload:limit', function (e) {
 
                     var _limits = [];
 
@@ -831,6 +831,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 scope.$on('$destroy', function (e) {
                     watchLimits();
+                    onLimitNav();
                     scope.$broadcast('toolbar:paginate:limit:reset');
 
                 });

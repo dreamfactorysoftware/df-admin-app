@@ -1207,7 +1207,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     }
                 });
 
-                $rootScope.$on('component-nav:reload:roles', function (e) {
+                var onRolesNav = $rootScope.$on('component-nav:reload:roles', function (e) {
 
                     var _roles = [];
 
@@ -1271,6 +1271,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 scope.$on('$destroy', function (e) {
                     watchRoles();
+                    onRolesNav();
                 })
 
                 scope.$watch('$viewContentLoaded',
