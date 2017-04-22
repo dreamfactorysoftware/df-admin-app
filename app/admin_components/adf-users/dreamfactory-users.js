@@ -102,7 +102,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     ])
 
-    .directive('dfUserDetails', ['MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', '$rootScope', function(MOD_USER_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore, $rootScope) {
+    .directive('dfUserDetails', ['MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', '$rootScope', 'SystemConfigDataService', function(MOD_USER_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore, $rootScope, SystemConfigDataService) {
 
         return {
 
@@ -144,7 +144,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 };
 
-
+                scope.loginAttribute = SystemConfigDataService.getSystemConfig().authentication.login_attribute;
                 scope.user = null;
                 scope.roles = dfApplicationData.getApiData('role');
                 scope.apps = dfApplicationData.getApiData('app');
@@ -261,6 +261,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             scope.roleToAppMap = {};
                             scope.lookupKeys = [];
 
+                            scope.$emit('sidebar-nav:view:reset');
                         },
                         function (reject) {
 
@@ -333,7 +334,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             scope.user = new User(result);
 
-                            if (dfApplicationPrefs.getPrefs().sections.user.autoClose) {
+                            if (dfApplicationData.getAdminPrefs().settings.sections.user.autoClose) {
 
                                 scope.closeUser();
                             }
@@ -729,6 +730,9 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         });
                     }
+                    else {
+                        scope.lookupKeys = [];
+                    }
                 });
 
                 var watchSameKeys = scope.$watch('sameKeys', function (newValue, oldValue) {
@@ -783,7 +787,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     }])
 
-    .directive('dfManageUsers', ['$rootScope', 'MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', function ($rootScope, MOD_USER_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify) {
+    .directive('dfManageUsers', ['$rootScope', 'MOD_USER_ASSET_PATH', 'dfApplicationData', 'dfNotify', function ($rootScope, MOD_USER_ASSET_PATH, dfApplicationData, dfNotify) {
 
         return {
             restrict: 'E',
@@ -820,7 +824,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     path: ''
                 };
 
-                scope.currentViewMode = dfApplicationPrefs.getPrefs().sections.user.manageViewMode;
+                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.user.manageViewMode;
 
                 scope.users = null;
 
@@ -1080,8 +1084,9 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         var _users = [];
 
                         angular.forEach(dfApplicationData.getApiData('user'), function (user) {
-
-                            _users.push(new ManagedUser(user));
+                            if (typeof user !== 'function') {
+                                _users.push(new ManagedUser(user));
+                            }
                         });
 
                         scope.users = _users;
@@ -1100,6 +1105,19 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             scope.emptySectionOptions.active = true;
                         }
                     }
+                });
+
+                var onUsersNav = $rootScope.$on('component-nav:reload:users', function (e) {
+
+                    var _users = [];
+
+                    angular.forEach(dfApplicationData.getApiData('user', null, true), function (user) {
+                        if (typeof user !== 'function') {
+                            _users.push(new ManagedApp(user));
+                        }
+                    });
+
+                    scope.users = _users;
                 });
 
                 var watchApiData = scope.$watchCollection(function() {
@@ -1152,6 +1170,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.$on('$destroy', function(e) {
                     watchUsers();
+                    onUsersNav();
                     scope.$broadcast('toolbar:paginate:user:reset');
                 });
 

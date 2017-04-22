@@ -86,7 +86,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             if (services.length > 0) return services;
 
             var serviceArray = [];
-            serviceArray = dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,aws_redshift_db,mongodb'}, forceRefresh);
+            serviceArray = dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,firebird,aws_redshift_db,mongodb'}, forceRefresh);
 
             if (serviceArray !== undefined) services = serviceArray;
 
@@ -422,11 +422,17 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
               var table = this._search(tableName);
 
               if (table.hasOwnProperty('field')) {
+
                   var index = table.field.findIndex(function (obj) {
                       return obj.name == fieldName;
                   });
 
-                  return table.field[index];
+                  if (index > -1) {
+                      return table.field[index];
+                  }
+                  else {
+                      return undefined;
+                  }
               }
 
               return null;
@@ -1938,10 +1944,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             link: function (scope, elem, attrs, ctrls) {
 
                 var childCtrl = ctrls[0];
-                var  parentCtrl = ctrls[1];
+                var parentCtrl = ctrls[1];
 
                 parentCtrl.register('field_create', childCtrl);
-
 
                 scope.addDbFunctionUse = function () {
 
@@ -1957,7 +1962,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope.returnTypeOptions = FieldOptions.returnTypeOptions;
                 scope.helpText = FieldOptions.helpText
 
-                scope.updField = function (value) {
+
+                var _setField = function () {
 
                     scope.parentTable = null;
 
@@ -2013,6 +2019,55 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         };
 
                         dfNotify.error(messageOptions);
+                    }
+                }
+
+
+                scope.updField = function (value) {
+
+                    if (scope.tableStatus) {
+
+                        if (tableManager.getField(scope.field.record.name, '__new') === undefined) {
+
+                            _setField();
+                        }
+                        else {
+
+                            var messageOptions = {
+                                module: 'Schema',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: 'The field name already exists'
+                            };
+
+                            dfNotify.error(messageOptions);
+                        }
+                    }
+                    else {
+
+                        tableManager.getTable({table: StateService.get('dftable')}).then(function (result) {
+
+                            var fields = result.field;
+
+                            var fieldNames = fields.map(function(obj){
+                                return obj.name;
+                            })
+
+                            if ((fieldNames.indexOf(scope.field.record.name) == -1) || (!value)) {
+
+                                _setField();
+                            }
+                            else {
+                                var messageOptions = {
+                                    module: 'Schema',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: 'The field name already exists'
+                                };
+
+                                dfNotify.error(messageOptions);
+                            }
+                        })
                     }
                 }
 
@@ -2081,6 +2136,61 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             scope.field.record.db_function.splice(objIndex, 1);
                         }
                     }
+                };
+
+                scope._loadReferenceTables = function () {
+
+                    var ref_service_name = StateService.get('dfservice').name;
+
+                    $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/').then(
+
+                        function (result) {
+                            scope.refTables = result.data.resource;
+                        },
+
+                        function (reject) {
+
+                            var messageOptions = {
+
+                                module: 'Api Error',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            };
+
+                            dfNotify.error(messageOptions);
+                        }
+                    );
+                };
+
+                scope._loadReferenceFields = function () {
+
+                    if (!scope.field.record.ref_table) {
+                        scope.refFields = null;
+                        return;
+                    }
+
+                    var ref_service_name =  StateService.get('dfservice').name;
+
+                    $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/' + scope.field.record.ref_table).then(
+                        function (result) {
+
+                            scope.refFields = result.data.field;
+                        },
+                        function (reject) {
+
+                            var messageOptions = {
+
+                                module: 'Api Error',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            };
+
+                            dfNotify.error(messageOptions);
+
+                        }
+                    )
                 };
 
                 var watchFieldData = scope.$watch('fieldData', function (newValue, oldValue) {

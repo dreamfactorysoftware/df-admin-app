@@ -19,13 +19,18 @@
             </div>
             <div class="panel-body">
                 <dreamfactory-waiting data-show="requestWaiting"></dreamfactory-waiting>
-                <p>Enter your email address to reset your password.</p>
+                <p ng-show="resetByEmail">Enter your email address to reset your password.</p>
+                <p ng-show="resetByUsername">Enter your username to reset your password.</p>
 
                 <!-- Forgot Password Form -->
                 <form name="reset-password-form" data-ng-submit="requestPasswordReset(creds)" autocomplete="off">
-                    <div class="form-group">
+                    <div class="form-group" ng-show="resetByEmail">
                         <input type="email" id="reset-password-email" name="reset-password-email" placeholder="Enter Email"
-                               data-ng-model="creds.email" class="form-control" required>
+                               data-ng-model="creds.email" class="form-control">
+                    </div>
+                    <div class="form-group" ng-show="resetByUsername">
+                        <input type="text" id="reset-password-username" name="reset-password-username" placeholder="Enter Username"
+                               data-ng-model="creds.username" class="form-control">
                     </div>
 
                     <input class="btn btn-primary btn-block" id="submit-reset" type="submit" value="Request Password Reset">

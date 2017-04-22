@@ -1,46 +1,47 @@
 <div class="form-group">
     <label>Name</label>
     <span class="text-muted">The auto-generated relation name used by the API.</span>
-    <input class="form-control" type="text" data-ng-model="relation.record.name" data-ng-disabled="true"/>
+    <input id="schema_relation_details_name" class="form-control" type="text" data-ng-model="relation.record.name" data-ng-disabled="true"/>
     <br/>
 
     <label>Alias</label>
     <span class="text-muted">If set, the alias is used in relation access instead of the name.</span>
-    <input class="form-control" type="text" data-ng-model="relation.record.alias"/>
+    <input id="schema_relation_details_alias" class="form-control" type="text" data-ng-model="relation.record.alias"/>
     <br/>
 
     <label>Label</label>
     <span class="text-muted">A displayable name used by clients.</span>
-    <input class="form-control" type="text" data-ng-model="relation.record.label"/>
+    <input id="schema_relation_details_label" class="form-control" type="text" data-ng-model="relation.record.label"/>
     <br/>
 
     <label>Description</label>
     <span class="text-muted">A displayable description used by clients.</span>
-    <input class="form-control" type="text" data-ng-model="relation.record.description"/>
+    <input id="schema_relation_details_description" class="form-control" type="text" data-ng-model="relation.record.description"/>
     <br/>
 
     <div class="checkbox">
         <label>
-            <input type="checkbox" data-ng-model="relation.record.always_fetch"/>
+            <input id="schema_relation_details_alwaysfetch" type="checkbox" data-ng-model="relation.record.always_fetch"/>
             Always Fetch</label>
     </div>
 
     <label>Type</label>
     <df-simple-help data-options="helpText.type"></df-simple-help>
-    <select data-ng-options="type.value as type.name for type in typeOptions" class="form-control"
+    <select id="schema_relation_details_type" data-ng-options="type.value as type.name for type in typeOptions" class="form-control"
             data-ng-model="relation.record.type" data-ng-disabled="!relation.record.is_virtual"></select>
     <br/>
 
     <div class="checkbox">
         <label>
-            <input type="checkbox" data-ng-disabled="true" data-ng-model="relation.record.is_virtual"/>
+            <input id="schema_relation_details_virtual" type="checkbox" data-ng-disabled="true" data-ng-model="relation.record.is_virtual"/>
             Virtual Relationship</label>
     </div>
 
     <span data-ng-init="_loadFields()"></span>
 
     <label>Field</label>
-    <select data-ng-disabled="!relation.record.is_virtual"
+    <select id="schema_relation_details_field"
+            data-ng-disabled="!relation.record.is_virtual"
             class="form-control"
             data-ng-model="relation.record.field"
             data-ng-options="o.name as o.name for o in fields">
@@ -49,7 +50,8 @@
     <br/>
 
     <label>Reference Service</label>
-    <select data-ng-disabled="!relation.record.is_virtual"
+    <select id="schema_relation_details_refservice"
+            data-ng-disabled="!relation.record.is_virtual"
             class="form-control"
             data-ng-change="changeReferenceService()"
             data-ng-model="relation.record.ref_service_id"
@@ -61,7 +63,8 @@
     <span data-ng-init="_loadReferenceTables()"></span>
 
     <label>Reference Table</label>
-    <select data-ng-disabled="!relation.record.is_virtual"
+    <select id="schema_relation_details_reftable"
+            data-ng-disabled="!relation.record.is_virtual"
             class="form-control"
             data-ng-change="_loadReferenceFields()"
             data-ng-model="relation.record.ref_table"
@@ -73,7 +76,8 @@
     <span data-ng-init="_loadReferenceFields()"></span>
 
     <label>Reference Field</label>
-    <select data-ng-disabled="!relation.record.is_virtual || !relation.record.ref_table"
+    <select id="schema_relation_details_reffield"
+            data-ng-disabled="!relation.record.is_virtual || !relation.record.ref_table"
             class="form-control"
             data-ng-model="relation.record.ref_field"
             data-ng-options="o.name as o.name for o in refFields">
@@ -82,7 +86,8 @@
     <br/>
 
     <label>Junction Service</label>
-    <select data-ng-disabled="!relation.record.is_virtual || (relation.record.type !== 'many_many')"
+    <select id="schema_relation_details_juncservice"
+            data-ng-disabled="!relation.record.is_virtual || (relation.record.type !== 'many_many')"
             class="form-control"
             data-ng-change="changeJunctionService()"
             data-ng-model="relation.record.junction_service_id"
@@ -94,7 +99,8 @@
     <span data-ng-init="_loadJunctionTables()"></span>
 
     <label>Junction Table</label>
-    <select data-ng-disabled="!relation.record.is_virtual || (relation.record.type !== 'many_many')"
+    <select id="schema_relation_details_junctable"
+            data-ng-disabled="!relation.record.is_virtual || (relation.record.type !== 'many_many')"
             class="form-control"
             data-ng-change="_loadJunctionFields()"
             data-ng-model="relation.record.junction_table"
@@ -106,7 +112,8 @@
     <span data-ng-init="_loadJunctionFields()"></span>
 
     <label>Junction Field</label>
-    <select data-ng-disabled="!relation.record.is_virtual || !relation.record.junction_table || (relation.record.type !== 'many_many')"
+    <select id="schema_relation_details_juncfield"
+            data-ng-disabled="!relation.record.is_virtual || !relation.record.junction_table || (relation.record.type !== 'many_many')"
             class="form-control"
             data-ng-model="relation.record.junction_field"
             data-ng-options="o.name as o.name for o in junctionFields">
@@ -115,7 +122,8 @@
     <br/>
 
     <label>Junction Reference Field</label>
-    <select data-ng-disabled="!relation.record.is_virtual || !relation.record.junction_table || (relation.record.type !== 'many_many')"
+    <select id="schema_relation_details_juncreffield"
+            data-ng-disabled="!relation.record.is_virtual || !relation.record.junction_table || (relation.record.type !== 'many_many')"
             class="form-control"
             data-ng-model="relation.record.junction_ref_field"
             data-ng-options="o.name as o.name for o in junctionFields">
@@ -126,12 +134,14 @@
     <div class="row df-btn-row" style="padding-bottom: 20px">
         <div class="col-xs-12">
             <button type="button"
+                id="schema_relation_details_save"
                 class="btn btn-primary"
                 data-ng-click="saveRelation();"
                 ng-hide="$parent.table.__dfUI.newTable">
                 Save
             </button>
             <button type="button"
+                id="schema_relation_details_cancel"
                 class="btn btn-default"
                 data-ng-click="closeRelation($parent.table.__dfUI.newTable)">
                 Cancel

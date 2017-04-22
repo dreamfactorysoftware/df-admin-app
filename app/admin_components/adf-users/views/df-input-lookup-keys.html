@@ -15,7 +15,7 @@
             -->
             <th>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-default btn-sm" data-ng-click="newKey()" title="Add lookup key"><i class="fa fa-plus fa-fw"></i></button>
+                    <button type="button" id="user_details_lookupkeys_addlookupkeys" class="btn btn-default btn-sm" data-ng-click="newKey()" title="Add lookup key"><i class="fa fa-plus fa-fw"></i></button>
                 </div>
             </th>
         </tr>
@@ -26,13 +26,13 @@
 
         <tr data-ng-repeat="key in lookupKeys track by $index" ng-show="key.record.user_id !== null">
             <td class="form-group" data-ng-class="key.__dfUI.unique ? '' : 'has-error'">
-                <input class="form-control" data-ng-model="key.record.name" data-ng-keyup="_isUniqueKey()" type="text" data-ng-required="true"/>
+                <input id="user_details_lookupkeys_name_{{$index}}" class="form-control" data-ng-model="key.record.name" data-ng-keyup="_isUniqueKey()" type="text" data-ng-required="true"/>
             </td>
             <td>
-                <input class="form-control"  data-ng-model="key.record.value" type="text" data-ng-required="true" />
+                <input id="user_details_lookupkeys_value_{{$index}}" class="form-control"  data-ng-model="key.record.value" type="text" data-ng-required="true" />
             </td>
             <td>
-                <input data-ng-model="key.record.private" type="checkbox" />
+                <input id="user_details_lookupkeys_private_{{$index}}" data-ng-model="key.record.private" type="checkbox" />
             </td>
             <!-- Todo: implement this after implementing an UI for non-admin users to update lookups
             <td>
@@ -41,7 +41,7 @@
             -->
             <td>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-default btn-sm" data-ng-click="removeKey($index)" title="Delete lookup key"><i class="fa fa-trash-o fa-fw"></i></button>
+                    <button id="user_details_lookupkeys_removelookupkey_{{$index}}" type="button" class="btn btn-default btn-sm" data-ng-click="removeKey($index)" title="Delete lookup key"><i class="fa fa-trash-o fa-fw"></i></button>
                 </div>
             </td>
         </tr>

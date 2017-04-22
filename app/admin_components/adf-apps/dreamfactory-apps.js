@@ -320,6 +320,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             // clean form
                             scope._resetAppDetails();
 
+                            scope.$emit('sidebar-nav:view:reset');
                         },
 
                         function (reject) {
@@ -372,7 +373,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                             // clean form
                             // reset app
-                            if (dfApplicationPrefs.getPrefs().sections.app.autoClose) {
+                            if (dfApplicationData.getAdminPrefs().settings.sections.app.autoClose) {
                                 scope._resetAppDetails();
                             }
 
@@ -564,7 +565,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 };
 
 
-                scope.currentViewMode = dfApplicationPrefs.getPrefs().sections.app.manageViewMode;
+                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.app.manageViewMode;
 
                 scope.apps = null;
 
@@ -851,8 +852,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     var _app = [];
 
                     angular.forEach(dfApplicationData.getApiData('app'), function (app) {
-
-                        _app.push(new ManagedApp(app));
+                        if (typeof app !== 'function') {
+                            _app.push(new ManagedApp(app));
+                        }
                     });
 
                     scope.apps = _app;
@@ -862,6 +864,19 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
 
                 // MESSAGES
+                var onAppsNav = $rootScope.$on('component-nav:reload:apps', function (e) {
+
+                    var _app = [];
+
+                    angular.forEach(dfApplicationData.getApiData('app', null, true), function (app) {
+                        if (typeof app !== 'function') {
+                            _app.push(new ManagedApp(app));
+                        }
+                    });
+
+                    scope.apps = _app;
+
+                });
 
                 scope.$on('toolbar:paginate:app:update', function (e) {
 
@@ -896,6 +911,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     // Destroy watchers
                     watchApps();
                     watchApiData();
+                    onAppsNav();
                 });
 
                 scope.$watch('$viewContentLoaded',

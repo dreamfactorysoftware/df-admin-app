@@ -348,7 +348,6 @@ angular.module('dfUtility', ['dfApplication'])
             // handle updating the active link
             link: function (scope, elem, attrs) {
 
-
                 scope.activeLink = null;
 
                 scope.links = scope.options.links;
@@ -378,6 +377,15 @@ angular.module('dfUtility', ['dfApplication'])
                     scope.toggleMenu = false;
                 };
 
+
+                scope.reload = function (tab, reload) {
+
+                    if (reload) {
+                      console.log('component-nav:reload:' + tab);
+                        $rootScope.$emit('component-nav:reload:' + tab);
+                    }
+
+                };
 
 
                 // WATCHERS
@@ -509,6 +517,21 @@ angular.module('dfUtility', ['dfApplication'])
 
                     scope.toggleMenu = false;
                 };
+
+
+                scope.$on('sidebar-nav:view:reset', function(event) {
+
+                    angular.forEach(scope.links, function(link, id) {
+                        if (id === 0) {
+                            scope.links[0].active = true;
+                        }
+                        else {
+                            scope.links[id].active = false;
+                        }
+                    })
+
+                    scope.setActiveView(scope.links[0])
+                })
 
 
                 // WATCHERS
@@ -896,11 +919,6 @@ angular.module('dfUtility', ['dfApplication'])
                             }
                         });
                     });
-
-                    elem.css({
-                        'display': 'inline-block', 'position': 'relative'
-                    });
-
                 }
             }
         }
@@ -1043,6 +1061,36 @@ angular.module('dfUtility', ['dfApplication'])
                     scope.btnText = 'None Selected';
                     scope.description = true;
 
+                    scope.checkAll = {
+                        checked: false
+                    };
+
+                    scope._toggleSelectAll = function (event) {
+
+                        if (event !== undefined) {
+                            event.stopPropagation();
+                        }
+
+                        var verbsSet = [];
+
+                        Object.keys(scope.verbs).forEach(function(key,index) {
+                            if (scope.verbs[key].active === true) {
+                                verbsSet.push(key);
+                            }
+                        });
+
+                        if (verbsSet.length > 0) {
+                            angular.forEach(verbsSet, function (verb) {
+                                scope._toggleVerbState(verb, event);
+                            });
+                        }
+                        else {
+                            Object.keys(scope.verbs).forEach(function(key,index) {
+                                scope._toggleVerbState(key, event);
+                            });
+                        }
+                    };
+
                     scope._setVerbState = function (nameStr, stateBool) {
                         var verb = scope.verbs[nameStr];
                         if (scope.verbs.hasOwnProperty(verb.name)) {
@@ -1051,7 +1099,9 @@ angular.module('dfUtility', ['dfApplication'])
                     };
 
                     scope._toggleVerbState = function (nameStr, event) {
-                        event.stopPropagation();
+                        if (event !== undefined) {
+                            event.stopPropagation();
+                        }
 
                         if (scope.verbs.hasOwnProperty(scope.verbs[nameStr].name)) {
                             scope.verbs[nameStr].active = !scope.verbs[nameStr].active;
@@ -1065,7 +1115,6 @@ angular.module('dfUtility', ['dfApplication'])
                                 if (_obj.active) {
                                     scope.allowedVerbs.push(_obj.name);
                                 }
-
                             }
                         );
                     };
@@ -2117,7 +2166,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // Used for manage section pagination
-    .directive('dfToolbarPaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$location', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $location) {
+    .directive('dfToolbarPaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$location', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfNotify, $location) {
 
 
         return {
@@ -2209,7 +2258,7 @@ angular.module('dfUtility', ['dfApplication'])
                     return {
                         number: _pageNum + 1,
                         value: _pageNum,
-                        offset: _pageNum * dfApplicationPrefs.getPrefs().data[scope.api].limit,
+                        offset: _pageNum * dfApplicationData.getAdminPrefs().settings.data[scope.api].limit,
                         stopPropagation: false
                     }
                 };
@@ -2272,7 +2321,7 @@ angular.module('dfUtility', ['dfApplication'])
                         return false;
                     }
 
-                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationPrefs.getPrefs().data[newValue].limit));
+                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationData.getAdminPrefs().settings.data[newValue].limit));
                 };
 
                 //local function for filter detection
@@ -2492,7 +2541,7 @@ angular.module('dfUtility', ['dfApplication'])
                         if (scope.currentPage.number !== 1) {
 
                             // calc proper offset
-                            curOffset = scope.currentPage.offset - dfApplicationPrefs.getPrefs().data[scope.api].limit
+                            curOffset = scope.currentPage.offset - dfApplicationData.getAdminPrefs().settings.data[scope.api].limit
                         }
                     }
 
@@ -2547,7 +2596,7 @@ angular.module('dfUtility', ['dfApplication'])
 
 
     // Used for manage section pagination
-    .directive('dfTablePaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$location', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $location) {
+    .directive('dfTablePaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$location', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfNotify, $location) {
 
         return {
             restrict: 'E',
@@ -2639,7 +2688,7 @@ angular.module('dfUtility', ['dfApplication'])
                     return {
                         number: _pageNum + 1,
                         value: _pageNum,
-                        offset: (_pageNum) ? _pageNum * dfApplicationPrefs.getPrefs().data[scope.api].limit : 0,
+                        offset: (_pageNum) ? _pageNum * dfApplicationData.getAdminPrefs().settings.data[scope.api].limit : 0,
                         stopPropagation: false
                     }
                 };
@@ -2702,7 +2751,7 @@ angular.module('dfUtility', ['dfApplication'])
                         return false;
                     }
 
-                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationPrefs.getPrefs().data[newValue].limit));
+                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationData.getAdminPrefs().settings.data[newValue].limit));
                 };
 
                 //local function for filter detection
@@ -2943,7 +2992,7 @@ angular.module('dfUtility', ['dfApplication'])
                         if (scope.currentPage.number !== 1) {
 
                             // calc proper offset
-                            curOffset = scope.currentPage.offset - dfApplicationPrefs.getPrefs().data[scope.api].limit
+                            curOffset = scope.currentPage.offset - dfApplicationData.getAdminPrefs().settings.data[scope.api].limit
                         }
                     }
 
@@ -4034,7 +4083,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // Notification service
-    .service('dfNotify', ['dfApplicationPrefs', function(dfApplicationPrefs) {
+    .service('dfNotify', ['dfApplicationData', function(dfApplicationData) {
 
         var stack_topleft = {"dir1": "down", "dir2": "right", "push": "top", "firstpos1": 25, "firstpos2": 25, "spacing1": 5, spacing2: 5};
         var stack_bottomleft = {"dir1": "right", "dir2": "up", "push": "top"};
@@ -4120,7 +4169,7 @@ angular.module('dfUtility', ['dfApplication'])
                 // parse the message from the error obj
                 // for batch error use error.context.resource[].message
                 // if not batch error use top level error
-                result = "The server returned an unkown error.";
+                result = "The server returned an unknown error.";
                 if (errorDataObj.data) {
                     error = errorDataObj.data.error;
                     if (error) {
@@ -4165,7 +4214,9 @@ angular.module('dfUtility', ['dfApplication'])
 
             success: function(options) {
 
-                switch(dfApplicationPrefs.getPrefs().application.notificationSystem.success) {
+                if (dfApplicationData.getAdminPrefs().settings === null) return;
+
+                switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.success) {
 
                     case 'pnotify':
                         pnotify(options);
@@ -4191,8 +4242,9 @@ angular.module('dfUtility', ['dfApplication'])
 
             error: function(options) {
 
+                if (dfApplicationData.getAdminPrefs().settings === null) return;
 
-                switch(dfApplicationPrefs.getPrefs().application.notificationSystem.error) {
+                switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.error) {
 
                     case 'pnotify':
                         options.message = parseError(options, 'message');
@@ -4219,7 +4271,9 @@ angular.module('dfUtility', ['dfApplication'])
 
             warn: function(options) {
 
-                switch(dfApplicationPrefs.getPrefs().application.notificationSystem.warn) {
+                if (dfApplicationData.getAdminPrefs().settings === null) return;
+
+                switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.warn) {
 
                     case 'pnotify':
                         pnotify(options);
@@ -4249,7 +4303,9 @@ angular.module('dfUtility', ['dfApplication'])
 
             confirm: function (msg) {
 
-                switch(dfApplicationPrefs.getPrefs().application.notificationSystem.confirm) {
+                if (dfApplicationData.getAdminPrefs().settings === null) return;
+
+                switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.confirm) {
 
                     case 'pnotify':
                         return pnotify(options);

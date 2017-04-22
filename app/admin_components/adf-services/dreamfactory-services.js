@@ -54,24 +54,48 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
     }])
 
-    .service('dfServiceData', ['$http', '$q', 'INSTANCE_URL', function ($http, $q, INSTANCE_URL) {
+    .factory('dfServiceTypes', function () {
+
+        var service = {};
+        var _types = null;
+
+        service.setTypes = function (types) {
+            _types = types;
+        }
+
+        service.getTypes = function () {
+            return _types;
+        }
+
+        return service;
+    })
+
+    .service('dfServiceData', ['$http', '$q', 'INSTANCE_URL', 'dfServiceTypes', function ($http, $q, INSTANCE_URL, dfServiceTypes) {
         var dfServiceData = {};
 
         dfServiceData.getServiceTypes = function () {
+
             var deferred = $q.defer();
 
             // Check if service types are in cache. If yes then return them.
             // Other wise request for service types and then cache them so that
             // we do not have to request them next time.
 
+            if (dfServiceTypes.getTypes() !== null) {
+                dfServiceData.serviceTypes = dfServiceTypes.getTypes();
+                deferred.resolve(dfServiceData.serviceTypes);
+            }
+
             if (dfServiceData.serviceTypes && dfServiceData.serviceTypes.length) {
                 deferred.resolve(dfServiceData.serviceTypes);
             } else {
+
                 $http({
                     method: 'GET',
                     url: INSTANCE_URL + '/api/v2/system/service_type'
                 }).success(function (data) {
                     dfServiceData.serviceTypes = data.resource;
+                    dfServiceTypes.setTypes(data.resource)
                     deferred.resolve(dfServiceData.serviceTypes);
                 });
             }
@@ -81,7 +105,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
         return dfServiceData;
     }])
 
-    .controller('ServicesCtrl', ['$scope', 'dfApplicationData', function ($scope, dfApplicationData) {
+    .controller('ServicesCtrl', ['$scope', 'dfApplicationData', 'dfServiceData', function ($scope, dfApplicationData, dfServiceData) {
 
         $scope.$parent.title = 'Services';
 
@@ -110,7 +134,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
         };
 
     }])
-    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfApplicationPrefs', 'dfServiceValues', '$http', 'INSTANCE_URL', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, dfApplicationPrefs, dfServiceValues, $http, INSTANCE_URL) {
+
+    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfServiceValues', '$http', 'INSTANCE_URL', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, dfServiceValues, $http, INSTANCE_URL) {
 
         return {
 
@@ -370,6 +395,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                             // clean form
                             scope._resetServiceDetails();
+
+                            scope.$emit('sidebar-nav:view:reset');
                         },
 
                         function (reject) {
@@ -448,7 +475,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     );
 
 
-                    if (dfApplicationPrefs.getPrefs().sections.service.autoClose) {
+                    if (dfApplicationData.getAdminPrefs().settings.sections.service.autoClose) {
                         scope._resetServiceDetails();
                     }
                 };
@@ -562,6 +589,23 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     // We have passed in data from an existing service.  Let's create
                     // a new Service obj from that data.
                     scope.service = new Service(newValue);
+
+                    if (newValue.hasOwnProperty('label')) {
+
+                        scope.dfLargeHelp.config = {
+                            title: 'Config Overview',
+                            text: 'Specify any service-specific configuration for <b>' + newValue['label'] + '</b> below.'
+                        };
+
+                        scope.dfLargeHelp.serviceDef = {
+                            title: 'Service Definition Overview',
+                            text: 'For the service <b>' + newValue['label'] + '</b> you can specify a definition below. Refer to the <a target="_blank" href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md" title="Link to Swagger">OpenAPI docs</a> for details, or build and export your own from <a target="_blank" href="http://editor.swagger.io/#/" title="Link to Swagger Editor">here</a>.'
+                        },
+                        scope.dfLargeHelp.serviceDefReadOnly = {
+                            title: 'Service Definition Overview',
+                            text: 'The service definition for <b>' + newValue['label'] + '</b>\'s service type is pre-defined and can not be edited.'
+                        }
+                    }
                 });
 
 
@@ -610,6 +654,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             scope: false,
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-info.html',
             link: function (scope, elem, attrs) {
+
+                scope.serviceArray = [];
+                scope.servicesReady = false;
 
                 // @TODO: Refactor to factory
                 var ServiceInfo = function (serviceInfoData) {
@@ -660,7 +707,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.serviceGroups = [];
                 scope.hcv = new dfServiceValues();
 
+
                 dfServiceData.getServiceTypes().then(function (serviceTypes) {
+
                     scope.hcv.serviceTypes = serviceTypes;
                     if (scope.newService) {
                         scope.hcv.serviceTypes = scope.hcv.serviceTypes
@@ -676,8 +725,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         return item.name === scope.serviceInfo.record.type;
                     })[0];
 
-                    var groups = scope.hcv.serviceTypes.map(function(obj) { return obj.group; });
-                    scope.serviceGroups = groups.filter(function(v,i) { return groups.indexOf(v) == i; });
+                    var typeObj = {};
+
+                    var groups = scope.hcv.serviceTypes.map(function(obj) {
+                        if (!typeObj.hasOwnProperty(obj.group)) {
+                            typeObj[String(obj.group)] = [];
+                        }
+
+                        typeObj[String(obj.group)].push({name: obj.name, label: obj.label})
+
+                        return obj.group;
+                    });
+
+                    groups = groups.filter(function(v,i) { return groups.indexOf(v) == i; });
 
                     var sortingArray = [
                         'Database',
@@ -690,7 +750,18 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         'LDAP'
                     ];
 
-                    scope.serviceGroups = scope._sortArray(scope.serviceGroups, sortingArray);
+                    groups = scope._sortArray(groups, sortingArray);
+
+                    var _serviceArray = [];
+
+                    for (var i = 0; i < groups.length; i++) {
+                        _serviceArray.push({group_name: groups[i], group_types: typeObj[String(groups[i])]});
+                        if (i === groups.length - 1) {
+                            scope.servicesReady = true;
+                            scope.serviceArray = _serviceArray;
+                        }
+                    }
+
                 });
 
 
@@ -699,7 +770,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope._storageType = {};
                 scope.sql_server_host_identifier = null;
                 scope.sql_server_db_identifier = null;
-
 
                 scope._buildFieldSet = function (fieldSetArray, append) {
 
@@ -1177,7 +1247,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 });
 
                 scope.$on('$destroy', function (e) {
-
                     watchService();
                     watchEmailProvider();
                 });
@@ -1337,7 +1406,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', '$rootScope', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache, $rootScope) {
+    .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfServiceData', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', 'dfServiceTypes', '$compile', '$templateCache', '$rootScope', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfServiceData, dfApplicationData, dfObjectService, dfStorageTypeFactory, dfServiceTypes, $compile, $templateCache, $rootScope) {
 
 
         return {
@@ -1372,6 +1441,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.isArray = angular.isArray;
 
                 scope.customConfig = [];
+                scope.servicesReady = false;
 
                 scope.githubModalShowConfig = function () {
 
@@ -1473,8 +1543,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     });
                 };
 
+                scope.hcv = new dfServiceValues();
 
                 scope.changeServiceType = function () {
+
                     if (!scope.serviceInfo && !scope.serviceInfo.record) {
                         return;
                     }
@@ -1489,13 +1561,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
 
                     scope._changeDefinitionView();
-                };
 
-                scope.hcv = new dfServiceValues();
 
-                dfServiceData.getServiceTypes().then(function (serviceTypes) {
-
-                    scope.hcv.serviceTypes = serviceTypes;
+                    scope.hcv.serviceTypes = dfServiceTypes.getTypes();
 
                     scope.handleFiles = function (files) {
                         if (!files) return;
@@ -1527,8 +1595,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         return item.name === scope.serviceInfo.record.type;
                     })[0];
 
-
-                });
+                    scope.servicesReady = true;
+                };
 
 
                 scope._script = {};
@@ -2181,7 +2249,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfManageServices', ['MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', function (MOD_SERVICES_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify) {
+    .directive('dfManageServices', ['$rootScope', 'MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfNotify', function ($rootScope, MOD_SERVICES_ASSET_PATH, dfApplicationData, dfNotify) {
 
 
         return {
@@ -2202,7 +2270,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
 
-                scope.currentViewMode = dfApplicationPrefs.getPrefs().sections.service.manageViewMode;
+                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.service.manageViewMode;
 
                 scope.services = null;
 
@@ -2463,13 +2531,27 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         var _services = [];
 
                         angular.forEach(scope._filterServices(dfApplicationData.getApiData('service')), function (service) {
-
-                            _services.push(new ManagedService(service));
+                            if (typeof service !== 'function') {
+                                _services.push(new ManagedService(service));
+                            }
                         });
 
                         scope.services = _services;
                         return;
                     }
+                });
+
+                var onServicesNav = $rootScope.$on('component-nav:reload:services', function (e) {
+
+                    var _services = [];
+
+                    angular.forEach(dfApplicationData.getApiData('service', null, true), function (service) {
+                        if (typeof service !== 'function') {
+                            _services.push(new ManagedApp(service));
+                        }
+                    });
+
+                    scope.services = _services;
                 });
 
                 var watchApiData = scope.$watchCollection(function () {
@@ -2522,6 +2604,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope.$on('$destroy', function (e) {
                     watchServices();
+                    onServicesNav();
                     scope.$broadcast('toolbar:paginate:service:reset');
                 })
 

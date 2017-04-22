@@ -120,7 +120,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                     }
                 };
 
-
+                scope.loginAttribute = SystemConfigDataService.getSystemConfig().authentication.login_attribute;
                 scope.user = null;
                 scope.password = null;
                 scope.bitnami_demo = SystemConfigDataService.getSystemConfig().platform.bitnami_demo;

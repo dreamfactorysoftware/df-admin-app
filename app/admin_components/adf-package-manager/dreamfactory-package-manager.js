@@ -156,20 +156,19 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             replace: true
         };
     })
-    .controller('PackageCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
+    .controller('PackageCtrl', ['$scope', '$q', 'INSTANCE_URL', 'dfApplicationData', 'dfAvailableApis', function($scope, $q, INSTANCE_URL, dfApplicationData, dfAvailableApis) {
         $scope.$parent.title = 'Packages';
         $scope.totalPaginationCount = 0;
 
         dfApplicationData.loadApi(['service_type', 'environment', 'service', 'role', 'app', 'admin', 'user', 'email_template', 'cors', 'lookup', 'package', 'limit']);
 
-        // Set module links
-        $scope.links = [
-            {
-                name: 'manage-packages',
-                label: 'Manage',
-                path: 'manage-packages'
-            }
-        ];
+        dfApplicationData.fetchPackageFromApi().then(function(data){
+            $scope.environmentData = angular.copy(dfApplicationData.getApiData('environment'));
+            $scope.packageData = angular.copy(dfApplicationData.getApiData('package'));
+            $scope.serviceData = angular.copy(dfApplicationData.getApiData('service'));
+            $scope.serviceTypeData = angular.copy(dfApplicationData.getApiData('service_type'));
+        });
+
 
         $scope.dfLargeHelp = {
 
@@ -360,8 +359,14 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 scope.totalCount = 0;
                 scope.totalCounts = {value: 0};
 
+                scope.loadStatus = [];
+
                 var tempFilterText = '';
                 var filterTextTimeout;
+
+                scope.types.push({name: '', label: 'Loading...', group: ''});
+                scope.selectedType = scope.types[0];
+
 
                 var ManagedData = function (data) {
 
@@ -384,7 +389,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 };
 
                 scope.init = function() {
-
                     var env = angular.copy(dfApplicationData.getApiData('environment'));
                     scope.enablePassword = env['platform']['secured_package_export'];
                     scope.limit = env['config']['db']['max_records_returned'];
@@ -395,64 +399,59 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         dfApplicationData.fetchFromApi(value);
                     });
 
-                    scope.types.push({name: '', label: 'Loading...', group: ''});
-                    scope.selectedType = scope.types[0];
+                    scope.types = [];
+                    scope.selectName = '';
 
-                    dfApplicationData.fetchPackageFromApi().then(function () {
-                        scope.types = [];
-                        scope.selectName = '';
-                        scope.loading = false;
+                    scope.rawPackageData = angular.copy(dfApplicationData.getApiData('package'));
 
-                        scope.rawPackageData = angular.copy(dfApplicationData.getApiData('package'));
+                    angular.forEach(scope.rawPackageData['service'], function (manifestValue, manifestKey) {
+                        if (typeof manifestValue === 'object') {
 
-                        angular.forEach(scope.rawPackageData['service'], function (manifestValue, manifestKey) {
-                            if (typeof manifestValue === 'object') {
+                            if (manifestKey === 'system') {
+                                angular.forEach(manifestValue, function (subManifestValue, subManifestKey) {
+                                    var _typeExists = scope.types.filter(function( obj ) {
+                                        return obj.name == 'system';
+                                    });
 
-                                if (manifestKey === 'system') {
-                                    angular.forEach(manifestValue, function (subManifestValue, subManifestKey) {
+                                    if (!_typeExists.length) {
+                                        scope.types.push({name: 'system', label: 'System', group: 'System'});
+                                    }
+                                });
+                            }
+                            else {
+                                var _serviceTypes = angular.copy(dfApplicationData.getApiData('service_type'));
+                                var _services = angular.copy(dfApplicationData.getApiData('service'));
+
+                                var _service = _services.filter(function( obj ) {
+                                    return obj.name == manifestKey;
+                                });
+
+                                if (_serviceTypes) {
+                                    angular.forEach(_service, function (value, key) {
+                                        var type = _serviceTypes.filter(function( obj ) {
+                                            return obj.name == value.type;
+                                        });
+
+                                        var _typeObj = {
+                                            name: type[0].name,
+                                            label: type[0].label,
+                                            group: type[0].group
+                                        };
+
                                         var _typeExists = scope.types.filter(function( obj ) {
-                                            return obj.name == 'system';
+                                            return obj.name == _typeObj.name;
                                         });
 
                                         if (!_typeExists.length) {
-                                            scope.types.push({name: 'system', label: 'System', group: 'System'});
+                                            scope.types.push(_typeObj);
                                         }
                                     });
                                 }
-                                else {
-                                    var _serviceTypes = angular.copy(dfApplicationData.getApiData('service_type'));
-                                    var _services = angular.copy(dfApplicationData.getApiData('service'));
-
-                                    var _service = _services.filter(function( obj ) {
-                                        return obj.name == manifestKey;
-                                    });
-
-                                    if (_serviceTypes) {
-                                        angular.forEach(_service, function (value, key) {
-                                            var type = _serviceTypes.filter(function( obj ) {
-                                                return obj.name == value.type;
-                                            });
-
-                                            var _typeObj = {
-                                                name: type[0].name,
-                                                label: type[0].label,
-                                                group: type[0].group
-                                            };
-
-                                            var _typeExists = scope.types.filter(function( obj ) {
-                                                return obj.name == _typeObj.name;
-                                            });
-
-                                            if (!_typeExists.length) {
-                                                scope.types.push(_typeObj);
-                                            }
-                                        });
-                                    }
-                                }
                             }
-                        });
-
+                        }
                     });
+
+                    scope.loading = false;
                 }
 
                 scope.addToPackage = function (selectAll) {
@@ -974,6 +973,20 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     }
                 };
 
+                scope.checkLoadStatus = function () {
+
+                    if (
+                        (scope.loadStatus.indexOf('environment') > -1) &&
+                        (scope.loadStatus.indexOf('package') > -1) &&
+                        (scope.loadStatus.indexOf('service') > -1) &&
+                        (scope.loadStatus.indexOf('service_type') > -1)
+                    ) {
+                        watchPData();
+                        watchSData();
+                        watchSTData();
+                        scope.init();
+                    }
+                }
 
                 scope.$on('toolbar:paginate:package:update', function (e) {
 
@@ -1138,6 +1151,12 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     if (newValue === {}) return;
 
+                    if (newValue == undefined) {
+                        scope.selectedType = scope.types[''];
+                        scope.selectedName = scope.names[''];
+                        return;
+                    }
+
                     if (!newValue.hasOwnProperty('label')) return;
 
                     if (newValue.label === 'Loading...') return;
@@ -1190,13 +1209,60 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     scope.loadTable(newValue, null);
                 });
 
+                scope.$on('package:content:init', function(event) {
+                    scope.init();
+                });
+
                 var watchEnvironmentData = scope.$watchCollection(function () {
                     return dfApplicationData.getApiData('environment')
                 }, function (newValue, oldValue) {
 
                     if (!newValue) return;
 
-                    scope.init();
+                    if (scope.loadStatus.indexOf('environment') === -1) {
+                        scope.loadStatus.push('environment');
+                    }
+
+                    scope.checkLoadStatus();
+                });
+
+                var watchPData = scope.$watchCollection(function () {
+                    return dfApplicationData.getApiData('package')
+                }, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    if (scope.loadStatus.indexOf('package') === -1) {
+                        scope.loadStatus.push('package');
+                    }
+
+                    scope.checkLoadStatus();
+                });
+
+                var watchSData = scope.$watchCollection(function () {
+                    return dfApplicationData.getApiData('service')
+                }, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    if (scope.loadStatus.indexOf('service') === -1) {
+                        scope.loadStatus.push('service');
+                    }
+
+                    scope.checkLoadStatus();
+                });
+
+                var watchSTData = scope.$watchCollection(function () {
+                    return dfApplicationData.getApiData('service_type')
+                }, function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    if (scope.loadStatus.indexOf('service_type') === -1) {
+                        scope.loadStatus.push('service_type');
+                    }
+
+                    scope.checkLoadStatus();
                 });
 
                 scope.$on('$destroy', function (e) {

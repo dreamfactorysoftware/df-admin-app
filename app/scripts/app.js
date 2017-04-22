@@ -41,7 +41,7 @@ angular
     ])
 
     // Set application version number
-    .constant('APP_VERSION', '2.6.0')
+    .constant('APP_VERSION', '2.7.0')
 
     // Set global url for this application
     .constant('INSTANCE_URL', '')
@@ -197,6 +197,28 @@ angular
 
             })
             .when('/user-invite', {
+                templateUrl: 'views/user-invite.html',
+                controller: 'UserInviteCtrl',
+                resolve: {
+
+                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'dfApplicationData', '$location', function (SystemConfigDataService, dfApplicationData, $location) {
+
+                        var currentUser = dfApplicationData.getCurrentUser();
+
+                        if (currentUser && currentUser.is_sys_admin) {
+                            $location.url('/home');
+                            return;
+                        }
+
+                        if (currentUser && !currentUser.is_sys_admin) {
+                            $location.url('/launchpad');
+                            return;
+                        }
+
+                    }]
+                }
+            })
+            .when('/admin-invite', {
                 templateUrl: 'views/user-invite.html',
                 controller: 'UserInviteCtrl',
                 resolve: {

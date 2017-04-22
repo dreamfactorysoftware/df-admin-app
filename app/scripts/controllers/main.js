@@ -268,6 +268,10 @@ angular.module('dreamfactoryApp')
 
                         $location.url('/user-invite?' + params.join('&'));
                     }
+                    else if ($location.path() === '/admin-invite'){
+
+                        $location.url('/admin-invite?' + params.join('&'));
+                    }
                     else if ($location.path() === '/register-confirm'){
 
                         $location.url('/register-confirm?' + params.join('&'));
@@ -592,7 +596,7 @@ angular.module('dreamfactoryApp')
         };
 
         $scope.registerLoginErrorMsg = '';
-
+        $scope.inviteType = 'user';
 
         // Listen for a confirmation success message
         // This returns a user credentials object which is just the email and password
@@ -759,6 +763,8 @@ angular.module('dreamfactoryApp')
             showTemplate: true,
             title: 'Invitation Confirmation'
         };
+
+        $scope.inviteType = ($location.$$path.indexOf('user') > -1) ? 'user' : 'admin';
 
         $scope.loginOptions = {
             showTemplate: false

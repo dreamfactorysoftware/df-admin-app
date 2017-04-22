@@ -32,11 +32,11 @@
 
         <div class="form-group">
             <div data-ng-if="newService && selectedSchema.config_schema != null">
-                <input class="btn btn-default btn-primary save-service-btn" type="submit" value="Save" ng-disabled="validCode"/>
+                <input id="services_details_save" class="btn btn-default btn-primary save-service-btn" type="submit" value="Save" ng-disabled="validCode"/>
             </div>
             <div data-ng-if="!newService">
-                <input class="btn btn-default btn-primary save-service-btn" type="submit" value="Save" ng-disabled="validCode"/>
-                <button type="button" class="btn btn-default" data-ng-click="closeService()">Cancel</button>
+                <input id="services_details_save" class="btn btn-default btn-primary save-service-btn" type="submit" value="Save" ng-disabled="validCode"/>
+                <button id="services_details_cancel" type="button" class="btn btn-default" data-ng-click="closeService()">Cancel</button>
             </div>
         </div>
     </form>

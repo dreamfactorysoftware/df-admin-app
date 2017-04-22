@@ -97,7 +97,8 @@
                     <label>
                         <input type="checkbox" data-ng-model="currentScriptObj.allow_event_modification"/>
                         &nbsp;
-                        Allow script to modify request (pre-process) or response (post-process)
+                        <span data-ng-show="currentScriptObj.name.indexOf('pre_process') > 0">Allow script to modify request payload</span>
+                        <span data-ng-show="currentScriptObj.name.indexOf('post_process') > 0">Allow script to modify response payload</span>
                     </label>
                 </div>
             </div>

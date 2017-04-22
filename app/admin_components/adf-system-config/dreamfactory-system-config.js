@@ -253,7 +253,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.$on('$locationChangeStart', function (e) {
 
                 if (!$scope.hasOwnProperty('systemConfig')) return;
-                
+
                 if (!dfObjectService.compareObjectsAsJson($scope.systemConfig.record, $scope.systemConfig.recordCopy)) {
 
                     if (!dfNotify.confirmNoSave()) {
@@ -1511,7 +1511,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             }
         }])
 
-    .directive('dfEditPreferences', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfPrefFactory', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfPrefFactory, dfNotify) {
+    .directive('dfEditPreferences', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfPrefFactory', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, dfApplicationData, dfPrefFactory, dfNotify) {
 
         return {
 
@@ -1522,11 +1522,12 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
 
                 scope.prefs = {};
+                scope.prefsLoaded = dfApplicationData.getAdminPrefs().valid;
 
                 scope.viewModes = ['list', 'thumbnails', 'table'];
 
                 // Init create pref objects
-                angular.forEach(dfApplicationPrefs.getPrefs(), function (value, key) {
+                angular.forEach(dfApplicationData.getAdminPrefs().settings, function (value, key) {
 
                     scope.prefs[key] = {};
 
@@ -1584,7 +1585,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     scope._savePrefsToServer(requestDataObj).then(
                         function (result) {
 
-
                             var messageOptions = {
                                 module: 'Preferences',
                                 type: 'success',
@@ -1593,9 +1593,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             };
 
                             dfNotify.success(messageOptions);
-
-                            dfApplicationPrefs.setPrefs(requestDataObj);
-
                         },
                         function (reject) {
 
@@ -1605,7 +1602,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 provider: 'dreamfactory',
                                 message: reject
                             };
-
 
                             dfNotify.error(messageOptions);
                         }
@@ -1655,7 +1651,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
         }
     }])
 
-    .service('SystemConfigDataService', ['INSTANCE_URL', function (INSTANCE_URL) {
+    .service('SystemConfigDataService', ['INSTANCE_URL', 'dfApplicationData',  function (INSTANCE_URL, dfApplicationData) {
 
         var systemConfig = {};
 
