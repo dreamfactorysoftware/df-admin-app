@@ -319,62 +319,26 @@ angular.module('dreamfactoryApp')
             $scope.setTopLevelLinkValue('user', 'label', n);
         })
 
-        // on $routeChangeSuccess show/hide admin nav and chat
+        // on $routeChangeSuccess show/hide admin top nav bar and chat
 
         $scope.$on('$routeChangeSuccess', function (e) {
 
-            var config, path;
-
-            // default chat settings
-
-            var enableLaunchpadChat = false;
-            var enableAdminChat = true;
-
-            // if value in config is true or false then use it, else use default
-
-            config = SystemConfigDataService.getSystemConfig();
-
-            if (config && config.hasOwnProperty('chat')) {
-
-                if (config.chat.hasOwnProperty('launchpad')) {
-                    if (config.chat.launchpad === true ||
-                        config.chat.launchpad === false) {
-                        enableLaunchpadChat = config.chat.launchpad;
-                    }
-                }
-
-                if (config.chat.hasOwnProperty('admin')) {
-                    if (config.chat.admin === true ||
-                        config.chat.admin === false) {
-                        enableAdminChat = config.chat.admin;
-                    }
-                }
-            }
+            var path;
 
             path = $location.path();
             switch (path) {
                 case '/launchpad':
-                    $scope.showAdminComponentNav = false;
-                    Comm100API.showChat(enableLaunchpadChat);
-                    break;
                 case '/profile':
-                    $scope.showAdminComponentNav = false;
-                    Comm100API.showChat(enableAdminChat);
-                    break;
+                case '/login':
                 case '/logout':
                     $scope.showAdminComponentNav = false;
-                    Comm100API.showChat(enableAdminChat);
                     break;
                 default:
-                    // this is not a launchpad or logout route so check is user is sys admin
-                    if ($scope.currentUser.is_sys_admin) {
-
-                        // yes.  show the component nav
-                        $scope.showAdminComponentNav = true;
-                    }
-                    Comm100API.showChat(enableAdminChat);
+                    $scope.showAdminComponentNav = true;
                     break;
             }
+            // put chat behind login to avoid abuse
+            Comm100API.showChat(path !== '/login');
         })
     }])
 
