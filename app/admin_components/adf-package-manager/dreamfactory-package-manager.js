@@ -574,7 +574,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                 scope.loadTable = function (newValue, filter) {
 
-                    var nameData = [], values = [];
+                    var nameData = [], values = [], record;
 
                     if (newValue && newValue.indexOf('[unavailable]') !== -1) {
                         alert('You have selected a service that is currently unavailable/unreachable. ' +
@@ -598,8 +598,17 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     }
                     angular.forEach(values, function (value) {
 
+                        if (scope.selectedType.group === 'System' && (scope.selectedName === 'admin' || scope.selectedName === 'user')) {
+                            record = {
+                                'display_label': value.email,
+                                'first_name': value.first_name,
+                                'last_name': value.last_name
+                            };
+                        } else {
+                            record = {'display_label': value};
+                        }
                         if (!filter || value.indexOf(filter) >= 0) {
-                            nameData.push(new TableData({display_label: value}));
+                            nameData.push(new TableData(record));
                         }
                     });
                     scope.selectedNameData = nameData;
@@ -777,6 +786,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 case 'System':
                                     if (payload.service[type] === undefined) {
                                         payload.service[type] = {};
+                                    }
+                                    if (payload.service[type][name] === undefined) {
                                         payload.service[type][name] = [];
                                     }
                                     payload.service[type][name] = payload.service[type][name].concat(selected);
@@ -784,12 +795,13 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 case 'Database':
                                     if (payload.service[name] === undefined) {
                                         payload.service[name] = {};
+                                    }
+                                    if (payload.service[name]['_schema'] === undefined) {
                                         payload.service[name]['_schema'] = [];
                                     }
                                     payload.service[name]['_schema'] = payload.service[name]['_schema'].concat(selected);
                                     break;
                                 case 'File':
-                                    debugger;
                                     if (payload.service[name] === undefined) {
                                         payload.service[name] = [];
                                     }

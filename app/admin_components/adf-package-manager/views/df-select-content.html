@@ -36,6 +36,9 @@
                         <td>
                             {{component.record.display_label}}
                         </td>
+                        <td ng-if="selectedName === 'user' || selectedName === 'admin'">
+                            {{component.record.first_name}} {{component.record.last_name}}
+                        </td>
                     </tr>
                     </tbody>
                 </table>
