@@ -327,6 +327,7 @@ angular.module('dreamfactoryApp')
 
             path = $location.path();
             switch (path) {
+                case '':
                 case '/launchpad':
                 case '/profile':
                 case '/login':
