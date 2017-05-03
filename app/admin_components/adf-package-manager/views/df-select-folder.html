@@ -5,9 +5,9 @@
 		</div>
 		<div class="col-xs-11">
 		<div class="form-inline">
-			<select class="form-control" data-ng-model="selectedFolder" data-ng-options="folder as folder for folder in folders" data-ng-required="true"></select>
+			<select class="form-control" data-ng-model="selectedFileService" data-ng-options="service as service for service in availableFileServices" data-ng-required="true"></select>
 		    <label for=""> / </label>
-		    <input class="form-control" data-ng-model="subFolderName" placeholder="__EXPORTS" id="nofillfolder" autocomplete="nope" />
+		    <input class="form-control" data-ng-model="folderName" placeholder="__EXPORTS" id="nofillfolder" autocomplete="nope" />
 			<label for=""> / </label>
 			<input class="form-control" data-ng-model="fileName" placeholder="File Name (Optional)" id="nofilename" autocomplete="nope" />
 		    </div>
@@ -34,35 +34,3 @@
 	    </div>
 	</div>
 </form>
-
-<!-- Modal -->
-<!--div modal-show modal-visible="showExportDialog" class="modal fade">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title">{{exportModalHeadline}}</h4>
-			</div>
-			<div class="modal-body">
-				{{exportModalBody.head}}
-				<br /><br />
-				<b>Description:</b><br />
-				{{exportModalBody.content}}
-				<br />
-				<div ng-if="exportModalBody.download !== ''">
-					<br />
-					{{exportModalBody.download}}
-					<br />
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			</div>
-		</div>
-	</div>
-</div-->
-
-
-
-
-

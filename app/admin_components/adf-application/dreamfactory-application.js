@@ -179,7 +179,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 module: null,
                 percent: 0
             }
-        }
+        };
 
         // remove params with null values
         function _checkParams(options) {
@@ -221,8 +221,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 api.api_name = '';
             }
 
-            if (apiName === 'package') return;
-
             return dfSystemData.getSystemApisFromServer(api).then(
                 function (result) {
 
@@ -259,6 +257,52 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             );
         }
 
+        function _loadSystemData(apis, forceRefresh) {
+
+            var deferred = $q.defer();
+            var promises = apis.map(function(api) {
+                return _loadOne(api, forceRefresh);
+            });
+            $q.all(promises).then(
+                function (response) {
+                    deferred.resolve(response);
+                },
+                function (response) {
+                    deferred.reject(response);
+                }
+            );
+            return deferred.promise;
+        }
+
+        function _loadOne(api, forceRefresh) {
+
+            var verbose = false;
+            var deferred = $q.defer();
+
+            var url = INSTANCE_URL + '/api/v2/system/' + api;
+
+            // no cache until other tabs are updated, don't want to waste session storage on newApis
+            forceRefresh = true;
+            if (forceRefresh !== true && dfApplicationObj.newApis.hasOwnProperty(api)) {
+                if (verbose) console.log('from cache', dfApplicationObj.newApis[api]);
+                deferred.resolve(dfApplicationObj.newApis[api]);
+            } else {
+                $http.get(url)
+                    .then(function (response) {
+                        if (verbose) console.log('ok from server', response.data);
+                        // no cache until other tabs are updated, don't want to waste session storage on newApis
+                        //dfApplicationObj.newApis[api] = response.data.resource || response.data;
+                        //dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
+                        //deferred.resolve(dfApplicationObj.newApis[api]);
+                        deferred.resolve(response.data.resource || response.data);
+                    }, function (error) {
+                        if (verbose) console.log('error from server', error.data);
+                        deferred.reject(error.data);
+                    });
+            }
+
+            return deferred.promise;
+        }
 
         function _fetchPackageFromApi() {
             var api = {
@@ -301,9 +345,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 if (!_prefsValid.valid && !_prefsValid.settings) {
                     _getAdminPrefs();
                 }
-            }
-
-            if (dfApplicationObj.currentUser.is_sys_admin) {
 
                 var promises = [];
                     //defer = $q.defer();
@@ -451,7 +492,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             var _prefs = {
                 settings: adminPrefs,
                 valid: true
-            }
+            };
 
             dfApplicationPrefs.setPrefs(_prefs);
 
@@ -480,7 +521,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     var _prefs = {
                         settings: _adminPrefsValue,
                         valid: true
-                    }
+                    };
 
                     if (_adminPrefsValue.hasOwnProperty('application') && _adminPrefsValue.application !== null) {
                         dfApplicationPrefs.setPrefs(_prefs);
@@ -962,6 +1003,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             loadApi: function(apis) {
               return _loadApi(apis);
+            },
+
+            loadSystemData: function(apis, forceRefresh) {
+                return _loadSystemData(apis, forceRefresh);
             }
 
         }
@@ -1164,10 +1209,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         autoClose: false,
                         manageViewMode: 'table'
                     }
-                },
+                }
             },
             valid: true
-        }
+        };
 
         return {
 
@@ -1305,11 +1350,19 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         };
 
         var retry = function (config, deferred) {
-            var $http = $injector.get('$http');
-            $http({
+
+            var request = {
                 method: config.method,
                 url: config.url
-            }).then(deferred.resolve, deferred.reject);
+            };
+            if (config.data) {
+                request.data = config.data;
+            }
+            if (config.transformRequest) {
+                request.transformRequest = config.transformRequest;
+            }
+            var $http = $injector.get('$http');
+            $http(request).then(deferred.resolve, deferred.reject);
             return deferred.promise;
         };
 
@@ -1378,9 +1431,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                                 //  put session
                                 return putSession(reject);
                             }
-                            else if (reject.config.url.indexOf('/package') !== -1) {
-                                break;
-                            } else {
+                            else {
                                 // refresh session
                                 return refreshSession(reject);
                             }
@@ -1441,7 +1492,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     scope.getPage = function (pageObj) {
 
                         scope._getPage(pageObj);
-                    }
+                    };
 
 
                     // PRIVATE API
@@ -1558,7 +1609,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                                     type: 'error',
                                     provider: 'dreamfactory',
                                     message: reject
-                                }
+                                };
 
                                 dfNotify.error(messageOptions);
                             }
@@ -1591,7 +1642,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                                     type: 'error',
                                     provider: 'dreamfactory',
                                     message: reject
-                                }
+                                };
 
                                 dfNotify.error(messageOptions);
                             }
@@ -1623,7 +1674,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                                     type: 'error',
                                     provider: 'dreamfactory',
                                     message: reject
-                                }
+                                };
 
                                 dfNotify.error(messageOptions);
                             }
@@ -1668,7 +1719,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                                     type: 'error',
                                     provider: 'dreamfactory',
                                     message: reject
-                                }
+                                };
 
                                 dfNotify.error(messageOptions);
                             }
@@ -1681,4 +1732,4 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     })
                 }
             }
-        }])
+        }]);
