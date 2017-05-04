@@ -304,26 +304,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             return deferred.promise;
         }
 
-        function _fetchPackageFromApi() {
-            var api = {
-                api_name: 'package',
-                params: {}
-            };
-
-            api.params = _getAdminPrefs().settings.data['package'];
-
-            // check for and remove null value params
-            _checkParams(api);
-
-            return dfSystemData.getSystemApisFromServer(api).then(
-                function (result) {
-                    dfApplicationObj['apis']['package'] = result.data;
-                },
-                $q.reject
-            );
-        }
-
-
         // Loads modules data and builds application object from async calls
         function _asyncInit(options) {
 
@@ -991,10 +971,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             fetchFromApi: function(apiName) {
                 return _fetchFromApi(apiName);
-            },
-
-            fetchPackageFromApi: function() {
-                return _fetchPackageFromApi();
             },
 
             systemDataExists: function(apiName) {
