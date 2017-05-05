@@ -18,7 +18,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         $httpProvider.interceptors.push('httpRequestInterceptor');
     })
 
-    .run(['$q', 'dfApplicationData', 'dfApplicationPrefs', 'dfAvailableApis', 'dfSessionStorage', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', function ($q, dfApplicationData, dfApplicationPrefs, dfAvailableApis, dfSessionStorage, UserDataService, SystemConfigDataService, $location, $rootScope) {
+    .run(['$q', 'dfApplicationData', 'dfApplicationPrefs', 'dfSessionStorage', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', function ($q, dfApplicationData, dfApplicationPrefs, dfSessionStorage, UserDataService, SystemConfigDataService, $location, $rootScope) {
 
 
         // Get the System Config synchronously because we are
@@ -45,47 +45,25 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             // the init completion
             dfApplicationData.initDeferred = $q.defer();
 
-            // Check if we are on the hosted system
-            if (SystemConfig.is_hosted) {
+            dfApplicationData.init().then(
+                // Success
+                function () {
 
-                // we are hosted.  Add the event api for scripting
-                dfApplicationData.init(dfAvailableApis.getApis().addEventApi().apis).then(
-                    // Success
-                    function () {
+                    // Resolve the init promise which will allow modules waiting on the init processs
+                    // to finish loading.  You will find this resolution in the resolve function
+                    // of component modules(like dfApps, dfUsers, dfRoles, etc etc)
+                    dfApplicationData.initDeferred.resolve();
 
-                        // Resolve the init promise which will allow modules waiting on the init processs
-                        // to finish loading.  You will find this resolution in the resolve function
-                        // of component modules(like dfApps, dfUsers, dfRoles, etc etc)
-                        dfApplicationData.initDeferred.resolve();
-
-                        // Set our init flag to false
-                        dfApplicationData.initInProgress = false;
-                    },
-                    function () {
-                        dfApplicationData.initInProgress = false;
-                        $location.url('/logout');
-                        return;
-                    }
-                )
-            }
-            else {
-
-                // Same process as above but event api is not loaded
-                // because we are not on the hosted system
-                dfApplicationData.init(dfAvailableApis.getApis().apis).then(
-                    function () {
-                        dfApplicationData.initDeferred.resolve();
-                        dfApplicationData.initInProgress = false;
-                    },
-                    function () {
-
-                        dfApplicationData.initInProgress = false;
-                        $location.url('/logout');
-                        return;
-                    }
-                )
-            }
-
+                    // Set our init flag to false
+                    dfApplicationData.initInProgress = false;
+                },
+                // Error
+                function () {
+                    
+                    dfApplicationData.initInProgress = false;
+                    $location.url('/logout');
+                }
+            )
         }
 
         // if we have a dfApplicationObj and a current user
@@ -98,35 +76,18 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             $rootScope.initInProgress = true;
             dfApplicationData.initDeferred = $q.defer();
 
-            if (SystemConfig.is_hosted) {
-
-                // reload app data
-                dfApplicationData.init(dfAvailableApis.getApis().addEventApi().apis).then(
-                    function () {
-                        dfApplicationData.initDeferred.resolve();
-                        dfApplicationData.initInProgress = false;
-                    },
-                    function () {
-                        dfApplicationData.initInProgress = false;
-                        $location.url('/logout');
-                        return;
-                    }
-                )
-            }
-            else {
-                dfApplicationData.init(dfAvailableApis.getApis().apis).then(
-                    function () {
-
-                        dfApplicationData.initDeferred.resolve();
-                        dfApplicationData.initInProgress = false;
-                    },
-                    function () {
-                        dfApplicationData.initInProgress = false;
-                        $location.url('/logout');
-                        return;
-                    }
-                )
-            }
+            // reload app data
+            dfApplicationData.init().then(
+                function () {
+                    dfApplicationData.initDeferred.resolve();
+                    dfApplicationData.initInProgress = false;
+                },
+                function () {
+                    dfApplicationData.initInProgress = false;
+                    $location.url('/logout');
+                    return;
+                }
+            )
         }
 
         // No local dfApplicationObj and no current user
@@ -305,14 +266,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
 
         // Loads modules data and builds application object from async calls
-        function _asyncInit(options) {
+        function _asyncInit(apis) {
 
-            var result,
-                api = {
-                    api_name: null,
-                    params: {}
-                },
-                defer = $q.defer();
+            var defer = $q.defer();
 
             // Load our current user into the application obj
             dfApplicationObj.currentUser = UserDataService.getCurrentUser();
@@ -326,13 +282,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     _getAdminPrefs();
                 }
 
-                var promises = [];
-                    //defer = $q.defer();
-
-                var totalApis = options.length;
-
-
-                promises = options.map(_fetchFromApi);
+                var promises = apis.map(_fetchFromApi);
 
                 $q.all(promises).then(
                     function () {
@@ -683,35 +633,29 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
 
         function _systemDataExists(apiName) {
+
             var appObj = dfApplicationObj;
 
             if (appObj.hasOwnProperty('apis')) {
                 if (appObj['apis'].hasOwnProperty(apiName)) {
-                    return appObj['apis'][apiName];
-                }
-                else {
-                    return false;
+                    return true;
                 }
             }
-            else {
-                return false;
-            }
+            return false;
         }
 
         function _loadApi(apis) {
+
             var newApis = [];
-            angular.forEach(apis, function(value, key) {
+            angular.forEach(apis, function(value) {
                 if (_systemDataExists(value) === false) {
-                    this.push(value);
+                    newApis.push(value);
                 }
+            });
 
-            }, newApis);
-
-            _asyncInit(newApis).then(
-                function () {
-                    return true;
-                }
-            )
+            if (newApis.length > 0) {
+                _asyncInit(newApis);
+            }
         }
 
 
@@ -721,11 +665,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             initDeferred: null,
 
             // Public function to init the app
-            init: function (options) {
+            init: function () {
 
-                options = options || [];
-
-                return _asyncInit(options);
+                return _asyncInit([]);
             },
 
             // Returns app obj that is stored in the service
@@ -1203,25 +1145,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 prefs = (data) ? data : prefsDefault;
             }
 
-        }
-    }])
-
-    .service('dfAvailableApis', [function () {
-
-
-        return {
-
-            //List of all APIs: 'system', 'environment', 'config', 'service_type', 'service', 'app', 'role', 'admin', 'user', 'email_template', 'lookup', 'cors', 'app_group', 'event', 'script_type', 'package'
-            apis: [],
-
-            getApis: function () {
-                return this;
-            },
-
-            addEventApi: function () {
-                // this.apis.push('event');
-                return this;
-            }
         }
     }])
 

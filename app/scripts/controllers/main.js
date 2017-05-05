@@ -348,7 +348,7 @@ angular.module('dreamfactoryApp')
     // We inject $location because we'll want to update our location on a successful
     // login and the UserEventsService from our DreamFactory User Management Module to be able
     // to respond to events generated from that module
-    .controller('LoginCtrl', ['dfAvailableApis', '$scope', '$window', '$location', '$timeout', 'UserDataService', 'UserEventsService', 'dfApplicationData', 'dfApplicationPrefs', 'SystemConfigDataService', 'dfNotify', function(dfAvailableApis, $scope, $window, $location, $timeout, UserDataService, UserEventsService, dfApplicationData, dfApplicationPrefs, SystemConfigDataService, dfNotify) {
+    .controller('LoginCtrl', ['$scope', '$window', '$location', '$timeout', 'UserDataService', 'UserEventsService', 'dfApplicationData', 'dfApplicationPrefs', 'SystemConfigDataService', 'dfNotify', function($scope, $window, $location, $timeout, UserDataService, UserEventsService, dfApplicationData, dfApplicationPrefs, SystemConfigDataService, dfNotify) {
 
         // Login options array
         $scope.loginOptions = {
@@ -392,11 +392,6 @@ angular.module('dreamfactoryApp')
             // Set our parent's current user var
             $scope.$parent.currentUser = userDataObj;
 
-            // API Options
-            var options = {
-                apis: []
-            };
-
             //Login using OAuth...
             var queryString = location.search.substring(1);
 
@@ -411,15 +406,8 @@ angular.module('dreamfactoryApp')
                 // and disappear
                 $timeout(function () {
 
-                    // Set the apis we want
-                    options.apis = dfAvailableApis.getApis().apis;
-
-                    if (SystemConfigDataService.getSystemConfig().is_hosted) {
-                        options.apis = dfAvailableApis.getApis().addEventApi().apis;
-                    }
-
                     // Init the app
-                    dfApplicationData.init(options.apis).then(
+                    dfApplicationData.init().then(
                         function () {
                             // Change our app location back to the home page
                             if(queryString){
@@ -612,7 +600,7 @@ angular.module('dreamfactoryApp')
     }])
 
     // Controls Reset of password
-    .controller('ResetPasswordEmailCtrl', ['$scope', '$location', 'dfApplicationData', 'dfAvailableApis', 'UserEventsService', 'SystemConfigDataService', 'dfNotify', '$timeout',  function($scope, $location, dfApplicationData, dfAvailableApis, UserEventsService, SystemConfigDataService, dfNotify, $timeout) {
+    .controller('ResetPasswordEmailCtrl', ['$scope', '$location', 'dfApplicationData', 'UserEventsService', 'SystemConfigDataService', 'dfNotify', '$timeout',  function($scope, $location, dfApplicationData, UserEventsService, SystemConfigDataService, dfNotify, $timeout) {
 
         // Login options array
         $scope.loginOptions = {
@@ -657,11 +645,6 @@ angular.module('dreamfactoryApp')
             // Set our parent's current user var
             $scope.$parent.currentUser = userDataObj;
 
-            // API Options
-            var options = {
-                apis: []
-            };
-
             // Set services on application object
             // are we an admin
             if (userDataObj.is_sys_admin) {
@@ -673,15 +656,8 @@ angular.module('dreamfactoryApp')
                 // and disappear
                 $timeout(function () {
 
-                    // Set the apis we want
-                    options.apis = dfAvailableApis.getApis().apis;
-
-                    if (SystemConfigDataService.getSystemConfig().is_hosted) {
-                        options.apis = dfAvailableApis.getApis().addEventApi().apis;
-                    }
-
                     // Init the app
-                    dfApplicationData.init(options.apis).then(
+                    dfApplicationData.init().then(
                         function () {
 
                             // Change our app location back to the home page
