@@ -309,15 +309,15 @@ angular
                 }
             }
         }]);
-    }])
+    }]);
 
     // Get the System Configuration and set in SystemConfigDataService
     // This is a synchronous call because we need the system config before
     // anything else should happen
-    .run(['SystemConfigDataService',
+    /*.run(['SystemConfigDataService',
         function(SystemConfigDataService) {
 
             var SystemConfig = SystemConfigDataService.getSystemConfigFromServerSync();
 
             SystemConfigDataService.setSystemConfig(SystemConfig);
-    }]);
+    }]);*/

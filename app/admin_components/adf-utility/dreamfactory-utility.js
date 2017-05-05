@@ -3831,7 +3831,7 @@ angular.module('dfUtility', ['dfApplication'])
 
     // Stores our System Configuration.  May not need to define here as it
     // is contained in the SystemConfigModule
-    .service('SystemConfigDataService', ['INSTANCE_URL', function (INSTANCE_URL) {
+    /*.service('SystemConfigDataService', ['INSTANCE_URL', function (INSTANCE_URL) {
 
         var systemConfig = {};
 
@@ -3893,7 +3893,7 @@ angular.module('dfUtility', ['dfApplication'])
             }
         }
     }
-    ])
+    ])*/
 
     // allows us to make synchronous ajax calls.  Not extensive enough in its
     // functionality to replace $http but helps with loading/bootstrapping data
