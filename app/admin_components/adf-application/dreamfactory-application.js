@@ -128,7 +128,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
         var dfApplicationObj = {
             currentUser: null,
-            apis: {}
+            apis: {},
+            newApis: {}
         };
 
         var dfMainLoadData = {
@@ -218,7 +219,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             );
         }
 
-        function _loadSystemData(apis, forceRefresh) {
+        function _loadApiData(apis, forceRefresh) {
 
             var deferred = $q.defer();
             var promises = apis.map(function(api) {
@@ -237,27 +238,23 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
         function _loadOne(api, forceRefresh) {
 
-            var verbose = false;
+            var verbose = true;
             var deferred = $q.defer();
 
-            var url = INSTANCE_URL + '/api/v2/system/' + api;
+            var url = INSTANCE_URL + '/api/v2/' + api;
 
-            // no cache until other tabs are updated, don't want to waste session storage on newApis
-            forceRefresh = true;
             if (forceRefresh !== true && dfApplicationObj.newApis.hasOwnProperty(api)) {
-                if (verbose) console.log('from cache', dfApplicationObj.newApis[api]);
+                if (verbose) console.log('_loadOne: from cache', dfApplicationObj.newApis[api]);
                 deferred.resolve(dfApplicationObj.newApis[api]);
             } else {
                 $http.get(url)
                     .then(function (response) {
-                        if (verbose) console.log('ok from server', response.data);
-                        // no cache until other tabs are updated, don't want to waste session storage on newApis
-                        //dfApplicationObj.newApis[api] = response.data.resource || response.data;
-                        //dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
-                        //deferred.resolve(dfApplicationObj.newApis[api]);
-                        deferred.resolve(response.data.resource || response.data);
+                        if (verbose) console.log('_loadOne: ok from server', response.data);
+                        dfApplicationObj.newApis[api] = response.data.resource || response.data;
+                        dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
+                        deferred.resolve(dfApplicationObj.newApis[api]);
                     }, function (error) {
-                        if (verbose) console.log('error from server', error.data);
+                        if (verbose) console.log('_loadOne: error from server', error.data);
                         deferred.reject(error.data);
                     });
             }
@@ -314,7 +311,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             dfApplicationObj = {
                 currentUser: null,
-                apis: {}
+                apis: {},
+                newApis: {}
             };
         }
 
@@ -923,8 +921,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
               return _loadApi(apis);
             },
 
-            loadSystemData: function(apis, forceRefresh) {
-                return _loadSystemData(apis, forceRefresh);
+            loadApiData: function(apis, forceRefresh) {
+                return _loadApiData(apis, forceRefresh);
             }
 
         }
