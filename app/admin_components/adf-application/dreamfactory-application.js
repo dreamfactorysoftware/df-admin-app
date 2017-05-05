@@ -23,6 +23,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
 
         var SystemConfig;
         $rootScope.progressbar = ngProgressFactory.createInstance();
+        $rootScope.progressbar.setHeight('4px');
+        $rootScope.progressbar.setColor('#b63d2a');
 
         dfApplicationData.loadApiData(['system/environment'], true).then(
             function (response) {
@@ -134,7 +136,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
 
         var dfMainLoadData = {
             numElemsToLoad: 0,
-            percentLoaded: 0,
+            percentIncrement: 0,
+            percentLoaded:0,
             loadData: {
 
                 op: 'Loading',
@@ -220,11 +223,15 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
         }
 
         function _loadApiData(apis, forceRefresh) {
-
             var deferred = $q.defer();
+
             var promises = apis.map(function(api) {
                 return _loadOne(api, forceRefresh);
             });
+
+            dfMainLoadData.numElemsToLoad = promises.length;
+            dfMainLoadData.percentIncrement = 100/promises.length;
+
             $q.all(promises).then(
                 function (response) {
                     deferred.resolve(response);
@@ -233,6 +240,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                     deferred.reject(response);
                 }
             );
+
             return deferred.promise;
         }
 
@@ -240,9 +248,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
 
             var verbose = true;
             var deferred = $q.defer();
-
             var url = INSTANCE_URL + '/api/v2/' + api;
-
             if (forceRefresh !== true && dfApplicationObj.newApis.hasOwnProperty(api)) {
                 if (verbose) console.log('_loadOne: from cache', dfApplicationObj.newApis[api]);
                 deferred.resolve(dfApplicationObj.newApis[api]);
@@ -250,14 +256,20 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 $http.get(url)
                     .then(function (response) {
                         if (verbose) console.log('_loadOne: ok from server', response.data);
+                        $rootScope.progressbar.set(dfMainLoadData.percentIncrement + dfMainLoadData.percentLoaded);
+                        dfMainLoadData.percentLoaded += dfMainLoadData.percentIncrement;
+                        if(dfMainLoadData.percentLoaded >= 100){
+                            $rootScope.progressbar.complete();
+                        }
                         dfApplicationObj.newApis[api] = response.data.resource || response.data;
                         dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
                         deferred.resolve(dfApplicationObj.newApis[api]);
-                    }, function (error) {
+                    },
+                    function (error) {
                         if (verbose) console.log('_loadOne: error from server', error.data);
                         deferred.reject(error.data);
                     });
-            }
+                }
 
             return deferred.promise;
         }
