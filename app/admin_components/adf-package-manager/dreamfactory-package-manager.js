@@ -113,9 +113,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
         $scope.loadTabData = function() {
 
-            var apis = ['system/service', 'system/service_type', 'system/environment', 'system/package', 'system/app'];
+            var apis = ['user/custom', 'system/service', 'system/service_type', 'system/environment', 'system/package', 'system/app'];
 
-            dfApplicationData.loadApiData(apis, false).then(
+            dfApplicationData.loadApiData(apis, true).then(
                 function (response) {
                     var newApiData = {};
                     apis.forEach(function(value, index) {
