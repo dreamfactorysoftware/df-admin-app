@@ -22,9 +22,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
         function ($q, dfApplicationData, dfSessionStorage, UserDataService, SystemConfigDataService, $location, $rootScope, ngProgressFactory) {
 
         var SystemConfig;
-        $rootScope.progressbar = ngProgressFactory.createInstance();
-        //$rootScope.progressbar.setHeight('4px');
-        //$rootScope.progressbar.setColor('#b63d2a');
+        //TODO:Add progress bar later on once stabilized.
+        //$rootScope.progressbar = ngProgressFactory.createInstance();
 
         dfApplicationData.loadApiData(['environment'], true).then(
             function (response) {
@@ -218,9 +217,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 return _loadOne(api, forceRefresh);
             });
 
-            dfMainLoadData.numElemsToLoad = promises.length;
-            dfMainLoadData.percentIncrement = 100/promises.length;
-
             $q.all(promises).then(
                 function (response) {
                     deferred.resolve(response);
@@ -250,11 +246,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                         dfApplicationObj.newApis[api] = response.resource ? response.resource : response;
                         if (debugLevel >= 1) console.log('_loadOne(' + api + '): ok from server', dfApplicationObj.newApis[api]);
                         if (debugLevel >= 2) console.log('_loadOne(' + api + '): dfApplicationObj', dfApplicationObj);
-                        $rootScope.progressbar.set(dfMainLoadData.percentIncrement + dfMainLoadData.percentLoaded);
-                        dfMainLoadData.percentLoaded += dfMainLoadData.percentIncrement;
-                        if(dfMainLoadData.percentLoaded >= 100){
-                            $rootScope.progressbar.complete();
-                        }
                         dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
                         deferred.resolve(dfApplicationObj.newApis[api]);
                     }, function (error) {
