@@ -303,13 +303,13 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     path: ''
                 };
 
-                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.user.manageViewMode;
+                scope.currentViewMode = dfApplicationData.getUserPrefs().sections.user.manageViewMode;
 
                 scope.limits = null;
                 scope.limitEnabled = false;
                 scope.currentEditLimit = editLimitService;
 
-                scope.system = dfApplicationData.getApiData('system', null, true);
+                scope.system = dfApplicationData.fetchFromApi('system');
 
                 scope.fields = [
                     {
@@ -749,22 +749,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     }
                 });
 
-                var onLimitNav = $rootScope.$on('component-nav:reload:limit', function (e) {
-
-                    var _limits = [];
-
-                    angular.forEach(dfApplicationData.getApiData('limit', null, true), function (limit) {
-                        if (typeof limit !== 'function') {
-                            _limits.push(new ManagedLimit(limit));
-                        }
-                    });
-
-                    scope.limits = _limits;
-
-                    updateLimitCacheData.mergeCacheData(scope.limits, scope.limitCache);
-                });
-
-
                 var watchApiData = scope.$watchCollection(function () {
 
                     var limits =  dfApplicationData.getApiData('limit');
@@ -833,7 +817,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 scope.$on('$destroy', function (e) {
                     watchLimits();
-                    onLimitNav();
                     scope.$broadcast('toolbar:paginate:limit:reset');
 
                 });

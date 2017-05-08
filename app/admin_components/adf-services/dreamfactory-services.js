@@ -475,7 +475,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     );
 
 
-                    if (dfApplicationData.getAdminPrefs().settings.sections.service.autoClose) {
+                    if (dfApplicationData.getUserPrefs().sections.service.autoClose) {
                         scope._resetServiceDetails();
                     }
                 };
@@ -2270,7 +2270,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
 
-                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.service.manageViewMode;
+                scope.currentViewMode = dfApplicationData.getUserPrefs().sections.service.manageViewMode;
 
                 scope.services = null;
 
@@ -2540,20 +2540,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         return;
                     }
                 });
-
-                var onServicesNav = $rootScope.$on('component-nav:reload:services', function (e) {
-
-                    var _services = [];
-
-                    angular.forEach(dfApplicationData.getApiData('service', null, true), function (service) {
-                        if (typeof service !== 'function') {
-                            _services.push(new ManagedApp(service));
-                        }
-                    });
-
-                    scope.services = _services;
-                });
-
+                
                 var watchApiData = scope.$watchCollection(function () {
 
                     return dfApplicationData.getApiData('service');
@@ -2604,7 +2591,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope.$on('$destroy', function (e) {
                     watchServices();
-                    onServicesNav();
                     scope.$broadcast('toolbar:paginate:service:reset');
                 })
 

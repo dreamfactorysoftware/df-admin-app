@@ -107,7 +107,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         });
     }])
 
-    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', '$location', 'dfServerInfoService', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$http', 'dfObjectService', '$rootScope', function (MOD_APPS_ASSET_PATH, INSTANCE_URL, UserDataService, $location, dfServerInfoService, dfApplicationData, dfApplicationPrefs, dfNotify, $http, dfObjectService, $rootScope) {
+    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', '$location', 'dfServerInfoService', 'dfApplicationData', 'dfNotify', '$http', 'dfObjectService', '$rootScope', function (MOD_APPS_ASSET_PATH, INSTANCE_URL, UserDataService, $location, dfServerInfoService, dfApplicationData, dfNotify, $http, dfObjectService, $rootScope) {
 
         return {
 
@@ -121,10 +121,15 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                 var getLocalFileStorageServiceId = function () {
 
-                    var a = dfApplicationData.getApiData('service', {type: 'local_file'});
+                    var a = dfApplicationData.getApiData('service');
+                    if (a !== undefined) {
+                        a = a.filter(function(obj) {
+                            return obj.type === 'local_file';
+                        });
+                    }
 
                     return a && a.length ? a[0].id : null;
-                }
+                };
 
                 // Need to refactor into factory.
                 var App = function (appData) {
@@ -178,8 +183,12 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 // Other data
                 scope.roles = dfApplicationData.getApiData('role');
                 scope.selectedRoleId = null;
-                scope.storageServices = dfApplicationData.getApiData('service',
-                    {type: 'local_file,aws_s3,azure_blob,rackspace_cloud_files,openstack_object_storage'});
+                scope.storageServices = dfApplicationData.getApiData('service');
+                if (scope.storageServices !== undefined) {
+                    scope.storageServices = scope.storageServices.filter(function (obj) {
+                        return ['local_file', 'aws_s3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage'].indexOf(obj.type) >= 0;
+                    });
+                }
                 scope.storageContainers = [];
 
                 if (scope.newApp) {
@@ -373,7 +382,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                             // clean form
                             // reset app
-                            if (dfApplicationData.getAdminPrefs().settings.sections.app.autoClose) {
+                            if (dfApplicationData.getUserPrefs().sections.app.autoClose) {
                                 scope._resetAppDetails();
                             }
 
@@ -490,10 +499,14 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     scope.roles = dfApplicationData.getApiData('role');
                 });
 
-                $rootScope.$on("service", function  (){
+                $rootScope.$on("service", function () {
 
-                    scope.storageServices = dfApplicationData.getApiData('service',
-                        {type: 'local_file,aws_s3,azure_blob,rackspace_cloud_files,openstack_object_storage'});
+                    scope.storageServices = dfApplicationData.getApiData('service');
+                    if (scope.storageServices !== undefined) {
+                        scope.storageServices = scope.storageServices.filter(function (obj) {
+                            return ['local_file', 'aws_s3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage'].indexOf(obj.type) >= 0;
+                        });
+                    }
                 });
 
                 // HELP
@@ -544,7 +557,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         }
     }])
 
-    .directive('dfManageApps', ['$rootScope', 'MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfReplaceParams', 'dfNotify', '$window', function ($rootScope, MOD_APPS_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfReplaceParams, dfNotify, $window) {
+    .directive('dfManageApps', ['$rootScope', 'MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfReplaceParams', 'dfNotify', '$window', function ($rootScope, MOD_APPS_ASSET_PATH, dfApplicationData, dfReplaceParams, dfNotify, $window) {
 
         return {
 
@@ -565,7 +578,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 };
 
 
-                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.app.manageViewMode;
+                scope.currentViewMode = dfApplicationData.getUserPrefs().sections.app.manageViewMode;
 
                 scope.apps = null;
 
@@ -864,19 +877,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
 
                 // MESSAGES
-                var onAppsNav = $rootScope.$on('component-nav:reload:apps', function (e) {
-
-                    var _app = [];
-
-                    angular.forEach(dfApplicationData.getApiData('app', null, true), function (app) {
-                        if (typeof app !== 'function') {
-                            _app.push(new ManagedApp(app));
-                        }
-                    });
-
-                    scope.apps = _app;
-
-                });
 
                 scope.$on('toolbar:paginate:app:update', function (e) {
 
@@ -911,7 +911,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     // Destroy watchers
                     watchApps();
                     watchApiData();
-                    onAppsNav();
                 });
 
                 scope.$watch('$viewContentLoaded',
@@ -938,9 +937,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
             scope: {},
             templateUrl: MOD_APPS_ASSET_PATH + 'views/df-import-app.html',
             link: function (scope, elem, attrs) {
-
-
-                scope.services = dfApplicationData.getApiData('service', {type: 'local_file,aws_s3,azure_blob'});
+                
+                scope.services = dfApplicationData.getApiData('service');
+                if (scope.services !== undefined) {
+                    scope.services = scope.services.filter(function (obj) {
+                        return ['local_file', 'aws_s3', 'azure_blob'].indexOf(obj.type) >= 0;
+                    });
+                }
                 scope.containers = [];
 
                 scope.appPath = null;

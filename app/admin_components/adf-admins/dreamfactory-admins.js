@@ -343,7 +343,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             scope.admin = new Admin(result);
 
-                            if (dfApplicationData.getAdminPrefs().settings.sections.admin.autoClose) {
+                            if (dfApplicationData.getUserPrefs().settings.sections.admin.autoClose) {
 
                                 scope.closeAdmin();
                             }
@@ -711,7 +711,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 // accesses import admins parent scope.  It's not as bad as it sounds
                 scope.uploadFile = null;
 
-                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.admin.manageViewMode;
+                scope.currentViewMode = dfApplicationData.getUserPrefs().settings.sections.admin.manageViewMode;
 
                 scope.admins = null;
 
@@ -949,12 +949,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
 
                 // WATCHERS
-
-                var onAdminsNav = $rootScope.$on('component-nav:reload:admins', function (e) {
-
-                    dfApplicationData.getApiData('admin', null, true);
-                });
-
+                
                 $rootScope.$on("admin", function  (){
 
                     //scope.$broadcast('toolbar:paginate:admin:reset');
@@ -983,7 +978,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
 
                 scope.$on('$destroy', function(e) {
-                    onAdminsNav();
                     scope.$broadcast('toolbar:paginate:admin:reset');
                 })
 

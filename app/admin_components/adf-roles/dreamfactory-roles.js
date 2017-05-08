@@ -371,7 +371,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         }
                     );
 
-                    if (dfApplicationData.getAdminPrefs().settings.sections.role.autoClose) {
+                    if (dfApplicationData.getUserPrefs().sections.role.autoClose) {
                         scope._resetRoleDetails();
                     }
                 };
@@ -470,7 +470,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 });
 
                 var watchServiceData = scope.$watchCollection(function () {
-                    return dfApplicationData.getApiData('service')
+                    return dfApplicationData.getApiData('service');
                 }, function (newValue, oldValue) {
 
                     if (!newValue) return;
@@ -941,7 +941,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
 
-                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.role.manageViewMode;
+                scope.currentViewMode = dfApplicationData.getUserPrefs().sections.role.manageViewMode;
 
                 scope.roles = null;
 
@@ -1206,21 +1206,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         }
                     }
                 });
-
-                var onRolesNav = $rootScope.$on('component-nav:reload:roles', function (e) {
-
-                    var _roles = [];
-
-                    angular.forEach(dfApplicationData.getApiData('role', null, true), function (role) {
-                        if (typeof role !== 'function') {
-                            _roles.push(new ManagedApp(role));
-                        }
-                    });
-
-                    scope.roles = _roles;
-
-                });
-
+                
                 var watchApiData = scope.$watchCollection(function () {
 
                     return dfApplicationData.getApiData('role');
@@ -1271,7 +1257,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 scope.$on('$destroy', function (e) {
                     watchRoles();
-                    onRolesNav();
                 })
 
                 scope.$watch('$viewContentLoaded',

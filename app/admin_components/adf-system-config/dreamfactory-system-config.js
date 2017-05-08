@@ -317,7 +317,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 });
 
                 var watchdfApplicationData = scope.$watchCollection(function () {
-                    return dfApplicationData.getApiData('environment')
+                    return dfApplicationData.getApiData('environment');
                 }, function (newValue, oldValue) {
 
                     if (!newValue) return;
@@ -762,7 +762,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     });
 
                     var watchdfApplicationData = scope.$watchCollection(function () {
-                        return dfApplicationData.getApiData('cors')
+                        return dfApplicationData.getApiData('cors');
                     }, function (newValue, oldValue) {
 
                         if (!newValue) return;
@@ -1141,7 +1141,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     });
 
                     var watchdfApplicationData = scope.$watchCollection(function () {
-                        return dfApplicationData.getApiData('email_template')
+                        return dfApplicationData.getApiData('email_template');
                     }, function (newValue, oldValue) {
 
                         if (!newValue) return;
@@ -1486,7 +1486,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     });
 
                     var watchdfApplicationData = scope.$watchCollection(function () {
-                        return dfApplicationData.getApiData('lookup')
+                        return dfApplicationData.getApiData('lookup');
                     }, function (newValue, oldValue) {
 
                         if (!newValue) return;
@@ -1522,12 +1522,11 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
 
                 scope.prefs = {};
-                scope.prefsLoaded = dfApplicationData.getAdminPrefs().valid;
 
                 scope.viewModes = ['list', 'thumbnails', 'table'];
 
                 // Init create pref objects
-                angular.forEach(dfApplicationData.getAdminPrefs().settings, function (value, key) {
+                angular.forEach(dfApplicationData.getUserPrefs(), function (value, key) {
 
                     scope.prefs[key] = {};
 
@@ -1546,43 +1545,9 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.savePrefs = function () {
 
-                    scope._savePrefs();
-                };
-
-
-                scope._savePrefsToServer = function (requestDataObj) {
-
-                    return dfApplicationData.saveAdminPrefs(requestDataObj);
-                };
-
-                scope._formatPrefs = function () {
-
-                    var _prefs = {};
-
-                    angular.forEach(scope.prefs, function (value, key) {
-
-                        _prefs[key] = {};
-
-                        angular.forEach(value, function (_value, _key) {
-
-                            _prefs[key][_key] = {};
-
-                            angular.forEach(_value, function (obj) {
-
-                                _prefs[key][_key][obj.key] = obj.value;
-                            })
-                        })
-                    })
-
-                    return _prefs;
-                }
-
-
-                scope._savePrefs = function () {
-
                     var requestDataObj = scope._formatPrefs();
 
-                    scope._savePrefsToServer(requestDataObj).then(
+                    dfApplicationData.saveUserPrefs(requestDataObj).then(
                         function (result) {
 
                             var messageOptions = {
@@ -1606,6 +1571,28 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             dfNotify.error(messageOptions);
                         }
                     );
+                };
+
+                scope._formatPrefs = function () {
+
+                    var _prefs = {};
+
+                    angular.forEach(scope.prefs, function (value, key) {
+
+                        _prefs[key] = {};
+
+                        angular.forEach(value, function (_value, _key) {
+
+                            _prefs[key][_key] = {};
+
+                            angular.forEach(_value, function (obj) {
+
+                                _prefs[key][_key][obj.key] = obj.value;
+                            })
+                        })
+                    });
+
+                    return _prefs;
                 }
             }
         }

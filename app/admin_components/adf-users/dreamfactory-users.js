@@ -334,7 +334,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             scope.user = new User(result);
 
-                            if (dfApplicationData.getAdminPrefs().settings.sections.user.autoClose) {
+                            if (dfApplicationData.getUserPrefs().sections.user.autoClose) {
 
                                 scope.closeUser();
                             }
@@ -824,7 +824,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     path: ''
                 };
 
-                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.user.manageViewMode;
+                scope.currentViewMode = dfApplicationData.getUserPrefs().sections.user.manageViewMode;
 
                 scope.users = null;
 
@@ -1107,19 +1107,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 });
 
-                var onUsersNav = $rootScope.$on('component-nav:reload:users', function (e) {
-
-                    var _users = [];
-
-                    angular.forEach(dfApplicationData.getApiData('user', null, true), function (user) {
-                        if (typeof user !== 'function') {
-                            _users.push(new ManagedApp(user));
-                        }
-                    });
-
-                    scope.users = _users;
-                });
-
                 var watchApiData = scope.$watchCollection(function() {
 
                     return dfApplicationData.getApiData('user');
@@ -1170,7 +1157,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.$on('$destroy', function(e) {
                     watchUsers();
-                    onUsersNav();
                     scope.$broadcast('toolbar:paginate:user:reset');
                 });
 

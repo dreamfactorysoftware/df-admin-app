@@ -1,8 +1,7 @@
 <div>
     <div class="row">
         <div class="col-md-6">
-            <div ng-show="!prefsLoaded"><br/>Preferences could not be loaded</div>
-            <div data-ng-repeat="(key, value) in prefs" ng-show="prefsLoaded">
+            <div data-ng-repeat="(key, value) in prefs">
                 <div data-ng-if="key === 'application'">
                     <legend><h4>Application</h4></legend>
                     <div class="panel panel-default">
@@ -93,7 +92,7 @@
 
     <div class="row df-btn-row" style="padding-bottom: 20px">
         <div class="col-xs-12">
-            <div class="btn btn-primary" data-ng-click="savePrefs()" ng-show="prefsLoaded">Save</div>
+            <div class="btn btn-primary" data-ng-click="savePrefs()">Save</div>
         </div>
     </div>
 </div>

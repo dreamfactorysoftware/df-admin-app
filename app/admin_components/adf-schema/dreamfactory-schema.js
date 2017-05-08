@@ -79,18 +79,18 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         }
 
 
-        function getServices(forceRefresh) {
+        function getServices() {
 
-            forceRefresh = forceRefresh || false;
-
-            if (services.length > 0) return services;
-
-            var serviceArray = [];
-            serviceArray = dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,firebird,aws_redshift_db,mongodb'}, forceRefresh);
-
-            if (serviceArray !== undefined) services = serviceArray;
-
-            return serviceArray;
+            if (services.length === 0) {
+                var serviceArray = dfApplicationData.getApiData('service');
+                if (serviceArray !== undefined) {
+                    services = serviceArray.filter(function(obj) {
+                        return ['mysql','pgsql','sqlite','sqlsrv','sqlanywhere','oracle','ibmdb2','firebird','aws_redshift_db','mongodb'].indexOf(obj.type) >= 0;
+                    });
+                }
+            }
+            
+            return services;
         }
 
         return {

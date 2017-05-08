@@ -377,15 +377,6 @@ angular.module('dfUtility', ['dfApplication'])
                     scope.toggleMenu = false;
                 };
 
-
-                scope.reload = function (tab, reload) {
-
-                    if (reload) {
-                        $rootScope.$emit('component-nav:reload:' + tab);
-                    }
-                };
-
-
                 // WATCHERS
                 scope.$watch('toggleMenu', function (n, o) {
 
@@ -2184,7 +2175,7 @@ angular.module('dfUtility', ['dfApplication'])
                 scope.isInProgress = false;
 
                 if (dfApplicationData.systemDataExists(scope.api)) {
-                    scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+                    scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
                 }
 
                 // PUBLIC API
@@ -2256,7 +2247,7 @@ angular.module('dfUtility', ['dfApplication'])
                     return {
                         number: _pageNum + 1,
                         value: _pageNum,
-                        offset: _pageNum * dfApplicationData.getAdminPrefs().settings.data[scope.api].limit,
+                        offset: _pageNum * dfApplicationData.getApiPrefs().data[scope.api].limit,
                         stopPropagation: false
                     }
                 };
@@ -2319,7 +2310,7 @@ angular.module('dfUtility', ['dfApplication'])
                         return false;
                     }
 
-                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationData.getAdminPrefs().settings.data[newValue].limit));
+                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationData.getApiPrefs().data[newValue].limit));
                 };
 
                 //local function for filter detection
@@ -2493,7 +2484,7 @@ angular.module('dfUtility', ['dfApplication'])
                         function(result) {
 
                             // reset everything.
-                            scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+                            scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
                             scope._calcPagination(scope.api);
                             // scope.linkedData = scope.prepFunc({dataArr: result.record});
                             scope._setCurrentPage(scope.pagesArr[0]);
@@ -2544,7 +2535,7 @@ angular.module('dfUtility', ['dfApplication'])
                         if (scope.currentPage.number !== 1) {
 
                             // calc proper offset
-                            curOffset = scope.currentPage.offset - dfApplicationData.getAdminPrefs().settings.data[scope.api].limit
+                            curOffset = scope.currentPage.offset - dfApplicationData.getApiPrefs().data[scope.api].limit
                         }
                     }
 
@@ -2558,7 +2549,7 @@ angular.module('dfUtility', ['dfApplication'])
                         function(result) {
 
                             // Total count will have been updated.  Grab our new record count
-                            scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+                            scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
 
                             // did we need to recalc pagination
                             if (recalcPagination) {
@@ -2622,7 +2613,7 @@ angular.module('dfUtility', ['dfApplication'])
                 scope.isInProgress = false;
 
                 if (dfApplicationData.systemDataExists(scope.api)) {
-                    scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+                    scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
                 }
 
                 // PUBLIC API
@@ -2691,7 +2682,7 @@ angular.module('dfUtility', ['dfApplication'])
                     return {
                         number: _pageNum + 1,
                         value: _pageNum,
-                        offset: (_pageNum) ? _pageNum * dfApplicationData.getAdminPrefs().settings.data[scope.api].limit : 0,
+                        offset: (_pageNum) ? _pageNum * dfApplicationData.getApiPrefs().data[scope.api].limit : 0,
                         stopPropagation: false
                     }
                 };
@@ -2754,7 +2745,7 @@ angular.module('dfUtility', ['dfApplication'])
                         return false;
                     }
 
-                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationData.getAdminPrefs().settings.data[newValue].limit));
+                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationData.getApiPrefs().data[newValue].limit));
                 };
 
                 //local function for filter detection
@@ -2906,7 +2897,7 @@ angular.module('dfUtility', ['dfApplication'])
                     if (!newValue) return false;
 
                     if (scope.servicetype.group === 'System') {
-                        scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+                        scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
                         scope._calcPagination(newValue);
                         scope._setCurrentPage(scope.pagesArr[0]);
                     }
@@ -2950,7 +2941,7 @@ angular.module('dfUtility', ['dfApplication'])
                         function(result) {
 
                             // reset everything.
-                            scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+                            scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
 
                             scope._calcPagination(scope.api);
                             // scope.linkedData = scope.prepFunc({dataArr: result.record});
@@ -3001,7 +2992,7 @@ angular.module('dfUtility', ['dfApplication'])
                         if (scope.currentPage.number !== 1) {
 
                             // calc proper offset
-                            curOffset = scope.currentPage.offset - dfApplicationData.getAdminPrefs().settings.data[scope.api].limit
+                            curOffset = scope.currentPage.offset - dfApplicationData.getApiPrefs().data[scope.api].limit
                         }
                     }
 
@@ -3015,7 +3006,7 @@ angular.module('dfUtility', ['dfApplication'])
                         function(result) {
 
                             // Total count will have been updated.  Grab our new record count
-                            scope.totalCount = dfApplicationData.getApiData(scope.api, 'meta').count;
+                            scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
 
                             // did we need to recalc pagination
                             if (recalcPagination) {
@@ -4222,10 +4213,8 @@ angular.module('dfUtility', ['dfApplication'])
         return {
 
             success: function(options) {
-
-                if (dfApplicationData.getAdminPrefs().settings === null) return;
-
-                switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.success) {
+                
+                switch(dfApplicationData.getUserPrefs().application.notificationSystem.success) {
 
                     case 'pnotify':
                         pnotify(options);
@@ -4250,10 +4239,8 @@ angular.module('dfUtility', ['dfApplication'])
             },
 
             error: function(options) {
-
-                if (dfApplicationData.getAdminPrefs().settings === null) return;
-
-                switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.error) {
+                
+                switch(dfApplicationData.getUserPrefs().application.notificationSystem.error) {
 
                     case 'pnotify':
                         options.message = parseError(options, 'message');
@@ -4279,10 +4266,8 @@ angular.module('dfUtility', ['dfApplication'])
             },
 
             warn: function(options) {
-
-                if (dfApplicationData.getAdminPrefs().settings === null) return;
-
-                switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.warn) {
+                
+                switch(dfApplicationData.getUserPrefs().application.notificationSystem.warn) {
 
                     case 'pnotify':
                         pnotify(options);
@@ -4311,10 +4296,8 @@ angular.module('dfUtility', ['dfApplication'])
             },
 
             confirm: function (msg) {
-
-                if (dfApplicationData.getAdminPrefs().settings === null) return;
-
-                switch(dfApplicationData.getAdminPrefs().settings.application.notificationSystem.confirm) {
+                
+                switch(dfApplicationData.getUserPrefs().application.notificationSystem.confirm) {
 
                     case 'pnotify':
                         return pnotify(options);

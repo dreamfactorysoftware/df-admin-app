@@ -113,7 +113,14 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
         $scope.init = function() {
 
-            angular.forEach(dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,firebird,aws_redshift_db'}), function (serviceData) {
+            var services = dfApplicationData.getApiData('service');
+            if (services !== undefined) {
+                services = services.filter(function (obj) {
+                    return ['mysql', 'pgsql', 'sqlite', 'sqlsrv', 'sqlanywhere', 'oracle', 'ibmdb2', 'firebird', 'aws_redshift_db'].indexOf(obj.type) >= 0;
+                });
+            }
+
+            angular.forEach(services, function (serviceData) {
 
                 $scope.__services__.push(serviceData);
             });
@@ -133,7 +140,13 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
         });
 
         $scope.$watchCollection(function () {
-            return dfApplicationData.getApiData('service', {type: 'mysql,pgsql,sqlite,sqlsrv,sqlanywhere,oracle,ibmdb2,firebird,aws_redshift_db'});
+            var services = dfApplicationData.getApiData('service');
+            if (services !== undefined) {
+                services = services.filter(function (obj) {
+                    return ['mysql', 'pgsql', 'sqlite', 'sqlsrv', 'sqlanywhere', 'oracle', 'ibmdb2', 'firebird', 'aws_redshift_db'].indexOf(obj.type) >= 0;
+                });
+            }
+            return services;
         }, function (newValue, oldValue) {
 
             if (!newValue) return;

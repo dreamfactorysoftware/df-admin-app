@@ -113,7 +113,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
         $scope.loadTabData = function() {
 
-            var apis = ['user/custom', 'system/service', 'system/service_type', 'system/environment', 'system/package', 'system/app'];
+            var apis = ['system', 'service', 'service_type', 'environment', 'package', 'app'];
 
             dfApplicationData.loadApiData(apis, true).then(
                 function (response) {
@@ -333,16 +333,16 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     scope.initVars();
 
-                    var env = scope.apiData['system/environment'];
+                    var env = scope.apiData['environment'];
                     scope.enablePassword = env['platform']['secured_package_export'];
 
-                    var _serviceTypes = scope.apiData['system/service_type'];
-                    var _services = scope.apiData['system/service'];
+                    var _serviceTypes = scope.apiData['service_type'];
+                    var _services = scope.apiData['service'];
 
                     // Build a unique list of service_types that covers all services in the manifest.
                     // This is what gets displayed in the Type menu. When you select a type it'll get
                     // all the services from the manifest with that type and put them in the Name menu.
-                    angular.forEach(scope.apiData['system/package']['service'], function (manifestValue, manifestKey) {
+                    angular.forEach(scope.apiData['package']['service'], function (manifestValue, manifestKey) {
 
                         // get the service whose name matches service from manifest
                         var _service = _services.filter(function (obj) {
@@ -522,7 +522,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                 scope.addAppFiles = function (appNames) {
 
-                    var retVal = false, apps = scope.apiData['system/app'];
+                    var retVal = false, apps = scope.apiData['app'];
                     var matches, services, serviceId, serviceName, container;
 
                     // for each app in list add storage service to tableData if
@@ -537,7 +537,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             serviceId = matches[0].storage_service_id;
                             container = matches[0].storage_container + '/';
                             // get storage service record
-                            services = scope.apiData['system/service'];
+                            services = scope.apiData['service'];
                             matches = services.filter(function (obj) {
                                 return obj.id === serviceId;
                             });
@@ -584,14 +584,14 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     switch (scope.selectedType.group) {
                         case 'System':
-                            values = scope.apiData['system/package']['service']['system'][newValue];
+                            values = scope.apiData['package']['service']['system'][newValue];
                             break;
                         case 'Database':
-                            values = scope.apiData['system/package']['service'][newValue]['_schema'];
+                            values = scope.apiData['package']['service'][newValue]['_schema'];
                             break;
                         case 'File':
                             // folders only
-                            values = scope.apiData['system/package']['service'][newValue].filter(function (obj) {
+                            values = scope.apiData['package']['service'][newValue].filter(function (obj) {
                                 return obj.indexOf('/') > 0;
                             });
                             break;
@@ -648,7 +648,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     if (_type === 'system') {
 
-                        angular.forEach(scope.apiData['system/package']['service']['system'], function (manifestValue, manifestKey) {
+                        angular.forEach(scope.apiData['package']['service']['system'], function (manifestValue, manifestKey) {
                             _names.push(manifestKey);
                         });
 
@@ -656,9 +656,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                         // find all services in manifest with matching service type
 
-                        _services = scope.apiData['system/service'];
+                        _services = scope.apiData['service'];
 
-                        angular.forEach(scope.apiData['system/package']['service'], function (manifestValue, manifestKey) {
+                        angular.forEach(scope.apiData['package']['service'], function (manifestValue, manifestKey) {
 
                             // get the service whose name matches service from manifest
                             _service = _services.filter(function (obj) {
@@ -727,8 +727,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                 scope.folderInit = function() {
 
-                    var _services = scope.apiData['system/service'];
-                    var _serviceTypes = scope.apiData['system/service_type'];
+                    var _services = scope.apiData['service'];
+                    var _serviceTypes = scope.apiData['service_type'];
 
                     var _fileTypes = _serviceTypes.filter(function( obj ) {
                         return obj.group === 'File';

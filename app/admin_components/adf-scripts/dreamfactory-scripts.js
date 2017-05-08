@@ -179,27 +179,29 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             // $scope.sampleScripts = new ScriptObj('sample-scripts', 'v8js', getSampleScripts.data);
 
             // All these vars pertain to building of events dynamically on the client
-            if(dfApplicationData.getApiData('event') === undefined) {
+            var data = dfApplicationData.getApiData('event');
+            if(data === undefined) {
                 // All these vars pertain to building of events dynamically on the client
-                dfApplicationData.getApiData('event', null, true).then(function (result) {
+                dfApplicationData.fetchFromApi('event').then(function (result) {
                     $scope.events = dfApplicationData.getApiData('event');
                     $scope.highlightScript();
                 });
             }
             else {
-                $scope.events = dfApplicationData.getApiData('event');
+                $scope.events = data;
                 $scope.highlightScript();
             }
 
 
-            if(dfApplicationData.getApiData('script_type') === undefined) {
+            var data = dfApplicationData.getApiData('script_type');
+            if (data === undefined) {
                 // These values are used to build the script type dropdown
-                dfApplicationData.getApiData('script_type', null, true).then(function (result) {
-                  $scope.scriptTypes = dfApplicationData.getApiData('script_type');
+                dfApplicationData.fetchFromApi('script_type').then(function (result) {
+                    $scope.scriptTypes = dfApplicationData.getApiData('script_type');
                 });
             }
             else {
-                $scope.scriptTypes = dfApplicationData.getApiData('script_type');
+                $scope.scriptTypes = data;
             }
 
             $scope.uppercaseVerbLabels = true;
