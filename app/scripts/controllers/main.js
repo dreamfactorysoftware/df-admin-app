@@ -216,7 +216,7 @@ angular.module('dreamfactoryApp')
                     break;
                 }
             }
-        }
+        };
 
 
         // WATCHERS
@@ -367,7 +367,7 @@ angular.module('dreamfactoryApp')
                 type: 'success',
                 provider: 'dreamfactory',
                 message: 'Password reset successful.'
-            }
+            };
 
             dfNotify.success(messageOptions);
 
@@ -521,7 +521,7 @@ angular.module('dreamfactoryApp')
 
             // redirect to the app home page
             $location.url('/launchpad');
-        })
+        });
 
         $scope.$on(UserEventsService.login.loginError, function (e) {
             e.stopPropagation();
@@ -577,7 +577,7 @@ angular.module('dreamfactoryApp')
                 type: 'success',
                 provider: 'dreamfactory',
                 message: 'Registration Confirmation successful.'
-            }
+            };
 
             dfNotify.success(messageOptions);
 
@@ -638,7 +638,7 @@ angular.module('dreamfactoryApp')
                 type: 'success',
                 provider: 'dreamfactory',
                 message: 'Password reset successful.'
-            }
+            };
 
             dfNotify.success(messageOptions);
 
@@ -739,7 +739,7 @@ angular.module('dreamfactoryApp')
                 type: 'success',
                 provider: 'dreamfactory',
                 message: 'User Confirmation successful.'
-            }
+            };
 
             dfNotify.success(messageOptions);
 

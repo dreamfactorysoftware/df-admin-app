@@ -3598,6 +3598,7 @@ angular.module('dfUtility', ['dfApplication'])
             link: function (scope, elem, attrs) {
 
                 scope.version = APP_VERSION;
+                scope.currentYear = new Date().getFullYear();
             }
         }
     }])
