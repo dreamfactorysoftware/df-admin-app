@@ -18,15 +18,15 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
         $httpProvider.interceptors.push('httpRequestInterceptor');
     })
 
-    .run(['$q', 'dfApplicationData', 'dfApplicationPrefs', 'dfSessionStorage', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', 'ngProgressFactory',
-        function ($q, dfApplicationData, dfApplicationPrefs, dfSessionStorage, UserDataService, SystemConfigDataService, $location, $rootScope, ngProgressFactory) {
+    .run(['$q', 'dfApplicationData', 'dfSessionStorage', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', 'ngProgressFactory',
+        function ($q, dfApplicationData, dfSessionStorage, UserDataService, SystemConfigDataService, $location, $rootScope, ngProgressFactory) {
 
         var SystemConfig;
         $rootScope.progressbar = ngProgressFactory.createInstance();
-        $rootScope.progressbar.setHeight('4px');
-        $rootScope.progressbar.setColor('#b63d2a');
+        //$rootScope.progressbar.setHeight('4px');
+        //$rootScope.progressbar.setColor('#b63d2a');
 
-        dfApplicationData.loadApiData(['system/environment'], true).then(
+        dfApplicationData.loadApiData(['environment'], true).then(
             function (response) {
                 SystemConfig = response[0];
                 SystemConfigDataService.setSystemConfig(SystemConfig);
@@ -125,7 +125,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
         });
     }])
 
-    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
+    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfUserPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfUserPrefs, $rootScope, $location, dfMainLoading) {
 
 
         var dfApplicationObj = {

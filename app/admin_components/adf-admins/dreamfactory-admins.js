@@ -343,7 +343,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             scope.admin = new Admin(result);
 
-                            if (dfApplicationData.getUserPrefs().settings.sections.admin.autoClose) {
+                            if (dfApplicationData.getUserPrefs().sections.admin.autoClose) {
 
                                 scope.closeAdmin();
                             }
@@ -711,7 +711,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 // accesses import admins parent scope.  It's not as bad as it sounds
                 scope.uploadFile = null;
 
-                scope.currentViewMode = dfApplicationData.getUserPrefs().settings.sections.admin.manageViewMode;
+                scope.currentViewMode = dfApplicationData.getUserPrefs().sections.admin.manageViewMode;
 
                 scope.admins = null;
 
