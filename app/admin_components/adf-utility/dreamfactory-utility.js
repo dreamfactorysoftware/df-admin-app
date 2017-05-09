@@ -2169,14 +2169,10 @@ angular.module('dfUtility', ['dfApplication'])
             templateUrl : MOD_UTILITY_ASSET_PATH + 'views/df-toolbar-paginate.html',
             link: function (scope, elem, attrs) {
 
-                scope.totalCount = 0;
+                scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
                 scope.pagesArr = [];
                 scope.currentPage = {};
                 scope.isInProgress = false;
-
-                if (dfApplicationData.systemDataExists(scope.api)) {
-                    scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
-                }
 
                 // PUBLIC API
                 scope.getPrevious = function () {
@@ -2526,7 +2522,7 @@ angular.module('dfUtility', ['dfApplication'])
                         recalcPagination = false;
 
                     // Are we on the last page and was the last record deleted
-                    if (scope._isLastPage() && !dfApplicationData.getApiData(scope.api).length) {
+                    if (scope._isLastPage() && !dfApplicationData.getApiDataFromCache(scope.api).length) {
 
                         // set var so we know to recalc our pagination
                         recalcPagination = true;
@@ -2607,14 +2603,10 @@ angular.module('dfUtility', ['dfApplication'])
 
             link: function (scope, elem, attrs) {
 
-                scope.totalCount = 0;
+                scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
                 scope.pagesArr = [];
                 scope.currentPage = {};
                 scope.isInProgress = false;
-
-                if (dfApplicationData.systemDataExists(scope.api)) {
-                    scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
-                }
 
                 // PUBLIC API
                 scope.getPreviousTbl = function () {
@@ -2983,7 +2975,7 @@ angular.module('dfUtility', ['dfApplication'])
                         recalcPagination = false;
 
                     // Are we on the last page and was the last record deleted
-                    if (scope._isLastPage() && !dfApplicationData.getApiData(scope.api).length) {
+                    if (scope._isLastPage() && !dfApplicationData.getApiDataFromCache(scope.api).length) {
 
                         // set var so we know to recalc our pagination
                         recalcPagination = true;

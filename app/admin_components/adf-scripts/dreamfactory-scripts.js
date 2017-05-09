@@ -29,14 +29,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     templateUrl: MODSCRIPTING_ASSET_PATH + 'views/main.html',
                     controller: 'ScriptsCtrl',
                     resolve: {
-                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
                         checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -83,7 +75,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.$parent.title = 'Scripts';
             $scope.sampleSelect = null;
 
-            dfApplicationData.loadApi(['event', 'script_type']);
+            dfApplicationData.getApiData(['event', 'script_type']);
 
             $scope.serviceTypeConfig = 'scripts';
 
@@ -179,11 +171,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             // $scope.sampleScripts = new ScriptObj('sample-scripts', 'v8js', getSampleScripts.data);
 
             // All these vars pertain to building of events dynamically on the client
-            var data = dfApplicationData.getApiData('event');
+            var data = dfApplicationData.getApiDataFromCache('event');
             if(data === undefined) {
                 // All these vars pertain to building of events dynamically on the client
                 dfApplicationData.fetchFromApi('event').then(function (result) {
-                    $scope.events = dfApplicationData.getApiData('event');
+                    $scope.events = dfApplicationData.getApiDataFromCache('event');
                     $scope.highlightScript();
                 });
             }
@@ -193,11 +185,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             }
 
 
-            var data = dfApplicationData.getApiData('script_type');
+            var data = dfApplicationData.getApiDataFromCache('script_type');
             if (data === undefined) {
                 // These values are used to build the script type dropdown
                 dfApplicationData.fetchFromApi('script_type').then(function (result) {
-                    $scope.scriptTypes = dfApplicationData.getApiData('script_type');
+                    $scope.scriptTypes = dfApplicationData.getApiDataFromCache('script_type');
                 });
             }
             else {

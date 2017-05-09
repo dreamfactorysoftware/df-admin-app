@@ -407,24 +407,20 @@ angular.module('dreamfactoryApp')
                 $timeout(function () {
 
                     // Init the app
-                    dfApplicationData.init().then(
-                        function () {
-                            // Change our app location back to the home page
-                            if(queryString){
-                                // if logging in using oauth then do a full reload
-                                // is needed to remove oauth related info from url.
-                                var uri = $location.absUrl().split('?');
-                                $window.location.href = uri[0]+'#/home';
-                            } else {
-                                if ('user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
-                                    $location.url('/profile');
-                                } else {
-                                    $location.url('/home');
-                                }
-                            }
+                    dfApplicationData.init();
+                    // Change our app location back to the home page
+                    if (queryString) {
+                        // if logging in using oauth then do a full reload
+                        // is needed to remove oauth related info from url.
+                        var uri = $location.absUrl().split('?');
+                        $window.location.href = uri[0] + '#/home';
+                    } else {
+                        if ('user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
+                            $location.url('/profile');
+                        } else {
+                            $location.url('/home');
                         }
-                    );
-
+                    }
                 }, 250);
             }
 
@@ -657,17 +653,14 @@ angular.module('dreamfactoryApp')
                 $timeout(function () {
 
                     // Init the app
-                    dfApplicationData.init().then(
-                        function () {
+                    dfApplicationData.init();
 
-                            // Change our app location back to the home page
-                            if ('user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
-                                $location.url('/profile');
-                            } else {
-                                $location.url('/home');
-                            }
-                        }
-                    );
+                    // Change our app location back to the home page
+                    if ('user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
+                        $location.url('/profile');
+                    } else {
+                        $location.url('/home');
+                    }
 
                 }, 250);
             }

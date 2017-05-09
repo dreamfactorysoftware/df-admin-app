@@ -21,116 +21,61 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
     .run(['$q', 'dfApplicationData', 'dfSessionStorage', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', 'ngProgressFactory',
         function ($q, dfApplicationData, dfSessionStorage, UserDataService, SystemConfigDataService, $location, $rootScope, ngProgressFactory) {
 
-        var SystemConfig;
-        //TODO:Add progress bar later on once stabilized.
-        //$rootScope.progressbar = ngProgressFactory.createInstance();
+            //TODO:Add progress bar later on once stabilized.
+            //$rootScope.progressbar = ngProgressFactory.createInstance();
 
-        dfApplicationData.loadApiData(['environment'], true).then(
-            function (response) {
-                SystemConfig = response[0];
-                SystemConfigDataService.setSystemConfig(SystemConfig);
-                // if no local dfApplicationObject and there is a current user
-                // **possibly a closed tab without loggin out**
-                if (!dfSessionStorage.getItem('dfApplicationObj') && UserDataService.getCurrentUser()) {
+            // Get the System Config synchronously because we are dead in the water without it
+            var SystemConfig = SystemConfigDataService.getSystemConfigFromServerSync();
 
-                    // Set init var true so other modules can check state
-                    dfApplicationData.initInProgress = true;
+            SystemConfigDataService.setSystemConfig(SystemConfig);
 
-                    // Set a rootScope init var.  The httpValidSession service looks for this to
-                    // determine if it should show the popup login on api call failure
-                    $rootScope.initInProgress = true;
+            var appObj = dfSessionStorage.getItem('dfApplicationObj');
+            var userObj = UserDataService.getCurrentUser();
 
-                    // Set a promise object so that any modules loading can be alerted to
-                    // the init completion
-                    dfApplicationData.initDeferred = $q.defer();
+            // if no local dfApplicationObject and there is a current user
+            // **possibly a closed tab without logging out**
+            if (!appObj && userObj) {
 
-                    dfApplicationData.init().then(
-                        // Success
-                        function () {
+                dfApplicationData.init();
+            }
 
-                            // Resolve the init promise which will allow modules waiting on the init processs
-                            // to finish loading.  You will find this resolution in the resolve function
-                            // of component modules(like dfApps, dfUsers, dfRoles, etc etc)
-                            dfApplicationData.initDeferred.resolve();
+            // if we have a dfApplicationObj and a current user
+            // ** browser refresh **
+            if (appObj && userObj) {
 
-                            // Set our init flag to false
-                            dfApplicationData.initInProgress = false;
-                        },
-                        // Error
-                        function () {
+                dfApplicationData.init();
+            }
 
-                            dfApplicationData.initInProgress = false;
-                            $location.url('/logout');
-                        }
-                    )
-                }
+            // No local dfApplicationObj and no current user
+            if (!appObj && !userObj) {
 
-                // if we have a dfApplicationObj and a current user
-                // ** browser refresh **
-                else if (dfSessionStorage.getItem('dfApplicationObj') && UserDataService.getCurrentUser()) {
+                // Destroy any existing dfApplicationObj that may be in memory
+                dfApplicationData.destroyApplicationObj();
 
+                // redirect to login
+                // the application routing will take care of this automatically
 
-                    // same init process as above.
-                    dfApplicationData.initInProgress = true;
-                    $rootScope.initInProgress = true;
-                    dfApplicationData.initDeferred = $q.defer();
+            }
+            if (appObj && !userObj) {
 
-                    // reload app data
-                    dfApplicationData.init().then(
-                        function () {
-                            dfApplicationData.initDeferred.resolve();
-                            dfApplicationData.initInProgress = false;
-                        },
-                        function () {
-                            dfApplicationData.initInProgress = false;
-                            $location.url('/logout');
-                            return;
-                        }
-                    )
-                }
+                // Something went wrong.  App obj should not be present
+                // This should be ammedned to accept guest users as a possibility
+                dfSessionStorage.removeItem('dfApplicationObj');
 
-                // No local dfApplicationObj and no current user
-                else if (!dfSessionStorage.getItem('dfApplicationObj') && !UserDataService.getCurrentUser()) {
+                // Delete the dfApplicationObj if it is in memory
+                dfApplicationData.destroyApplicationObj();
 
-                    // Destroy any existing dfApplicationObj that may be in memory
-                    dfApplicationData.destroyApplicationObj();
-
-                    // redirect to login
-                    // the application routing will take care of this automatically
-
-                }
-                else if (dfSessionStorage.getItem('dfApplicationObj') && !UserDataService.getCurrentUser()) {
-
-                    // Something went wrong.  App obj should not be present
-                    // This should be ammedned to accept guest users as a possibility
-                    dfSessionStorage.removeItem('dfApplicationObj');
-
-                    // Delete the dfApplicationObj if it is in memory
-                    dfApplicationData.destroyApplicationObj();
-
-                    // send to login
-                    $location.url('/login');
-                }
-                else {
-
-                    // Sample Caching Mode
-                    // used for development so we don't have to contact the sever
-                    // everytime we make a CSS change.  Commented out as nothing should ever reach here.
-                    // screen was refreshed.  reload app obj from session storage
-                    // dfApplicationData.setApplicationObj(angular.fromJson(dfSessionStorage.getItem('dfApplicationObj')));
-                    alert('dfAplicationData: INIT: This should not be reached')
-                }
-
-        });
-    }])
+                // send to login
+                $location.url('/login');
+            }
+        }])
 
     .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfUserPrefs', '$rootScope', '$location', 'dfMainLoading', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfUserPrefs, $rootScope, $location, dfMainLoading) {
 
 
         var dfApplicationObj = {
             currentUser: null,
-            apis: {},
-            newApis: {}
+            apis: {}
         };
 
         var dfMainLoadData = {
@@ -162,55 +107,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
             });
         }
 
-        function _fetchFromApi(apiName) {
-
-            var params = _getApiPrefs().data[apiName];
-
-            if (!params) {
-                params = {};
-            }
-
-            params['api'] = (apiName === 'system' ? '' : apiName);
-
-            return dfSystemData.resource().get(params).$promise.then(
-
-                function (result) {
-
-                    console.log('_fetchFromApi(' + apiName + ')', result);
-                    switch (apiName) {
-
-                        case 'system':
-
-                            // Set our application object system prop
-                            dfApplicationObj['apis']['system'] = {};
-                            dfApplicationObj.apis.system['resource'] = result.resource;
-
-                            break;
-
-                        case 'config':
-
-                            // Set our application object config prop
-                            dfApplicationObj['apis']['config'] = {};
-
-                            // This returns an object so store in an array to mimick other apis
-                            dfApplicationObj.apis.config['resource'] = new Array(result.data);
-
-                            break;
-
-                        default:
-
-                            dfApplicationObj['apis'][apiName] = result.resource;
-                    }
-
-                    // Set the loading screen
-                    // dfMainLoading.update(apiName);
-                    $rootScope.$broadcast(apiName);
-                },
-                $q.reject
-            );
-        }
-
-        function _loadApiData(apis, forceRefresh) {
+        function _getApiData(apis, forceRefresh) {
             var deferred = $q.defer();
 
             var promises = apis.map(function(api) {
@@ -231,23 +128,30 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
 
         function _loadOne(api, forceRefresh) {
 
+            var params;
             var debugLevel = 1;
             var deferred = $q.defer();
 
-            if (forceRefresh !== true && dfApplicationObj.newApis.hasOwnProperty(api)) {
-                if (debugLevel >= 1) console.log('_loadOne(' + api + '): from cache', dfApplicationObj.newApis[api]);
+            if (forceRefresh !== true && dfApplicationObj.apis.hasOwnProperty(api)) {
+                if (debugLevel >= 1) console.log('_loadOne(' + api + '): from cache', dfApplicationObj.apis[api]);
                 if (debugLevel >= 2) console.log('_loadOne(' + api + '): dfApplicationObj', dfApplicationObj);
-                deferred.resolve(dfApplicationObj.newApis[api]);
+                deferred.resolve(dfApplicationObj.apis[api]);
             } else {
-                var params = {};
+                // get default params, all tabs share this data so params must stay consistent
+                params = _getApiPrefs().data[api];
+                if (!params) {
+                    params = {};
+                }
+                // add required api param used by resource to build url
                 params['api'] = (api === 'system' ? '' : api);
                 dfSystemData.resource().get(params).$promise.then(
                     function (response) {
-                        dfApplicationObj.newApis[api] = response.resource ? response.resource : response;
-                        if (debugLevel >= 1) console.log('_loadOne(' + api + '): ok from server', dfApplicationObj.newApis[api]);
+                        dfApplicationObj.apis[api] = response.resource ? response.resource : response;
+                        if (debugLevel >= 1) console.log('_loadOne(' + api + '): ok from server', dfApplicationObj.apis[api]);
                         if (debugLevel >= 2) console.log('_loadOne(' + api + '): dfApplicationObj', dfApplicationObj);
                         dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
-                        deferred.resolve(dfApplicationObj.newApis[api]);
+                        deferred.resolve(dfApplicationObj.apis[api]);
+                        $rootScope.$broadcast(api);
                     }, function (error) {
                         if (debugLevel >= 1) console.log('_loadOne(' + api + '): error from server', error);
                         if (debugLevel >= 2) console.log('_loadOne(' + api + '): dfApplicationObj', dfApplicationObj);
@@ -258,53 +162,12 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
             return deferred.promise;
         }
 
-        // Loads modules data and builds application object from async calls
-        function _asyncInit(apis) {
-
-            var defer = $q.defer();
-
-            // Load our current user into the application obj
-            dfApplicationObj.currentUser = UserDataService.getCurrentUser();
-
-            // Are we an admin
-            if (dfApplicationObj.currentUser.is_sys_admin) {
-
-                _getUserPrefs();
-
-                var promises = apis.map(_fetchFromApi);
-
-                $q.all(promises).then(
-                    function () {
-
-                        // Set our bootstrapped application object into sessionStorage
-                        dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
-
-                        defer.resolve();
-
-                        // Init was successful.  The popup login will check for this value to be false before
-                        // showing.  Init is in progress it will allow this module to handle login/logout and user location
-                        $rootScope.initInProgress = false;
-                    },
-                    defer.reject
-                );
-
-
-                //return defer.promise;
-            } else {
-                // current user is not admin so just call resolve for defer
-                defer.resolve();
-            }
-
-            return defer.promise;
-        }
-
         // Resets the dfApplicationObj to initial state
         function _resetApplicationObj() {
 
             dfApplicationObj = {
                 currentUser: null,
-                apis: {},
-                newApis: {}
+                apis: {}
             };
         }
 
@@ -686,42 +549,17 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
             return $location.path();
         }
 
-        function _systemDataExists(apiName) {
-
-            var appObj = dfApplicationObj;
-
-            if (appObj.hasOwnProperty('apis')) {
-                if (appObj['apis'].hasOwnProperty(apiName)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        function _loadApi(apis) {
-
-            var newApis = [];
-            angular.forEach(apis, function(value) {
-                if (_systemDataExists(value) === false) {
-                    newApis.push(value);
-                }
-            });
-
-            if (newApis.length > 0) {
-                _asyncInit(newApis);
-            }
-        }
-
-
         return {
-
-            initInProgress: false,
-            initDeferred: null,
 
             // Public function to init the app
             init: function () {
 
-                return _asyncInit([]);
+                dfApplicationObj.currentUser = UserDataService.getCurrentUser();
+
+                // Are we an admin
+                if (dfApplicationObj.currentUser.is_sys_admin) {
+                    _getUserPrefs();
+                }
             },
 
             // Returns app obj that is stored in the service
@@ -777,7 +615,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
             },
 
             // get api data by name
-            getApiData: function (api) {
+            getApiDataFromCache: function (api) {
 
                 // temporary for backwards compatibility
                 var result = undefined;
@@ -793,7 +631,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                         result = dfApplicationObj.apis[api];
                     }
                 }
-                console.log('getApiData(' + api + ')', result);
+                console.log('getApiDataFromCache(' + api + ')', result);
                 return result;
             },
 
@@ -875,7 +713,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
 
             getServiceComponents: function (serviceName, url, params, forceRefresh) {
                 var deferred = $q.defer();
-                var service = this.getApiData('service');
+                var service = this.getApiDataFromCache('service');
                 if (service !== undefined) {
                     service = service.filter(function(obj) {
                         return obj.name === serviceName;
@@ -896,7 +734,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
             },
 
             updateServiceComponentsLocal: function (service) {
-                var dfServiceData = this.getApiData('service');
+                var dfServiceData = this.getApiDataFromCache('service');
                 if (dfServiceData !== undefined) {
                     dfServiceData = dfServiceData.filter(function(obj) {
                         return obj.name === service.name;
@@ -905,20 +743,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 dfServiceData.components = service.components;
             },
 
-            fetchFromApi: function(apiName) {
-                return _fetchFromApi(apiName);
-            },
-
-            systemDataExists: function(apiName) {
-                return _systemDataExists(apiName);
-            },
-
-            loadApi: function(apis) {
-                return _loadApi(apis);
-            },
-
-            loadApiData: function(apis, forceRefresh) {
-                return _loadApiData(apis, forceRefresh);
+            getApiData: function(apis, forceRefresh) {
+                return _getApiData(apis, forceRefresh);
             }
 
         }
@@ -1201,7 +1027,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                         if (reject.status !== 401) break;
                         if (reject.config.ignore401) break;
 
-                        if ((reject.status === 401 || reject.data.error.code === 401)  && reject.config.url.indexOf('/session') === -1 && $rootScope.initInProgress === false) {
+                        if ((reject.status === 401 || reject.data.error.code === 401)  && reject.config.url.indexOf('/session') === -1) {
                             if (reject.data.error.message === 'Token has expired' || reject.config.url.indexOf('/profile') !== -1) {
                                 //  put session
                                 return putSession(reject);

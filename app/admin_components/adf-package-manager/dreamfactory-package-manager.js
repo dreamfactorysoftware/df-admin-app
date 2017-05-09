@@ -8,13 +8,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     templateUrl: MOD_PACKAGE_MANAGER_ASSET_PATH + 'views/main.html',
                     controller: 'PackageCtrl',
                     resolve: {
-                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
                         checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -113,9 +106,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
         $scope.loadTabData = function() {
 
-            var apis = ['system', 'service', 'service_type', 'environment', 'package', 'app'];
+            var apis = ['service', 'service_type', 'environment', 'package', 'app'];
 
-            dfApplicationData.loadApiData(apis, true).then(
+            dfApplicationData.getApiData(apis, true).then(
                 function (response) {
                     var newApiData = {};
                     apis.forEach(function(value, index) {

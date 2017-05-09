@@ -29,7 +29,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         if (cookie) {
 
             // There is so store it for a sec
-            UserDataService.setCurrentUser($cookieStore.get('CurrentUserObj'));
+            UserDataService.setCurrentUser(cookie);
 
             $http.defaults.headers.common['X-DreamFactory-Session-Token'] = cookie.session_id;
 

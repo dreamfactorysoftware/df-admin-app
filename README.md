@@ -110,15 +110,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     templateUrl: MOD_APPS_ASSET_PATH + 'views/main.html',
                     controller: 'AppsCtrl',
                     resolve: {
-                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
-                            // is the app in init
-                            if (dfApplicationData.initInProgress) {
-                            
-                                // don't load controller until it is finished
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
                         checkCurrentUser: ['UserDataService', '$location', function (UserDataService, $location) {
 
                             var currentUser = UserDataService.getCurrentUser();

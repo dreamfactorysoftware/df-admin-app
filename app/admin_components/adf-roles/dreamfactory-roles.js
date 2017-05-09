@@ -11,14 +11,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     templateUrl: MOD_ROLES_ASSET_PATH + 'views/main.html',
                     controller: 'RolesCtrl',
                     resolve: {
-                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
                         checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -83,7 +75,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
         ];
 
-        $scope.loading = dfApplicationData.loadApi(['role', 'service']);
+        $scope.loading = dfApplicationData.getApiData(['role', 'service']);
 
         $scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
 
@@ -460,7 +452,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 var watchService = scope.$watch('services', function (newValue, oldValue) {
                     if (newValue === null) {
 
-                        scope.services = dfApplicationData.getApiData('service');
+                        scope.services = dfApplicationData.getApiDataFromCache('service');
 
                         if (scope.services[0].name !== 'All') {
                             scope.services.unshift({id: null, name: 'All', components: ["", "*"]});
@@ -470,12 +462,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 });
 
                 var watchServiceData = scope.$watchCollection(function () {
-                    return dfApplicationData.getApiData('service');
+                    return dfApplicationData.getApiDataFromCache('service');
                 }, function (newValue, oldValue) {
 
                     if (!newValue) return;
 
-                    scope.services = dfApplicationData.getApiData('service');
+                    scope.services = dfApplicationData.getApiDataFromCache('service');
 
                     if (scope.services[0].name !== 'All') {
                         scope.services.unshift({id: null, name: 'All', components: ["", "*"]});
@@ -1185,7 +1177,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         var _roles = [];
 
-                        angular.forEach(dfApplicationData.getApiData('role'), function (role) {
+                        angular.forEach(dfApplicationData.getApiDataFromCache('role'), function (role) {
                             if (typeof role !== 'function') {
                                 _roles.push(new ManagedRole(role));
                             }
@@ -1209,13 +1201,13 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 
                 var watchApiData = scope.$watchCollection(function () {
 
-                    return dfApplicationData.getApiData('role');
+                    return dfApplicationData.getApiDataFromCache('role');
 
                 }, function (newValue, oldValue) {
 
                     var _roles = [];
 
-                    angular.forEach(dfApplicationData.getApiData('role'), function (role) {
+                    angular.forEach(dfApplicationData.getApiDataFromCache('role'), function (role) {
 
                         _roles.push(new ManagedRole(role));
                     });
@@ -1231,7 +1223,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     var _roles = [];
 
-                    angular.forEach(dfApplicationData.getApiData('role'), function (role) {
+                    angular.forEach(dfApplicationData.getApiDataFromCache('role'), function (role) {
 
 
                         var _role = new ManagedRole(role);

@@ -13,14 +13,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     templateUrl: MOD_APPS_ASSET_PATH + 'views/main.html',
                     controller: 'AppsCtrl',
                     resolve: {
-                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
                         checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -72,7 +64,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
         $rootScope.isRouteLoading = true;
 
-        dfApplicationData.loadApi(['role', 'service', 'app']);
+        dfApplicationData.getApiData(['role', 'service', 'app']);
 
         // Set module links
         $scope.links = [
@@ -121,7 +113,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                 var getLocalFileStorageServiceId = function () {
 
-                    var a = dfApplicationData.getApiData('service');
+                    var a = dfApplicationData.getApiDataFromCache('service');
                     if (a !== undefined) {
                         a = a.filter(function(obj) {
                             return obj.type === 'local_file';
@@ -181,9 +173,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 ];
 
                 // Other data
-                scope.roles = dfApplicationData.getApiData('role');
+                scope.roles = dfApplicationData.getApiDataFromCache('role');
                 scope.selectedRoleId = null;
-                scope.storageServices = dfApplicationData.getApiData('service');
+                scope.storageServices = dfApplicationData.getApiDataFromCache('service');
                 if (scope.storageServices !== undefined) {
                     scope.storageServices = scope.storageServices.filter(function (obj) {
                         return ['local_file', 'aws_s3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage'].indexOf(obj.type) >= 0;
@@ -496,12 +488,12 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                 $rootScope.$on("role", function  (){
 
-                    scope.roles = dfApplicationData.getApiData('role');
+                    scope.roles = dfApplicationData.getApiDataFromCache('role');
                 });
 
                 $rootScope.$on("service", function () {
 
-                    scope.storageServices = dfApplicationData.getApiData('service');
+                    scope.storageServices = dfApplicationData.getApiDataFromCache('service');
                     if (scope.storageServices !== undefined) {
                         scope.storageServices = scope.storageServices.filter(function (obj) {
                             return ['local_file', 'aws_s3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage'].indexOf(obj.type) >= 0;
@@ -833,7 +825,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                         var _app = [];
 
-                        angular.forEach(dfApplicationData.getApiData('app'), function (app) {
+                        angular.forEach(dfApplicationData.getApiDataFromCache('app'), function (app) {
 
                             if (!app.hasOwnProperty('roles') && (app.hasOwnProperty('import_url') && app.import_url != null)) {
                                 app.roles = [];
@@ -858,13 +850,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                 var watchApiData = scope.$watchCollection(function () {
 
-                    return dfApplicationData.getApiData('app');
+                    return dfApplicationData.getApiDataFromCache('app');
 
                 }, function (newValue, oldValue) {
 
                     var _app = [];
 
-                    angular.forEach(dfApplicationData.getApiData('app'), function (app) {
+                    angular.forEach(dfApplicationData.getApiDataFromCache('app'), function (app) {
                         if (typeof app !== 'function') {
                             _app.push(new ManagedApp(app));
                         }
@@ -882,7 +874,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     var _apps = [];
 
-                    angular.forEach(dfApplicationData.getApiData('app'), function (app) {
+                    angular.forEach(dfApplicationData.getApiDataFromCache('app'), function (app) {
 
 
                         var _app = new ManagedApp(app);
@@ -938,7 +930,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
             templateUrl: MOD_APPS_ASSET_PATH + 'views/df-import-app.html',
             link: function (scope, elem, attrs) {
                 
-                scope.services = dfApplicationData.getApiData('service');
+                scope.services = dfApplicationData.getApiDataFromCache('service');
                 if (scope.services !== undefined) {
                     scope.services = scope.services.filter(function (obj) {
                         return ['local_file', 'aws_s3', 'azure_blob'].indexOf(obj.type) >= 0;

@@ -11,13 +11,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     templateUrl: MOD_SERVICES_ASSET_PATH + 'views/main.html',
                     controller: 'ServicesCtrl',
                     resolve: {
-                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
                         checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -109,7 +102,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
         $scope.$parent.title = 'Services';
 
-        dfApplicationData.loadApi(['service']);
+        dfApplicationData.getApiData(['service']);
 
         // Set module links
         $scope.links = [
@@ -2530,7 +2523,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         var _services = [];
 
-                        angular.forEach(scope._filterServices(dfApplicationData.getApiData('service')), function (service) {
+                        angular.forEach(scope._filterServices(dfApplicationData.getApiDataFromCache('service')), function (service) {
                             if (typeof service !== 'function') {
                                 _services.push(new ManagedService(service));
                             }
@@ -2543,13 +2536,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 
                 var watchApiData = scope.$watchCollection(function () {
 
-                    return dfApplicationData.getApiData('service');
+                    return dfApplicationData.getApiDataFromCache('service');
 
                 }, function (newValue, oldValue) {
 
                     var _services = [];
 
-                    angular.forEach(scope._filterServices(dfApplicationData.getApiData('service')), function (service) {
+                    angular.forEach(scope._filterServices(dfApplicationData.getApiDataFromCache('service')), function (service) {
 
                         _services.push(new ManagedService(service));
                     });
@@ -2565,7 +2558,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     var _services = [];
 
-                    angular.forEach(scope._filterServices(dfApplicationData.getApiData('service')), function (service) {
+                    angular.forEach(scope._filterServices(dfApplicationData.getApiDataFromCache('service')), function (service) {
 
 
                         var _service = new ManagedService(service);

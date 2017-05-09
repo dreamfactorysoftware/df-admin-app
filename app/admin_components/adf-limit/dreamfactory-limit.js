@@ -12,14 +12,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     templateUrl: MOD_LIMIT_ASSET_PATH + 'views/main.html',
                     controller: 'LimitCtl',
                     resolve: {
-                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
                         checkCurrentLimit: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -108,7 +100,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         $scope.$parent.title = 'Limits';
         $rootScope.isRouteLoading = true;
 
-        dfApplicationData.loadApi(['system', 'limit', 'role', 'service', 'user', 'limit_cache']);
+        dfApplicationData.getApiData(['system', 'limit', 'role', 'service', 'user', 'limit_cache']);
 
         // Set module links
         $scope.links = [
@@ -730,7 +722,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                         var _limits = [];
 
-                        var limits = dfApplicationData.getApiData('limit');
+                        var limits = dfApplicationData.getApiDataFromCache('limit');
                         angular.forEach(limits, function (limit) {
                             _limits.push(new ManagedLimit(limit));
                         });
@@ -751,7 +743,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 var watchApiData = scope.$watchCollection(function () {
 
-                    var limits =  dfApplicationData.getApiData('limit');
+                    var limits =  dfApplicationData.getApiDataFromCache('limit');
                     if(angular.isDefined(limits) && limits.length === 0){
                         scope.emptySectionOptions.active = true;
                     }
@@ -762,7 +754,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     var _limits = [];
 
-                    var limitData = dfApplicationData.getApiData('limit');
+                    var limitData = dfApplicationData.getApiDataFromCache('limit');
 
                     angular.forEach(limitData, function (limit) {
                         _limits.push(new ManagedLimit(limit));
@@ -788,7 +780,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 scope.$on('toolbar:paginate:limit:update', function (e) {
 
                     var _limits = [];
-                    var limits = dfApplicationData.getApiData('limit');
+                    var limits = dfApplicationData.getApiDataFromCache('limit');
 
 
                     angular.forEach(limits, function (limit) {
@@ -829,21 +821,21 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 $rootScope.$on("app", function  (){
 
-                    scope.apps = dfApplicationData.getApiData('app');
+                    scope.apps = dfApplicationData.getApiDataFromCache('app');
                 });
 
                 $rootScope.$on("user", function  (){
 
-                    scope.users = dfApplicationData.getApiData('user');
+                    scope.users = dfApplicationData.getApiDataFromCache('user');
                 });
 
                 $rootScope.$on("role", function  (){
 
-                    scope.roles = dfApplicationData.getApiData('role');
+                    scope.roles = dfApplicationData.getApiDataFromCache('role');
                 });
                 $rootScope.$on("service", function  (){
 
-                    scope.services = dfApplicationData.getApiData('service');
+                    scope.services = dfApplicationData.getApiDataFromCache('service');
                 });
 
                 $rootScope.$on("limit", function  (){
@@ -852,14 +844,14 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 $rootScope.$on("limit_cache", function  (){
 
-                    scope.limitCache = dfApplicationData.getApiData('limit_cache');
+                    scope.limitCache = dfApplicationData.getApiDataFromCache('limit_cache');
                     updateLimitCacheData.mergeCacheData(scope.limits, scope.limitCache);
 
 
                 });
 
                 scope.$on("system", function  () {
-                    scope.system = dfApplicationData.getApiData('system');
+                    scope.system = dfApplicationData.getApiDataFromCache('system');
                     scope._determineLimitsStatus(scope.system)
                 });
 
@@ -943,10 +935,10 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                   scope.currentEditLimit = new Limit();
                 }
 
-                scope.apps = dfApplicationData.getApiData('app');
-                scope.services = dfApplicationData.getApiData('service');
-                scope.roles = dfApplicationData.getApiData('role');
-                scope.users = dfApplicationData.getApiData('user');
+                scope.apps = dfApplicationData.getApiDataFromCache('app');
+                scope.services = dfApplicationData.getApiDataFromCache('service');
+                scope.roles = dfApplicationData.getApiDataFromCache('role');
+                scope.users = dfApplicationData.getApiDataFromCache('user');
 
                 scope.verbs = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'];
 
@@ -1300,27 +1292,27 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 $rootScope.$on("app", function  (){
 
-                    scope.apps = dfApplicationData.getApiData('app');
+                    scope.apps = dfApplicationData.getApiDataFromCache('app');
                 });
 
                 $rootScope.$on("user", function  (){
 
-                    scope.users = dfApplicationData.getApiData('user');
+                    scope.users = dfApplicationData.getApiDataFromCache('user');
                 });
 
                 $rootScope.$on("role", function  (){
 
-                    scope.roles = dfApplicationData.getApiData('role');
+                    scope.roles = dfApplicationData.getApiDataFromCache('role');
                 });
 
                 $rootScope.$on("limit_cache", function  (){
 
-                    scope.limitCache = dfApplicationData.getApiData('limit_cache');
+                    scope.limitCache = dfApplicationData.getApiDataFromCache('limit_cache');
                 });
 
                 $rootScope.$on("service", function  () {
 
-                    scope.services = dfApplicationData.getApiData('service');
+                    scope.services = dfApplicationData.getApiDataFromCache('service');
 
                 });
 

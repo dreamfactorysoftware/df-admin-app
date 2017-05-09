@@ -30,14 +30,6 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
                     templateUrl: MOD_DATA_ASSET_PATH + 'views/main.html',
                     controller: 'DataCtrl',
                     resolve: {
-                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
                         checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -82,7 +74,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
         $scope.$parent.title = 'Data';
 
-        dfApplicationData.loadApi(['service']);
+        dfApplicationData.getApiData(['service']);
 
         // Set module links
         $scope.links = [
@@ -113,7 +105,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
         $scope.init = function() {
 
-            var services = dfApplicationData.getApiData('service');
+            var services = dfApplicationData.getApiDataFromCache('service');
             if (services !== undefined) {
                 services = services.filter(function (obj) {
                     return ['mysql', 'pgsql', 'sqlite', 'sqlsrv', 'sqlanywhere', 'oracle', 'ibmdb2', 'firebird', 'aws_redshift_db'].indexOf(obj.type) >= 0;
@@ -140,7 +132,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
         });
 
         $scope.$watchCollection(function () {
-            var services = dfApplicationData.getApiData('service');
+            var services = dfApplicationData.getApiDataFromCache('service');
             if (services !== undefined) {
                 services = services.filter(function (obj) {
                     return ['mysql', 'pgsql', 'sqlite', 'sqlsrv', 'sqlanywhere', 'oracle', 'ibmdb2', 'firebird', 'aws_redshift_db'].indexOf(obj.type) >= 0;

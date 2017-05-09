@@ -11,13 +11,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     templateUrl: MOD_USER_ASSET_PATH + 'views/main.html',
                     controller: 'UsersCtrl',
                     resolve: {
-                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
                         checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -68,7 +61,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
             $rootScope.isRouteLoading = true;
 
-            dfApplicationData.loadApi(['user', 'role', 'app']);
+            dfApplicationData.getApiData(['user', 'role', 'app']);
 
             // Set module links
             $scope.links = [
@@ -146,8 +139,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.loginAttribute = SystemConfigDataService.getSystemConfig().authentication.login_attribute;
                 scope.user = null;
-                scope.roles = dfApplicationData.getApiData('role');
-                scope.apps = dfApplicationData.getApiData('app');
+                scope.roles = dfApplicationData.getApiDataFromCache('role');
+                scope.apps = dfApplicationData.getApiDataFromCache('app');
 
                 if (scope.newUser) {
                     scope.user = new User();
@@ -419,12 +412,12 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 $rootScope.$on("app", function  (){
 
-                    scope.apps = dfApplicationData.getApiData('app');
+                    scope.apps = dfApplicationData.getApiDataFromCache('app');
                 });
 
                 $rootScope.$on("role", function  (){
 
-                    scope.roles = dfApplicationData.getApiData('role');
+                    scope.roles = dfApplicationData.getApiDataFromCache('role');
                 });
 
                 $rootScope.$on("user", function  (){
@@ -545,8 +538,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 //scope.apps = [];
                 //scope.roles = [];
 
-                scope.roles = dfApplicationData.getApiData('role');
-                scope.apps = dfApplicationData.getApiData('app');
+                scope.roles = dfApplicationData.getApiDataFromCache('role');
+                scope.apps = dfApplicationData.getApiDataFromCache('app');
 
                 scope.$watch('user', function () {
                     if (!scope.user) return;
@@ -875,7 +868,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.selectedUsers = [];
 
-                scope.roles = dfApplicationData.getApiData('role');
+                scope.roles = dfApplicationData.getApiDataFromCache('role');
 
 
 
@@ -1083,7 +1076,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         var _users = [];
 
-                        angular.forEach(dfApplicationData.getApiData('user'), function (user) {
+                        angular.forEach(dfApplicationData.getApiDataFromCache('user'), function (user) {
                             if (typeof user !== 'function') {
                                 _users.push(new ManagedUser(user));
                             }
@@ -1109,13 +1102,13 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 var watchApiData = scope.$watchCollection(function() {
 
-                    return dfApplicationData.getApiData('user');
+                    return dfApplicationData.getApiDataFromCache('user');
 
                 }, function (newValue, oldValue) {
 
                     var _users = [];
 
-                    angular.forEach(dfApplicationData.getApiData('user'), function (user) {
+                    angular.forEach(dfApplicationData.getApiDataFromCache('user'), function (user) {
 
                         _users.push(new ManagedUser(user));
                     });
@@ -1132,7 +1125,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     var _users = [];
 
-                    angular.forEach(dfApplicationData.getApiData('user'), function (user) {
+                    angular.forEach(dfApplicationData.getApiDataFromCache('user'), function (user) {
 
                         var _user = new ManagedUser(user);
 

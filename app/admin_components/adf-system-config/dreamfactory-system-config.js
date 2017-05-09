@@ -31,14 +31,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/main.html',
                     controller: 'SystemConfigurationCtrl',
                     resolve: {
-                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
                         checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -84,7 +76,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
     .controller('SystemConfigurationCtrl', ['$scope', 'dfApplicationData', 'SystemConfigEventsService', 'SystemConfigDataService', 'dfObjectService', 'dfNotify', 'INSTANCE_URL', '$http',
         function ($scope, dfApplicationData, SystemConfigEventsService, SystemConfigDataService, dfObjectService, dfNotify, INSTANCE_URL, $http) {
 
-            $scope.test = dfApplicationData.loadApi(['environment', 'config', 'cors', 'lookup', 'email_template']);
+            $scope.test = dfApplicationData.getApiData(['environment', 'cors', 'lookup', 'email_template']);
 
             var SystemConfig = function (systemConfigData) {
 
@@ -311,18 +303,18 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 var watchEnvironment = scope.$watch('systemEnv', function (newValue, oldValue) {
 
                     if (newValue === null) {
-                        scope.systemEnv = dfApplicationData.getApiData('environment');
+                        scope.systemEnv = dfApplicationData.getApiDataFromCache('environment');
                     }
 
                 });
 
                 var watchdfApplicationData = scope.$watchCollection(function () {
-                    return dfApplicationData.getApiData('environment');
+                    return dfApplicationData.getApiDataFromCache('environment');
                 }, function (newValue, oldValue) {
 
                     if (!newValue) return;
 
-                    scope.systemEnv = dfApplicationData.getApiData('environment');
+                    scope.systemEnv = dfApplicationData.getApiDataFromCache('environment');
                 });
 
 
@@ -754,7 +746,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         if (newValue === null) {
 
                             scope.corsEntries = [];
-                            angular.forEach(dfApplicationData.getApiData('cors'), function (emailData) {
+                            angular.forEach(dfApplicationData.getApiDataFromCache('cors'), function (emailData) {
 
                                 scope.corsEntries.push(new CorsEntry(emailData));
                             })
@@ -762,7 +754,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     });
 
                     var watchdfApplicationData = scope.$watchCollection(function () {
-                        return dfApplicationData.getApiData('cors');
+                        return dfApplicationData.getApiDataFromCache('cors');
                     }, function (newValue, oldValue) {
 
                         if (!newValue) return;
@@ -1133,7 +1125,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         if (newValue === null) {
 
                             scope.emailTemplates = [];
-                            angular.forEach(dfApplicationData.getApiData('email_template'), function (emailData) {
+                            angular.forEach(dfApplicationData.getApiDataFromCache('email_template'), function (emailData) {
 
                                 scope.emailTemplates.push(new EmailTemplate(emailData));
                             })
@@ -1141,7 +1133,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     });
 
                     var watchdfApplicationData = scope.$watchCollection(function () {
-                        return dfApplicationData.getApiData('email_template');
+                        return dfApplicationData.getApiDataFromCache('email_template');
                     }, function (newValue, oldValue) {
 
                         if (!newValue) return;
@@ -1478,7 +1470,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         if (newValue === null) {
 
                             scope.globalLookups = [];
-                            angular.forEach(dfApplicationData.getApiData('lookup'), function (lookupData) {
+                            angular.forEach(dfApplicationData.getApiDataFromCache('lookup'), function (lookupData) {
 
                                 scope.globalLookups.push(new Lookup(lookupData));
                             })
@@ -1486,7 +1478,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     });
 
                     var watchdfApplicationData = scope.$watchCollection(function () {
-                        return dfApplicationData.getApiData('lookup');
+                        return dfApplicationData.getApiDataFromCache('lookup');
                     }, function (newValue, oldValue) {
 
                         if (!newValue) return;

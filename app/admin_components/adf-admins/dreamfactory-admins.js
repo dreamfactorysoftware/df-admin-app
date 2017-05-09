@@ -29,13 +29,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     templateUrl: MOD_ADMIN_ASSET_PATH + 'views/main.html',
                     controller: 'AdminsCtrl',
                     resolve: {
-                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
                         checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -86,7 +79,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
             $rootScope.isRouteLoading = true;
 
-            dfApplicationData.loadApi(['admin']);
+            dfApplicationData.getApiData(['admin']);
 
             // Set module links
             $scope.links = [
@@ -957,7 +950,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 var watchApiData = scope.$watchCollection(function() {
 
-                    return dfApplicationData.getApiData('admin');
+                    return dfApplicationData.getApiDataFromCache('admin');
 
                 }, function (newValue, oldValue) {
 

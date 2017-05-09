@@ -11,14 +11,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/main.html',
                     controller: 'SchemaCtrl',
                     resolve: {
-                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
                         checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -71,7 +63,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             var deferred = $q.defer();
 
-            dfApplicationData.loadApi(['service']);
+            dfApplicationData.getApiData(['service']);
 
             deferred.resolve(true);
 
@@ -82,7 +74,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         function getServices() {
 
             if (services.length === 0) {
-                var serviceArray = dfApplicationData.getApiData('service');
+                var serviceArray = dfApplicationData.getApiDataFromCache('service');
                 if (serviceArray !== undefined) {
                     services = serviceArray.filter(function(obj) {
                         return ['mysql','pgsql','sqlite','sqlsrv','sqlanywhere','oracle','ibmdb2','firebird','aws_redshift_db','mongodb'].indexOf(obj.type) >= 0;

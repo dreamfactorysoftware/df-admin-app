@@ -11,14 +11,6 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                     templateUrl: MOD_PROFILE_ASSET_PATH + 'views/main.html',
                     controller: 'ProfileCtrl',
                     resolve: {
-                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
                         checkProfileRoute: ['dfApplicationData', 'SystemConfigDataService', '$location', 'dfNotify', function (dfApplicationData, SystemConfigDataService, $location, dfNotify) {
 
                             var currentUser = dfApplicationData.getCurrentUser(),
@@ -72,7 +64,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
         $scope.currentUser = UserDataService.getCurrentUser();
 
-        dfApplicationData.loadApi(['admin']);
+        dfApplicationData.getApiData(['admin']);
 
         // Set Title in parent
         // $scope.$parent.title = $scope.currentUser.name + ' Profile';
@@ -125,7 +117,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                 scope.password = null;
                 scope.bitnami_demo = SystemConfigDataService.getSystemConfig().platform.bitnami_demo;
 
-                scope.apps = dfApplicationData.getApiData('app');
+                scope.apps = dfApplicationData.getApiDataFromCache('app');
 
 
                 // PUBLIC API
