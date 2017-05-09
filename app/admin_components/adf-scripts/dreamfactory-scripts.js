@@ -174,8 +174,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             var data = dfApplicationData.getApiDataFromCache('event');
             if(data === undefined) {
                 // All these vars pertain to building of events dynamically on the client
-                dfApplicationData.fetchFromApi('event').then(function (result) {
-                    $scope.events = dfApplicationData.getApiDataFromCache('event');
+                dfApplicationData.getApiData(['event']).then(function (result) {
+                    $scope.events = result[0];
                     $scope.highlightScript();
                 });
             }
@@ -188,8 +188,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             var data = dfApplicationData.getApiDataFromCache('script_type');
             if (data === undefined) {
                 // These values are used to build the script type dropdown
-                dfApplicationData.fetchFromApi('script_type').then(function (result) {
-                    $scope.scriptTypes = dfApplicationData.getApiDataFromCache('script_type');
+                dfApplicationData.getApiData(['script_type']).then(function (result) {
+                    $scope.scriptTypes = result[0].resource;
                 });
             }
             else {

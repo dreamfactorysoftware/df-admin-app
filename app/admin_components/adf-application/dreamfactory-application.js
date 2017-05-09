@@ -146,7 +146,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 params['api'] = (api === 'system' ? '' : api);
                 dfSystemData.resource().get(params).$promise.then(
                     function (response) {
-                        dfApplicationObj.apis[api] = response.resource ? response.resource : response;
+                        dfApplicationObj.apis[api] = response;
                         if (debugLevel >= 1) console.log('_loadOne(' + api + '): ok from server', dfApplicationObj.apis[api]);
                         if (debugLevel >= 2) console.log('_loadOne(' + api + '): dfApplicationObj', dfApplicationObj);
                         dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
