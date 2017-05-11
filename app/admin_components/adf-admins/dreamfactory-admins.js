@@ -164,21 +164,23 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope._validateData = function () {
 
-                    if (!scope.setPassword && !scope.sendEmailOnCreate) {
-                        dfNotify.error({
-                            module: 'Users',
-                            type: 'error',
-                            message: 'Please select email invite or set password.'
-                        });
-                        return false;
-                    }
-                    if (scope.setPassword && scope.sendEmailOnCreate) {
-                        dfNotify.error({
-                            module: 'Users',
-                            type: 'error',
-                            message: 'Please select email invite or set password, but not both.'
-                        });
-                        return false;
+                    if (scope.newAdmin) {
+                        if (!scope.setPassword && !scope.sendEmailOnCreate) {
+                            dfNotify.error({
+                                module: 'Users',
+                                type: 'error',
+                                message: 'Please select email invite or set password.'
+                            });
+                            return false;
+                        }
+                        if (scope.setPassword && scope.sendEmailOnCreate) {
+                            dfNotify.error({
+                                module: 'Users',
+                                type: 'error',
+                                message: 'Please select email invite or set password, but not both.'
+                            });
+                            return false;
+                        }
                     }
                     if (scope.setPassword && scope.password.new_password !== scope.password.verify_password) {
                         dfNotify.error({

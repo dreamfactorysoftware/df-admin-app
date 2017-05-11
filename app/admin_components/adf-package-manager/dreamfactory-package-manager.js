@@ -116,7 +116,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     });
                     $scope.apiData = newApiData;
                 },
-                function (response) {
+                function (error) {
                     var messageOptions = {
                         module: 'Package Manager',
                         provider: 'dreamfactory',
