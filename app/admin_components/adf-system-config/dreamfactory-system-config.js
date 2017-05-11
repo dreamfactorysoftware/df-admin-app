@@ -998,7 +998,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                     scope._saveEmailTemplate = function (template) {
 
-
                         var requestDataObj = {
                             params: {
                                 fields: '*'
@@ -1037,7 +1036,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                         scope.emailTemplates[i] = _newTemplate;
                                         scope.selectedEmailTemplate = _newTemplate;
                                     }
-
+                                    
                                     i++;
                                 }
                             },
@@ -1057,7 +1056,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     }
 
                     scope._updateEmailTemplate = function (template) {
-
 
                         var requestDataObj = {
                             params: {
@@ -1099,15 +1097,15 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     scope.helpText = {
                         recipient: {
                             title: 'Recipient',
-                            text: 'Enter recipient address.'
+                            text: 'Enter recipient address. Enter multiple addresses separated by comma.'
                         },
                         cc: {
                             title: 'Cc',
-                            text: 'Enter cc address.'
+                            text: 'Enter cc address. Enter multiple addresses separated by comma.'
                         },
                         bcc: {
                             title: 'Bcc',
-                            text: 'Enter bcc address.'
+                            text: 'Enter bcc address. Enter multiple addresses separated by comma.'
                         },
                         reply_to_name: {
                             title: 'Reply to Name',
