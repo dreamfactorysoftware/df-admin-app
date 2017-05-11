@@ -54,28 +54,17 @@
                     </div>
                     <div class="col-md-6">
 
-                        <!-- Admin Confirmed -->
-
-                        <div data-ng-show="!newAdmin">
-                            <div class="form-group">
-                                <label>Confirmation</label><df-simple-help data-options="dfHelp.adminConfirmation"></df-simple-help>
-                                <df-confirm-admin></df-confirm-admin>
-                            </div>
-                            <hr />
+                        <!-- Admin Invite/Confirmation -->
+                        <div class="form-group">
+                            <df-confirm-admin></df-confirm-admin>
                         </div>
 
-                        <!-- AdminSend Invite on create -->
-
-                        <div data-ng-show="newAdmin">
-                            <div class="form-group">
-                                <label>
-                                    <input type="checkbox" data-ng-model="sendEmailOnCreate" data-ng-checked="sendEmailOnCreate"/>
-                                    Send Email Invitation
-                                </label>
-                            </div>
-                            <hr />
+                        <!-- Admin Password -->
+                        <div class="form-group">
+                            <df-set-user-password></df-set-user-password>
                         </div>
 
+                        <hr />
 
                         <!-- Admin Active -->
                         <div class="form-group">
@@ -86,9 +75,6 @@
                                 </label>
                             </div>
                         </div>
-
-                        <!-- Admin Password -->
-                        <df-set-admin-password></df-set-admin-password>
 
                     </div>
                 </div>

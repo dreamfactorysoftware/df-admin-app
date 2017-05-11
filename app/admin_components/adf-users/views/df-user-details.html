@@ -55,25 +55,17 @@
                     </div>
                     <div class="col-md-6">
 
-                        <!-- User Confirmed -->
-                        <div data-ng-show="!newUser">
-                            <div class="form-group">
-                                <label>Confirmation</label><df-simple-help data-options="dfHelp.userConfirmation"></df-simple-help>
-                                <df-confirm-user></df-confirm-user>
-                            </div>
-                            <hr />
+                        <!-- User Invite/Confirmation -->
+                        <div class="form-group">
+                            <df-confirm-user></df-confirm-user>
                         </div>
 
-                        <!-- UserSend Invite on create -->
-                        <div data-ng-show="newUser">
-                            <div class="checkbox">
-                                <label>
-                                    <input id="user_details_info_invite" type="checkbox" data-ng-model="sendEmailOnCreate" data-ng-checked="sendEmailOnCreate"/>
-                                    Send Email Invitation
-                                </label>
-                            </div>
-                            <hr />
+                        <!-- User Password -->
+                        <div class="form-group">
+                            <df-set-user-password></df-set-user-password>
                         </div>
+
+                        <hr />
 
                         <!-- User Active -->
                         <div class="form-group">
@@ -84,9 +76,6 @@
                                 </label>
                             </div>
                         </div>
-
-                        <!-- User Password -->
-                        <df-set-user-password></df-set-user-password>
 
                     </div>
                 </div>

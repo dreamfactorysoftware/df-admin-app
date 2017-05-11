@@ -202,16 +202,34 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope._prepareUserData = function () {
 
+                    scope._preparePasswordData();
                     scope._prepareLookupKeyData();
 
                 };
 
                 scope._validateData = function () {
-                    if (scope.setPassword && scope.verifyPassword !== scope.user.record.password) {
+
+                    if (!scope.setPassword && !scope.sendEmailOnCreate) {
                         dfNotify.error({
                             module: 'Users',
                             type: 'error',
-                            message: 'Passwords not same.'
+                            message: 'Please select email invite or set password.'
+                        });
+                        return false;
+                    }
+                    if (scope.setPassword && scope.sendEmailOnCreate) {
+                        dfNotify.error({
+                            module: 'Users',
+                            type: 'error',
+                            message: 'Please select email invite or set password, but not both.'
+                        });
+                        return false;
+                    }
+                    if (scope.setPassword && scope.password.new_password !== scope.password.verify_password) {
+                        dfNotify.error({
+                            module: 'Users',
+                            type: 'error',
+                            message: 'Passwords do not match.'
                         });
                         return false;
                     }
@@ -385,6 +403,21 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     scope.user = new User(newValue);
                 });
 
+                scope.$watch('setPassword', function (newValue) {
+
+                    if (newValue) {
+
+                        scope.password = {
+                            new_password: '',
+                            verify_password: ''
+                        };
+                    }
+                    else {
+                        scope.password = null;
+                        scope.identical = true;
+                    }
+                });
+
                 /*
                 var watchAppData = scope.$watch('apps', function (newValue, oldValue) {
 
@@ -461,29 +494,19 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             link: function(scope, elem, attrs) {
 
 
-                scope.inviteUserOnCreate = false;
+                scope.sendEmailOnCreate = false;
 
                 scope.systemConfig = SystemConfigDataService.getSystemConfig();
 
                 scope.invite = function() {
 
-                    scope._invite(scope.user.record.id);
-                };
-
-                scope._sendInvite = function (userId) {
-
-                    return  $http({
-                        url: INSTANCE_URL + '/api/v2/system/user/'+userId,
+                    $http({
+                        url: INSTANCE_URL + '/api/v2/system/user/' + scope.user.record.id,
                         method: 'PATCH',
                         params: {
                             send_invite: true
                         }
-                    })
-                };
-
-                scope._invite = function (userId) {
-
-                    scope._sendInvite(userId).then(
+                    }).then(
                         function(result) {
 
                             var messageOptions = {
@@ -495,8 +518,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             };
 
                             dfNotify.success(messageOptions);
-
-
                         },
                         function (reject) {
 
@@ -504,25 +525,13 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 module: 'Users',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject.data.error.message
-                            }
+                                message: reject
+                            };
 
                             dfNotify.error(messageOptions);
-
                         }
                     );
                 };
-
-                scope._callSendInvite = function (user) {
-
-                    if (scope.inviteUserOnCreate) {
-                        scope._invite(user.id);
-                    }
-                };
-
-
-                // @TODO: Send invite automatically
-
             }
         }
     }])
@@ -613,7 +622,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         };
     }])
 
-    .directive('dfUserLookupKeys', ['MOD_USER_ASSET_PATH', 'dfStringService', function(MOD_USER_ASSET_PATH, dfStringService) {
+    .directive('dfUserLookupKeys', ['MOD_USER_ASSET_PATH', function(MOD_USER_ASSET_PATH) {
 
         return {
             restrict: 'E',
@@ -639,7 +648,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         record: angular.copy(lookupKeyData || _new),
                         recordCopy: angular.copy(lookupKeyData || _new)
                     };
-                }
+                };
 
                 scope.lookupKeys = [];
 
@@ -676,7 +685,20 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         })
                     });
 
-                }
+                };
+
+                scope._preparePasswordData = function () {
+                    
+                    if (scope.setPassword) {
+                        // set password in user record
+                        scope.user.record.password = scope.password.new_password;
+                    } else {
+                        // delete password from user record
+                        if (scope.user.record.password) {
+                            delete scope.user.record.password;
+                        }
+                    }
+                };
 
                 scope._prepareLookupKeyData = function () {
 

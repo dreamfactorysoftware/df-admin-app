@@ -488,7 +488,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
 
     // Forgot Password Email Confirmation
-    .directive('dreamfactoryForgotPwordEmail', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '_dfStringService', 'UserEventsService', function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, _dfStringService, UserEventsService) {
+    .directive('dreamfactoryForgotPwordEmail', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', 'UserEventsService', function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, UserEventsService) {
 
 
         return {
@@ -599,7 +599,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 // Test if our entered passwords are identical
                 scope._verifyPassword = function (userDataObj) {
 
-                    scope.identical = _dfStringService.areIdentical(userDataObj.new_password, userDataObj.verify_password);
+                    scope.identical = (userDataObj.new_password === userDataObj.verify_password);
                 };
 
                 // Test if our passwords are long enough
@@ -785,8 +785,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
     }])
 
     // Password Reset Directive
-    .directive('dreamfactoryPasswordReset', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfNotify', '$location', 'SystemConfigDataService',
-        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, UserEventsService, _dfStringService, _dfObjectService, dfNotify, $location, SystemConfigDataService) {
+    .directive('dreamfactoryPasswordReset', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', 'UserEventsService', '_dfObjectService', 'dfNotify', '$location', 'SystemConfigDataService',
+        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, UserEventsService, _dfObjectService, dfNotify, $location, SystemConfigDataService) {
 
             return {
                 restrict: 'E',
@@ -895,7 +895,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // Test if our entered passwords are identical
                     scope._verifyPassword = function (userDataObj) {
 
-                        scope.identical = _dfStringService.areIdentical(userDataObj.new_password, userDataObj.verify_password);
+                        scope.identical = (userDataObj.new_password === userDataObj.verify_password);
                     };
 
                     // Test if our passwords are long enough
@@ -1099,8 +1099,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
 
     // Register Directive.  Takes care of registering a user for our application
-    .directive('dreamfactoryRegisterUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$rootScope', '$cookieStore', '$location', 'UserEventsService', '_dfStringService', '_dfObjectService', 'dfXHRHelper', 'SystemConfigDataService',
-        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $rootScope, $cookieStore, $location, UserEventsService, _dfStringService, _dfObjectService, dfXHRHelper, SystemConfigDataService) {
+    .directive('dreamfactoryRegisterUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$rootScope', '$cookieStore', '$location', 'UserEventsService', '_dfObjectService', 'dfXHRHelper', 'SystemConfigDataService',
+        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $rootScope, $cookieStore, $location, UserEventsService, _dfObjectService, dfXHRHelper, SystemConfigDataService) {
 
 
             return {
@@ -1338,7 +1338,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // Test if our entered passwords are identical
                     scope._verifyPassword = function (userDataObj) {
 
-                        scope.identical = _dfStringService.areIdentical(userDataObj.new_password, userDataObj.verify_password);
+                        scope.identical = (userDataObj.new_password === userDataObj.verify_password);
                     };
 
 
@@ -1455,8 +1455,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
 
     // Enter confirmation code page
-    .directive('dreamfactoryConfirmUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$location', '$http', '_dfObjectService', '_dfStringService', 'UserDataService', 'UserEventsService', 'SystemConfigDataService',
-        function(MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $location, $http, _dfObjectService, _dfStringService, UserDataService, UserEventsService, SystemConfigDataService) {
+    .directive('dreamfactoryConfirmUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$location', '$http', '_dfObjectService', 'UserDataService', 'UserEventsService', 'SystemConfigDataService',
+        function(MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $location, $http, _dfObjectService, UserDataService, UserEventsService, SystemConfigDataService) {
 
             return {
 
@@ -1548,7 +1548,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // Test if our entered passwords are identical
                     scope._verifyPassword = function (userDataObj) {
 
-                        scope.identical = _dfStringService.areIdentical(userDataObj.new_password, userDataObj.verify_password);
+                        scope.identical = (userDataObj.new_password === userDataObj.verify_password);
                     };
 
                     // Test if our passwords are long enough
@@ -1862,40 +1862,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 return _hasUser();
             }
         }
-    }])
-    .service('_dfStringService', [function () {
-
-        return {
-            areIdentical: function (stringA, stringB) {
-
-                stringA = stringA || '';
-                stringB = stringB || '';
-
-
-                function _sameLength(stringA, stringB) {
-                    return  stringA.length == stringB.length;
-                }
-
-                function _sameLetters(stringA, stringB) {
-
-                    var l = Math.min(stringA.length, stringB.length);
-
-                    for (var i = 0; i < l; i++) {
-                        if (stringA.charAt(i) !== stringB.charAt(i)) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-
-                if (_sameLength(stringA, stringB) && _sameLetters(stringA, stringB)) {
-                    return true;
-                }
-
-                return false;
-            }
-        }
-
     }])
     .service('_dfObjectService', [function () {
 

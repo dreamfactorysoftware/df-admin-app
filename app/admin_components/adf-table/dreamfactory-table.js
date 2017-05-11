@@ -2746,7 +2746,7 @@ angular.module('dfTable', ['dfUtility'])
             }
         }
     }])
-    .directive('dreamfactoryBuildField', ['$templateCache', '$compile', 'dfObjectService', 'dfStringService', 'INSTANCE_URL', function ($templateCache, $compile, dfObjectService, dfStringService, INSTANCE_URL) {
+    .directive('dreamfactoryBuildField', ['$templateCache', '$compile', 'dfObjectService', 'INSTANCE_URL', function ($templateCache, $compile, dfObjectService, INSTANCE_URL) {
 
         return {
             restrict: 'A',

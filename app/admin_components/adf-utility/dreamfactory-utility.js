@@ -3074,7 +3074,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // allows user to set password with verify functionality
-    .directive('dfSetUserPassword', ['MOD_USER_ASSET_PATH', '$compile', 'dfStringService', function(MOD_USER_ASSET_PATH, $compile, dfStringService) {
+    .directive('dfSetUserPassword', ['MOD_UTILITY_ASSET_PATH', '$compile', function(MOD_USER_ASSET_PATH, $compile) {
 
         return {
             restrict: 'E',
@@ -3082,75 +3082,52 @@ angular.module('dfUtility', ['dfApplication'])
             templateUrl: MOD_USER_ASSET_PATH + 'views/df-input-manual-password.html',
             link: function(scope, elem, attrs) {
 
-                scope.verifyPassword = '';
-
-                scope.updatePassword = false;
+                scope.requireOldPassword = false;
+                scope.password = null;
                 scope.setPassword = false;
                 scope.identical = true;
 
                 // Test if our entered passwords are identical
-                scope._verifyPassword = function (password) {
+                scope._verifyPassword = function () {
 
-                    // did we pass a password to chekc against
-                    // if not...assume the existence of a user object with a password prop
-                    // this is terrible.  Do it better later.
-                    password = password || scope.user.record.password;
-
-                    scope.identical = dfStringService.areIdentical(password, scope.verifyPassword);
+                    scope.identical = (scope.password.new_password === scope.password.verify_password);
                 };
 
                 scope._resetUserPasswordForm = function () {
 
-                    scope.verifyPassword = '';
+                    scope.password = null;
                     scope.setPassword = false;
-                }
-
+                    scope.identical = true;
+                };
 
                 // WATCHERS AND INIT
-                var watchSetPassword = scope.$watch('setPassword', function (newValue, oldValue) {
+                scope.$watch('setPassword', function (newValue) {
 
-                    if (!newValue) return false;
-                    var html = '';
+                    if (newValue) {
+                        var html = '';
 
-                    if (!scope.updatePassword) {
-                        html +=  '<div class="form-group" data-ng-class="{\'has-error\' : identical === false}">' +
-                            '<input type="password" id="password" name="password" placeholder="Enter Password" data-ng-model="user.record.password" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword()" >' +
-                            '</div>' +
-                            '<div class="form-group" data-ng-class="{\'has-error\' : identical === false}">' +
-                            '<input type="password" id="verify-password" name="verify-password" placeholder="Verify Password" data-ng-model="verifyPassword" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword()" >' +
-                            '</div>';
-                    }
-                    else {
-
-                        html += '<div class="form-group">' +
-                            '<input type="password" id="old-password" class="form-control" data-ng-model="password.old_password" placeholder="Enter Old Password" />' +
+                        html += '<div class="form-group" ng-if="requireOldPassword">' +
+                            '<input type="password" id="old-password" class="form-control" data-ng-model="password.old_password" placeholder="Enter Old Password" data-ng-required="true" />' +
                             '</div>';
 
                         html +=  '<div class="form-group" data-ng-class="{\'has-error\' : identical === false}">' +
-                            '<input type="password" id="password" name="password" placeholder="Enter Password" data-ng-model="password.new_password" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword(password.new_password)" >' +
+                            '<input type="password" id="password" name="password" placeholder="Enter Password" data-ng-model="password.new_password" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword()" >' +
                             '</div>' +
                             '<div class="form-group" data-ng-class="{\'has-error\' : identical === false}">' +
-                            '<input type="password" id="verify-password" name="verify-password" placeholder="Verify Password" data-ng-model="verifyPassword" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword(password.new_password)" >' +
+                            '<input type="password" id="verify-password" name="verify-password" placeholder="Verify Password" data-ng-model="password.verify_password" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword()" >' +
                             '</div>';
 
+                        var el = $compile(html)(scope);
+
+                        angular.element('#set-password').append(el);
                     }
-
-
-                    var el = $compile(html)(scope);
-
-                    angular.element('#set-password').append(el);
                 });
-
-
+                
                 // MESSAGES
                 // Listen for userForm clear message
                 scope.$on('reset:user:form', function (e) {
-                 scope._resetUserPasswordForm();
-                 });
 
-                scope.$on('$destroy', function (e) {
-
-                    watchSetPassword();
+                    scope._resetUserPasswordForm();
                 });
             }
         }
@@ -3618,8 +3595,8 @@ angular.module('dfUtility', ['dfApplication'])
 
     // Helps merge objects.  Supports deep merge.  Many modules
     // need this
-    .service('dfObjectService', ['dfStringService',
-        function (dfStringService) {
+    .service('dfObjectService', [
+        function () {
 
             return {
 
@@ -3680,138 +3657,11 @@ angular.module('dfUtility', ['dfApplication'])
 
                 compareObjectsAsJson: function(o, p) {
 
-                    return dfStringService.areIdentical(angular.toJson(o), angular.toJson(p));
-                },
-
-                compareObjects: function (o, p) {
-
-                    var i,
-                        keysO = Object.keys(o).sort(),
-                        keysP = Object.keys(p).sort();
-                    if (keysO.length !== keysP.length){
-
-                    console.log('not the same nr of keys')
-                        return false;//not the same nr of keys
-                    }
-
-                    if (keysO.join('') !== keysP.join('')) {
-                     console.log('different keys')
-                        return false;//different keys
-                    }
-
-                    for (i=0;i<keysO.length;++i)
-                    {
-                        if (o[keysO[i]] instanceof Array)
-                        {
-                            if (!(p[keysO[i]] instanceof Array)) {
-                                console.log('first array')
-
-                                return false;
-                            }
-
-                            //if (compareObjects(o[keysO[i]], p[keysO[i]] === false) return false
-                            //would work, too, and perhaps is a better fit, still, this is easy, too
-                            if (p[keysO[i]].sort().join('') !== o[keysO[i]].sort().join('')) {
-                                console.log('secound array')
-                                return false;
-                            }
-
-
-                        }
-                        else if (o[keysO[i]] instanceof Date)
-                        {
-                            if (!(p[keysO[i]] instanceof Date)) {
-
-                            console.log('date 1');
-                                return false;
-                            }
-
-                            if ((''+o[keysO[i]]) !== (''+p[keysO[i]])) {
-
-
-                                console.log('date 2');
-                                return false;
-                            }
-                        }
-                        else if (o[keysO[i]] instanceof Function)
-                        {
-                            if (!(p[keysO[i]] instanceof Function)) {
-
-
-                                console.log('func 1');
-                                return false;
-                            }
-                            //ignore functions, or check them regardless?
-                        }
-                        else if (o[keysO[i]] instanceof Object)
-                        {
-                            if (!(p[keysO[i]] instanceof Object)) {
-
-
-                                console.log('obj 1');
-                                return false;
-                            }
-
-                            if (o[keysO[i]] === o)
-                            {//self reference?
-                                if (p[keysO[i]] !== p){
-                                    console.log('date 2');
-                                    return false;
-                                }
-                            }
-                            else if (this.compareObjects(o[keysO[i]], p[keysO[i]]) === false) {
-                                console.log('something else');
-                                return false;//WARNING: does not deal with circular refs other than ^^
-                            }
-                        }
-
-
-                        /*if (o[keysO[i]] != p[keysO[i]]) {//change !== to != for loose comparison
-
-                            console.log(o[keysO[i]] + ' = ' + p[keysO[i]]);
-                            return false;//not the same value
-                        }*/
-                    }
-                    return true;
-
+                    return angular.toJson(o) === angular.toJson(p);
                 }
             }
         }
     ])
-
-    // Useful string operations
-    .service('dfStringService', [function () {
-
-        return {
-            areIdentical: function (stringA, stringB) {
-
-                stringA = stringA || '';
-                stringB = stringB || '';
-
-                function _sameLength(stringA, stringB) {
-                    return stringA.length == stringB.length;
-                }
-
-                function _sameLetters(stringA, stringB) {
-
-                    var l = Math.min(stringA.length, stringB.length);
-
-                    for (var i = 0; i < l; i++) {
-                        if (stringA.charAt(i) !== stringB.charAt(i)) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-
-                if (_sameLength(stringA, stringB) && _sameLetters(stringA, stringB)) {
-                    return true;
-                }
-
-                return false;
-            }
-        }
-    }])
 
     // Stores our System Configuration.  May not need to define here as it
     // is contained in the SystemConfigModule

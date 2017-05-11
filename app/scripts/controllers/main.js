@@ -224,14 +224,14 @@ angular.module('dreamfactoryApp')
 
         $scope.$watch('currentUser', function(newValue, oldValue) {
 
-            var groupedApp = SystemConfigDataService.getSystemConfig().app_group,
-                noGroupApp = SystemConfigDataService.getSystemConfig().no_group_app;
+            var config = SystemConfigDataService.getSystemConfig();
+            var groupedApp = config.app_group, noGroupApp = config.no_group_app;
 
             // There is no currentUser and there are apps.
             if (!newValue && ((groupedApp && groupedApp.length > 0) || (noGroupApp && noGroupApp.length > 0))) {
 
                 // Do we allow open registration
-                if (SystemConfigDataService.getSystemConfig().authentication.allow_open_registration) {
+                if (config.authentication.allow_open_registration) {
 
                     // yes
                     $scope._setActiveLinks($scope.topLevelLinks, ['support', 'launchpad', 'login', 'register']);
@@ -244,11 +244,11 @@ angular.module('dreamfactoryApp')
                 }
 
             }
-            // There is no currentUser and we don't allow guest users
-            else if (!newValue && !SystemConfigDataService.getSystemConfig().allow_guest_user) {
+            // There is no currentUser and no apps
+            else if (!newValue) {
 
                 // Do we allow open registration
-                if (SystemConfigDataService.getSystemConfig().authentication.allow_open_registration) {
+                if (config.authentication.allow_open_registration) {
 
                     // yes
                     $scope._setActiveLinks($scope.topLevelLinks, ['support', 'login', 'register']);
@@ -309,7 +309,7 @@ angular.module('dreamfactoryApp')
                 // Sets active links for user in the UI
                 $scope._setActiveLinks($scope.topLevelLinks, ['support', 'launchpad', 'user']);
             }
-        })
+        });
 
         $scope.$watch(function () {return UserDataService.getCurrentUser().name}, function (n, o) {
 
@@ -317,7 +317,7 @@ angular.module('dreamfactoryApp')
             if (!n) return;
 
             $scope.setTopLevelLinkValue('user', 'label', n);
-        })
+        });
 
         // on $routeChangeSuccess show/hide admin top nav bar and chat
 
@@ -327,15 +327,13 @@ angular.module('dreamfactoryApp')
 
             path = $location.path();
             switch (path) {
-                case '':
                 case '/launchpad':
                 case '/profile':
-                case '/login':
                 case '/logout':
                     $scope.showAdminComponentNav = false;
                     break;
                 default:
-                    $scope.showAdminComponentNav = true;
+                    $scope.showAdminComponentNav = ($scope.currentUser && $scope.currentUser.is_sys_admin === true);
                     break;
             }
             // put chat behind login to avoid abuse
@@ -585,7 +583,7 @@ angular.module('dreamfactoryApp')
 
             // redirect to the app home page
             $location.url('/launchpad');
-        })
+        });
 
         // Handle a login error
         $scope.$on(UserEventsService.login.loginError, function(e, errMsg) {

@@ -635,6 +635,17 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 return result;
             },
 
+            // delete api data by name
+            deleteApiDataFromCache: function (api) {
+
+                // check for data
+                if (dfApplicationObj.apis.hasOwnProperty(api)) {
+
+                    delete dfApplicationObj.apis[api];
+                }
+                console.log('deleteApiDataFromCache(' + api + ')');
+            },
+
             // save data to server and update app obj
             saveApiData: function (api, options) {
 
