@@ -3135,37 +3135,32 @@ angular.module('dfUtility', ['dfApplication'])
 
     // allows user to set security question and answer
     .directive('dfSetSecurityQuestion', ['MOD_UTILITY_ASSET_PATH', '$compile', function (MOD_UTILITY_ASSET_PATH, $compile) {
-
-
+        
         return {
-
             restrict: 'E',
             scope: false,
             templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-set-security-question.html',
             link: function(scope, elem, attrs) {
-
-
+                
                 scope.setQuestion = false;
 
+                scope.$watch('setQuestion', function (newValue) {
 
-                var watchSetQuestion = scope.$watch('setQuestion', function (n, o) {
+                    if (newValue) {
+                        var html = '';
 
-                    if (!n) return false;
-                    var html = '';
-
-                    html += '<div class="form-group"></div>' +
-                        '<label for="user-security-question">Security Question</label>' +
-                        '<input type="text" id="user-security-question" data-ng-model="user.record.security_question" class="form-control" placeholder="Enter security question" />' +
-                        '</div>' +
-                        '<div class="form-group"></div>' +
-                        '<label for="user-security-answer">Security Answer</label>' +
-                        '<input type="text" id="user-security-answer" data-ng-model="user.record.security_answer" class="form-control" placeholder="Enter security answer" />' +
-                        '</div>' ;
-
-
-
-                    angular.element('#set-question').append($compile(html)(scope));
-                })
+                        html += '<div class="form-group"></div>' +
+                            '<label for="user-security-question">Security Question</label>' +
+                            '<input type="text" id="user-security-question" data-ng-model="user.security_question" class="form-control" placeholder="Enter security question" />' +
+                            '</div>' +
+                            '<div class="form-group"></div>' +
+                            '<label for="user-security-answer">Security Answer</label>' +
+                            '<input type="text" id="user-security-answer" data-ng-model="user.security_answer" class="form-control" placeholder="Enter security answer" />' +
+                            '</div>' ;
+                        
+                        angular.element('#set-question').append($compile(html)(scope));
+                    }
+                });
             }
         }
     }])
