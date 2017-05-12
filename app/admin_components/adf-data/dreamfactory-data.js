@@ -74,7 +74,34 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
         $scope.$parent.title = 'Data';
 
-        dfApplicationData.getApiData(['service']);
+        $scope.apiData = null;
+
+        $scope.loadTabData = function() {
+
+            var apis = ['service'];
+
+            dfApplicationData.getApiData(apis).then(
+                function (response) {
+                    var newApiData = {};
+                    apis.forEach(function(value, index) {
+                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                    });
+                    $scope.apiData = newApiData;
+                },
+                function (error) {
+                    var messageOptions = {
+                        module: 'Data',
+                        provider: 'dreamfactory',
+                        type: 'error',
+                        message: 'There was an error loading the Data tab. Please try refreshing your browser.'
+                    };
+                    dfNotify.error(messageOptions);
+                }
+            );
+        };
+
+        // initial data loading
+        $scope.loadTabData();
 
         // Set module links
         $scope.links = [
@@ -86,8 +113,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
             }
         ];
 
-
-        $scope.__services__ = [];
+        $scope.services = null;
 
         $scope.selected = {
             service: null,
@@ -102,22 +128,6 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
             childTableAttachPoint: '#child-table-attach'
         };
 
-
-        $scope.init = function() {
-
-            var services = dfApplicationData.getApiDataFromCache('service');
-            if (services !== undefined) {
-                services = services.filter(function (obj) {
-                    return ['mysql', 'pgsql', 'sqlite', 'sqlsrv', 'sqlanywhere', 'oracle', 'ibmdb2', 'firebird', 'aws_redshift_db'].indexOf(obj.type) >= 0;
-                });
-            }
-
-            angular.forEach(services, function (serviceData) {
-
-                $scope.__services__.push(serviceData);
-            });
-        }
-
         $scope.$watchCollection('selected', function (newValue, oldValue) {
 
             var options = {
@@ -131,21 +141,13 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
             $scope.options = options;
         });
 
-        $scope.$watchCollection(function () {
-            var services = dfApplicationData.getApiDataFromCache('service');
-            if (services !== undefined) {
-                services = services.filter(function (obj) {
+        $scope.$watchCollection('apiData.service', function (newValue, oldValue) {
+
+            if (newValue) {
+
+                $scope.services = newValue.filter(function (obj) {
                     return ['mysql', 'pgsql', 'sqlite', 'sqlsrv', 'sqlanywhere', 'oracle', 'ibmdb2', 'firebird', 'aws_redshift_db'].indexOf(obj.type) >= 0;
                 });
             }
-            return services;
-        }, function (newValue, oldValue) {
-
-            if (!newValue) return;
-
-            if ($scope.__services__.length === 0) {
-                $scope.init();
-            }
         });
-
     }]);
