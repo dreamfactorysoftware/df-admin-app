@@ -182,6 +182,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope.service = null;
+                dfApplicationData.getApiData(['environment']).then(function(response){
+                    scope.serverIp = response[0].server.ip;
+                });
 
                 // Is this going to be a new Service
                 if (scope.newService) {
