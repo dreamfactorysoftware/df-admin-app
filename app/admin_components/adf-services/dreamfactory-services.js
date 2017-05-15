@@ -102,7 +102,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
         $scope.$parent.title = 'Services';
 
-        dfApplicationData.getApiData(['service']);
+        dfApplicationData.getApiData(['service','environment']);
 
         // Set module links
         $scope.links = [
@@ -135,7 +135,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             restrict: 'E',
             scope: {
                 serviceData: '=?',
-                newService: '=?'
+                newService: '=?',
+                environment: '=?'
             },
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-details.html',
             link: function (scope, elem, attrs) {
@@ -182,9 +183,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope.service = null;
-                dfApplicationData.getApiData(['environment']).then(function(response){
-                    scope.serverIp = response[0].server.ip;
-                });
 
                 // Is this going to be a new Service
                 if (scope.newService) {
@@ -604,6 +602,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 });
 
+                scope.$watchCollection(function () {
+
+                    return dfApplicationData.getApiDataFromCache('environment');
+
+                }, function (newValue, oldValue) {
+
+                    scope.environment = newValue;
+                });
 
                 // MESSAGES
                 scope.$on('$destroy', function (e) {
