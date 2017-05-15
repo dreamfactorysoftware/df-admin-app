@@ -2451,11 +2451,6 @@ angular.module('dfUtility', ['dfApplication'])
                 // This is fired on $destroy in controllers that use this directive
                 scope.$on('toolbar:paginate:' + scope.api + ':reset', function (e) {
 
-                    // if we are already on the first page, no need for reloading the data
-                    if (scope._isFirstPage()) {
-                        return;
-                    }
-
                     // If we're logging out don't bother
                     // dfApplicationObj is being destroyed
                     if ($location.path() === '/logout') {
@@ -2903,11 +2898,6 @@ angular.module('dfUtility', ['dfApplication'])
 
                 // This is fired on $destroy in controllers that use this directive
                 scope.$on('toolbar:paginate:' + scope.type + ':reset', function (e) {
-
-                    // if we are already on the first page, no need for reloading the data
-                    if (scope._isFirstPage()) {
-                        return;
-                    }
 
                     // If we're logging out don't bother
                     // dfApplicationObj is being destroyed
