@@ -74,35 +74,6 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
         $scope.$parent.title = 'Data';
 
-        $scope.apiData = null;
-
-        $scope.loadTabData = function() {
-
-            var apis = ['service'];
-
-            dfApplicationData.getApiData(apis).then(
-                function (response) {
-                    var newApiData = {};
-                    apis.forEach(function(value, index) {
-                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
-                    });
-                    $scope.apiData = newApiData;
-                },
-                function (error) {
-                    var messageOptions = {
-                        module: 'Data',
-                        provider: 'dreamfactory',
-                        type: 'error',
-                        message: 'There was an error loading the Data tab. Please try refreshing your browser.'
-                    };
-                    dfNotify.error(messageOptions);
-                }
-            );
-        };
-
-        // initial data loading
-        $scope.loadTabData();
-
         // Set module links
         $scope.links = [
 
@@ -150,4 +121,34 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
                 });
             }
         });
+
+        // load data
+
+        $scope.apiData = null;
+
+        $scope.loadTabData = function() {
+
+            var apis = ['service'];
+
+            dfApplicationData.getApiData(apis).then(
+                function (response) {
+                    var newApiData = {};
+                    apis.forEach(function(value, index) {
+                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                    });
+                    $scope.apiData = newApiData;
+                },
+                function (error) {
+                    var messageOptions = {
+                        module: 'Data',
+                        provider: 'dreamfactory',
+                        type: 'error',
+                        message: 'There was an error loading the Data tab. Please try refreshing your browser.'
+                    };
+                    dfNotify.error(messageOptions);
+                }
+            );
+        };
+
+        $scope.loadTabData();
     }]);

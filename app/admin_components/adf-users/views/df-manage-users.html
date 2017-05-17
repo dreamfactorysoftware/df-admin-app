@@ -3,7 +3,6 @@
     <!-- User Listing -->
     <div data-ng-hide="currentEditUser">
 
-
         <!-- Section Header -->
         <df-section-header data-title="'Manage Users'"></df-section-header>
 
@@ -50,7 +49,7 @@
             <df-empty-section></df-empty-section>
         </div>
 
-        <div data-ng-show="users.length === 0 && filterText && !emptySectionOptions.active">
+        <div data-ng-show="users.length === 0 && filterText">
             <df-empty-search-result></df-empty-search-result>
         </div>
 
@@ -175,7 +174,7 @@
 
     <!-- Edit User -->
     <div data-ng-show="currentEditUser">
-        <df-user-details data-user-data="currentEditUser" data-new-user="false"></df-user-details>
+        <df-user-details data-user-data="currentEditUser" data-new-user="false" data-api-data="apiData"></df-user-details>
     </div>
 
     <!-- Import Users Upload File Input-->

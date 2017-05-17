@@ -1,7 +1,7 @@
 <div>
-    <div class="alert alert-info" ng-show="selectedSchema && environment.platform.is_hosted">
+    <div class="alert alert-info" ng-show="selectedSchema && apiData.environment.server.ip">
         <li class="fa fa-info-circle"></li>
-        The IP address for your DreamFactory instance is {{ environment.server.ip }}. If you have trouble accessing your service through DreamFactory make sure the service allows connections from this IP address.
+        The IP address for your DreamFactory instance is <strong>{{ apiData.environment.server.ip }}</strong>. If you have trouble accessing your service through DreamFactory make sure the service allows connections from this IP address.
     </div>
 
     <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema">

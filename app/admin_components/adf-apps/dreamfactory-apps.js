@@ -63,9 +63,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         $scope.$parent.title = 'Apps';
 
         $rootScope.isRouteLoading = true;
-
-        dfApplicationData.getApiData(['role', 'service', 'app']);
-
+        
         // Set module links
         $scope.links = [
             {
@@ -94,33 +92,62 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
             active: false
         };
 
-        $scope.$on('$destroy', function (e) {
+        // load data
 
-        });
+        $scope.apiData = null;
+
+        $scope.loadTabData = function() {
+
+            var apis = ['app', 'role', 'service'];
+
+            dfApplicationData.getApiData(apis).then(
+                function (response) {
+                    var newApiData = {};
+                    apis.forEach(function(value, index) {
+                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                        if (value === 'service') {
+                            newApiData[value] = newApiData[value].filter(function (obj) {
+                                return ['local_file', 'aws_s3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage'].indexOf(obj.type) >= 0;
+                            });
+                        }
+                    });
+                    $scope.apiData = newApiData;
+                },
+                function (error) {
+                    var messageOptions = {
+                        module: 'Apps',
+                        provider: 'dreamfactory',
+                        type: 'error',
+                        message: 'There was an error loading data for the Apps tab. Please try refreshing your browser.'
+                    };
+                    dfNotify.error(messageOptions);
+                }
+            );
+        };
+
+        $scope.loadTabData();
     }])
 
-    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', '$location', 'dfServerInfoService', 'dfApplicationData', 'dfNotify', '$http', 'dfObjectService', '$rootScope', function (MOD_APPS_ASSET_PATH, INSTANCE_URL, UserDataService, $location, dfServerInfoService, dfApplicationData, dfNotify, $http, dfObjectService, $rootScope) {
+    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', 'dfServerInfoService', 'dfApplicationData', 'dfNotify', 'dfObjectService', function (MOD_APPS_ASSET_PATH, dfServerInfoService, dfApplicationData, dfNotify, dfObjectService) {
 
         return {
 
             restrict: 'E',
             scope: {
                 appData: '=?',
-                newApp: '=?'
+                newApp: '=?',
+                apiData: '=?'
             },
             templateUrl: MOD_APPS_ASSET_PATH + 'views/df-app-details.html',
             link: function (scope, elem, attrs) {
 
                 var getLocalFileStorageServiceId = function () {
 
-                    var a = dfApplicationData.getApiDataFromCache('service');
-                    if (a !== undefined) {
-                        a = a.filter(function(obj) {
-                            return obj.type === 'local_file';
-                        });
-                    }
+                    var localFileSvc = scope.apiData.service.filter(function(obj) {
+                        return obj.type === 'local_file';
+                    });
 
-                    return a && a.length ? a[0].id : null;
+                    return localFileSvc ? localFileSvc[0].id : null;
                 };
 
                 // Need to refactor into factory.
@@ -172,17 +199,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     }
                 ];
 
-                // Other data
-                scope.roles = dfApplicationData.getApiDataFromCache('role');
-                scope.selectedRoleId = null;
-                scope.storageServices = dfApplicationData.getApiDataFromCache('service');
-                if (scope.storageServices !== undefined) {
-                    scope.storageServices = scope.storageServices.filter(function (obj) {
-                        return ['local_file', 'aws_s3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage'].indexOf(obj.type) >= 0;
-                    });
-                }
-                scope.storageContainers = [];
-
                 if (scope.newApp) {
                     scope.app = new App();
                 }
@@ -203,15 +219,11 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 scope.closeApp = function () {
 
                     scope._closeApp();
-                }
+                };
 
 
                 // PRIVATE API
                 scope._prepareAppData = function (record) {
-
-
-                    // Assign role to app
-                    scope._assignRoleToApp();
 
                     var _app = angular.copy(record);
 
@@ -260,25 +272,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     return dfApplicationData.updateApiData('app', requestDataObj).$promise;
                 };
 
-                scope._assignRoleToApp = function () {
-
-                    scope.app.record.role_id = null;
-
-                    // Loop through roles
-                    angular.forEach(scope.roles, function (role) {
-
-                        if (scope.selectedRoleId) {
-
-                            // Is this the selected role
-                            if (role.id === scope.selectedRoleId) {
-
-                                // yes.  Assign
-                                scope.app.record.role_id = role.id;
-                            }
-                        }
-                    })
-                };
-
                 scope._resetAppDetails = function () {
 
                     if (scope.newApp) {
@@ -288,8 +281,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                         scope.appData = null;
                     }
-
-                    scope.selectedRoleId = null;
                 };
 
                 // COMPLEX IMPLEMENTATION
@@ -415,90 +406,33 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     scope._resetAppDetails();
                 };
 
-                scope.changeStorageService = function () {
-                    if (scope.app && scope.app.record && scope.storageServices) {
-                        scope.selectedStorageService = scope.storageServices.filter(function (item) {
+                // WATCHERS
+                
+                // this is simply to get the name of the selected storage service for use in updating app URL in UI
+                var watchAppStorageService = scope.$watch('app.record.storage_service_id', function (newValue, oldValue) {
+
+                    if (scope.app && scope.app.record && scope.apiData.service) {
+                        scope.selectedStorageService = scope.apiData.service.filter(function (item) {
                             return item.id == scope.app.record.storage_service_id;
                         })[0];
                     }
-
-                };
-
-                // WATCHERS
-
-                var watchAppStorageService = scope.$watch('app.record.storage_service_id', function (newValue, oldValue) {
-
-                    // No new value....return
-                    scope.changeStorageService();
-                    if (!newValue) return false;
-
-                    var i = 0;
-
-                    scope.storageContainers = [];
-                    while (i < scope.storageServices.length) {
-
-                        if (scope.storageServices[i].id === newValue) {
-
-                            dfApplicationData.getServiceComponents(scope.storageServices[i].name).then(function (result) {
-                                angular.forEach(result, function (component) {
-
-                                    if (component !== '' && component !== '*') {
-
-                                        scope.storageContainers.push(component)
-                                    }
-                                }, function (reject) {
-                                    var messageOptions = {
-
-                                        module: 'Api Error',
-                                        type: 'error',
-                                        provider: 'dreamfactory',
-                                        message: reject
-                                    };
-
-                                    dfNotify.error(messageOptions);
-                                });
-                            });
-                        }
-
-                        i++
-                    }
                 });
 
+                // this fires when a record is selected for editing
+                // appData is passed in to the directive as data-app-data
                 var watchAppData = scope.$watch('appData', function (newValue, oldValue) {
 
-                    if (!newValue) return false;
-
-                    scope.app = new App(newValue);
-
-                    angular.forEach(scope.roles, function (roleObj) {
-
-                        if (roleObj.id === scope.app.record.role_id) {
-
-                            scope.selectedRoleId = roleObj.id;
-                        }
-                    });
+                    if (newValue) {
+                        scope.app = new App(newValue);
+                    }
                 });
 
                 // MESSAGES
                 scope.$on('$destroy', function (e) {
 
+                    // Destroy watchers
                     watchAppStorageService();
                     watchAppData();
-                });
-
-                $rootScope.$on("role", function  (){
-
-                    scope.roles = dfApplicationData.getApiDataFromCache('role');
-                });
-
-                $rootScope.$on("service", function () {
-
-                    scope.storageServices = dfApplicationData.getApiDataFromCache('service');
-                    if (scope.storageServices !== undefined) {
-                        scope.storageServices = scope.storageServices.filter(function (obj) {
-                            return ['local_file', 'aws_s3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage'].indexOf(obj.type) >= 0;
-                        });
-                    }
                 });
 
                 // HELP
@@ -712,6 +646,10 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                             dfNotify.success(messageOptions);
 
+                            // tell pagination code to update
+                            // if last record on page was deleted it will go to previous page if any
+                            // it will send us an update message when complete so we can rebuild the list
+                            scope.$broadcast('toolbar:paginate:app:delete');
                         },
 
                         function (reject) {
@@ -794,6 +732,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                             scope.selectedApps = [];
 
+                            // possible multi-delete, tell pagination code to reset to page 1
+                            // it will send us an update message when complete so we can rebuild the list
                             scope.$broadcast('toolbar:paginate:app:reset');
                         },
 
@@ -817,91 +757,35 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     )
                 };
 
-
                 // WATCHERS
-                var watchApps = scope.$watchCollection('apps', function (newValue, oldValue) {
 
-                    if (newValue == null) {
-
-                        var _app = [];
-
-                        angular.forEach(dfApplicationData.getApiDataFromCache('app'), function (app) {
-
-                            if (!app.hasOwnProperty('roles') && (app.hasOwnProperty('import_url') && app.import_url != null)) {
-                                app.roles = [];
-                            }
-
-
-                            _app.push(new ManagedApp(app));
-                        });
-
-                        scope.apps = _app;
-
-                        return;
-                    }
-
-                    if (newValue !== null && oldValue !== null) {
-
-                        if (newValue.length === 0 && oldValue.length === 0) {
-                            scope.emptySectionOptions.active = true;
-                        }
-                    }
-                });
-
-                var watchApiData = scope.$watchCollection(function () {
-
-                    return dfApplicationData.getApiDataFromCache('app');
-
-                }, function (newValue, oldValue) {
-
-                    var _app = [];
-
-                    angular.forEach(dfApplicationData.getApiDataFromCache('app'), function (app) {
-                        if (typeof app !== 'function') {
-                            _app.push(new ManagedApp(app));
-                        }
-                    });
-
-                    scope.apps = _app;
-
-                    return;
-                });
-
-
-                // MESSAGES
-
-                scope.$on('toolbar:paginate:app:update', function (e) {
+                // this fires when the API data changes
+                // apiData is passed in to the details directive as data-api-data
+                var watchApiData = scope.$watchCollection('apiData.app', function (newValue, oldValue) {
 
                     var _apps = [];
 
-                    angular.forEach(dfApplicationData.getApiDataFromCache('app'), function (app) {
-
-
-                        var _app = new ManagedApp(app);
-
-                        var i = 0;
-
-                        while (i < scope.selectedApps.length) {
-
-                            if (scope.selectedApps[i] === _app.record.id) {
-
-                                _app.__dfUI.selected = true;
-                                break;
-                            }
-
-                            i++
-                        }
-
-                        _apps.push(_app);
-                    });
+                    if (newValue) {
+                        angular.forEach(newValue, function (app) {
+                            _apps.push(new ManagedApp(app));
+                        });
+                        scope.emptySectionOptions.active = (newValue.length === 0);
+                    }
 
                     scope.apps = _apps;
+                });
+
+                // MESSAGES
+
+                // broadcast by pagination code when new data is available
+                scope.$on('toolbar:paginate:app:update', function (e) {
+
+                    scope.loadTabData();
                 });
 
                 scope.$on('$destroy', function (e) {
 
                     // Destroy watchers
-                    watchApps();
                     watchApiData();
                 });
 
@@ -926,16 +810,12 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         return {
 
             restrict: 'E',
-            scope: {},
+            scope: {
+                apiData: '=?'
+            },
             templateUrl: MOD_APPS_ASSET_PATH + 'views/df-import-app.html',
             link: function (scope, elem, attrs) {
-                
-                scope.services = dfApplicationData.getApiDataFromCache('service');
-                if (scope.services !== undefined) {
-                    scope.services = scope.services.filter(function (obj) {
-                        return ['local_file', 'aws_s3', 'azure_blob'].indexOf(obj.type) >= 0;
-                    });
-                }
+
                 scope.containers = [];
 
                 scope.appPath = null;
@@ -1071,7 +951,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     scope.storageContainer = '';
                     scope.uploadFile = null;
                     scope.field.val('');
-                }
+                };
 
 
                 // COMPLEX IMPLEMENTATION
@@ -1115,7 +995,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                                 type: 'success',
                                 provider: 'dreamfactory',
                                 message: 'App successfully imported.'
-                            }
+                            };
 
                             dfNotify.success(messageOptions);
 
@@ -1128,7 +1008,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 message: reject
-                            }
+                            };
 
                             dfNotify.error(messageOptions);
 
@@ -1150,43 +1030,21 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     )
                 };
 
-
                 // WATCHERS
-                var watchStorageService = scope.$watch('storageService', function (newValue, oldValue) {
-
-                    // No new value....return
-                    if (!newValue) return false;
-
-                    dfApplicationData.getServiceComponents(newValue.name).then(function (components) {
-
-                        scope.containers = [];
-
-                        // loop through components.
-                        angular.forEach(components, function (v, i) {
-
-                            // We don't want '*' or empty string to be available
-                            // as options
-                            if (v !== '*' && v !== '') {
-                                scope.containers.push(v);
-                            }
-                        });
-
-                    });
-
-                });
 
                 var watchUploadFile = scope.$watch('uploadFile', function (n, o) {
 
                     if (!n) return;
 
                     scope.appPath = n.name;
-                })
-
+                });
 
                 // MESSAGES
-                scope.$on('$destroy', function (e) {
-                    watchStorageService();
 
+                scope.$on('$destroy', function (e) {
+
+                    // Destroy watchers
+                    watchUploadFile();
                 });
 
                 // HELP

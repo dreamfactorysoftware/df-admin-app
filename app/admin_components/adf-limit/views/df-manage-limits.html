@@ -26,7 +26,6 @@
         <!-- ToolBar -->
         <df-section-toolbar>
             <df-toolbar-view-modes></df-toolbar-view-modes>
-            <!-- <input type="text" data-ng-model="$parent.filterText" data-ng-change="changeFilter($parent.filterText)" class="df-search-box" placeholder="Search">
            <!-- <div class="btn-group btn-group-sm pull-right df-btn-group">
                <button df-import-limits
                        type="button"
@@ -49,12 +48,8 @@
             <div style="clear: both"></div>
         </df-section-toolbar>
 
-        <div data-ng-show="limits.length === 0 && !filterText && emptySectionOptions.active">
+        <div data-ng-show="limits.length === 0 && emptySectionOptions.active">
             <df-empty-section></df-empty-section>
-        </div>
-
-        <div data-ng-show="limits.length === 0 && filterText && !emptySectionOptions.active">
-            <df-empty-search-result></df-empty-search-result>
         </div>
 
         <div data-ng-show="limits.length > 0">
@@ -215,13 +210,11 @@
 
     <!-- Edit Limit -->
     <div data-ng-show="currentEditLimit.record.id">
-        <df-limit-details data-limit-data="currentEditLimit" data-new-limit="false"></df-limit-details>
+        <df-limit-details data-limit-data="currentEditLimit" data-new-limit="false" data-api-data="apiData"></df-limit-details>
     </div>
     <div data-ng-if="subscription_required">
         <br/><h4>This feature requires a DreamFactory Gold product subscription.</h4> Email <a href="mailto:dspsales@dreamfactory.com" >dspsales@dreamfactory.com</a> or call +1-650-641-1800 for pricing information.
     </div>
-    <!-- Import Limit Upload File Input-->
-    <input style="display: none" type="file" id="upload" file-model="uploadFile.path" />
 
 
 </div>

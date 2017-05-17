@@ -78,9 +78,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             $scope.$parent.title = 'Admins';
 
             $rootScope.isRouteLoading = true;
-
-            dfApplicationData.getApiData(['admin']);
-
+            
             // Set module links
             $scope.links = [
                 {
@@ -93,23 +91,43 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     label: 'Create',
                     path: 'create-admin'
                 }
-
             ];
-
-            // Set empty section options
-            $scope.emptySectionOptions = {
-                title: 'You have no Admins!',
-                text: 'Click the button below to get started adding admins.  You can always create new admins by clicking the tab located in the section menu to the left.',
-                buttonText: 'Create An Admin!',
-                viewLink: $scope.links[1],
-                active: false
-            };
-
+            
             // Set empty search result message
             $scope.emptySearchResult = {
                 title: 'You have no Admins that match your search criteria!',
-                text: '',
+                text: ''
             };
+
+            // load data
+            
+            $scope.apiData = null;
+            
+            $scope.loadTabData = function() {
+
+                var apis = ['admin'];
+
+                dfApplicationData.getApiData(apis).then(
+                    function (response) {
+                        var newApiData = {};
+                        apis.forEach(function(value, index) {
+                            newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                        });
+                        $scope.apiData = newApiData;
+                    },
+                    function (error) {
+                        var messageOptions = {
+                            module: 'Admins',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'There was an error loading data for the Admins tab. Please try refreshing your browser.'
+                        };
+                        dfNotify.error(messageOptions);
+                    }
+                );
+            };
+
+            $scope.loadTabData();
         }])
 
     .directive('dfAdminDetails', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', 'SystemConfigDataService', function(MOD_ADMIN_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore, SystemConfigDataService) {
@@ -207,7 +225,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     else {
                         scope._updateAdmin();
                     }
-
                 };
 
                 scope.closeAdmin = function () {
@@ -225,10 +242,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
                 scope._updateAdminToServer = function (requestDataObj) {
-                    //if (UserDataService.getCurrentUser().id === requestDataObj.data.id) {
-                    //    requestDataObj.url = INSTANCE_URL + '/api/v2/system/:api/profile';
-                    //    requestDataObj.queryParams = { api: '@api' }
-                    //}
 
                     return dfApplicationData.updateApiData('admin', requestDataObj).$promise;
                 };
@@ -239,7 +252,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         scope.admin = new Admin();
                     }
                     else {
-
                         scope.adminData = null;
                     }
                 };
@@ -336,14 +348,13 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 existingUser.session_id = result.session_token;
                                 $cookieStore.put('CurrentUserObj', existingUser);
                             }
-
-
+                            
                             var messageOptions = {
                                 module: 'Admins',
                                 provider: 'dreamfactory',
                                 type: 'success',
                                 message: 'Admin updated successfully.'
-                            }
+                            };
 
                             dfNotify.success(messageOptions);
 
@@ -380,8 +391,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             // console.log('Admin save finally');
                         }
                     )
-
-
                 };
 
                 scope._closeAdmin = function () {
@@ -401,18 +410,18 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     scope._resetAdminDetails();
                 };
 
-
                 // WATCHERS
 
+                // this fires when a record is selected for editing
+                // adminData is passed in to the directive as data-admin-data
                 var watchAdminData = scope.$watch('adminData', function (newValue, oldValue) {
 
-                    if (!newValue) return false;
-
-                    scope.admin = new Admin(newValue);
-
+                    if (newValue) {
+                        scope.admin = new Admin(newValue);
+                    }
                 });
 
-                scope.$watch('setPassword', function (newValue) {
+                var watchPassword = scope.$watch('setPassword', function (newValue) {
 
                     if (newValue) {
 
@@ -427,15 +436,13 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 });
 
-
                 // MESSAGES
 
                 scope.$on('$destroy', function(e) {
 
                     watchAdminData();
+                    watchPassword();
                 });
-
-
 
                 // HELP
 
@@ -816,8 +823,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     return dfApplicationData.deleteApiData('admin', requestDataObj).$promise;
                 };
 
-
-
                 // COMPLEX IMPLEMENTATION
 
                 scope._editAdmin = function (admin) {
@@ -963,12 +968,8 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
 
                 // WATCHERS
-                
-                $rootScope.$on("admin", function  (){
 
-                    //scope.$broadcast('toolbar:paginate:admin:reset');
-                });
-
+                // this fires when the API data changes
                 var watchApiData = scope.$watchCollection(function() {
 
                     return dfApplicationData.getApiDataFromCache('admin');
@@ -976,22 +977,24 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 }, function (newValue, oldValue) {
 
                     var _admins = [];
-
-                    angular.forEach(newValue, function (admin) {
-
-                        _admins.push(new ManagedAdmin(admin));
-                    });
+                    
+                    if (newValue) {
+                        angular.forEach(newValue, function (admin) {
+                            _admins.push(new ManagedAdmin(admin));
+                        });
+                    }
 
                     scope.admins = _admins;
-
-                    return;
                 });
-
 
                 // MESSAGES
 
+                scope.$on('$destroy', function (e) {
 
-                scope.$on('$destroy', function(e) {
+                    // Destroy watchers
+                    watchApiData();
+                    // when filter is changed the controller is reloaded and we get destroy event
+                    // the reset event tells pagination engine to update based on filter
                     scope.$broadcast('toolbar:paginate:admin:reset');
                 })
 
@@ -1128,7 +1131,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 message: reject
-                            }
+                            };
 
                             dfNotify.error(messageOptions);
 

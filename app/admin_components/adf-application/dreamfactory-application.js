@@ -129,7 +129,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
         function _loadOne(api, forceRefresh) {
 
             var params;
-            var debugLevel = 1;
+            var debugLevel = 0;
             var deferred = $q.defer();
 
             if (forceRefresh !== true && dfApplicationObj.apis.hasOwnProperty(api)) {
@@ -151,7 +151,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                         if (debugLevel >= 2) console.log('_loadOne(' + api + '): dfApplicationObj', dfApplicationObj);
                         dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
                         deferred.resolve(dfApplicationObj.apis[api]);
-                        $rootScope.$broadcast(api);
                     }, function (error) {
                         if (debugLevel >= 1) console.log('_loadOne(' + api + '): error from server', error);
                         if (debugLevel >= 2) console.log('_loadOne(' + api + '): dfApplicationObj', dfApplicationObj);
@@ -359,7 +358,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                     },
                     service: {
                         include_count: true,
-                        include_components: true,
                         limit: limit
                     },
                     config: {},
@@ -631,7 +629,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                         result = dfApplicationObj.apis[api];
                     }
                 }
-                console.log('getApiDataFromCache(' + api + ')', result);
                 return result;
             },
 
@@ -643,7 +640,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
 
                     delete dfApplicationObj.apis[api];
                 }
-                console.log('deleteApiDataFromCache(' + api + ')');
             },
 
             // save data to server and update app obj
@@ -733,8 +729,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 if (service.components && !forceRefresh) {
                     deferred.resolve(service.components);
                 } else {
-                    var apiUrl = url || INSTANCE_URL + '/api/v2/' + service.name + '/?as_access_list=true';
-                    $http.get(apiUrl, params || {})
+                    $http.get(url, params || {})
                         .success(function (result) {
                             service.components = result.resource || result;
                             deferred.resolve(service.components);
