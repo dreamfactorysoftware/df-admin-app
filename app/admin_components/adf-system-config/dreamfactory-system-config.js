@@ -76,8 +76,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
     .controller('SystemConfigurationCtrl', ['$scope', 'dfApplicationData', 'SystemConfigEventsService', 'SystemConfigDataService', 'dfObjectService', 'dfNotify', 'INSTANCE_URL', '$http',
         function ($scope, dfApplicationData, SystemConfigEventsService, SystemConfigDataService, dfObjectService, dfNotify, INSTANCE_URL, $http) {
 
-            $scope.test = dfApplicationData.getApiData(['environment', 'cors', 'lookup', 'email_template']);
-
             var SystemConfig = function (systemConfigData) {
 
                 return {
@@ -109,7 +107,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         dfNotify.error(messageOptions);
                     }
                 );
-            }
+            };
 
             $scope.$parent.title = 'Config';
 
@@ -282,10 +280,42 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     'to a SQL or NoSQL database. Mark any Lookup Key as private to securely encrypt the key value on the server and hide it in the user interface.' +
                     '<span style="color: red;">  Note that Lookup Keys for REST service configuration and credentials must be private.</span>'
                 }
-            }
+            };
+
+            // load data
+
+            $scope.apiData = null;
+
+            $scope.loadTabData = function() {
+
+                // sys config in SystemConfigDataService is as seen by unauthenticated user
+                // for full info we have to get /system/environment using getApiData interface
+                var apis = ['environment', 'cors', 'lookup', 'email_template'];
+
+                dfApplicationData.getApiData(apis).then(
+                    function (response) {
+                        var newApiData = {};
+                        apis.forEach(function(value, index) {
+                            newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                        });
+                        $scope.apiData = newApiData;
+                    },
+                    function (error) {
+                        var messageOptions = {
+                            module: 'Config',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'There was an error loading data for the Config tab. Please try refreshing your browser.'
+                        };
+                        dfNotify.error(messageOptions);
+                    }
+                );
+            };
+
+            $scope.loadTabData();
         }])
 
-    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', 'INSTANCE_URL', 'APP_VERSION', '$http', 'dfNotify', 'dfApplicationData', function (MODSYSCONFIG_ASSET_PATH, INSTANCE_URL, APP_VERSION, $http, dfNotify, dfApplicationData) {
+    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', 'APP_VERSION', 'SystemConfigDataService', function (MODSYSCONFIG_ASSET_PATH, APP_VERSION, SystemConfigDataService) {
 
         return {
             restrict: 'E',
@@ -300,33 +330,18 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.APP_VERSION = APP_VERSION;
 
-                var watchEnvironment = scope.$watch('systemEnv', function (newValue, oldValue) {
+                var watchEnvironment = scope.$watchCollection('apiData.environment', function (newValue, oldValue) {
 
-                    if (newValue === null) {
-                        scope.systemEnv = dfApplicationData.getApiDataFromCache('environment');
+                    if (newValue) {
+
+                        scope.systemEnv = newValue;
                     }
-
                 });
-
-                var watchdfApplicationData = scope.$watchCollection(function () {
-                    return dfApplicationData.getApiDataFromCache('environment');
-                }, function (newValue, oldValue) {
-
-                    if (!newValue) return;
-
-                    scope.systemEnv = dfApplicationData.getApiDataFromCache('environment');
-                });
-
 
                 scope.$on('$destroy', function (e) {
 
                     watchEnvironment();
-                    watchdfApplicationData();
                 });
-
-
-
-
             }
         }
     }])
@@ -605,7 +620,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                             }
                         )
-                    }
+                    };
 
                     scope._saveCorsEntry = function (template) {
 
@@ -665,7 +680,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 dfNotify.error(messageOptions);
                             }
                         )
-                    }
+                    };
 
                     scope._updateCorsEntry = function (template) {
 
@@ -705,7 +720,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                             }
                         )
-                    }
+                    };
 
                     scope.helpTextCors = {
                         description: {
@@ -738,43 +753,23 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             title: 'Methods (Access-Control-Allow-Methods)',
                             text: 'Select HTTP verbs/methods that are allowed.'
                         }
-                    }
+                    };
 
+                    var watchCorsEntries = scope.$watchCollection('apiData.cors', function (newValue, oldValue) {
 
-                    var watchcorsEntries = scope.$watch('corsEntries', function (newValue, oldValue) {
-
-                        if (newValue === null) {
+                        if (newValue) {
 
                             scope.corsEntries = [];
-                            angular.forEach(dfApplicationData.getApiDataFromCache('cors'), function (emailData) {
-
-                                scope.corsEntries.push(new CorsEntry(emailData));
+                            angular.forEach(newValue, function (cors) {
+                                scope.corsEntries.push(new CorsEntry(cors));
                             })
                         }
                     });
 
-                    var watchdfApplicationData = scope.$watchCollection(function () {
-                        return dfApplicationData.getApiDataFromCache('cors');
-                    }, function (newValue, oldValue) {
-
-                        if (!newValue) return;
-
-
-                        scope.corsEntries = [];
-                        angular.forEach(newValue, function (hostData) {
-
-                            scope.corsEntries.push(new CorsEntry(hostData));
-                        })
-                    });
-
-
                     scope.$on('$destroy', function (e) {
 
-                        watchcorsEntries();
-                        watchdfApplicationData();
+                        watchCorsEntries();
                     });
-
-
                 }
             }
         }])
@@ -994,7 +989,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                             }
                         )
-                    }
+                    };
 
                     scope._saveEmailTemplate = function (template) {
 
@@ -1053,7 +1048,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 dfNotify.error(messageOptions);
                             }
                         )
-                    }
+                    };
 
                     scope._updateEmailTemplate = function (template) {
 
@@ -1092,7 +1087,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                             }
                         )
-                    }
+                    };
 
                     scope.helpText = {
                         recipient: {
@@ -1115,43 +1110,23 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             title: 'Reply to Email',
                             text: 'Enter reply to email.'
                         }
-                    }
+                    };
 
+                    var watchEmailTemplates = scope.$watchCollection('apiData.email_template', function (newValue, oldValue) {
 
-                    var watchEmailTemplates = scope.$watch('emailTemplates', function (newValue, oldValue) {
-
-                        if (newValue === null) {
+                        if (newValue) {
 
                             scope.emailTemplates = [];
-                            angular.forEach(dfApplicationData.getApiDataFromCache('email_template'), function (emailData) {
-
-                                scope.emailTemplates.push(new EmailTemplate(emailData));
+                            angular.forEach(newValue, function (email) {
+                                scope.emailTemplates.push(new EmailTemplate(email));
                             })
                         }
                     });
 
-                    var watchdfApplicationData = scope.$watchCollection(function () {
-                        return dfApplicationData.getApiDataFromCache('email_template');
-                    }, function (newValue, oldValue) {
-
-                        if (!newValue) return;
-
-
-                        scope.emailTemplates = [];
-                        angular.forEach(newValue, function (emailData) {
-
-                            scope.emailTemplates.push(new EmailTemplate(emailData));
-                        })
-                    });
-
-
                     scope.$on('$destroy', function (e) {
 
                         watchEmailTemplates();
-                        watchdfApplicationData();
                     });
-
-
                 }
             }
         }])
@@ -1360,7 +1335,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                             }
                         )
-                    }
+                    };
 
                     scope._saveLookup = function (lookup) {
 
@@ -1420,7 +1395,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 dfNotify.error(messageOptions);
                             }
                         )
-                    }
+                    };
 
                     scope._updateLookup = function (lookup) {
 
@@ -1460,43 +1435,23 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                             }
                         )
-                    }
+                    };
 
+                    var watchGlobalLookupKeys = scope.$watchCollection('apiData.lookup', function (newValue, oldValue) {
 
-                    var watchGlobalLookupKeys = scope.$watch('globalLookups', function (newValue, oldValue) {
-
-                        if (newValue === null) {
+                        if (newValue) {
 
                             scope.globalLookups = [];
-                            angular.forEach(dfApplicationData.getApiDataFromCache('lookup'), function (lookupData) {
-
-                                scope.globalLookups.push(new Lookup(lookupData));
+                            angular.forEach(newValue, function (lookup) {
+                                scope.globalLookups.push(new Lookup(lookup));
                             })
                         }
                     });
 
-                    var watchdfApplicationData = scope.$watchCollection(function () {
-                        return dfApplicationData.getApiDataFromCache('lookup');
-                    }, function (newValue, oldValue) {
-
-                        if (!newValue) return;
-
-
-                        scope.globalLookups = [];
-                        angular.forEach(newValue, function (lookupData) {
-
-                            scope.globalLookups.push(new Lookup(lookupData));
-                        })
-                    });
-
-
                     scope.$on('$destroy', function (e) {
 
                         watchGlobalLookupKeys();
-                        watchdfApplicationData();
                     });
-
-
                 }
             }
         }])
@@ -1628,6 +1583,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
         }
     }])
 
+    // sys config as seen by unauthenticated user
+    // for full info we have to get /system/environment using getApiData interface
     .service('SystemConfigDataService', ['INSTANCE_URL', 'dfApplicationData',  function (INSTANCE_URL, dfApplicationData) {
 
         var systemConfig = {};
