@@ -211,13 +211,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
             var params = options.params;
             params['api'] = api;
 
-
-            // had to put in this special rule
-            // for config.  Do not send id param.
-            if (api === 'config') {
-                params.id = null;
-            }
-
             // return response from server as promise
             return dfSystemData.resource({ url: options.url })[options.method || 'put'](params, options.data, function (result) {
 
@@ -360,7 +353,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                         include_count: true,
                         limit: limit
                     },
-                    config: {},
                     email_template: {
                         include_count: true
                     },
