@@ -2534,9 +2534,13 @@ angular.module('dfUtility', ['dfApplication'])
                     // Block any more calls until we are done.
                     scope.isInProgress = true;
 
+                    var filter = detectFilter();
+                    var filterFunction = filter ? scope._getDataFromServer(curOffset, 'filter', filter) : scope._getDataFromServer(curOffset);
+
                     // This tells the dfApplicationObj to update it self and pull
                     // record with a specific offset
-                    scope._getDataFromServer(curOffset).then(
+
+                    filterFunction.then(
                         function(result) {
 
                             // Total count will have been updated.  Grab our new record count
