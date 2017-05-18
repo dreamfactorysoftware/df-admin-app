@@ -954,6 +954,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 method: config.method,
                 url: config.url
             };
+            if (config.params) {
+                request.params = config.params;
+            }
             if (config.data) {
                 request.data = config.data;
             }
