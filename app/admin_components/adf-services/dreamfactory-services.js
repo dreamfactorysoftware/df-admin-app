@@ -2382,23 +2382,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     return dfApplicationData.deleteApiData('service', requestDataObj).$promise;
                 };
 
-                scope._filterServices = function (dataArr) {
-
-
-                    var filtered = ['All', 'Schema', 'Local Portal Service'];
-
-                    angular.forEach(dataArr, function (data, i) {
-                        angular.forEach(filtered, function (value, index) {
-
-                            if (data.name === value) {
-                                dataArr.splice(i, 1);
-                            }
-                        })
-                    });
-
-                    return dataArr;
-                };
-
 
                 // COMPLEX IMPLEMENTATION
 
