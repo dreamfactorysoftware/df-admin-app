@@ -134,7 +134,7 @@ angular.module('dfUtility', ['dfApplication'])
                           }
                       }
                   });
-              }
+              };
 
               scope.githubModalCancel = function () {
 
@@ -179,7 +179,7 @@ angular.module('dfUtility', ['dfApplication'])
                   scope.modalError = {
                       visible: false,
                       message: ''
-                  }
+                  };
 
                   var file_ext = newValue.substring(newValue.lastIndexOf('.') + 1, newValue.length)
 
@@ -198,7 +198,7 @@ angular.module('dfUtility', ['dfApplication'])
                           headers: {
                               'X-DreamFactory-API-Key': undefined,
                               'X-DreamFactory-Session-Token': undefined
-                          },
+                          }
                       })
                       .then(function successCallback(response) {
 
@@ -517,10 +517,10 @@ angular.module('dfUtility', ['dfApplication'])
                         else {
                             scope.links[id].active = false;
                         }
-                    })
+                    });
 
                     scope.setActiveView(scope.links[0])
-                })
+                });
 
 
                 // WATCHERS
@@ -595,7 +595,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                             $('.df-component-nav-title').css({
                                 marginLeft: 0
-                            })
+                            });
                             break;
 
                         case '/home':
@@ -785,7 +785,7 @@ angular.module('dfUtility', ['dfApplication'])
                         })
                     }
                 }
-            }
+            };
 
             // Respond to swagger loaded
             scope.$on('apidocs:loaded', function (e) {
@@ -966,7 +966,7 @@ angular.module('dfUtility', ['dfApplication'])
                             scope.cols = 3;
                         }
                         scope.width = (100/(scope.cols*1))-3;
-                    }
+                    };
                     scope._init();
 
                     scope._toggleSelectAll = function(event){
@@ -978,7 +978,7 @@ angular.module('dfUtility', ['dfApplication'])
                             }
                         });
                         scope.selectedOptions = selected;
-                    }
+                    };
 
                     scope._toggleOptionState = function (nameStr, event) {
                         event.stopPropagation();
@@ -1123,7 +1123,7 @@ angular.module('dfUtility', ['dfApplication'])
                                 verbs.push(verbObj.name);
                             }
 
-                        })
+                        });
 
                         scope.btnText = '';
 
@@ -1391,7 +1391,7 @@ angular.module('dfUtility', ['dfApplication'])
                                 uses.push(useObj.name);
                             }
 
-                        })
+                        });
 
                         scope.btnText = '';
 
@@ -1757,14 +1757,14 @@ angular.module('dfUtility', ['dfApplication'])
                             readOnly: true,
                             highlightActiveLine: false,
                             highlightGutterLine: false
-                        })
+                        });
                         scope.editor.renderer.$cursorLayer.element.style.opacity=0;
                     } else {
                         scope.editor.setOptions({
                             readOnly: false,
                             highlightActiveLine: true,
                             highlightGutterLine: true
-                        })
+                        });
                         scope.editor.renderer.$cursorLayer.element.style.opacity=100;
                     }
                 };
@@ -2200,12 +2200,12 @@ angular.module('dfUtility', ['dfApplication'])
                 scope.getPage = function (pageObj) {
 
                     scope._getPage(pageObj);
-                }
+                };
 
                 scope.prepFunc = function (data) {
 
                     return data;
-                }
+                };
 
 
 
@@ -2216,7 +2216,7 @@ angular.module('dfUtility', ['dfApplication'])
                     var params = {
                             offset: offset,
                             include_count: true
-                        }
+                        };
                     if(type) {
                         if(type == 'filter') {
                             params.filter = value
@@ -2322,7 +2322,7 @@ angular.module('dfUtility', ['dfApplication'])
                         return '(' + item + ' like "%' + filterText + '%")'
                     }).join(' or ');
 
-                }
+                };
 
                 // COMPLEX IMPLEMENTATION
                 scope._getPrevious = function () {
@@ -2352,7 +2352,7 @@ angular.module('dfUtility', ['dfApplication'])
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 message: reject
-                            }
+                            };
 
                             dfNotify.error(messageOptions);
                         }
@@ -2389,7 +2389,7 @@ angular.module('dfUtility', ['dfApplication'])
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 message: reject
-                            }
+                            };
 
                             dfNotify.error(messageOptions);
                         }
@@ -2426,7 +2426,7 @@ angular.module('dfUtility', ['dfApplication'])
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 message: reject
-                            }
+                            };
 
                             dfNotify.error(messageOptions);
                         }
@@ -2493,7 +2493,7 @@ angular.module('dfUtility', ['dfApplication'])
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 message: reject
-                            }
+                            };
 
                             dfNotify.error(messageOptions);
                         }
@@ -2563,7 +2563,7 @@ angular.module('dfUtility', ['dfApplication'])
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 message: reject
-                            }
+                            };
 
                             dfNotify.error(messageOptions);
                         }
@@ -2578,458 +2578,6 @@ angular.module('dfUtility', ['dfApplication'])
             }
         }
     }])
-
-
-    // Used for manage section pagination
-    .directive('dfTablePaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$location', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfNotify, $location) {
-
-        return {
-            restrict: 'E',
-            scope: {
-                api: '=',
-                type: '=?',
-                servicetype: '=',
-                prepFunc: '=?',
-                totalCount: '=totalCount',
-                filter: '='
-            },
-            replace: true,
-            templateUrl : MOD_UTILITY_ASSET_PATH + 'views/df-paginate-table.html',
-
-            link: function (scope, elem, attrs) {
-
-                scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
-                scope.pagesArr = [];
-                scope.currentPage = {};
-                scope.isInProgress = false;
-
-                // PUBLIC API
-                scope.getPreviousTbl = function () {
-
-                    if (scope._isFirstPage() || scope.isInProgress) {
-                        return false;
-                    } else {
-
-                        scope._getPreviousTbl();
-
-                    }
-                };
-
-                scope.getNextTbl = function () {
-
-                    if (scope._isLastPage() || scope.isInProgress) {
-                        return false;
-                    } else {
-                        scope._getNextTbl();
-                    }
-                };
-
-                scope.getPage = function (pageObj) {
-
-                    scope._getPage(pageObj);
-                }
-
-                scope.prepFunc = function (data) {
-
-                    return data;
-                }
-
-
-                // PRIVATE API
-
-                // Data
-                scope._getDataFromServerTbl = function(offset, type, value) {
-                    var params = {
-                            offset: offset,
-                            include_count: true
-                    };
-
-                    if(type) {
-                        if(type == 'filter') {
-                            params.filter = value
-                        } else {
-                            params.type = value
-                        }
-                    }
-
-                    return dfApplicationData.getDataSetFromServer(scope.api, {
-                        params: params
-                    }).$promise;
-                };
-
-
-                // Pagination
-                scope._calcTotalPages = function (totalCount, numPerPage) {
-                    scope.$parent.totalCountInit.value = totalCount
-                    return Math.ceil(totalCount / numPerPage);
-                };
-
-                scope._createPageObj = function (_pageNum) {
-
-                    return {
-                        number: _pageNum + 1,
-                        value: _pageNum,
-                        offset: (_pageNum) ? _pageNum * dfApplicationData.getApiPrefs().data[scope.api].limit : 0,
-                        stopPropagation: false
-                    }
-                };
-
-                scope._createPagesArr = function (_totalCount) {
-
-                    scope.pagesArr = [];
-
-                    for (var i = 0; i < _totalCount; i++) {
-
-                        scope.pagesArr.push(scope._createPageObj(i));
-                    }
-                };
-
-                scope._setCurrentPage = function (pageDataObj) {
-
-                    scope.currentPage = pageDataObj;
-                };
-
-                scope._getCurrentPage = function () {
-
-                    if (!scope.currentPage && scope.pagesArr.length > 0) {
-                        scope.currentPage = scope.pagesArr[0];
-                    } else if (!scope.currentPage && !scope.pagesArr.length) {
-
-                        scope.pagesArr.push(scope._createPageObj(0));
-                        scope.currentPage = scope.pagesArr[0];
-                    }
-
-                    return scope.currentPage;
-                };
-
-                scope._isFirstPage = function () {
-
-                    return scope._getCurrentPage().value === 0;
-                };
-
-                scope._isLastPage = function () {
-
-                    return scope.currentPage.value === scope.pagesArr.length - 1
-                };
-
-                scope._previousPage = function () {
-
-                    scope.currentPage = scope.pagesArr[scope.currentPage.value - 1]
-                };
-
-                scope._nextPage = function () {
-
-                    scope.currentPage = scope.pagesArr[scope.currentPage.value + 1]
-                };
-
-                scope._calcPagination = function (newValue) {
-
-                    scope.pagesArr = [];
-
-                    if (scope.totalCount == 0) {
-                        scope.pagesArr.push(scope._createPageObj(0));
-                        scope.totalCountInit = {value: 0};
-                        return false;
-                    }
-
-                    scope._createPagesArr(scope._calcTotalPages(scope.totalCount, dfApplicationData.getApiPrefs().data[newValue].limit));
-                };
-
-                //local function for filter detection
-                var detectFilter = function() {
-
-                    // Checking if we have filters applied
-                    var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : scope.filter || undefined;
-
-                    if(!filterText) return false;
-
-                    var arr = [ "first_name", "last_name", "name", "email" ];
-
-                    return arr.map(function(item) {
-                        return '(' + item + ' like "%' + filterText + '%")'
-                    }).join(' or ');
-
-                }
-
-                // COMPLEX IMPLEMENTATION
-                scope._getPreviousTbl = function () {
-
-                    if (scope.isInProgress) return false;
-
-                    scope.isInProgress = true;
-
-                    var offset = scope.pagesArr[scope.currentPage.value - 1].offset
-
-                    var filter = detectFilter();
-                    var filterFunction = filter ? scope._getDataFromServerTbl(offset, 'filter', filter) : scope._getDataFromServerTbl(offset);
-
-                    filterFunction.then(
-
-                        function(result) {
-
-                            scope.linkedData = scope.prepFunc({dataArr: result.record});
-                            scope._previousPage();
-                            scope.$emit('toolbar:paginate:' + scope.type + ':update');
-                        },
-
-                        function(reject) {
-
-                            var messageOptions = {
-                                module: 'DreamFactory Paginate Table',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            }
-
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(
-                        function() {
-
-                            scope.isInProgress = false;
-                        }
-                    )
-                };
-
-                scope._getNextTbl = function () {
-
-                    if (scope.isInProgress) return false;
-
-                    scope.isInProgress = true;
-
-                    var offset = scope.pagesArr[scope.currentPage.value + 1].offset
-                    var filter = detectFilter();
-                    var filterFunction = filter ? scope._getDataFromServerTbl(offset, 'filter', filter) : scope._getDataFromServerTbl(offset);
-
-                    filterFunction.then(
-
-                        function(result) {
-                            scope.linkedData = scope.prepFunc({dataArr: result.record});
-
-                            scope._nextPage();
-                            if (scope.type !== undefined) {
-                                scope.$emit('toolbar:paginate:' + scope.type + ':update');
-                            }
-                            else {
-                                scope.$emit('toolbar:paginate:' + scope.api + ':update');
-                            }
-                        },
-
-                        function(reject) {
-                            var messageOptions = {
-                                module: 'DreamFactory Paginate Table',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            }
-
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(
-                        function() {
-
-                            scope.isInProgress = false;
-                        }
-                    )
-                };
-
-                scope._getPage = function (pageObj) {
-
-                    if (scope.isInProgress) return false;
-
-                    scope.isInProgress = true;
-
-                    var filter = detectFilter();
-                    var filterFunction = filter ? scope._getDataFromServerTbl(pageObj.offset, 'filter', filter) : scope._getDataFromServerTbl(pageObj.offset);
-
-                    filterFunction.then(
-
-                        function(result) {
-
-                            scope._setCurrentPage(pageObj);
-                            scope.$emit('toolbar:paginate:' + scope.type + ':update');
-                        },
-
-                        function(reject) {
-
-                            var messageOptions = {
-                                module: 'DreamFactory Paginate Table',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            }
-
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(
-                        function() {
-
-                            scope.isInProgress = false;
-                        }
-                    )
-
-                };
-
-                // WATCHERS
-
-                scope.$on('update:pagination', function(event, count) {
-                    scope.totalCount = count;
-                    scope.$parent.totalCountInit.value = {value: count};
-                    scope._calcPagination(scope.api);
-                    scope._setCurrentPage(0);
-                });
-
-                var watchApi = scope.$watch('api', function(newValue, oldValue) {
-
-                    if (!newValue) return false;
-
-                    if (scope.servicetype.group === 'System') {
-                        scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
-                        scope._calcPagination(newValue);
-                        scope._setCurrentPage(scope.pagesArr[0]);
-                    }
-                    else {
-                        scope.totalCount = 0;
-                        scope.$parent.totalCountInit.value = scope.totalCount
-                        scope._calcPagination(0);
-                        scope._setCurrentPage(0);
-                    }
-                });
-
-                // This is fired on $destroy in controllers that use this directive
-                scope.$on('toolbar:paginate:' + scope.type + ':reset', function (e) {
-
-                    // If we're logging out don't bother
-                    // dfApplicationObj is being destroyed
-                    if ($location.path() === '/logout') {
-                        return;
-                    }
-
-
-                    // are we currently updating the model.
-                    // yes.
-                    if (scope.isInProgress) return false;
-
-                    // We are about to update our data model.
-                    // Block any more calls until we are done.
-                    scope.isInProgress = true;
-
-
-                    var filter = detectFilter();
-                    var filterFunction = filter ? scope._getDataFromServer(0, 'filter', filter) : scope._getDataFromServer(0);
-
-                    // We just want to reset back to the first page.
-                    filterFunction.then(
-                        function(result) {
-
-                            // reset everything.
-                            scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
-
-                            scope._calcPagination(scope.api);
-                            // scope.linkedData = scope.prepFunc({dataArr: result.record});
-                            scope._setCurrentPage(scope.pagesArr[0]);
-
-                            // We're done modifiying our data object and calcualting pagination
-                            // if it was needed.  Let everyone know data is upto date.
-                            scope.$emit('toolbar:paginate:' + scope.type + ':update');
-                        },
-
-                        function(reject) {
-
-                            // There was an error
-                            var messageOptions = {
-                                module: 'DreamFactory Paginate Table',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            }
-
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(
-                        function() {
-                            // Stop our progress indicator
-                            scope.isInProgress = false;
-                        }
-                    )
-                });
-
-                scope.$on('toolbar:paginate:' + scope.type + ':delete', function (e) {
-
-                    // are we currently updating the model.
-                    // yes.
-                    if (scope.isInProgress) return;
-
-                    // set up vars
-                    var curOffset = scope.currentPage.offset,
-                        recalcPagination = false;
-
-                    // Are we on the last page and was the last record deleted
-                    if (scope._isLastPage() && !dfApplicationData.getApiDataFromCache(scope.api).length) {
-
-                        // set var so we know to recalc our pagination
-                        recalcPagination = true;
-
-                        // We need to set the offset for pagination
-                        if (scope.currentPage.number !== 1) {
-
-                            // calc proper offset
-                            curOffset = scope.currentPage.offset - dfApplicationData.getApiPrefs().data[scope.api].limit
-                        }
-                    }
-
-                    // We are about to update our data model.
-                    // Block any more calls until we are done.
-                    scope.isInProgress = true;
-
-                    // This tells the dfApplicationObj to update it self and pull
-                    // record with a specific offset
-                    scope._getDataFromServer(curOffset).then(
-                        function(result) {
-
-                            // Total count will have been updated.  Grab our new record count
-                            scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
-
-                            // did we need to recalc pagination
-                            if (recalcPagination) {
-
-                                // Yep.  Make it happen captin
-                                scope._calcPagination(scope.api);
-                                scope._setCurrentPage(scope.pagesArr[scope.pagesArr.length -1]);
-                            }
-
-                            // We're done modifiying our data object and calcualting pagination
-                            // if it was needed.  Let everyone know data is upto date.
-                            //scope.$emit('toolbar:paginate:' + scope.api + ':update');
-                            scope.$emit('toolbar:paginate:' + scope.type + ':update');
-                        },
-
-                        function(reject) {
-
-                            // There was an error
-                            var messageOptions = {
-                                module: 'DreamFactory Paginate Table',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            }
-
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(
-                        function() {
-
-                            // Stop our progress indicator
-                            scope.isInProgress = false;
-                        }
-                    )
-                })
-
-            }
-
-        }
-    }])
-
 
     // Details section headers
     .directive('dfDetailsHeader', ['MOD_UTILITY_ASSET_PATH', function (MOD_UTILITY_ASSET_PATH) {
@@ -3245,238 +2793,6 @@ angular.module('dfUtility', ['dfApplication'])
                 if($location.search() && $location.search().filter) {
                     scope.$parent.filterText = ($location.search() && $location.search().filter) ? $location.search().filter : null;
                 }
-            }
-        }
-    }])
-
-    // Init loading screen
-    .directive('__dfMainLoading', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', '$interval', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, $interval) {
-
-        return {
-            restrict: 'E',
-            scope: false,
-            templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-main-loading.html',
-            link: function (scope, elem, attrs) {
-
-
-                scope.text = {
-                    operation: "Loading",
-                    module: null
-                };
-
-                scope.moduleNames = ['Services', 'Apps', 'Roles', 'System','Users', 'Config', 'Email Templates', 'Lookup Keys', 'CORS Config', 'App Groups', 'Events', 'Current User', 'Limits'];
-                var loadingDots = null;
-
-
-
-                // PUBLIC API
-                scope.dfmlStart = function () {
-
-                    scope._dfmlStart();
-                };
-
-                scope.dfmlUpdate = function() {
-
-                    scope._dfmlUpdate();
-                };
-
-                scope.dfmlFinish = function() {
-
-                    scope._dfmlFinish();
-                };
-
-
-
-                // PRIVATE API
-                scope._setProgressBar = function (percent) {
-
-                    $('.progress-bar').css({'width' :  percent + '%'});
-                };
-
-                scope._getModuleName = function (moduleStr) {
-
-
-                    switch(moduleStr) {
-
-                        case 'service':
-                            return scope.moduleNames[0];
-                        case 'app':
-                            return scope.moduleNames[1];
-                        case 'role':
-                            return scope.moduleNames[2];
-                        case 'system':
-                            return scope.moduleNames[3];
-                        case 'user':
-                            return scope.moduleNames[4];
-                        case 'config':
-                            return scope.moduleNames[5];
-                        case 'email_template':
-                            return scope.moduleNames[6];
-                        case 'lookup':
-                            return scope.moduleNames[7];
-                        case 'cors':
-                            return scope.moduleNames[8];
-                        case 'app_group':
-                            return scope.moduleNames[9];
-                        case 'event':
-                            return scope.moduleNames[10];
-                        case 'Current User':
-                            return scope.moduleNames[11];
-
-
-                    }
-
-                };
-
-                scope._getOpName = function (opStr) {
-                    switch (opStr) {
-
-                        case 'loading':
-                            return "Loading";
-
-
-                    }
-                };
-
-                scope._loadingDots = function () {
-
-                    var counter = 0;
-
-                    loadingDots = $interval(function () {
-
-                        counter++;
-
-                        if (counter <= 3) {
-                            console.log(counter)
-                            $('#loading-dots').append('.');
-                        }
-                        else {
-                            $('#loading-dots').html('');
-                            console.log('reset')
-                            counter = 0;
-                        }
-                    }, 500, 0 , false);
-                };
-
-
-
-                // COMPLEX IMPLEMENTATION
-                scope._dfmlStart = function () {
-
-                    // Doesn't work during ajax calls for some reason.
-                    // scope._loadingDots();
-                    scope.text.module = scope._getModuleName(dfApplicationData.getMainLoadData().loadData.module);
-
-                    // $(elem).find('h1').html(scope.text.operation);
-                    $(elem).find('small').html(scope.text.module);
-                    scope._setProgressBar(0);
-
-                    $.each($(elem).children(), function (index, value) {
-
-                        $(value).show();
-                    });
-                };
-
-                scope._dfmlUpdate = function () {
-
-                    var data = dfApplicationData.getMainLoadData().loadData;
-                    scope.text.module = scope._getModuleName(data.module);
-                    $(elem).find('h1').html(scope.text.operation);
-                    $(elem).find('p').html(scope.text.module);
-                    scope._setProgressBar(data.percent);
-                };
-
-                scope._dfmlFinish = function () {
-
-                    $(elem).children().hide();
-                    scope._setProgressBar(0);
-
-                    $interval.cancel(loadingDots);
-                };
-
-
-                // MESSAGES
-                scope.$on('dfml:start', function (e, dataObj) {
-
-                    scope.dfmlStart();
-                });
-
-                scope.$on('dfml:update', function (e, dataObj) {
-
-                    scope.dfmlUpdate();
-                });
-
-                scope.$on('dfml:finish', function (e, dataObj) {
-
-                    scope.dfmlFinish();
-                });
-
-            }
-        }
-    }])
-
-    // Init loading screen
-    .service('dfMainLoading', ['$timeout', '$window', function ($timeout, $window) {
-
-        var appendTo = 'dreamfactoryApp';
-        var containerName = 'df-main-loading-container'
-        var title = 'df-loading-title';
-
-        var template = '<div id="' + containerName + '" class="col-xs-10 col-sm-6 col-md-4 col-xs-offset-1 col-sm-offset-3 col-md-offset-4 df-main-loading df-auth-container">' +
-                            '<div class="panel panel-default">' +
-                                '<div class="panel-heading">' +
-                            '<span id="' + title + '"></span>&nbsp;<span id="loading-dots"></span>' +
-                                '</div>' +
-                                '<div class="panel-body">' +
-                                    '<!--<h1 class="df-main-loading">{{text.operation}}</h1>-->' +
-                                    '<p></p>' +
-                                    '<div style="clear: both"></div>' +
-                                    '<div class="progress">' +
-                                        '<div class="progress-bar df-main-loading-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" >' +
-                                            '<span class="sr-only"></span>' +
-                                        '</div>' +
-                                    '</div>' +
-                                '</div>' +
-                            '</div>' +
-                        '</div>';
-
-
-        function calcPercent (totalApis) {
-
-            return (100 / totalApis);
-        }
-
-        function setProgressBar (percent) {
-
-            $('.progress-bar').css({'width' :  percent + '%'});
-        };
-
-        return {
-
-            percentIncrease: 0,
-            currentPercent: 0,
-
-            start: function (totalApis) {
-
-                this.percentIncrease = calcPercent(totalApis);
-                $('#' + appendTo).append(template);
-            },
-
-            update: function (apiName) {
-
-                this.currentPercent += this.percentIncrease;
-                setProgressBar(this.currentPercent);
-                $('#' + title).html(apiName.substr(0,1).toUpperCase() + apiName.substr(1, apiName.length).split('_').join(' '));
-            },
-
-
-            finish: function (apiName) {
-
-                this.currentPercent += this.percentIncrease;
-                setProgressBar(this.currentPercent);
-
-                $('#' + containerName).remove();
-                this.currentPercent = 0;
             }
         }
     }])
@@ -4279,7 +3595,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                             return cmp(Number(a), Number(b));
                         }
-                    )
+                    );
                     break;
 
                 case 'string':
@@ -4358,18 +3674,18 @@ angular.module('dfUtility', ['dfApplication'])
 
             // There is nothing to base a filter off of
             if (!options) {
-                return items
+                return items;
             }
-            ;
+
 
             if (!options.field) {
-                return items
+                return items;
             }
-            ;
+
             if (!options.value) {
-                return items
+                return items;
             }
-            ;
+
             if (!options.regex) {
                 options.regex = new RegExp(options.value, "i");
             }
@@ -4403,7 +3719,7 @@ angular.module('dfUtility', ['dfApplication'])
                     }
                     i++;
                 }
-            )
+            );
 
             return filtered;
 
