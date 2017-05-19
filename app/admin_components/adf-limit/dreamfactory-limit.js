@@ -984,7 +984,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     var requestDataObj = {
                         params: {
-                            fields: '*'
+                            fields: '*',
+                            related: 'service_by_service_id,role_by_role_id,user_by_user_id'
                         },
                         data: scope.saveData
                     };
@@ -1001,7 +1002,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             };
 
                             dfNotify.success(messageOptions);
-                            scope._updateSavedLimit(result);
 
                         },
                         function (reject) {
@@ -1037,7 +1037,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     var requestDataObj = {
 
                         params: {
-                            fields: '*'
+                            fields: '*',
+                            related: 'service_by_service_id,role_by_role_id,user_by_user_id'
                         },
                         data: scope.saveData
                     };
@@ -1045,6 +1046,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     scope._updateLimitToServer(requestDataObj).then(
                         function (result) {
 
+                            debugger;
                             var messageOptions = {
                                 module: 'Limit',
                                 provider: 'dreamfactory',
@@ -1053,8 +1055,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             };
 
                             dfNotify.success(messageOptions);
-                            scope._updateSavedLimit(result);
-
                         },
                         function (reject) {
 
@@ -1132,53 +1132,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     delete saveData.service_by_service_id;
 
                     return saveData;
-                };
-
-                /**
-                 * This to be called after a successful limit update to place
-                 * service, role, user objects back in the limit model, updating
-                 * the table.
-                 * @private
-                 */
-                scope._updateSavedLimit = function (referenceLimit) {
-                    if(angular.isObject(scope.currentEditLimit.record.user_by_user_id)){
-                        referenceLimit.resource[0].user_by_user_id = scope.currentEditLimit.record.user_by_user_id;
-                    }
-                    if(angular.isObject(scope.currentEditLimit.record.role_by_role_id)){
-                        referenceLimit.resource[0].role_by_role_id = scope.currentEditLimit.record.role_by_role_id;
-                    }
-                    if(angular.isObject(scope.currentEditLimit.record.service_by_service_id)){
-                        referenceLimit.resource[0].service_by_service_id = scope.currentEditLimit.record.service_by_service_id;
-                    }
-
-                    /* Clear out any previous object references (if any) */
-                    switch(scope.currentEditLimit.record.type) {
-                        case 'instance':
-                        case 'instance.each_user':
-                            delete referenceLimit.user_by_user_id;
-                            delete referenceLimit.role_by_role_id;
-                            delete referenceLimit.service_by_service_id;
-                            break;
-                        case 'instance.user':
-                            delete referenceLimit.role_by_role_id;
-                            delete referenceLimit.service_by_service_id;
-                            break;
-                        case 'instance.service':
-                            delete referenceLimit.user_by_user_id;
-                            delete referenceLimit.role_by_role_id;
-                            break;
-                        case 'instance.role':
-                            delete referenceLimit.user_by_user_id;
-                            delete referenceLimit.service_by_service_id;
-                            break;
-                        case 'instance.user.service':
-                            delete referenceLimit.role_by_role_id;
-                            break;
-                        case 'instance.each_user.service':
-                            delete referenceLimit.user_by_user_id;
-                            delete referenceLimit.role_by_role_id;
-                            break;
-                    }
                 };
 
                 scope._closeLimit = function () {
