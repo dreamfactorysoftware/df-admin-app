@@ -1019,7 +1019,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     ).finally(
                             function() {
                                 /*reset the currentEditLimit */
-                                $rootScope.$broadcast('toolbar:paginate:limit:reset');
                                 scope.currentEditLimit.record = {};
                                 scope.activeView = scope.links[0];
                             }
@@ -1069,8 +1068,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     ).finally(
                         function(test) {
                             /*reset the currentEditLimit */
-                            $rootScope.$broadcast('toolbar:paginate:limit:reset');
-
                             scope.currentEditLimit.record = {};
                             scope.activeView = scope.links[0];
                         }
