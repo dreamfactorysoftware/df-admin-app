@@ -86,6 +86,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             active: false
         };
 
+        $scope.$on('$destroy', function (e) {
+
+            // dump data if not on page 1
+            $scope.$broadcast('toolbar:paginate:role:destroy');
+        });
+
         // load data
 
         $scope.apiData = null;
@@ -1211,8 +1217,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     // Destroy watchers
                     watchApiData();
-                    // dump data if not on page 1
-                    scope.$broadcast('toolbar:paginate:role:destroy');
                 });
 
                 scope.$watch('$viewContentLoaded',

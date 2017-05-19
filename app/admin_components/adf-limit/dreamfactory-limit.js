@@ -243,6 +243,12 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
             }
         };
 
+    $scope.$on('$destroy', function (e) {
+
+        // dump data if not on page 1
+        $scope.$broadcast('toolbar:paginate:limit:destroy');
+    });
+
     // load data
 
     $scope.apiData = null;
@@ -768,8 +774,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     // Destroy watchers
                     watchLimitApiData();
                     watchLimitCacheApiData();
-                    // dump data if not on page 1
-                    scope.$broadcast('toolbar:paginate:limit:destroy');
                 });
 
                 scope.$watch('$viewContentLoaded',

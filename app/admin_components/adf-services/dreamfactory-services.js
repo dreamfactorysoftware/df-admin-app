@@ -126,6 +126,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             viewLink: $scope.links[1]
         };
 
+        $scope.$on('$destroy', function (e) {
+
+            // dump data if not on page 1
+            $scope.$broadcast('toolbar:paginate:service:destroy');
+        });
+
         // load data
 
         $scope.apiData = null;
@@ -2561,8 +2567,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     // Destroy watchers
                     watchApiData();
-                    // dump data if not on page 1
-                    scope.$broadcast('toolbar:paginate:service:destroy');
                 });
 
                 scope.$watch('$viewContentLoaded',

@@ -92,6 +92,12 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
             active: false
         };
 
+        $scope.$on('$destroy', function (e) {
+
+            // dump data if not on page 1
+            $scope.$broadcast('toolbar:paginate:app:destroy');
+        });
+
         // load data
 
         $scope.apiData = null;
@@ -150,7 +156,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         return obj.type === 'local_file';
                     });
 
-                    return localFileSvc ? localFileSvc[0].id : null;
+                    return (localFileSvc && localFileSvc.length > 0)? localFileSvc[0].id : null;
                 };
 
                 // Need to refactor into factory.
@@ -790,8 +796,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     // Destroy watchers
                     watchApiData();
-                    // dump data if not on page 1
-                    scope.$broadcast('toolbar:paginate:app:destroy');
                 });
 
                 scope.$watch('$viewContentLoaded',
