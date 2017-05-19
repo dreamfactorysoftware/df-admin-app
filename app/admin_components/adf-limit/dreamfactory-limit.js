@@ -1046,7 +1046,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     scope._updateLimitToServer(requestDataObj).then(
                         function (result) {
 
-                            debugger;
                             var messageOptions = {
                                 module: 'Limit',
                                 provider: 'dreamfactory',
