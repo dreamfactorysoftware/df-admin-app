@@ -527,6 +527,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
 
                 // Everything looks good...let's add the data object to the array
                 dfApplicationObj.apis[api].resource = result.resource;
+                dfApplicationObj.apis[api].meta = result.meta;
             }
 
             // Lets update our local storage.

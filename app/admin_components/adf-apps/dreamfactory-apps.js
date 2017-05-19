@@ -96,7 +96,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
         $scope.apiData = null;
 
-        $scope.loadTabData = function() {
+        $scope.loadTabData = function(init) {
 
             var apis = ['app', 'role', 'service'];
 
@@ -112,6 +112,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         }
                     });
                     $scope.apiData = newApiData;
+                    if (init) {
+                        $scope.$broadcast('toolbar:paginate:app:load');
+                    }
                 },
                 function (error) {
                     var messageOptions = {
@@ -125,7 +128,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
             );
         };
 
-        $scope.loadTabData();
+        $scope.loadTabData(true);
     }])
 
     .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', 'dfServerInfoService', 'dfApplicationData', 'dfNotify', 'dfObjectService', function (MOD_APPS_ASSET_PATH, dfServerInfoService, dfApplicationData, dfNotify, dfObjectService) {
@@ -787,6 +790,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     // Destroy watchers
                     watchApiData();
+                    // dump data if not on page 1
+                    scope.$broadcast('toolbar:paginate:app:destroy');
                 });
 
                 scope.$watch('$viewContentLoaded',

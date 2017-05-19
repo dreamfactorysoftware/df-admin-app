@@ -90,7 +90,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
         $scope.apiData = null;
 
-        $scope.loadTabData = function() {
+        $scope.loadTabData = function(init) {
 
             var apis = ['role', 'service'];
 
@@ -101,6 +101,9 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         newApiData[value] = response[index].resource ? response[index].resource : response[index];
                     });
                     $scope.apiData = newApiData;
+                    if (init) {
+                        $scope.$broadcast('toolbar:paginate:role:load');
+                    }
                 },
                 function (error) {
                     var messageOptions = {
@@ -114,7 +117,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             );
         };
 
-        $scope.loadTabData();
+        $scope.loadTabData(true);
     }])
 
     .directive('dfRoleDetails', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$q', 'SystemConfigDataService', 'dfSystemData', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, $q, SystemConfigDataService, dfSystemData) {
@@ -1208,6 +1211,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     // Destroy watchers
                     watchApiData();
+                    // dump data if not on page 1
+                    scope.$broadcast('toolbar:paginate:role:destroy');
                 });
 
                 scope.$watch('$viewContentLoaded',

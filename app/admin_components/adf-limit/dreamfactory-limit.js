@@ -247,7 +247,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
     $scope.apiData = null;
 
-    $scope.loadTabData = function() {
+    $scope.loadTabData = function(init) {
 
             var apis = ['system', 'limit', 'role', 'service', 'user', 'limit_cache'];
 
@@ -258,6 +258,9 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         newApiData[value] = response[index].resource ? response[index].resource : response[index];
                     });
                     $scope.apiData = newApiData;
+                    if (init) {
+                        $scope.$broadcast('toolbar:paginate:limit:load');
+                    }
                 },
                 function (error) {
                     var messageOptions = {
@@ -271,7 +274,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
             );
         };
 
-        $scope.loadTabData();
+        $scope.loadTabData(true);
 
     }])
 
@@ -765,6 +768,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     // Destroy watchers
                     watchLimitApiData();
                     watchLimitCacheApiData();
+                    // dump data if not on page 1
+                    scope.$broadcast('toolbar:paginate:limit:destroy');
                 });
 
                 scope.$watch('$viewContentLoaded',

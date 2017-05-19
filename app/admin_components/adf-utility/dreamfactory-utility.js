@@ -2418,14 +2418,54 @@ angular.module('dfUtility', ['dfApplication'])
 
                 // WATCHERS
 
+                // Here we have a watcher function and an event listener. The purpose of these
+                // is to initialize pagination after all data is loaded. In the original app
+                // design all data was loaded at startup. When you clicked on a tab the watcher
+                // would fire and it would get the record count from cache to init pagination. Now we
+                // load data as needed for each tab, either from the server or from cache. If from
+                // cache the old way works fine. The data finishes loading before the watcher fires
+                // and the watcher inits pagination. If the data comes from the server it will take
+                // longer, and the data may not be available when the watcher fires. In this case
+                // the controller broadcasts the 'load' event to init pagination. If data is loaded
+                // from cache the listener for the event may not exist yet, but the watcher
+                // will init pagination. If the data is loaded from the server the watcher might
+                // find 0 records (data not loaded yet) but after all daata is loaded the event
+                // listener will init pagination.
                 var watchApi = scope.$watch('api', function(newValue, oldValue) {
 
                     if (!newValue) return false;
+                    scope.totalCount = dfApplicationData.getApiRecordCount(newValue);
                     scope._calcPagination(newValue);
                     scope._setCurrentPage(scope.pagesArr[0]);
                 });
 
-                // This is fired on $destroy in controllers that use this directive
+                // If data for the tab is loaded after the watcher fires, this event will init
+                // pagination.
+                scope.$on('toolbar:paginate:' + scope.api + ':load', function (e) {
+
+                    scope.totalCount = dfApplicationData.getApiRecordCount(scope.api);
+                    scope._calcPagination(scope.api);
+                    scope._setCurrentPage(scope.pagesArr[0]);
+                });
+
+                // This event is fired on $destroy in controllers that have pagination.
+                // If you are not on the first page when you leave the tab, you need to
+                // make sure the data for page 1 is loaded next time you go back to that
+                // same tab. Deleting the data from cache forces a reload from server
+                // and inits pagination to page 1.
+                scope.$on('toolbar:paginate:' + scope.api + ':destroy', function (e) {
+
+                    if (scope.currentPage.number !== 1) {
+
+                        dfApplicationData.deleteApiDataFromCache(scope.api);
+                        scope.totalCount = 0
+                        scope._calcPagination(scope.api);
+                        scope._setCurrentPage(scope.pagesArr[0]);
+                    }
+                });
+
+                // This event is fired from controllers that have pagination when selected
+                // records are deleted. It loads records for page 1 and resets pagination.
                 scope.$on('toolbar:paginate:' + scope.api + ':reset', function (e) {
 
                     // If we're logging out don't bother
@@ -2478,6 +2518,9 @@ angular.module('dfUtility', ['dfApplication'])
                     )
                 });
 
+                // This event is fired from controllers that have pagination when a single
+                // record is deleted. Unlike the reset event, it tries to keep the current page,
+                // or load prevous page if last record on current page was deleted.
                 scope.$on('toolbar:paginate:' + scope.api + ':delete', function (e) {
 
                     // are we currently updating the model.

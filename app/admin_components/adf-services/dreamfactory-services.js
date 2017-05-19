@@ -130,7 +130,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
         $scope.apiData = null;
 
-        $scope.loadTabData = function() {
+        $scope.loadTabData = function(init) {
 
             var apis = ['service', 'service_type', 'environment'];
 
@@ -141,6 +141,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         newApiData[value] = response[index].resource ? response[index].resource : response[index];
                     });
                     $scope.apiData = newApiData;
+                    if (init) {
+                        $scope.$broadcast('toolbar:paginate:service:load');
+                    }
                 },
                 function (error) {
                     var messageOptions = {
@@ -154,7 +157,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             );
         };
 
-        $scope.loadTabData();
+        $scope.loadTabData(true);
     }])
 
     .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'dfServiceValues', '$http', 'INSTANCE_URL', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, dfServiceValues, $http, INSTANCE_URL) {
@@ -2558,6 +2561,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     // Destroy watchers
                     watchApiData();
+                    // dump data if not on page 1
+                    scope.$broadcast('toolbar:paginate:service:destroy');
                 });
 
                 scope.$watch('$viewContentLoaded',
