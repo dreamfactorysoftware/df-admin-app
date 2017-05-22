@@ -2,14 +2,15 @@
 <div class="form-group">
     <label>Service Type</label>
     <df-simple-help data-options="dfSimpleHelp.serviceType"></df-simple-help><br/>
-    <div class="btn-group" data-ng-if="newService">
-        <button id="services_info_type" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-ng-disabled="!servicesReady">
+
+    <div class="dropdown" data-ng-if="newService">
+        <button id="services_info_type" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" data-ng-disabled="!servicesReady">
             {{selectedSchema.label || 'Select Service Type'}}
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
             <li class="dropdown-submenu" ng-repeat="service in serviceArray">
-                <a id="services_info_type_{{$index}}" tabindex="-1">{{service.group_name}}</a>
+                <a id="services_info_type_{{$index}}" class="sub" tabindex="-1">{{service.group_name}}</a>
                 <ul class="dropdown-menu">
                     <li data-ng-repeat="type in service.group_types">
                         <a href="" id="services_info_type_select_{{type.name}}" data-ng-click="$parent.$parent.serviceInfo.record.type = type.name; changeServiceType()">{{type.label}}</a>
@@ -18,6 +19,7 @@
             </li>
         </ul>
     </div>
+
     <div class="btn-group" data-ng-if="!newService">
         <button type="button" data-ng-model="serviceInfo.record.type" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled="disabled">
             {{selectedSchema.label}}    <span class="caret"></span>
@@ -53,3 +55,16 @@
         <br/><h4>This feature requires a DreamFactory {{selectedSchema.group === 'Log' ? 'Gold': 'Silver'}} product subscription.</h4> Email dspsales@dreamfactory.com or call +1-650-641-1800 for pricing information.
     </div>
 </div>
+
+<script>
+    $(document).ready(function(){
+        $('.dropdown-menu').find('ul').toggle(false);
+
+        $('.dropdown-submenu a.sub').on("click", function(e){
+            $('.dropdown-menu').find('ul').toggle(false);
+            $(this).next('ul').toggle();
+            e.stopPropagation();
+            e.preventDefault();
+        });
+    });
+</script>
