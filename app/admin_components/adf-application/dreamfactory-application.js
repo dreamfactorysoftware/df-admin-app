@@ -70,7 +70,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
             }
         }])
 
-    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfUserPrefs', '$rootScope', '$location', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfUserPrefs, $rootScope, $location) {
+    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', '$rootScope', '$location', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, $rootScope, $location) {
 
 
         var dfApplicationObj = {
@@ -258,63 +258,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 // update the application object and session storage.
                 __replaceApiData(api, result);
             });
-        }
-
-        // saves current user to server
-        // update session storage and app obj
-        function _saveUserPrefs(userPrefs) {
-
-            dfUserPrefs.setPrefs(userPrefs);
-
-            var adminPreferences = {
-                'resource': [
-                    {
-                        'name': 'adminPreferences',
-                        'value': userPrefs
-                    }
-                ]
-            };
-
-            return UserDataService.saveUserSetting(adminPreferences);
-        }
-
-        // retrieves user settings
-        function _getUserPrefs() {
-
-            var prefs, result, valid;
-
-            // get current settings
-            prefs = dfUserPrefs.getPrefs();
-
-            // if not loaded then request from server
-            if (prefs === null) {
-
-                // returns 404 if adminPreferences settings do not exist yet
-                result = UserDataService.getUserSetting('adminPreferences', true);
-
-                valid = false;
-
-                if (result.status === 200) {
-
-                    // success, pull out settings data
-                    prefs = angular.fromJson(result.response);
-
-                    // safety belt to make sure data looks sane
-                    if (prefs.hasOwnProperty('application') && prefs.application) {
-                        valid = true;
-                    }
-                }
-
-                // if no valid prefs available then use defaults
-                if (!valid) {
-                    prefs = dfUserPrefs.getDefaultPrefs();
-                }
-
-                // set prefs object. this is the 'cache'
-                dfUserPrefs.setPrefs(prefs);
-            }
-
-            return prefs;
         }
 
         // retrieves API settings
@@ -546,11 +489,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
             init: function () {
 
                 dfApplicationObj.currentUser = UserDataService.getCurrentUser();
-
-                // Are we an admin
-                if (dfApplicationObj.currentUser.is_sys_admin) {
-                    _getUserPrefs();
-                }
             },
 
             // Returns app obj that is stored in the service
@@ -681,19 +619,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 }
             },
 
-            // saves current user preferences to server
-            saveUserPrefs: function (adminPrefs) {
-
-                return _saveUserPrefs(adminPrefs);
-            },
-
-            // get current user preferences from server
-            getUserPrefs: function () {
-
-                return _getUserPrefs();
-
-            },
-
             // get API preferences
             getApiPrefs: function () {
 
@@ -790,61 +715,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                         headers: options.headers
                     }
                 });
-            }
-        }
-    }])
-
-    // user configurable prefs for UI
-
-    .factory('dfUserPrefs', [function () {
-
-        var prefs = null;
-
-        return {
-
-            getPrefs: function () {
-
-                return prefs;
-            },
-
-            setPrefs: function (data) {
-
-                prefs = data;
-            },
-
-            getDefaultPrefs: function () {
-
-                return {
-                    application: {
-                        notificationSystem: {
-                            success: 'pnotify',
-                            error: 'pnotify',
-                            warn: 'pnotify'
-                        }
-                    },
-                    sections: {
-                        app: {
-                            autoClose: false,
-                            manageViewMode: 'table'
-                        },
-                        role: {
-                            autoClose: false,
-                            manageViewMode: 'table'
-                        },
-                        admin: {
-                            autoClose: false,
-                            manageViewMode: 'table'
-                        },
-                        user: {
-                            autoClose: false,
-                            manageViewMode: 'table'
-                        },
-                        service: {
-                            autoClose: false,
-                            manageViewMode: 'table'
-                        }
-                    }
-                };
             }
         }
     }])

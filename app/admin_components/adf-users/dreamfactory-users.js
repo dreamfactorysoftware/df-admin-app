@@ -368,10 +368,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             scope.user = new User(result);
 
-                            if (dfApplicationData.getUserPrefs().sections.user.autoClose) {
-
-                                scope.closeUser();
-                            }
+                            scope.closeUser();
 
                             scope.lookupKeys = scope.lookupKeys.filter(function (key) {
                                 return key.record.user_id !== null;
@@ -801,8 +798,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope.uploadFile = {
                     path: ''
                 };
-
-                scope.currentViewMode = dfApplicationData.getUserPrefs().sections.user.manageViewMode;
 
                 scope.users = null;
 

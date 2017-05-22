@@ -364,10 +364,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             scope.admin = new Admin(result);
 
-                            if (dfApplicationData.getUserPrefs().sections.admin.autoClose) {
-
-                                scope.closeAdmin();
-                            }
+                            scope.closeAdmin();
 
                             scope.lookupKeys = scope.lookupKeys.filter(function (key) {
                                 return key.record.user_id !== null;
@@ -731,8 +728,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 // there is a scope issue where the fileUpload directive
                 // accesses import admins parent scope.  It's not as bad as it sounds
                 scope.uploadFile = null;
-
-                scope.currentViewMode = dfApplicationData.getUserPrefs().sections.admin.manageViewMode;
 
                 scope.admins = null;
 

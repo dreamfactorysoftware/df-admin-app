@@ -243,13 +243,10 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     // reset tabs
                     angular.element('#basic-tab').trigger('click');
-                    scope.$broadcast('dfPaginate:reset:user');
-                    scope.$broadcast('dfPaginate:reset:app');
 
                     // reset errors
                     scope.lookupKeysError = false;
                     scope.basicInfoError = false;
-
                 };
 
 
@@ -401,9 +398,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         }
                     );
 
-                    if (dfApplicationData.getUserPrefs().sections.role.autoClose) {
-                        scope._resetRoleDetails();
-                    }
+                    scope._resetRoleDetails();
                 };
 
                 scope._deleteRole = function () {
@@ -494,7 +489,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 scope.$on('$destroy', function (e) {
                     watchRoleData();
                     watchServiceData();
-                    scope.$broadcast('dfPaginate:reset:records');
                 });
 
                 // HELP
@@ -949,8 +943,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 };
 
                 scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
-
-                scope.currentViewMode = dfApplicationData.getUserPrefs().sections.role.manageViewMode;
 
                 scope.roles = null;
 

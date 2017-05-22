@@ -2098,42 +2098,6 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
-    // Adds view modes functionality for sections
-    // ability to toggle between list, thumbnail, and table views of data
-    .directive('dfToolbarViewModes', ['MOD_UTILITY_ASSET_PATH', function (MOD_UTILITY_ASSET_PATH) {
-
-
-        return {
-            restrict: 'E',
-            scope: false,
-            replace: true,
-            templateUrl : MOD_UTILITY_ASSET_PATH + 'views/df-view-modes.html',
-            link: function (scope, elem, attrs) {
-
-                // Toolbar creates an unnecessary scope.
-                // so we just bind to the $parent scope to bypass dfToolbar's scope
-                scope = scope.$parent;
-
-                scope.viewMode = ['list', 'thumbnails', 'table'];
-
-
-                // PUBLIC API
-                scope.toggleViewMode = function(mode) {
-                    scope._toggleViewMode(mode);
-                };
-
-
-                // PRIVATE API
-                scope._toggleViewMode = function(mode) {
-
-                    scope.currentViewMode = scope.viewMode[mode];
-                };
-
-
-            }
-        }
-    }])
-
     // Used for section overview help
     .directive('dfToolbarHelp', ['MOD_UTILITY_ASSET_PATH', function (MOD_UTILITY_ASSET_PATH) {
 
@@ -3309,80 +3273,18 @@ angular.module('dfUtility', ['dfApplication'])
 
             success: function(options) {
                 
-                switch(dfApplicationData.getUserPrefs().application.notificationSystem.success) {
-
-                    case 'pnotify':
-                        pnotify(options);
-                        break;
-                    case 'browserAlert':
-                        alert(options.message);
-                        break;
-                    case 'browserLog':
-                        // Need to make cross browser compatible
-                        console.log(options.message);
-                        break;
-                    case 'dfModalNotify':
-                        // Actually need to create this service
-                        console.log('dfModalNotfiy');
-                        break;
-
-                    default:
-                        console.log('browserAlert');
-
-                }
-
+                pnotify(options);
             },
 
             error: function(options) {
                 
-                switch(dfApplicationData.getUserPrefs().application.notificationSystem.error) {
-
-                    case 'pnotify':
-                        options.message = parseError(options, 'message');
-                        pnotify(options);
-                        break;
-                    case 'browserAlert':
-                        alert(parseError(options, 'message'));
-                        break;
-                    case 'browserLog':
-                        // Need to make cross browser compatible
-                        console.error(parseError(options, 'message'));
-                        break;
-                    case 'dfModalNotify':
-                        // Actually need to create this service
-                        console.log('dfModalNotfiy');
-                        break;
-
-                    default:
-                        console.log('browserAlert');
-
-                }
-
+                options.message = parseError(options, 'message');
+                pnotify(options);
             },
 
             warn: function(options) {
-                
-                switch(dfApplicationData.getUserPrefs().application.notificationSystem.warn) {
 
-                    case 'pnotify':
-                        pnotify(options);
-                        break;
-                    case 'browserAlert':
-                        alert(options);
-                        break;
-                    case 'browserLog':
-                        // Need to make cross browser compatible
-                        console.error(options);
-                        break;
-                    case 'dfModalNotify':
-                        // Actually need to create this service
-                        console.log('dfModalNotfiy');
-                        break;
-
-                    default:
-                        console.log('browserAlert');
-
-                }
+                pnotify(options);
             },
 
             confirmNoSave: function () {
@@ -3392,19 +3294,7 @@ angular.module('dfUtility', ['dfApplication'])
 
             confirm: function (msg) {
                 
-                switch(dfApplicationData.getUserPrefs().application.notificationSystem.confirm) {
-
-                    case 'pnotify':
-                        return pnotify(options);
-                        break;
-
-                    default:
-                        return confirm(msg);
-                }
-            },
-
-            alert: function (msg) {
-                alert(msg);
+                return confirm(msg);
             }
         }
     }])

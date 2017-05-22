@@ -1776,37 +1776,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             return currentUser;
         }
 
-        function _saveUserSetting(userSettings) {
-
-            return $http({
-                url: INSTANCE_URL + '/api/v2/user/custom',
-                method: 'POST',
-                data: userSettings
-            })
-        }
-
-        function _getUserSetting(setting, sync) {
-
-            setting = setting || '';
-            sync = sync || false;
-
-
-            if (sync) {
-                var requestDataObj = {
-                    url: 'user/custom/' + setting
-                };
-
-                return XHRHelper.ajax(requestDataObj);
-            }
-
-
-            return $http({
-                url: INSTANCE_URL + '/api/v2/user/custom/' + setting,
-                method: 'GET'
-            })
-        }
-
-
         // set the current user
         function _setCurrentUser(userDataObj) {
 
@@ -1833,18 +1802,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             getCurrentUser: function () {
 
                 return _getCurrentUser();
-            },
-
-            saveUserSetting: function (userSettings) {
-
-
-                return _saveUserSetting(userSettings);
-
-            },
-
-            getUserSetting: function (userSetting, sync) {
-
-                return _getUserSetting(userSetting, sync);
             },
 
             setCurrentUser: function (userDataObj) {

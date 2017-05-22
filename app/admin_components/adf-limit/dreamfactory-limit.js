@@ -60,7 +60,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 .service('updateLimitCacheData', [ function(){
     this.mergeCacheData = function(limits, limitCache){
         /* Enrich limits with limit cache data */
-        if(angular.isObject(limitCache)){
+        if(limitCache && limitCache.length > 0){
 
             /* Precalc percentage for limits cache */
             angular.forEach(limitCache, function(value, key){
@@ -78,17 +78,19 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 value.record.cacheData = limitCache.filter(function(obj){
                     return (obj.id == limitId);
                 })[0];
-                /* If value is being changed on an update, etc. */
-                if(value.record.rate != value.record.cacheData.max){
-                    value.record.cacheData.max = value.record.rate;
-                    if(value.record.cacheData.attempts > 0){
-                        value.record.cacheData.percent = (value.record.cacheData.attempts / value.record.cacheData.max) * 100;
-                    } else {
-                        value.record.cacheData.percent = 0;
+                if (value.record.cacheData) {
+                    /* If value is being changed on an update, etc. */
+                    if(value.record.rate != value.record.cacheData.max){
+                        value.record.cacheData.max = value.record.rate;
+                        if(value.record.cacheData.attempts > 0){
+                            value.record.cacheData.percent = (value.record.cacheData.attempts / value.record.cacheData.max) * 100;
+                        } else {
+                            value.record.cacheData.percent = 0;
+                        }
                     }
+                    /* For filtering and sorting, add percent to the root record */
+                    value.record.percent = value.record.cacheData.percent;
                 }
-                /* For filtering and sorting, add percent to the root record */
-                value.record.percent = value.record.cacheData.percent;
             });
         }
     };
@@ -316,8 +318,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         record: limitData
                     }
                 };
-
-                scope.currentViewMode = dfApplicationData.getUserPrefs().sections.user.manageViewMode;
 
                 scope.limits = null;
                 scope.limitcache = null;
@@ -1003,6 +1003,10 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                             dfNotify.success(messageOptions);
 
+                            // clean form
+                            scope._resetLimitDetails();
+
+                            scope.$emit('sidebar-nav:view:reset');
                         },
                         function (reject) {
 
@@ -1014,15 +1018,10 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             };
 
                             dfNotify.error(messageOptions);
-
                         }
                     ).finally(
-                            function() {
-                                /*reset the currentEditLimit */
-                                scope.currentEditLimit.record = {};
-                                scope.activeView = scope.links[0];
-                            }
-                        )
+                        function() {}
+                    )
                 };
 
                 scope._updateLimit = function () {
@@ -1066,14 +1065,10 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             dfNotify.error(messageOptions);
                         }
                     ).finally(
-                        function(test) {
-                            /*reset the currentEditLimit */
-                            scope.currentEditLimit.record = {};
-                            scope.activeView = scope.links[0];
-                        }
+                        function() {}
                     )
 
-
+                    scope._resetLimitDetails();
                 };
 
                 /**

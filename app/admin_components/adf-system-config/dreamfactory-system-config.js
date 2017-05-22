@@ -148,11 +148,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     label: 'Global Lookup Keys',
                     path: 'global-lookup-keys',
                     active: false
-                },
-                {
-                    name: 'edit-preferences',
-                    label: 'Preferences',
-                    path: 'edit-preferences'
                 }
             ];
 
@@ -1455,122 +1450,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 }
             }
         }])
-
-    .directive('dfEditPreferences', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfPrefFactory', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, dfApplicationData, dfPrefFactory, dfNotify) {
-
-        return {
-
-            restrict: 'E',
-            scope: {},
-            templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/df-edit-preferences.html',
-            link: function (scope, elem, attrs) {
-
-
-                scope.prefs = {};
-
-                scope.viewModes = ['list', 'thumbnails', 'table'];
-
-                // Init create pref objects
-                angular.forEach(dfApplicationData.getUserPrefs(), function (value, key) {
-
-                    scope.prefs[key] = {};
-
-                    angular.forEach(value, function (_value, _key) {
-
-                        scope.prefs[key][_key] = [];
-
-                        angular.forEach(_value, function (__value, __key) {
-
-                            scope.prefs[key][_key].push(dfPrefFactory(__key, __value));
-
-                        })
-                    })
-
-                });
-
-                scope.savePrefs = function () {
-
-                    var requestDataObj = scope._formatPrefs();
-
-                    dfApplicationData.saveUserPrefs(requestDataObj).then(
-                        function (result) {
-
-                            var messageOptions = {
-                                module: 'Preferences',
-                                type: 'success',
-                                provider: 'dreamfactory',
-                                message: 'Preferences saved.'
-                            };
-
-                            dfNotify.success(messageOptions);
-                        },
-                        function (reject) {
-
-                            var messageOptions = {
-                                module: 'Api Error',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            };
-
-                            dfNotify.error(messageOptions);
-                        }
-                    );
-                };
-
-                scope._formatPrefs = function () {
-
-                    var _prefs = {};
-
-                    angular.forEach(scope.prefs, function (value, key) {
-
-                        _prefs[key] = {};
-
-                        angular.forEach(value, function (_value, _key) {
-
-                            _prefs[key][_key] = {};
-
-                            angular.forEach(_value, function (obj) {
-
-                                _prefs[key][_key][obj.key] = obj.value;
-                            })
-                        })
-                    });
-
-                    return _prefs;
-                }
-            }
-        }
-    }])
-
-    .factory('dfPrefFactory', [function () {
-
-        return function (key, value) {
-            var Pref = function (type, key, value) {
-                return {
-                    type: type,
-                    key: key,
-                    value: value
-                }
-            };
-
-
-            switch (Object.prototype.toString.call(value)) {
-
-                case '[object String]':
-                    return new Pref('string', key, value);
-                case '[object Array]':
-                    return new Pref('array', key, value);
-                case '[object Number]':
-                    return new Pref('number', key, value);
-                case '[object Boolean]':
-                    return new Pref('boolean', key, value);
-                case '[object Object':
-                    return new Pref('object', key, value);
-
-            }
-        }
-    }])
 
     .service('SystemConfigEventsService', [function () {
 
