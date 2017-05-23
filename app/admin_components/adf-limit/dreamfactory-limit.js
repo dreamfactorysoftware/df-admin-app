@@ -904,7 +904,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     // perform some checks on app data
 
-                    if (!dfObjectService.compareObjectsAsJson(scope.limit.record, scope.currentEditLimit.record)) {
+                    if (!dfObjectService.compareObjectsAsJson(scope.limitData.record, scope.currentEditLimit.record)) {
 
                         if (!dfNotify.confirmNoSave()) {
 
