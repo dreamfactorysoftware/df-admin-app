@@ -25,9 +25,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
             //$rootScope.progressbar = ngProgressFactory.createInstance();
 
             // Get the System Config synchronously because we are dead in the water without it
-            var SystemConfig = SystemConfigDataService.getSystemConfigFromServerSync();
-
-            SystemConfigDataService.setSystemConfig(SystemConfig);
+            SystemConfigDataService.getSystemConfig();
 
             var appObj = dfSessionStorage.getItem('dfApplicationObj');
             var userObj = UserDataService.getCurrentUser();

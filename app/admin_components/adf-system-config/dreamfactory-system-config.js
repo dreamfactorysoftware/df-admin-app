@@ -151,87 +151,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 }
             ];
 
-
-            // PUBLIC API
-            $scope.updateConfig = function () {
-                $scope._updateConfig()
-            };
-
-            // PRIVATE API
-            $scope._updateConfigData = function (requestDataObj) {
-
-                return dfApplicationData.updateApiData('config', requestDataObj).$promise
-            };
-
-            $scope._updateSystemConfigService = function (systemConfigDataObj) {
-
-                SystemConfigDataService.setSystemConfig(systemConfigDataObj);
-            };
-
-            $scope._prepareSystemConfigData = function () {
-
-                $scope._prepareLookupKeyData();
-            };
-
-
-            // COMPLEX IMPLEMENTATION
-            $scope._updateConfig = function () {
-
-                $scope._prepareSystemConfigData();
-
-
-                var requestDataObj = {
-                    params: {
-                        fields: '*'
-                    },
-                    data: $scope.systemConfig.record
-                };
-
-                $scope._updateConfigData(requestDataObj).then(
-                    function (result) {
-
-                        var systemConfigDataObj = result;
-
-                        // We no longer store the system config in the SystemConfigDataService
-                        // You can only get the config and then use as necessary.  The point
-                        // being that you always have a fresh config in the event of a refresh.
-                        // We used to store in a cookie for refresh.  Now we just get it and
-                        // return the promise.
-
-                        //$scope._updateCookie(systemConfigDataObj);
-                        $scope._updateSystemConfigService(systemConfigDataObj);
-
-                        $scope.systemConfig = new SystemConfig(result);
-
-
-                        var messageOptions = {
-                            module: 'Config',
-                            type: 'success',
-                            provider: 'dreamfactory',
-                            message: 'System config updated successfully.'
-
-                        };
-
-                        dfNotify.success(messageOptions);
-
-
-                        $scope.$emit($scope.es.updateSystemConfigSuccess, systemConfigDataObj);
-                    },
-                    function (reject) {
-
-                        var messageOptions = {
-                            module: 'Api Error',
-                            type: 'error',
-                            provider: 'dreamfactory',
-                            message: reject
-                        };
-
-                        dfNotify.error(messageOptions);
-                    }
-                );
-            };
-
-
             // MESSAGES
             // This works but we need to make sure our nav doesn't update
             // probably some kind of message needs to be fired to the navigation directive
@@ -1464,11 +1383,11 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
     // sys config as seen by unauthenticated user
     // for full info we have to get /system/environment using getApiData interface
-    .service('SystemConfigDataService', ['INSTANCE_URL', 'dfApplicationData',  function (INSTANCE_URL, dfApplicationData) {
+    .service('SystemConfigDataService', ['INSTANCE_URL',  function (INSTANCE_URL) {
 
-        var systemConfig = {};
+        var systemConfig = null;
 
-        function _getSystemConfigFromServerSync() {
+        function getSystemConfigFromServerSync() {
 
             var xhr;
 
@@ -1493,36 +1412,19 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     module: 'DreamFactory System Config Module',
                     type: 'error',
                     provider: 'dreamfactory',
-                    exception: 'XMLHTTPRequest Failure:  _getSystemConfigFromServer() Failed retrieve config.  Please contact your system administrator.'
+                    exception: 'XMLHTTPRequest Failure:  getSystemConfigFromServer() Failed retrieve config.  Please contact your system administrator.'
                 }
             }
         }
 
-        function _getSystemConfig() {
-
-            return systemConfig;
-        }
-
-        function _setSystemConfig(userDataObj) {
-
-            systemConfig = userDataObj;
-        }
-
         return {
-
-            getSystemConfigFromServerSync: function () {
-
-                return _getSystemConfigFromServerSync();
-            },
 
             getSystemConfig: function () {
 
-                return _getSystemConfig();
-            },
-
-            setSystemConfig: function (systemConfigDataObj) {
-
-                _setSystemConfig(systemConfigDataObj);
+                if (systemConfig === null) {
+                    systemConfig = getSystemConfigFromServerSync();
+                }
+                return systemConfig;
             }
         }
     }
