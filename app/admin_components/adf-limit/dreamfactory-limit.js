@@ -709,7 +709,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                             // console.log('Delete Limits Finally');
                         }
-                    )
+                    );
                 };
 
                 scope._determineLimitsStatus = function(systemData){
@@ -902,7 +902,18 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 scope.closeLimit = function () {
 
-                    scope._closeLimit();
+                    // perform some checks on app data
+
+                    if (!dfObjectService.compareObjectsAsJson(scope.limit.record, scope.currentEditLimit.record)) {
+
+                        if (!dfNotify.confirmNoSave()) {
+
+                            return false;
+                        }
+
+                    }
+
+                    scope._resetLimitDetails();
                 };
 
                 /*/!** When API Endpoint is selected, need to map associative resource options *!/
@@ -1021,7 +1032,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         }
                     ).finally(
                         function() {}
-                    )
+                    );
                 };
 
                 scope._updateLimit = function () {
@@ -1066,7 +1077,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         }
                     ).finally(
                         function() {}
-                    )
+                    );
 
                     scope._resetLimitDetails();
                 };
@@ -1125,21 +1136,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     return saveData;
                 };
 
-                scope._closeLimit = function () {
-
-                    // perform some checks on app data
-
-                    if (!dfObjectService.compareObjectsAsJson(scope.limit.record, scope.limit.recordCopy)) {
-
-                        if (!dfNotify.confirmNoSave()) {
-
-                            return false;
-                        }
-
-                    }
-
-                    scope._resetLimitDetails();
-                };
 
 
                 // WATCHERS
