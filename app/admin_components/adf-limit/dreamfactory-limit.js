@@ -380,8 +380,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 scope.selectedLimits = [];
 
-                scope.subscription_required = false;
-
                 // PUBLIC API
 
                 scope.editLimit = function (limit) {
@@ -716,23 +714,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     );
                 };
 
-                scope._determineLimitsStatus = function(systemData){
-                    if(angular.isObject(systemData)){
-                        angular.forEach(systemData, function(value){
-                            if(value.name == 'limit'){
-                                scope.limitEnabled = true;
-                            }
-                        });
-                        if(!scope.limitEnabled){
-                            scope.subscription_required = true;
-                            /* Disable ability to navigate to create */
-                            scope.links[1].path = scope.links[0].path;
-                            return;
-                        }
-                    }
-
-                };
-
                 // WATCHERS
 
                 // this fires when the API data changes
@@ -765,6 +746,21 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     }
                 });
 
+                var watchSystemApiData = scope.$watchCollection('apiData.system', function (newValue, oldValue) {
+
+                    if (newValue) {
+                        angular.forEach(newValue, function (value) {
+                            if (value.name === 'limit') {
+                                scope.limitEnabled = true;
+                            }
+                        });
+                        if (!scope.limitEnabled) {
+                            /* Disable ability to navigate to create */
+                            scope.links[1].path = scope.links[0].path;
+                        }
+                    }
+                });
+
                 // MESSAGES
 
                 // broadcast by pagination code when new data is available
@@ -778,6 +774,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     // Destroy watchers
                     watchLimitApiData();
                     watchLimitCacheApiData();
+                    watchSystemApiData();
                 });
 
                 scope.$watch('$viewContentLoaded',

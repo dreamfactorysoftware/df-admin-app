@@ -16,8 +16,8 @@
 
 <div>
 
-    <!-- User Listing -->
-    <div data-ng-hide="currentEditLimit.record.id">
+    <!-- Limit Listing -->
+    <div data-ng-hide="!limitEnabled || currentEditLimit.record.id">
 
 
         <!-- Section Header -->
@@ -141,10 +141,10 @@
 
 
     <!-- Edit Limit -->
-    <div data-ng-show="currentEditLimit.record.id">
+    <div data-ng-show="limitEnabled && currentEditLimit.record.id">
         <df-limit-details data-limit-data="currentEditLimit" data-new-limit="false" data-api-data="apiData"></df-limit-details>
     </div>
-    <div data-ng-if="subscription_required">
+    <div data-ng-if="!limitEnabled">
         <br/><h4>This feature requires a DreamFactory Gold product subscription.</h4> Email <a href="mailto:dspsales@dreamfactory.com" >dspsales@dreamfactory.com</a> or call +1-650-641-1800 for pricing information.
     </div>
 
