@@ -907,9 +907,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     if (!dfObjectService.compareObjectsAsJson(scope.currentEditLimit.record, scope.currentEditLimit.recordCopy)) {
                         var record = angular.toJson(scope.currentEditLimit.record);
-                        console.log(record);
                         var recordCopy = angular.toJson(scope.currentEditLimit.recordCopy);
-                        console.log(recordCopy);
                         if (!dfNotify.confirmNoSave()) {
 
                             return false;
