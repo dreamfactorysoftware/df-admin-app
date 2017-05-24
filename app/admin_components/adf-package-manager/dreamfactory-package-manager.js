@@ -1,4 +1,4 @@
-angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
+angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
     .constant('MOD_PACKAGE_MANAGER_ROUTER_PATH', '/package-manager')
     .constant('MOD_PACKAGE_MANAGER_ASSET_PATH', 'admin_components/adf-package-manager/')
     .config(['$routeProvider', 'MOD_PACKAGE_MANAGER_ROUTER_PATH', 'MOD_PACKAGE_MANAGER_ASSET_PATH',
@@ -173,10 +173,22 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
             link: function (scope, elem, attrs) {
                 scope.packageImportPassword = '';
                 scope.overwrite = false;
+                scope.fileSelector = angular.element('#fileSelect');
+                scope.fileImportPath = null;
+                scope.uploadFile = null;
+
+                scope.browseFileSystem = function () {
+
+                    scope.fileSelector.trigger('click');
+                };
 
                 scope.importPackageFile = function() {
+                    var file = scope.file;
+                    if(file === undefined){
+                        file = scope.fileImportPath;
+                    }
 
-                    if (scope.file !== undefined) {
+                    if (file) {
 
                         var currentUser = UserDataService.getCurrentUser();
 
@@ -187,7 +199,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                 'X-DreamFactory-Session-Token': currentUser.session_token
                             },
                             data: {
-                                files: scope.file
+                                files: file,
+                                import_url: file
                             },
                             transformRequest: function (data, headersGetter) {
 
@@ -268,7 +281,25 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     }
                     angular.element("input[type='file']").val(null);
                     scope.packageImportPassword = '';
+                    scope.fileImportPath = null;
                 }
+
+                // WATCHERS
+
+                var watchUploadFile = scope.$watch('uploadFile', function (n, o) {
+
+                    if (!n) return;
+
+                    scope.fileImportPath = n.name;
+                });
+
+                // MESSAGES
+
+                scope.$on('$destroy', function (e) {
+
+                    // Destroy watchers
+                    watchUploadFile();
+                });
             }
         }
     }])
@@ -716,6 +747,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 scope.fileName = '';
                 scope.packagePassword = '';
                 scope.showDownload = false;
+                scope.showFilePath = false;
+                scope.publicFilePath = 'N/A';
+                scope.publicPathNote = '';
 
                 var exportPath = '';
                 var payload = {};
@@ -816,6 +850,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                             scope.showDownload = true;
                             var path = response.data.path;
                             path = path.replace('api/v2/', '');
+                            scope.publicFilePath = path;
+                            scope.showFilePath = true;
 
                             var msg = 'The package has been exported. Click the Download button to download the file.\n\n' +
                                 'The path to the exported package is: \n' +
@@ -823,10 +859,12 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                             if(response.data.is_public === false){
                                 var subFolder = (scope.folderName === '')? '__EXPORTS' : scope.folderName;
-                                msg += '\nYour exported file is not publicly accessible. '+
+                                var pathNote = '\nYour exported file is not publicly accessible. '+
                                     'Please edit your "'+scope.selectedFileService+'" service configuration to '+
                                     'put "'+subFolder+'" under "Public Path" in order to make this '+
-                                    'exported file publicly accessible/downloadable.'
+                                    'exported file publicly accessible/downloadable.';
+                                msg += pathNote;
+                                scope.publicPathNote = pathNote;
                             }
 
                             $timeout(function () {
@@ -864,6 +902,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     scope.fileName = '';
                     scope.showDownload = false;
                     scope.packagePassword = '';
+                    scope.showFilePath = false;
+                    scope.publicFilePath = 'N/A';
+                    scope.publicPathNote = '';
                 };
 
                 scope.$watchCollection('apiData', function(newValue) {

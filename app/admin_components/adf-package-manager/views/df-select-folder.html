@@ -32,5 +32,19 @@
 			<button ng-if="showDownload" type="button" class="btn btn-success" data-ng-click="exportDownload()">Download</button>
 	        <button df-export-package type="button" class="btn btn-default" data-ng-click="exportClear()">Clear</button>
 	    </div>
+		<div class="col-xs-11" style="margin-top: 10px" ng-if="showFilePath">
+			<div>
+				<label>File Path:</label>
+				<span id="publicFilePathInput">{{ publicFilePath }}</span>
+				<button class="button" ngclipboard data-clipboard-target="#publicFilePathInput">
+					<i class="fa fa-clipboard"></i>&nbsp; Copy to clipboard
+				</button>
+			</div>
+			<div style="margin-top: 10px" class="alert alert-danger" ng-if="publicPathNote">
+				<li class="fa fa-exclamation-circle"></li>
+				<label>Note: </label>
+				<span>{{ publicPathNote }}</span>
+			</div>
+		</div>
 	</div>
 </form>
