@@ -54,7 +54,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 }])
 
 .factory('editLimitService', [ function(){
-    return { record: {} };
+    return { record: {}, recordCopy: {} };
 }])
 
 .service('updateLimitCacheData', [ function(){
@@ -315,7 +315,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         __dfUI: {
                             selected: false
                         },
-                        record: limitData
+                        record: limitData,
+                        recordCopy: limitData
                     }
                 };
 
@@ -463,23 +464,26 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 scope._editLimit = function (limit) {
 
-                    angular.copy(limit, scope.currentEditLimit.record);
+                    angular.copy(limit, scope.currentEditLimit);
 
-                    var limitType = limit.type;
-                    var limitPeriod = limit.period;
-                    var userId = limit.user_id;
+                    var limitType = limit.record.type;
+                    var limitPeriod = limit.record.period;
+                    var userId = limit.record.user_id;
 
                     scope.currentEditLimit.record.typeObj = scope.instanceTypes.filter(function(obj){
                         return (obj.value == limitType);
                     })[0];
+                    scope.currentEditLimit.recordCopy.typeObj = scope.currentEditLimit.record.typeObj;
                     scope.currentEditLimit.record.periodObj = scope.limitPeriods.filter(function(obj){
                         return (obj.value == limitPeriod);
                     })[0];
+                    scope.currentEditLimit.recordCopy.periodObj = scope.currentEditLimit.record.periodObj;
 
                     if(angular.isObject(scope.users)){
                         scope.currentEditLimit.record.user_id = scope.users.filter(function(obj){
                             return (obj.id == userId);
                         })[0];
+                        scope.currentEditLimit.recordCopy.user_id = scope.currentEditLimit.record.user_id;
 
                     }
                     scope.selectType(scope.currentEditLimit.record.typeObj);
@@ -901,8 +905,9 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     // perform some checks on app data
 
-                    if (!dfObjectService.compareObjectsAsJson(scope.limitData.record, scope.currentEditLimit.record)) {
-
+                    if (!dfObjectService.compareObjectsAsJson(scope.currentEditLimit.record, scope.currentEditLimit.recordCopy)) {
+                        var record = angular.toJson(scope.currentEditLimit.record);
+                        var recordCopy = angular.toJson(scope.currentEditLimit.recordCopy);
                         if (!dfNotify.confirmNoSave()) {
 
                             return false;
