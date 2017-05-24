@@ -1178,7 +1178,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 type: 'success',
                                 provider: 'dreamfactory',
                                 message: 'Users imported successfully.'
-                            }
+                            };
                             dfNotify.success(messageOptions);
 
 
@@ -1186,11 +1186,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         },
                         function (reject) {
-                            var detailError = '';
-                            if(reject.data && reject.data.error && reject.data.error.context){
-                                var errorNum = reject.data.error.context.errors[0];
-                                detailError = reject.data.error.message +' Detail: '+ reject.data.error.context.resource[errorNum];
-                            }
 
                             scope.importType = null;
                             scope.uploadFile.path = '';
@@ -1201,8 +1196,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: (detailError != '')? detailError : reject
-                            }
+                                message: reject
+                            };
 
                             dfNotify.error(messageOptions);
 

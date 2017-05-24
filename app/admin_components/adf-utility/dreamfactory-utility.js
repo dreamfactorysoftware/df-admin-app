@@ -3257,18 +3257,6 @@ angular.module('dfUtility', ['dfApplication'])
             return result;
         }
 
-        function parseError (error, retValue) {
-
-            switch (retValue) {
-
-                case 'message':
-                    return parseDreamfactoryError(error.message);
-                default:
-                    error.message = parseDreamfactoryError(error.message);
-                    return error;
-            }
-        }
-
         return {
 
             success: function(options) {
@@ -3278,7 +3266,8 @@ angular.module('dfUtility', ['dfApplication'])
 
             error: function(options) {
                 
-                options.message = parseError(options, 'message');
+                // sometimes options.message is a string, sometimes it's an object
+                options.message = parseDreamfactoryError(options.message);
                 pnotify(options);
             },
 
