@@ -380,6 +380,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 scope.selectedLimits = [];
 
+                scope.subscription_required = false;
+
                 // PUBLIC API
 
                 scope.editLimit = function (limit) {
@@ -755,6 +757,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             }
                         });
                         if (!scope.limitEnabled) {
+                            scope.subscription_required = true;
                             /* Disable ability to navigate to create */
                             scope.links[1].path = scope.links[0].path;
                         }
