@@ -262,7 +262,7 @@ angular.module('dreamfactoryApp')
 
                     if ($location.path() === '/reset-password') {
 
-                        $location.url('/reset-password' + params.join('&'));
+                        $location.url('/reset-password?' + params.join('&'));
                     }
                     else if ($location.path() === '/user-invite'){
 
