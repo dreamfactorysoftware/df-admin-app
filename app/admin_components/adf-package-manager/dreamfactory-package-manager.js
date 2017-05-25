@@ -746,7 +746,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                 scope.folderName = '';
                 scope.fileName = '';
                 scope.packagePassword = '';
-                scope.showDownload = false;
                 scope.showFilePath = false;
                 scope.publicFilePath = 'N/A';
                 scope.publicPathNote = '';
@@ -847,7 +846,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                             data: payload
                         }).then(function successCallback(response) {
                             exportPath = response.data.path;
-                            scope.showDownload = true;
                             var path = response.data.path;
                             path = path.replace('api/v2/', '');
                             scope.publicFilePath = path;
@@ -900,7 +898,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                     exportPath = '';
                     scope.folderName = '';
                     scope.fileName = '';
-                    scope.showDownload = false;
                     scope.packagePassword = '';
                     scope.showFilePath = false;
                     scope.publicFilePath = 'N/A';

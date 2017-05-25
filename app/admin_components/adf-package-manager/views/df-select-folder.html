@@ -29,22 +29,26 @@
 	    <div class="col-xs-1"> </div>
 	    <div class="col-xs-11">
 	        <button df-export-package type="button" class="btn btn-primary" data-ng-click="exportPackage()">Export</button>
-			<button ng-if="showDownload" type="button" class="btn btn-success" data-ng-click="exportDownload()">Download</button>
 	        <button df-export-package type="button" class="btn btn-default" data-ng-click="exportClear()">Clear</button>
 	    </div>
-		<div class="col-xs-11" style="margin-top: 10px" ng-if="showFilePath">
-			<div>
-				<label>File Path:</label>
-				<span id="publicFilePathInput">{{ publicFilePath }}</span>
-				<button class="button" ngclipboard data-clipboard-target="#publicFilePathInput">
-					<i class="fa fa-clipboard"></i>&nbsp; Copy to clipboard
-				</button>
-			</div>
-			<div style="margin-top: 10px" class="alert alert-danger" ng-if="publicPathNote">
-				<li class="fa fa-exclamation-circle"></li>
-				<label>Note: </label>
-				<span>{{ publicPathNote }}</span>
-			</div>
+	</div>
+	<div ng-if="showFilePath" class="row df-btn-row" style="padding-top: 10px; padding-bottom: 20px">
+		<div class="col-xs-1" style="padding-top: 10px;">
+			<label>File Path:</label>
 		</div>
+		<div class="col-xs-11">
+			<span id="publicFilePathInput">{{ publicFilePath }}</span>
+			<button class="btn btn-primary" ngclipboard data-clipboard-target="#publicFilePathInput">
+				<i class="fa fa-clipboard"></i>&nbsp; Copy to clipboard
+			</button>
+			<button class="btn btn-success" data-ng-click="exportDownload()">
+				<i class="fa fa-download"></i>&nbsp; Download
+			</button>
+		</div>
+	</div>
+	<div style="margin-top: 5px" class="alert alert-danger" ng-if="publicPathNote">
+		<li class="fa fa-exclamation-circle"></li>
+		<label>Note: </label>
+		<span>{{ publicPathNote }}</span>
 	</div>
 </form>
