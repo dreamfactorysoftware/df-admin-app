@@ -942,15 +942,29 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     if(checkData.name === null || checkData.name == ''){
                         var options = {
-                            message: 'The limit name cannot be blank.'
+                            module: 'Limit Create Error',
+                            message: 'The limit name cannot be blank.',
+                            type: 'error'
                         };
                         dfNotify.error(options);
                         return false;
-
                     }
+
+                    if(!angular.isDefined(checkData.typeObj)){
+                        var options = {
+                            module: 'Limit Create Error',
+                            message: 'A Limit type must be selected.',
+                            type: 'error'
+                        };
+                        dfNotify.error(options);
+                        return false;
+                    }
+
                     if(checkData.rate === null || checkData.rate == ''){
                         var options = {
-                            message: 'The limit rate cannot be blank.'
+                            module: 'Limit Create Error',
+                            message: 'The limit rate cannot be blank.',
+                            type: 'error'
                         };
                         dfNotify.error(options);
                         return false;
@@ -959,7 +973,9 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     var reg = /^\d+$/;
                     if(!reg.test(checkData.rate)){
                         var options = {
-                            message: 'The limit rate must be an integer.'
+                            module: 'Limit Create Error',
+                            message: 'The limit rate must be an integer.',
+                            type: 'error'
                         };
                         dfNotify.error(options);
                         return false;
@@ -1097,7 +1113,9 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     ];
 
                     /** Endpoint check for blank */
-                    if(!angular.isDefined(saveData.endpoint) && endpointTypes.indexOf(saveData.type) !== -1){
+                    if(!angular.isDefined(saveData.endpoint) &&
+                        endpointTypes.indexOf(saveData.type) !== -1)
+                    {
                         saveData.endpoint = '';
                     }
 
