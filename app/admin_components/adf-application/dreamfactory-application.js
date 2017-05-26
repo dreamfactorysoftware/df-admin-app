@@ -650,26 +650,34 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 return _getLocation();
             },
 
+            // Get table names. If not in cache then request from server and update cache.
+
             getServiceComponents: function (serviceName, url, params, forceRefresh) {
                 var deferred = $q.defer();
-                var service = this.getApiDataFromCache('service');
-                if (service !== undefined) {
-                    service = service.filter(function(obj) {
-                        return obj.name === serviceName;
-                    })[0];
-                }
+                // assumes services are loaded already and there's a matching service name
+                var serviceList = this.getApiDataFromCache('service');
+                var service = serviceList.filter(function(obj) {
+                    return obj.name === serviceName;
+                })[0];
                 if (service.components && !forceRefresh) {
                     deferred.resolve(service.components);
                 } else {
                     $http.get(url, params || {})
-                        .success(function (result) {
-                            service.components = result.resource || result;
-                            deferred.resolve(service.components);
-                            __updateApiData('service', service);
-                        });
+                        .then(
+                            function (result) {
+                                service.components = result.data.resource || result.data;
+                                deferred.resolve(service.components);
+                                __updateApiData('service', service);
+                            },
+                            function (error) {
+                                deferred.reject(error.data);
+                            }
+                        );
                 }
                 return deferred.promise;
             },
+
+            // Table list has changed. Update cache with new list.
 
             updateServiceComponentsLocal: function (service) {
                 var dfServiceData = this.getApiDataFromCache('service');
