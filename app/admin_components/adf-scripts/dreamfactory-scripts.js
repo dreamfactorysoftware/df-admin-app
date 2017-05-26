@@ -75,8 +75,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.$parent.title = 'Scripts';
             $scope.sampleSelect = null;
 
-            dfApplicationData.getApiData(['event', 'script_type']);
-
             $scope.serviceTypeConfig = 'scripts';
 
             // Loosely defined script object for when a script is non-existent.
@@ -170,34 +168,39 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.samplesScripts = null;
             // $scope.sampleScripts = new ScriptObj('sample-scripts', 'v8js', getSampleScripts.data);
 
-            // All these vars pertain to building of events dynamically on the client
-            var data = dfApplicationData.getApiDataFromCache('event');
-            if(data === undefined) {
-                // All these vars pertain to building of events dynamically on the client
-                dfApplicationData.getApiData(['event']).then(function (result) {
-                    $scope.events = result[0];
-                    $scope.highlightScript();
-                });
-            }
-            else {
-                $scope.events = data;
-                $scope.highlightScript();
-            }
+            // load data
+            // Allows for building of events dynamically on the client
 
+            $scope.apiData = null;
 
-            var data = dfApplicationData.getApiDataFromCache('script_type');
-            if (data === undefined) {
-                // These values are used to build the script type dropdown
-                dfApplicationData.getApiData(['script_type']).then(function (result) {
-                    $scope.scriptTypes = result[0].resource;
-                });
-            }
-            else {
-                $scope.scriptTypes = data;
-            }
+            $scope.loadTabData = function() {
+
+                var apis = ['event', 'script_type'];
+
+                dfApplicationData.getApiData(apis).then(
+                    function (response) {
+                        var newApiData = {};
+                        apis.forEach(function(value, index) {
+                            newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                        });
+                        $scope.apiData = newApiData;
+                    },
+                    function (error) {
+                        var messageOptions = {
+                            module: 'Scripts',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser.'
+                        };
+                        dfNotify.error(messageOptions);
+                    }
+                );
+            };
+
+            $scope.loadTabData();
 
             $scope.uppercaseVerbLabels = true;
-            $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete']
+            $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete'];
 
             $scope.allowedScriptFormats = ['js','php','py', 'txt'];
 
@@ -231,7 +234,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.cachePath = { // Ugly, but needed for "back" functionality
                     verbs: $scope.currentPathObj.verbs,
                     name: $scope.currentPathObj.name
-                }
+                };
                 $scope._setEventList(name, verb, verbs, events);
             };
 
@@ -246,7 +249,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     $scope.currentPathObj.verb = null;
                     $scope.currentPathObj.verbs = null;
                 }
-            }
+            };
 
             $scope.saveScript = function () {
 
@@ -407,7 +410,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         dfNotify.error(reject)
                     }
                 )
-            }
+            };
 
             var constructPaths = function (name, verbList, parameter) {
                 var newEventName;
@@ -638,7 +641,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     mode = scriptType;
                 }
                 ace.edit('ide').session.setMode('ace/mode/' + mode);
-            }
+            };
 
             $scope.jumpTo = function (index) {
 
@@ -744,7 +747,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.modalError = {
                     visible: false,
                     message: ''
-                }
+                };
 
                 if (newValue.indexOf('.js') > 0 ||
                     newValue.indexOf('.py') > 0 ||
@@ -764,7 +767,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         headers: {
                             'X-DreamFactory-API-Key': undefined,
                             'X-DreamFactory-Session-Token': undefined
-                        },
+                        }
                     })
                     .then(function successCallback(response) {
 
@@ -786,12 +789,32 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             });
 
+            var watchEventApiData = $scope.$watchCollection('apiData.event', function (newValue, oldValue) {
+
+                if (newValue) {
+
+                    $scope.events = newValue;
+                    $scope.highlightScript();
+                }
+            });
+
+            var watchScriptTypeApiData = $scope.$watchCollection('apiData.script_type', function (newValue, oldValue) {
+
+                if (newValue) {
+
+                    $scope.scriptTypes = newValue;
+                }
+            });
+
+
 
             $scope.$on('$destroy', function (e) {
 
                 watchGithubURL();
                 watchGithubCredUser();
                 watchGithubCredPass();
+                watchEventApiData();
+                watchScriptTypeApiData();
             });
         }])
 
@@ -851,14 +874,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             readOnly: true,
                             highlightActiveLine: false,
                             highlightGutterLine: false
-                        })
+                        });
                         scope.editor.renderer.$cursorLayer.element.style.opacity = 0;
                     } else {
                         scope.editor.setOptions({
                             readOnly: false,
                             highlightActiveLine: true,
                             highlightGutterLine: true
-                        })
+                        });
                         scope.editor.renderer.$cursorLayer.element.style.opacity = 100;
                     }
                 };
