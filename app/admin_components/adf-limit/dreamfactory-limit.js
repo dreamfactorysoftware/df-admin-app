@@ -1062,24 +1062,16 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     if(angular.isObject(saveData.service_by_service_id)){
                         saveData.service_id = saveData.service_by_service_id.id;
                     }
+                    var endpointTypes = [
+                        'instance.service.endpoint',
+                        'instance.user.service.endpoint',
+                        'instance.each_user.service.endpoint'
+                    ];
 
-                    /**
-                     * For building the endpoint
-                     */
-                    /*var pattern = /{(.*?)}/;
-
-                    if(angular.isDefined(saveData.resource)){
-                        var resourceBase = '';
-                        if(pattern.test(saveData.resource)){
-                            resourceBase += saveData.resource.replace(pattern, '');
-
-                        }
-                        if(angular.isDefined(saveData.resourceId)){
-                            resourceBase += saveData.resourceId;
-                        }
-                        saveData.endpoint = resourceBase;
+                    /** Endpoint check for blank */
+                    if(!angular.isDefined(saveData.endpoint) && endpointTypes.indexOf(saveData.type) !== -1){
+                        saveData.endpoint = '';
                     }
-                    */
 
                     delete saveData.key_text;
                     delete saveData.periodObj;
