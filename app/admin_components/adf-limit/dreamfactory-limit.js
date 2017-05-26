@@ -938,9 +938,33 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                
                 scope._validateData = function () {
-                    return true;
+                    var checkData = scope.currentEditLimit.record;
 
-                    //add limit validation here true / false
+                    if(checkData.name === null || checkData.name == ''){
+                        var options = {
+                            message: 'The limit name cannot be blank.'
+                        };
+                        dfNotify.error(options);
+                        return false;
+
+                    }
+                    if(checkData.rate === null || checkData.rate == ''){
+                        var options = {
+                            message: 'The limit rate cannot be blank.'
+                        };
+                        dfNotify.error(options);
+                        return false;
+                    }
+                    /** Check for only integers */
+                    var reg = /^\d+$/;
+                    if(!reg.test(checkData.rate)){
+                        var options = {
+                            message: 'The limit rate must be an integer.'
+                        };
+                        dfNotify.error(options);
+                        return false;
+                    }
+                    return true;
                 };
 
                 // COMPLEX IMPLEMENTATION
@@ -948,6 +972,9 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     // perform some checks on app data
                     scope.saveData = scope._prepareLimitData();
+                    if(!scope.saveData){
+                        return false;
+                    }
 
                     var requestDataObj = {
                         params: {
@@ -1039,7 +1066,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 };
 
                 /**
-                 * Strips out and prepares data for saving or updating in API model. Copies currentEditLimit to preserve
+                 * Strips out and prepares data for saving or updating in API model. Does some basic validations as well.
+                 * Copies currentEditLimit to preserve
                  * objects, etc.
                  * @private
                  */
