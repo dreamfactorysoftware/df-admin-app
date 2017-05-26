@@ -54,8 +54,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
     }])
     
-    .controller('UsersCtrl', ['$rootScope', '$scope', 'dfApplicationData',
-        function($rootScope, $scope, dfApplicationData){
+    .controller('UsersCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify',
+        function($rootScope, $scope, dfApplicationData, dfNotify){
 
             $scope.$parent.title = 'Users';
 

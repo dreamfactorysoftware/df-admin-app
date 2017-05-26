@@ -70,7 +70,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
     .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {}])
 
-    .controller('DataCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
+    .controller('DataCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', function($scope, INSTANCE_URL, dfApplicationData, dfNotify) {
 
         $scope.$parent.title = 'Data';
 

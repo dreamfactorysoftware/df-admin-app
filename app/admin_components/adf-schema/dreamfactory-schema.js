@@ -811,7 +811,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         };
     })
 
-    .controller('SchemaCtrl', ['$scope', 'dfApplicationData', 'ServiceModel', function ($scope, dfApplicationData, ServiceModel) {
+    .controller('SchemaCtrl', ['$scope', 'dfApplicationData', 'ServiceModel', 'dfNotify', function ($scope, dfApplicationData, ServiceModel, dfNotify) {
 
         // Set Title in parent
         $scope.$parent.title = 'Schema';
