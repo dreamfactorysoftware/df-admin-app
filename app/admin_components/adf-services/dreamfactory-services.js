@@ -87,7 +87,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
         $scope.loadTabData = function(init) {
 
-            var apis = ['eventlist', 'service', 'service_type', 'environment'];
+            // eventlist is loaded only as needed to improve user experience
+            var apis = ['service', 'service_type', 'environment'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -1383,7 +1384,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', '$rootScope', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache, $rootScope) {
+    .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', '$rootScope', 'dfNotify', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache, $rootScope, dfNotify) {
 
 
         return {
@@ -2058,6 +2059,24 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             scope.allowedConfigFormats = '.js';
                             scope.allowedConfigGitFormats = ['js'];
                             break;
+                        case 'logstash':
+                            // get event list. it will be cached after first time
+                            if (newValue.name === 'logstash') {
+                                dfApplicationData.getApiData(['eventlist']).then(
+                                    function (response) {
+                                        scope.apiData.eventlist = response[0].resource;
+                                    },
+                                    function (error) {
+                                        var messageOptions = {
+                                            module: 'Services',
+                                            provider: 'dreamfactory',
+                                            type: 'error',
+                                            message: 'There was an error loading the event list for the Logstash service. Please try refreshing your browser.'
+                                        };
+                                        dfNotify.error(messageOptions);
+                                    }
+                                );
+                            }
                         default:
                             scope.allowedConfigFormats = '.json,.js,.php,.yaml,.yml';
                             scope.allowedConfigGitFormats = ['json','js','php','yaml','yml'];
