@@ -57,46 +57,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
     return { record: {}, recordCopy: {} };
 }])
 
-.service('updateLimitCacheData', [ function(){
-    this.mergeCacheData = function(limits, limitCache){
-        /* Enrich limits with limit cache data */
-        if(limitCache && limitCache.length > 0){
-
-            /* Precalc percentage for limits cache */
-            angular.forEach(limitCache, function(value, key){
-                if(value.attempts > 0){
-                    value.percent = (value.attempts / value.max) * 100;
-                } else {
-                    value.percent = 0;
-                }
-            });
-            /* Add limits cache to limits as object, Adjust max as necessary for updates on rate */
-            angular.forEach(limits, function(value){
-                /* need a zero and one for sorting purposes */
-                value.record.active = (value.record.is_active) ? 'active' : 'inactive';
-                var limitId = value.record.id;
-                value.record.cacheData = limitCache.filter(function(obj){
-                    return (obj.id == limitId);
-                })[0];
-                if (value.record.cacheData) {
-                    /* If value is being changed on an update, etc. */
-                    if(value.record.rate != value.record.cacheData.max){
-                        value.record.cacheData.max = value.record.rate;
-                        if(value.record.cacheData.attempts > 0){
-                            value.record.cacheData.percent = (value.record.cacheData.attempts / value.record.cacheData.max) * 100;
-                        } else {
-                            value.record.cacheData.percent = 0;
-                        }
-                    }
-                    /* For filtering and sorting, add percent to the root record */
-                    value.record.percent = value.record.cacheData.percent;
-                }
-            });
-        }
-    };
-
-}])
-
 .controller('LimitCtl', ['INSTANCE_URL', '$rootScope', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function (INSTANCE_URL, $rootScope, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {
 
         $scope.$parent.title = 'Limits';
@@ -321,14 +281,13 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         'dfNotify',
         '$timeout',
         'editLimitService',
-        'updateLimitCacheData',
         function ($rootScope,
             MOD_LIMIT_ASSET_PATH,
             dfApplicationData,
             dfNotify,
             $timeout,
-            editLimitService,
-            updateLimitCacheData) {
+            editLimitService
+        ) {
 
         return {
             restrict: 'E',
@@ -349,7 +308,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 };
 
                 scope.limits = null;
-                scope.limitcache = null;
                 scope.currentEditLimit = editLimitService;
 
                 scope.fields = [
@@ -536,8 +494,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                                 message: 'Limit counter successfully reset.'
                             };
 
-                            limit.record.cacheData.attempts = 0;
-                            limit.record.cacheData.percent = 0;
+                            limit.record.limit_cache_by_limit_id.attempts = 0;
+                            limit.record.limit_cache_by_limit_id.percent = 0;
                             dfNotify.success(messageOptions);
 
 
@@ -665,8 +623,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             angular.forEach(scope.selectedLimits, function(value){
                                 scope.limits.filter(function(obj){
                                     if(obj.record.id == value){
-                                         obj.record.cacheData.attempts = 0;
-                                         obj.record.cacheData.percent = 0;
+                                         obj.record.limit_cache_by_limit_id.attempts = 0;
+                                         obj.record.limit_cache_by_limit_id.percent = 0;
                                     }
                                 });
                             });
@@ -758,21 +716,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     scope.limits = _limits;
 
-                    if (scope.limits && scope.limitcache) {
-                        updateLimitCacheData.mergeCacheData(scope.limits, scope.limitcache);
-                    }
                 });
-
-                var watchLimitCacheApiData = scope.$watchCollection('apiData.limit_cache', function (newValue, oldValue) {
-
-                    if (newValue) {
-                        scope.limitcache = newValue;
-                    }
-                    if (scope.limits && scope.limitcache) {
-                        updateLimitCacheData.mergeCacheData(scope.limits, scope.limitcache);
-                    }
-                });
-
 
                 // MESSAGES
 
@@ -783,10 +727,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 });
 
                 scope.$on('$destroy', function (e) {
-
                     // Destroy watchers
                     watchLimitApiData();
-                    watchLimitCacheApiData();
                 });
 
                 scope.$watch('$viewContentLoaded',
@@ -817,7 +759,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
     '$cookieStore',
     '$rootScope',
     'editLimitService',
-    'updateLimitCacheData', function(
+    function(
         MOD_LIMIT_ASSET_PATH,
         dfApplicationData,
         dfNotify,
@@ -828,8 +770,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         UserDataService,
         $cookieStore,
         $rootScope,
-        editLimitService,
-        updateLimitCacheData) {
+        editLimitService
+        ) {
 
         return {
 
@@ -1061,7 +1003,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                         params: {
                             fields: '*',
-                            related: 'service_by_service_id,role_by_role_id,user_by_user_id'
+                            related: 'service_by_service_id,role_by_role_id,user_by_user_id,limit_cache_by_limit_id'
                         },
                         data: scope.saveData
                     };
@@ -1140,12 +1082,12 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     */
 
                     delete saveData.key_text;
-                    delete saveData.cacheData;
                     delete saveData.periodObj;
                     delete saveData.typeObj;
                     delete saveData.user_by_user_id;
                     delete saveData.role_by_role_id;
                     delete saveData.service_by_service_id;
+                    delete saveData.limit_cache_by_limit_id;
 
                     return saveData;
                 };

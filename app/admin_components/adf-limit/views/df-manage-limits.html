@@ -98,23 +98,22 @@
                                         <td data-ng-click="editLimit(obj)">{{obj.record.name}}</td>
                                         <td data-ng-click="editLimit(obj)">{{obj.record.type}}</td>
                                         <td data-ng-click="editLimit(obj)">{{obj.record.rate + ' / ' + obj.record.period}}</td>
-                                        <td data-ng-click="editLimit(obj)" ng-if="obj.record.cacheData">
-                                            <div  class="progress" >
+                                        <td data-ng-click="editLimit(obj)" ng-if="obj.record.limit_cache_by_limit_id">
+                                            <div  class="progress" data-ng-init="obj.record.limit_cache_by_limit_id.percent = (obj.record.limit_cache_by_limit_id.attempts / obj.record.limit_cache_by_limit_id.max) * 100" >
                                                 <div class="progress-bar"
-                                                     ng-class="{ 'progress-bar-warning' : obj.record.cacheData.percent >= 75,
-                                                     'progress-bar-danger' : obj.record.cacheData.percent >= 90 }"
+                                                     ng-class="{ 'progress-bar-warning' : obj.record.limit_cache_by_limit_id. >= 75,
+                                                     'progress-bar-danger' : obj.record.limit_cache_by_limit_id. >= 90 }"
                                                      role="progressbar" aria-valuenow="70"
-                                                     aria-valuemin="0" aria-valuemax="100" style="width:{{ obj.record.cacheData.percent }}%">
+                                                     aria-valuemin="0" aria-valuemax="100" style="width: {{ obj.record.limit_cache_by_limit_id.percent }}%">
 
                                                 </div>
                                             </div>
-                                            <div style="text-align: center;">{{ obj.record.cacheData.attempts + ' / ' + obj.record.cacheData.max  }}</div>
+                                            <div style="text-align: center;">{{ obj.record.limit_cache_by_limit_id.attempts + ' / ' + obj.record.limit_cache_by_limit_id.max  }}</div>
                                         </td>
-                                        <td data-ng-click="editLimit(obj)" ng-if="!obj.record.cacheData">
+                                        <td data-ng-click="editLimit(obj)" ng-if="!obj.record.limit_cache_by_limit_id">
                                             <div  class="progress" >
                                                 <div class="progress-bar"
-                                                     ng-class="{ 'progress-bar-warning' : obj.record.cacheData.percent >= 75,
-                                                     'progress-bar-danger' : obj.record.cacheData.percent >= 90 }"
+                                                     ng-class=""
                                                      role="progressbar" aria-valuenow="0"
                                                      aria-valuemin="0" aria-valuemax="{{ obj.record.rate }}" style="width:0%">
 
