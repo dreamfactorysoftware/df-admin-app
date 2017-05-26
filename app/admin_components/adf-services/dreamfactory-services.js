@@ -47,7 +47,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
     }])
 
-    .controller('ServicesCtrl', ['$rootScope', '$scope', 'dfApplicationData', function ($rootScope, $scope, dfApplicationData) {
+    .controller('ServicesCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', function ($rootScope, $scope, dfApplicationData, dfNotify) {
 
         $scope.$parent.title = 'Services';
 
@@ -87,7 +87,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
         $scope.loadTabData = function(init) {
 
-            var apis = ['service', 'service_type', 'environment'];
+            var apis = ['eventlist', 'service', 'service_type', 'environment'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -1578,6 +1578,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope._script = {};
                 scope.serviceInfo = {};
                 scope._storageType = {};
+                scope.eventList = [];
 
                 scope.sql_server_host_identifier = null;
                 scope.sql_server_db_identifier = null;
@@ -2063,11 +2064,43 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 });
 
+                var watchEventList = scope.$watchCollection('apiData.eventlist', function (newValue, oldValue) {
+
+                    var temp = {};
+                    var serviceEvents = [];
+
+                    if (newValue) {
+                        angular.forEach(newValue, function (event) {
+                            var service = event;
+                            var index = service.indexOf('.');
+                            if (index >= 0) {
+                                service = service.substr(0, index);
+                            }
+                            if (!temp[service]) {
+                                temp[service] = [];
+                            }
+                            temp[service].push({
+                                'label': event,
+                                'name': event
+                            });
+                        });
+
+                        angular.forEach(temp, function(items, service) {
+                            items.unshift({'label': 'All ' + service + ' events', 'name': service + '.*'});
+                            serviceEvents.push({'label': service, 'name': service, 'items': items});
+                        });
+
+                        scope.eventList = serviceEvents;
+                    }
+                });
+
+
                 scope.$on('$destroy', function (e) {
 
                     watchService();
                     watchEmailProvider();
                     watchSelectedSchema();
+                    watchEventList();
                 });
 
                 // HELP

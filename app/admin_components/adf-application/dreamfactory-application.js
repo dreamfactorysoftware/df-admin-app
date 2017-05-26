@@ -141,7 +141,20 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                     params = {};
                 }
                 // add required api param used by resource to build url
-                params['api'] = (api === 'system' ? '' : api);
+                // this allows for aliasing so the same api can be called with different query params
+                // for example event = system/event but eventlist = system/event?as_list=true
+                // this capability should be used as little as possible
+                switch (api) {
+                    case 'system':
+                        params['api'] = '';
+                        break;
+                    case 'eventlist':
+                        params['api'] = 'event';
+                        break;
+                    default:
+                        params['api'] = api;
+                        break;
+                }
                 dfSystemData.resource().get(params).$promise.then(
                     function (response) {
                         dfApplicationObj.apis[api] = response;
@@ -305,6 +318,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                     },
                     event: {
                         scriptable: true
+                    },
+                    eventlist: {
+                        as_list: true
                     },
                     limit: {
                         include_count: true,

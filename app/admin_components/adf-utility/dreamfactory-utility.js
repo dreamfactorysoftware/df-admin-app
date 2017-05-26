@@ -895,18 +895,19 @@ angular.module('dfUtility', ['dfApplication'])
                         scope.selected = item.name;
                     };
 
-                    scope.$watch('selected', function (n, o) {
-                        if (n == null && n == undefined) return false;
+                    scope.$watch('selected', function (newValue, oldValue) {
 
-                        angular.forEach(scope.options, function (option) {
-                            if(option.items) {
-                                angular.forEach(option.items, function(item){
-                                    if(n === item.name){
-                                        scope.selectedLabel = item.label;
-                                    }
-                                })
-                            }
-                        });
+                        if (newValue) {
+                            angular.forEach(scope.options, function (option) {
+                                if(option.items) {
+                                    angular.forEach(option.items, function(item){
+                                        if(newValue === item.name){
+                                            scope.selectedLabel = item.label;
+                                        }
+                                    })
+                                }
+                            });
+                        }
                     });
                 }
             }
