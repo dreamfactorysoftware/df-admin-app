@@ -404,8 +404,6 @@ angular.module('dreamfactoryApp')
                 // and disappear
                 $timeout(function () {
 
-                    // Init the app
-                    dfApplicationData.init();
                     // Change our app location back to the home page
                     if (queryString) {
                         // if logging in using oauth then do a full reload
@@ -428,9 +426,6 @@ angular.module('dreamfactoryApp')
                 // Set our parent's current user var
                 $scope.$parent.currentUser = userDataObj;
 
-                // Init the application
-                dfApplicationData.init();
-
                 // Send em to launchpad
                 if(queryString){
                     // if logging in using oauth then do a full reload
@@ -448,7 +443,7 @@ angular.module('dreamfactoryApp')
     // Our LogoutCtrl controller inherits from out TopLevelAppCtrl controller
     // This controller provides an attachment point for our logout functionality
     // We inject $location and the UserEventsService...same as the LoginCtrl.
-    .controller('LogoutCtrl', ['$scope', '$location', 'UserEventsService', 'dfApplicationData', 'SystemConfigDataService', function($scope, $location, UserEventsService, dfApplicationData, SystemConfigDataService) {
+    .controller('LogoutCtrl', ['$scope', '$location', 'UserEventsService', 'dfApplicationData', function($scope, $location, UserEventsService, dfApplicationData) {
 
         // Listen for the logout success message
         // then we...
@@ -459,8 +454,8 @@ angular.module('dreamfactoryApp')
             // and should be 'false'
             $scope.$parent.currentUser = userDataObj;
 
-            // Remove Application Object from sessionStorage on successful logout
-            dfApplicationData.destroyApplicationObj();
+            // Reset Application Object on successful logout
+            dfApplicationData.resetApplicationObj();
 
             // redirect
             $location.url('/login')
@@ -578,9 +573,6 @@ angular.module('dreamfactoryApp')
             // Assign the user to the parent current user var
             $scope.$parent.currentUser = userDataObj;
 
-            // setup the app
-            dfApplicationData.init();
-
             // redirect to the app home page
             $location.url('/launchpad');
         });
@@ -650,9 +642,6 @@ angular.module('dreamfactoryApp')
                 // and disappear
                 $timeout(function () {
 
-                    // Init the app
-                    dfApplicationData.init();
-
                     // Change our app location back to the home page
                     if ('user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
                         $location.url('/profile');
@@ -668,9 +657,6 @@ angular.module('dreamfactoryApp')
 
                 // Set our parent's current user var
                 $scope.$parent.currentUser = userDataObj;
-
-                // Init the application
-                dfApplicationData.init();
 
                 // Send em to launchpad
                 $location.url('/launchpad');
@@ -736,9 +722,6 @@ angular.module('dreamfactoryApp')
 
             // Assign the user to the parent current user var
             $scope.$parent.currentUser = userDataObj;
-
-            // setup the app
-            dfApplicationData.init();
 
             // redirect to the app home page
             $location.url('/launchpad');

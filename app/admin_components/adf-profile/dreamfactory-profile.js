@@ -11,8 +11,8 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                     templateUrl: MOD_PROFILE_ASSET_PATH + 'views/main.html',
                     controller: 'ProfileCtrl',
                     resolve: {
-                        checkProfileRoute: ['dfApplicationData', 'SystemConfigDataService', '$location', 'dfNotify', function (dfApplicationData, SystemConfigDataService, $location, dfNotify) {
-                            if (!dfApplicationData.getCurrentUser()) {
+                        checkProfileRoute: ['UserDataService', '$location', function (UserDataService, $location) {
+                            if (!UserDataService.getCurrentUser()) {
                                 $location.url('/login');
                             }
                         }]

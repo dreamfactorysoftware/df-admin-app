@@ -85,7 +85,7 @@ Authentication controllers provide attachment points for authentication/register
 
 ### Data repository and Utility modules
 
-A data repository module called `dfApplicationData` facilitates the loading and management of frequently used application data.  It creates an object called `dfApplicationObj` in the browser session storage.  It contains generic methods to access, modify, and delete data in the application and on the server.  It also provides accessor methods to retrieve and save the actual dfApplicationObj.  While not recommended to interact with this object directly it is sometimes a necessary evil.  The module also contains init code to check whether it is necessary to build a new app object or to refresh the screen with local data as well as what apis to load.  
+A data repository module called `dfApplicationData` facilitates the loading and management of frequently used application data.  It creates an object called `dfApplicationObj`.  It contains generic methods to access, modify, and delete data in the application and on the server.  It also provides accessor methods to retrieve and save the actual dfApplicationObj.  While not recommended to interact with this object directly it is sometimes a necessary evil.  The module also contains init code to check whether it is necessary to build a new app object or to refresh the screen with local data as well as what apis to load.  
 
 The utility module provides services, factories, directives, and filters related to the operation of modules.  Things like our icon service, navs, table filtering/pagination, etc are stored here.  Basically, things that multiple modules may need access to and/or have no other place to go.  
 

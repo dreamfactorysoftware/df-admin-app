@@ -2434,7 +2434,7 @@ angular.module('dfUtility', ['dfApplication'])
                 scope.$on('toolbar:paginate:' + scope.api + ':reset', function (e) {
 
                     // If we're logging out don't bother
-                    // dfApplicationObj is being destroyed
+                    // dfApplicationObj is being reset
                     if ($location.path() === '/logout') {
                         return;
                     }
@@ -2515,8 +2515,8 @@ angular.module('dfUtility', ['dfApplication'])
                     // Block any more calls until we are done.
                     scope.isInProgress = true;
 
-                    // This tells the dfApplicationObj to update it self and pull
-                    // record with a specific offset
+                    // This tells the dfApplicationObj to update itself and pull
+                    // records with a specific offset
                     scope._getDataFromServer(curOffset, detectFilter()).then(
 
                         function(result) {
@@ -3105,41 +3105,6 @@ angular.module('dfUtility', ['dfApplication'])
             }
         }
 
-    }])
-
-    // browser storage mechanism
-    .service('dfSessionStorage', [function() {
-
-        return {
-
-
-            setItem: function(key, value) {
-
-                sessionStorage.setItem(key, value);
-            },
-
-            getItem: function(key) {
-
-                if (sessionStorage.hasOwnProperty(key)) {
-
-                    return sessionStorage.getItem(key);
-                }
-
-                return false;
-            },
-
-            removeItem: function(key) {
-
-                if (sessionStorage.hasOwnProperty(key)) {
-
-                    if (!sessionStorage.removeItem(key)) {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        }
     }])
 
     // Notification service

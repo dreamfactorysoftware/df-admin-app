@@ -120,7 +120,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                 },
                 function (error) {
                     var messageOptions = {
-                        module: 'Package Manager',
+                        module: 'Packages',
                         provider: 'dreamfactory',
                         type: 'error',
                         message: 'There was an error loading data for the Packages tab. Please try refreshing your browser.'
@@ -221,7 +221,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                             if (data.success === true) {
 
                                 var messageOptions = {
-                                    module: 'Package Manager',
+                                    module: 'Packages',
                                     provider: 'dreamfactory',
                                     type: 'success',
                                     message: 'Package was imported successfully.'
@@ -251,7 +251,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                         })
                         .error(function (data, status) {
                             var messageOptions = {
-                                module: 'Package Manager',
+                                module: 'Packages',
                                 provider: 'dreamfactory',
                                 type: 'error',
                                 message: data.error.message
@@ -264,7 +264,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                     }
                     else {
                         var messageOptions = {
-                            module: 'Package Manager',
+                            module: 'Packages',
                             provider: 'dreamfactory',
                             type: 'error',
                             message: 'No package file selected.'
@@ -458,7 +458,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                         // if no missing file service was added then show message
                         if (!scope.addAppFiles(scope.getAllNames())) {
                             var messageOptions = {
-                                module: 'Package Manager',
+                                module: 'Packages',
                                 provider: 'dreamfactory',
                                 type: 'error',
                                 message: 'You have already selected all items for ' + scope.selectedType.label + ' / ' + scope.selectedName + '.'
@@ -781,7 +781,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                     if (scope.tableData.length === 0) {
 
                         var messageOptions = {
-                            module: 'Package Manager',
+                            module: 'Packages',
                             provider: 'dreamfactory',
                             type: 'error',
                             message: 'No package content is selected.'

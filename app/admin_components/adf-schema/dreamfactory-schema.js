@@ -112,31 +112,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
     }])
 
 
-    .factory('TableUtilities', ['INSTANCE_URL', '$http', 'dfNotify', 'dfApplicationData', 'TableDataModel', function(INSTANCE_URL, $http, dfNotify, dfApplicationData, TableDataModel) {
-
-
-        function insertNewTableToAppObj (resource, serviceName) {
-
-            var appObj = dfApplicationData.getApplicationObj();
-
-            if (appObj.apis.hasOwnProperty('service') && appObj.apis.service.hasOwnProperty('resource')) {
-
-                for (var i = 0; i < appObj.apis.service.resource.length; i++) {
-
-                    if (appObj.apis.service.resource[i].name === serviceName) {
-
-                        appObj.apis.service.resource[i].components.push({
-                            'name': resource.name,
-                            'label': resource.label
-                        });
-                        break;
-                    }
-                }
-            }
-
-            dfApplicationData.setApplicationObj(appObj);
-        }
-
+    .factory('TableUtilities', ['dfApplicationData', function(dfApplicationData) {
 
         function updateServiceComponents (newTable, service) {
 
@@ -144,7 +120,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         }
 
         return {
-            insertNewTableToAppObj: insertNewTableToAppObj,
             updateServiceComponents: updateServiceComponents
         }
     }])

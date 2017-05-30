@@ -18,8 +18,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
         $httpProvider.interceptors.push('httpRequestInterceptor');
     })
 
-    .run(['$q', 'dfApplicationData', 'dfSessionStorage', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', 'ngProgressFactory',
-        function ($q, dfApplicationData, dfSessionStorage, UserDataService, SystemConfigDataService, $location, $rootScope, ngProgressFactory) {
+    .run(['dfApplicationData', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', 'ngProgressFactory',
+        function (dfApplicationData, UserDataService, SystemConfigDataService, $location, $rootScope, ngProgressFactory) {
 
             //TODO:Add progress bar later on once stabilized.
             //$rootScope.progressbar = ngProgressFactory.createInstance();
@@ -27,65 +27,17 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
             // Get the System Config synchronously because we are dead in the water without it
             SystemConfigDataService.getSystemConfig();
 
-            var appObj = dfSessionStorage.getItem('dfApplicationObj');
-            var userObj = UserDataService.getCurrentUser();
+            // reset app obj
+            dfApplicationData.resetApplicationObj();
 
-            // if no local dfApplicationObject and there is a current user
-            // **possibly a closed tab without logging out**
-            if (!appObj && userObj) {
-
-                dfApplicationData.init();
-            }
-
-            // if we have a dfApplicationObj and a current user
-            // ** browser refresh **
-            if (appObj && userObj) {
-
-                dfApplicationData.init();
-            }
-
-            // No local dfApplicationObj and no current user
-            if (!appObj && !userObj) {
-
-                // Destroy any existing dfApplicationObj that may be in memory
-                dfApplicationData.destroyApplicationObj();
-
-                // redirect to login
-                // the application routing will take care of this automatically
-
-            }
-            if (appObj && !userObj) {
-
-                // Something went wrong.  App obj should not be present
-                // This should be ammedned to accept guest users as a possibility
-                dfSessionStorage.removeItem('dfApplicationObj');
-
-                // Delete the dfApplicationObj if it is in memory
-                dfApplicationData.destroyApplicationObj();
-
-                // send to login
-                $location.url('/login');
-            }
+            console.log(UserDataService.getCurrentUser());
         }])
 
-    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', '$rootScope', '$location', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, $rootScope, $location) {
+    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', '$rootScope', '$location', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, $rootScope, $location) {
 
 
         var dfApplicationObj = {
-            currentUser: null,
             apis: {}
-        };
-
-        var dfMainLoadData = {
-            numElemsToLoad: 0,
-            percentIncrement: 0,
-            percentLoaded:0,
-            loadData: {
-
-                op: 'Loading',
-                module: null,
-                percent: 0
-            }
         };
 
         // remove params with null values
@@ -160,7 +112,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                         dfApplicationObj.apis[api] = response;
                         if (debugLevel >= 1) console.log('_loadOne(' + api + '): ok from server', dfApplicationObj.apis[api]);
                         if (debugLevel >= 2) console.log('_loadOne(' + api + '): dfApplicationObj', dfApplicationObj);
-                        dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
                         deferred.resolve(dfApplicationObj.apis[api]);
                     }, function (error) {
                         if (debugLevel >= 1) console.log('_loadOne(' + api + '): error from server', error);
@@ -176,7 +127,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
         function _resetApplicationObj() {
 
             dfApplicationObj = {
-                currentUser: null,
                 apis: {}
             };
         }
@@ -357,11 +307,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                     dfApplicationObj.apis[api].meta['count'] = 1;
                 }
             }
-
-            // Lets update our local storage.
-            if (dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true))) {
-                return true;
-            }
         }
 
         // Insert data into local model dfApplicationObj
@@ -394,11 +339,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                     // duh
                     i++;
                 }
-            }
-
-            // Lets update our local storage.
-            if (dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true))) {
-                return true;
             }
         }
 
@@ -467,11 +407,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                     removeRecord(result);
                     updateCount();
                 }
-
-                // set to session storage
-                if (dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true))) {
-                    return true;
-                }
             }
         }
 
@@ -486,67 +421,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 dfApplicationObj.apis[api].resource = result.resource;
                 dfApplicationObj.apis[api].meta = result.meta;
             }
-
-            // Lets update our local storage.
-            if (dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true))) {
-                return true;
-            }
-        }
-
-        function _getLocation() {
-            return $location.path();
         }
 
         return {
-
-            // Public function to init the app
-            init: function () {
-
-                dfApplicationObj.currentUser = UserDataService.getCurrentUser();
-            },
-
-            // Returns app obj that is stored in the service
-            getApplicationObj: function () {
-
-                return dfApplicationObj;
-            },
-
-            // Sets app obj stored in the service
-            // Useful for when the app obj is pulled from session storage
-            // Otherwise the app obj should be built by init or other functions
-            // strictly for editing the app obj
-            setApplicationObj: function (appObj) {
-
-                dfApplicationObj = appObj;
-            },
-
-            // for when you just have to update the applicationObj manually
-            // certain things like updating schema components don't adhere
-            // to the resource way of updating.  Having second thoughts about
-            // the way that interface works.  Will revisit.
-            setApplicationObjOverride: function (appObj) {
-
-                dfApplicationObj = appObj;
-                this.updateApplicationStore();
-            },
-
-            // Update browser sessionStorage with current dfApplicationObj in memory.
-            updateApplicationStore: function () {
-
-                dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
-            },
-
-            // removes the app obj from session storage and sets local copy to empty obj
-            destroyApplicationObj: function () {
-
-                // Set local app obj to empty
-                _resetApplicationObj();
-
-                // remove from session storage
-                if (dfSessionStorage.removeItem('dfApplicationObj')) {
-                    return true;
-                }
-            },
 
             getApiRecordCount: function (api) {
 
@@ -624,30 +501,11 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 }
             },
 
-            // retrieves the stored currentUser from local data model
-            getCurrentUser: function () {
-
-                if (dfApplicationObj.hasOwnProperty('currentUser')) {
-
-                    return dfApplicationObj.currentUser;
-                }
-            },
-
             // get API preferences
             getApiPrefs: function () {
 
                 return _getApiPrefs();
 
-            },
-
-            // get data about current state of init
-            getMainLoadData: function () {
-
-                return dfMainLoadData;
-            },
-
-            getLocation: function () {
-                return _getLocation();
             },
 
             // Get table names. If not in cache then request from server and update cache.
@@ -691,8 +549,11 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
 
             getApiData: function(apis, forceRefresh) {
                 return _getApiData(apis, forceRefresh);
-            }
+            },
 
+            resetApplicationObj: function() {
+                _resetApplicationObj();
+            }
         }
     }])
 

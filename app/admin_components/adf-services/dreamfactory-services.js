@@ -677,9 +677,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     return result;
                 };
 
-
-                var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
-
                 scope.customConfig = [];
 
                 scope.serviceGroups = [];
@@ -1409,9 +1406,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 };
 
-                var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
-
-
                 scope.allowedConfigFormats = '.json,.js,.php,.py,.python,.yaml,.yml';
                 scope.allowedConfigGitFormats = ['json','js','php','py','python','yaml','yml'];
                 scope.serviceTypeConfig = 'configmodal';
@@ -1516,6 +1510,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope.getReferences = function (key, valueField) {
+                    var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
                     return dfApplicationObjApis[key].record.map(function (item) {
                         return {name: item.name, value: item[valueField] || item.id };
                     });
