@@ -27,10 +27,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
             // Get the System Config synchronously because we are dead in the water without it
             SystemConfigDataService.getSystemConfig();
 
-            // reset app obj
+            // reset dfApplicationObj
             dfApplicationData.resetApplicationObj();
-
-            console.log(UserDataService.getCurrentUser());
         }])
 
     .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', '$rootScope', '$location', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, $rootScope, $location) {
@@ -44,14 +42,12 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
         function _checkParams(options) {
 
             if (!options.params) {
-                debugger;
                 options['params'] = {};
                 return;
             }
             angular.forEach(options.params, function (value, key) {
 
                 if (value == null) {
-                    debugger;
                     delete options.params[key];
                 }
             });
@@ -425,6 +421,18 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
 
         return {
 
+            // Returns dfApplicationObj that is stored in the service
+            getApplicationObj: function () {
+
+                return dfApplicationObj;
+            },
+
+            // Resets dfApplicationObj to initial state
+            resetApplicationObj: function() {
+
+                _resetApplicationObj();
+            },
+
             getApiRecordCount: function (api) {
 
                 var count = 0;
@@ -509,8 +517,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
             },
 
             // Get table names. If not in cache then request from server and update cache.
+            // This piggybacks on the existing service data to store components.
 
             getServiceComponents: function (serviceName, url, params, forceRefresh) {
+
                 var deferred = $q.defer();
                 // assumes services are loaded already and there's a matching service name
                 var serviceList = this.getApiDataFromCache('service');
@@ -537,22 +547,20 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
 
             // Table list has changed. Update cache with new list.
 
-            updateServiceComponentsLocal: function (service) {
-                var dfServiceData = this.getApiDataFromCache('service');
-                if (dfServiceData !== undefined) {
-                    dfServiceData = dfServiceData.filter(function(obj) {
-                        return obj.name === service.name;
+            updateServiceComponentsLocal: function (svc) {
+
+                // assumes services are loaded already and there's a matching service name
+                var serviceList = this.getApiDataFromCache('service');
+                if (serviceList !== undefined) {
+                    var service = dfServiceData.filter(function(obj) {
+                        return obj.name === svc.name;
                     })[0];
+                    service.components = svc.components;
                 }
-                dfServiceData.components = service.components;
             },
 
             getApiData: function(apis, forceRefresh) {
                 return _getApiData(apis, forceRefresh);
-            },
-
-            resetApplicationObj: function() {
-                _resetApplicationObj();
             }
         }
     }])

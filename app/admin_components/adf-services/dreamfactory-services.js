@@ -2035,8 +2035,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 var watchSelectedSchema = scope.$watch('selectedSchema', function (newValue, oldValue) {
 
+                    var loadEvents, i;
+
                     if (!newValue) return;
 
+                    // set allowed file types
                     switch (newValue.name) {
                         case 'nodejs':
                             scope.allowedConfigFormats = '.js';
@@ -2054,27 +2057,42 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             scope.allowedConfigFormats = '.js';
                             scope.allowedConfigGitFormats = ['js'];
                             break;
-                        case 'logstash':
-                            // get event list. it will be cached after first time
-                            if (newValue.name === 'logstash') {
-                                dfApplicationData.getApiData(['eventlist']).then(
-                                    function (response) {
-                                        scope.apiData.eventlist = response[0].resource;
-                                    },
-                                    function (error) {
-                                        var messageOptions = {
-                                            module: 'Services',
-                                            provider: 'dreamfactory',
-                                            type: 'error',
-                                            message: 'There was an error loading the event list for the Logstash service. Please try refreshing your browser.'
-                                        };
-                                        dfNotify.error(messageOptions);
-                                    }
-                                );
-                            }
                         default:
                             scope.allowedConfigFormats = '.json,.js,.php,.yaml,.yml';
                             scope.allowedConfigGitFormats = ['json','js','php','yaml','yml'];
+                    }
+
+                    // Some services need an event list, currently GCM, APN, and Logstash. These all have a
+                    // common entry in their config_schema array named 'service_event_map' which we look for
+                    // to trigger loading of events. Events are loaded only as needed, because it can be
+                    // slow when there are many services or fail completely if there are bad services, rendering
+                    // the admin app services tab inoperable. We check for this here because it works for both
+                    // creating and editing services.
+                    if (newValue.config_schema) {
+                        loadEvents = false;
+                        for (i = 0; i < newValue.config_schema.length; i++) {
+                            if (newValue.config_schema[i].name === 'service_event_map') {
+                                loadEvents = true;
+                                break;
+                            }
+                        }
+                        if (loadEvents) {
+                            // Trigger loading of event list. It will be cached after first time.
+                            dfApplicationData.getApiData(['eventlist']).then(
+                                function (response) {
+                                    scope.apiData.eventlist = response[0].resource;
+                                },
+                                function (error) {
+                                    var messageOptions = {
+                                        module: 'Services',
+                                        provider: 'dreamfactory',
+                                        type: 'error',
+                                        message: 'There was an error loading the service. Please try refreshing your browser.'
+                                    };
+                                    dfNotify.error(messageOptions);
+                                }
+                            );
+                        }
                     }
                 });
 
