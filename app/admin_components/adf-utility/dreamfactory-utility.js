@@ -3342,6 +3342,25 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
+    // convert service type to service group
+    // caller must provide the serviceTypes array
+   .service('serviceTypeToGroup', [function () {
+
+        return function (type, serviceTypes) {
+            var i, length, result = null;
+            if (type && serviceTypes) {
+                length = serviceTypes.length;
+                for (i = 0; i < length; i++) {
+                    if (serviceTypes[i].name === type) {
+                        result = serviceTypes[i].group;
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+    }])
+
     // Various Filters.  All used in dfTable.  Possibly elsewhere.
     // I'll find out if so.
     .filter('orderAndShowSchema', [function () {

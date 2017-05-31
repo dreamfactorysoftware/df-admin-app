@@ -98,7 +98,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
         $scope.loadTabData = function(init) {
 
-            var apis = ['role', 'service'];
+            var apis = ['role', 'service', 'service_type'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -710,7 +710,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
         }
     }])
 
-    .directive('dfServiceAccess', ['MOD_ROLES_ASSET_PATH', 'dfNotify', '$http', 'INSTANCE_URL', function (MOD_ROLES_ASSET_PATH, dfNotify, $http, INSTANCE_URL) {
+    .directive('dfServiceAccess', ['MOD_ROLES_ASSET_PATH', 'dfNotify', '$http', 'INSTANCE_URL', 'serviceTypeToGroup', function (MOD_ROLES_ASSET_PATH, dfNotify, $http, INSTANCE_URL, serviceTypeToGroup) {
 
         return {
 
@@ -878,31 +878,31 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.serviceAccess.record.service_id = newValue.id;
                     scope.serviceAccess.record.service.components = ['', '*'];
                     if ('All' !== scope.serviceAccess.record.service.name) {
-                        switch (scope.serviceAccess.record.type) {
-                            case 'rws':
-                            case 'nodejs':
-                            case 'php':
-                            case 'python':
-                            case 'v8js':
-                                break;
-                            default:
-                                scope._getComponents().then(
-                                    function (result) {
+                            var group = serviceTypeToGroup(scope.serviceAccess.record.service.type, scope.apiData['service_type']);
+                            if (group !== null) {
+                                switch (group) {
+                                    case 'Script':
+                                    case 'Email':
+                                        break;
+                                    default:
+                                        scope._getComponents().then(
+                                            function (result) {
 
-                                        scope.serviceAccess.record.service.components = result.data.resource;
-                                    },
+                                                scope.serviceAccess.record.service.components = result.data.resource;
+                                            },
 
-                                    function (reject) {
-                                        throw {
-                                            module: 'DreamFactory Utility Module',
-                                            type: 'error',
-                                            provider: 'dreamfactory',
-                                            exception: reject
-                                        }
-                                    }
-                                );
-                                break;
-                        }
+                                            function (reject) {
+                                                throw {
+                                                    module: 'DreamFactory Utility Module',
+                                                    type: 'error',
+                                                    provider: 'dreamfactory',
+                                                    exception: reject
+                                                }
+                                            }
+                                        );
+                                        break;
+                                }
+                            }
                     }
                     scope._checkForFailure();
                     scope._checkForFailure();
