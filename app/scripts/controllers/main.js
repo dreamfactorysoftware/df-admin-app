@@ -682,7 +682,8 @@ angular.module('dreamfactoryApp')
             title: 'Invitation Confirmation'
         };
 
-        $scope.inviteType = ($location.$$path.indexOf('user') > -1) ? 'user' : 'admin';
+        // == is on purpose
+        $scope.inviteType = ($location.search().admin == 1) ? 'admin' : 'user';
 
         $scope.loginOptions = {
             showTemplate: false
