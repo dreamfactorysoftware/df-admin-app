@@ -552,7 +552,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 // assumes services are loaded already and there's a matching service name
                 var serviceList = this.getApiDataFromCache('service');
                 if (serviceList !== undefined) {
-                    var service = dfServiceData.filter(function(obj) {
+                    var service = serviceList.filter(function(obj) {
                         return obj.name === svc.name;
                     })[0];
                     service.components = svc.components;
