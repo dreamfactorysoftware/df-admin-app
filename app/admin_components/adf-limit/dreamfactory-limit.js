@@ -250,7 +250,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     $scope.links[1].path = $scope.links[0].path;
                 } else {
                     // limits enabled, load other data
-                    apis = ['limit', 'role', 'service', 'user', 'limit_cache'];
+                    apis = ['limit', 'role', 'service', 'user'];
 
                     dfApplicationData.getApiData(apis).then(
                         function (response) {
@@ -284,12 +284,16 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         'dfNotify',
         '$timeout',
         'editLimitService',
+        '$http',
+        'INSTANCE_URL',
         function ($rootScope,
             MOD_LIMIT_ASSET_PATH,
             dfApplicationData,
             dfNotify,
             $timeout,
-            editLimitService
+            editLimitService,
+            $http,
+            INSTANCE_URL
         ) {
 
         return {
@@ -445,7 +449,12 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 };
 
                 scope._deleteCacheFromServer = function (requestDataObj) {
-                    return dfApplicationData.deleteApiData('limit_cache', requestDataObj).$promise;
+
+                    return $http({
+                        method: 'DELETE',
+                        url: INSTANCE_URL + '/api/v2/system/limit_cache',
+                        params: requestDataObj.params
+                    });
                 };
 
                 // COMPLEX IMPLEMENTATION
@@ -482,7 +491,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 scope._deleteLimitCache = function (limit){
                     var requestDataObj = {
                         params: {
-                            id: limit.record.id
+                            ids: limit.record.id
                         }
                     };
 
@@ -497,11 +506,12 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                                 message: 'Limit counter successfully reset.'
                             };
 
-                            limit.record.limit_cache_by_limit_id.attempts = 0;
-                            limit.record.limit_cache_by_limit_id.percent = 0;
+                            angular.forEach(limit.record.limit_cache_by_limit_id, function(cache){
+                                cache.attempts = 0;
+                                cache.percent = 0;
+                            });
+
                             dfNotify.success(messageOptions);
-
-
                         },
 
                         function (reject) {
@@ -606,8 +616,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 scope._resetSelectedLimits = function () {
                     var requestDataObj = {
                         params: {
-                            ids: scope.selectedLimits.join(','),
-                            rollback: true
+                            ids: scope.selectedLimits.join(',')
                         }
                     };
 
@@ -626,8 +635,10 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             angular.forEach(scope.selectedLimits, function(value){
                                 scope.limits.filter(function(obj){
                                     if(obj.record.id == value){
-                                         obj.record.limit_cache_by_limit_id.attempts = 0;
-                                         obj.record.limit_cache_by_limit_id.percent = 0;
+                                        angular.forEach(obj.record.limit_cache_by_limit_id, function(cache){
+                                            cache.attempts = 0;
+                                            cache.percent = 0;
+                                        });
                                     }
                                 });
                             });
@@ -1008,7 +1019,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'service_by_service_id,role_by_role_id,user_by_user_id'
+                            related: 'service_by_service_id,role_by_role_id,user_by_user_id,limit_cache_by_limit_id'
                         },
                         data: scope.saveData
                     };
