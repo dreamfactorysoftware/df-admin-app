@@ -119,89 +119,92 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
         $scope.selectType = function(recordType) {
 
-            switch(recordType.value){
-                case 'instance':
-                    $scope.hidden = {
-                        users : true,
-                        roles : true,
-                        services: true,
-                        endpoint: true
-                    };
-                    break;
-                case 'instance.user':
-                    $scope.hidden = {
-                        users : false,
-                        roles : true,
-                        services: true,
-                        endpoint: true
-                    };
+            if (angular.isObject(recordType)) {
 
-                    break;
-                case 'instance.each_user':
-                    $scope.hidden = {
-                        users : true,
-                        roles : true,
-                        services: true,
-                        endpoint: true
-                    };
+                switch (recordType.value) {
+                    case 'instance':
+                        $scope.hidden = {
+                            users: true,
+                            roles: true,
+                            services: true,
+                            endpoint: true
+                        };
+                        break;
+                    case 'instance.user':
+                        $scope.hidden = {
+                            users: false,
+                            roles: true,
+                            services: true,
+                            endpoint: true
+                        };
 
-                    break;
-                case 'instance.service':
-                    $scope.hidden = {
-                        users : true,
-                        roles : true,
-                        services: false,
-                        endpoint: true
-                    };
-                    break;
-                case 'instance.role':
-                    $scope.hidden = {
-                        users : true,
-                        roles : false,
-                        services: true,
-                        endpoint: true
-                    };
-                    break;
-                case 'instance.user.service':
-                    $scope.hidden = {
-                        users : false,
-                        roles : true,
-                        services: false,
-                        endpoint: true
-                    };
-                    break;
-                case 'instance.each_user.service':
-                    $scope.hidden = {
-                        users : true,
-                        roles : true,
-                        services: false,
-                        endpoint: true
-                    };
-                    break;
-                case 'instance.service.endpoint':
-                    $scope.hidden = {
-                        users : true,
-                        roles : true,
-                        services: false,
-                        endpoint: false
-                    };
-                    break;
-                case 'instance.user.service.endpoint' :
-                    $scope.hidden = {
-                        users : false,
-                        roles : true,
-                        services: false,
-                        endpoint: false
-                    };
-                    break;
-                case 'instance.each_user.service.endpoint' :
-                    $scope.hidden = {
-                        users : true,
-                        roles : true,
-                        services: false,
-                        endpoint: false
-                    };
-                    break;
+                        break;
+                    case 'instance.each_user':
+                        $scope.hidden = {
+                            users: true,
+                            roles: true,
+                            services: true,
+                            endpoint: true
+                        };
+
+                        break;
+                    case 'instance.service':
+                        $scope.hidden = {
+                            users: true,
+                            roles: true,
+                            services: false,
+                            endpoint: true
+                        };
+                        break;
+                    case 'instance.role':
+                        $scope.hidden = {
+                            users: true,
+                            roles: false,
+                            services: true,
+                            endpoint: true
+                        };
+                        break;
+                    case 'instance.user.service':
+                        $scope.hidden = {
+                            users: false,
+                            roles: true,
+                            services: false,
+                            endpoint: true
+                        };
+                        break;
+                    case 'instance.each_user.service':
+                        $scope.hidden = {
+                            users: true,
+                            roles: true,
+                            services: false,
+                            endpoint: true
+                        };
+                        break;
+                    case 'instance.service.endpoint':
+                        $scope.hidden = {
+                            users: true,
+                            roles: true,
+                            services: false,
+                            endpoint: false
+                        };
+                        break;
+                    case 'instance.user.service.endpoint' :
+                        $scope.hidden = {
+                            users: false,
+                            roles: true,
+                            services: false,
+                            endpoint: false
+                        };
+                        break;
+                    case 'instance.each_user.service.endpoint' :
+                        $scope.hidden = {
+                            users: true,
+                            roles: true,
+                            services: false,
+                            endpoint: false
+                        };
+                        break;
+                }
             }
         };
 
@@ -939,6 +942,16 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                
                 scope._validateData = function () {
                     var checkData = scope.currentEditLimit.record;
+
+                    if(checkData.typeObj == null) {
+                        var options = {
+                            module: 'Limit Create Error',
+                            message: 'Please select a limit type.',
+                            type: 'error'
+                        };
+                        dfNotify.error(options);
+                        return false;
+                    }
 
                     if(checkData.name === null || checkData.name == ''){
                         var options = {
