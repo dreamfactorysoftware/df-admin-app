@@ -218,28 +218,6 @@ angular
                     }]
                 }
             })
-            .when('/admin-invite', {
-                templateUrl: 'views/user-invite.html',
-                controller: 'UserInviteCtrl',
-                resolve: {
-
-                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
-
-                        var currentUser = UserDataService.getCurrentUser();
-
-                        if (currentUser && currentUser.is_sys_admin) {
-                            $location.url('/home');
-                            return;
-                        }
-
-                        if (currentUser && !currentUser.is_sys_admin) {
-                            $location.url('/launchpad');
-                            return;
-                        }
-
-                    }]
-                }
-            })
             .otherwise({
                 controller: 'LoginCtrl',
                 templateUrl: 'views/login.html',

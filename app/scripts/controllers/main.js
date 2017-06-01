@@ -268,10 +268,6 @@ angular.module('dreamfactoryApp')
 
                         $location.url('/user-invite?' + params.join('&'));
                     }
-                    else if ($location.path() === '/admin-invite'){
-
-                        $location.url('/admin-invite?' + params.join('&'));
-                    }
                     else if ($location.path() === '/register-confirm'){
 
                         $location.url('/register-confirm?' + params.join('&'));
