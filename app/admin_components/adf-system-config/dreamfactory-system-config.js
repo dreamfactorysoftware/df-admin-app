@@ -229,7 +229,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.loadTabData();
         }])
 
-    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', 'APP_VERSION', 'SystemConfigDataService', function (MODSYSCONFIG_ASSET_PATH, APP_VERSION, SystemConfigDataService) {
+    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', function (MODSYSCONFIG_ASSET_PATH) {
 
         return {
             restrict: 'E',
@@ -241,8 +241,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                     window.top.location = 'http://wiki.dreamfactory.com/';
                 };
-
-                scope.APP_VERSION = APP_VERSION;
 
                 var watchEnvironment = scope.$watchCollection('apiData.environment', function (newValue, oldValue) {
 
@@ -260,7 +258,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
         }
     }])
 
-    .directive('dreamfactoryCacheConfig', ['MODSYSCONFIG_ASSET_PATH', 'INSTANCE_URL', 'APP_VERSION', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, INSTANCE_URL, APP_VERSION, $http, dfNotify) {
+    .directive('dreamfactoryCacheConfig', ['MODSYSCONFIG_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, INSTANCE_URL, $http, dfNotify) {
 
         return {
             restrict: 'E',
