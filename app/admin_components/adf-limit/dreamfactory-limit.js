@@ -1137,7 +1137,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     ];
 
                     /** Endpoint check for blank */
-                    if(!angular.isDefined(saveData.endpoint) &&
+                    if(!saveData.endpoint &&
                         endpointTypes.indexOf(saveData.type) !== -1)
                     {
                         saveData.endpoint = '';
