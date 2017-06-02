@@ -813,6 +813,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         role_id: null,
                         service_id: null,
                         type: null,
+                        endpoint: null,
                         user_id: null,
                         cacheData: {}
                     };
@@ -1137,10 +1138,9 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     ];
 
                     /** Endpoint check for blank */
-                    if(!saveData.endpoint &&
-                        endpointTypes.indexOf(saveData.type) !== -1)
+                    if(!saveData.endpoint || endpointTypes.indexOf(saveData.type) === -1)
                     {
-                        saveData.endpoint = '';
+                        saveData.endpoint = null;
                     }
 
                     delete saveData.key_text;
