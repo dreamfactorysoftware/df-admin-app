@@ -44,22 +44,22 @@ git checkout master
 git pull origin master
 git checkout develop
 git pull origin develop
-git flow release start 1.0.7
+git flow release start 2.8.0
 ```
 
 Bump the app version in app/scripts/app.js.
 
 ```
 // Set application version number
-.constant('APP_VERSION', '1.0.7')
+.constant('APP_VERSION', '2.8.0')
 ```
 
 ```
 grunt build
 git checkout -- dist/fonts app/index.html
 git add --all
-git commit -m "Release 1.0.7"
-git flow release finish 1.0.7
+git commit -m "Release 2.8.0"
+git flow release finish 2.8.0
 git push origin develop
 git checkout master
 git push origin master
@@ -85,7 +85,7 @@ Authentication controllers provide attachment points for authentication/register
 
 ### Data repository and Utility modules
 
-A data repository module called `dfApplicationData` facilitates the loading and management of frequently used application data.  It creates an object called `dfApplicationObj` in the browser session storage.  It contains generic methods to access, modify, and delete data in the application and on the server.  It also provides accessor methods to retrieve and save the actual dfApplicationObj.  While not recommended to interact with this object directly it is sometimes a necessary evil.  The module also contains init code to check whether it is necessary to build a new app object or to refresh the screen with local data as well as what apis to load.  
+A data repository module called `dfApplicationData` facilitates the loading and management of frequently used application data.  It creates an object called `dfApplicationObj`.  It contains generic methods to access, modify, and delete data in the application and on the server.  It also provides accessor methods to retrieve and save the actual dfApplicationObj.  While not recommended to interact with this object directly it is sometimes a necessary evil.  The module also contains init code to check whether it is necessary to build a new app object or to refresh the screen with local data as well as what apis to load.  
 
 The utility module provides services, factories, directives, and filters related to the operation of modules.  Things like our icon service, navs, table filtering/pagination, etc are stored here.  Basically, things that multiple modules may need access to and/or have no other place to go.  
 
@@ -110,15 +110,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     templateUrl: MOD_APPS_ASSET_PATH + 'views/main.html',
                     controller: 'AppsCtrl',
                     resolve: {
-                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
-                            // is the app in init
-                            if (dfApplicationData.initInProgress) {
-                            
-                                // don't load controller until it is finished
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
                         checkCurrentUser: ['UserDataService', '$location', function (UserDataService, $location) {
 
                             var currentUser = UserDataService.getCurrentUser();
@@ -220,7 +211,7 @@ Each module has a `main.html`.  In `main.html` there wil be directives that pert
 
 ```
 
-If you are experienced with AngularJS you can see that most of if not all of the modules work is delegated to directives as opposed to using routes and controllers.  While this doesn't allow for deep linking it does offer the convenience of dealing with data via context.  Most modules will have manage and detail contexts which are modeled as directives and have templates stored locally in relation to the modules folder.  The manage directive will pull data from the repository, create an object(referred to as a 'Managed Object') based on that data, and present it in a tabular, list, or thumbnail fashion.  There is usually behavior associated with the Managed object (for example, managed app objects allow you to launch a hosted app from it's Managed Object state).  Upon selection the managed object will be passed to a detail directive which will create an object of that type for editing or creation.  When that detail directive detects data the manage context is closed and the detail context is shown.  This is usually a form for editing the currently selected object.  The object can be saved, updated, or closed with changes discarded.  Basic CRUD stuff.  Once an operation has been completed the detail context can be closed and the manage context will reappear.  We save deleting for the manage context where one or multiple objects can be selected and deleted.
+If you are experienced with AngularJS you can see that most of if not all of the modules work is delegated to directives as opposed to using routes and controllers.  While this doesn't allow for deep linking it does offer the convenience of dealing with data via context.  Most modules will have manage and detail contexts which are modeled as directives and have templates stored locally in relation to the modules folder.  The manage directive will pull data from the repository, create an object(referred to as a 'Managed Object') based on that data, and present it in a tabular fashion.  There is usually behavior associated with the Managed object (for example, managed app objects allow you to launch a hosted app from it's Managed Object state).  Upon selection the managed object will be passed to a detail directive which will create an object of that type for editing or creation.  When that detail directive detects data the manage context is closed and the detail context is shown.  This is usually a form for editing the currently selected object.  The object can be saved, updated, or closed with changes discarded.  Basic CRUD stuff.  Once an operation has been completed the detail context can be closed and the manage context will reappear.  We save deleting for the manage context where one or multiple objects can be selected and deleted.
 
 All the directives(contexts) work in a similar fashion of having data passed to them and then creating an object that holds that data.  The data passed to a directive will always be encapsulated in the 'record' property of the created object.  Often we attach other UI specific properties to that object which will be found under the `__dfUI` property.  Below is an example of what an App object looks like in the detail context.
 

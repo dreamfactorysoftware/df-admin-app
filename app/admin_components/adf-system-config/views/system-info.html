@@ -6,7 +6,7 @@
             <tr>
                 <td valign="top" style="width: 60%; border-right: dashed 1px">
                     <p>
-                        Admin Application Version: {{APP_VERSION}}
+                        License Level: {{systemEnv.platform.license}}
                     </p>
                     <p>
                         DreamFactory Version: {{systemEnv.platform.version_current}}
@@ -79,6 +79,9 @@
         </p>
         <p>
             Host: {{systemEnv.server.host}}
+        </p>
+        <p>
+            IP Address: {{systemEnv.server.ip}}
         </p>
         <p>
             Machine: {{systemEnv.server.machine}}

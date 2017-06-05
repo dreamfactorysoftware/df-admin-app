@@ -11,13 +11,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     templateUrl: MOD_USER_ASSET_PATH + 'views/main.html',
                     controller: 'UsersCtrl',
                     resolve: {
-                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
                         checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -60,16 +53,14 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
 
     }])
-
+    
     .controller('UsersCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify',
         function($rootScope, $scope, dfApplicationData, dfNotify){
 
             $scope.$parent.title = 'Users';
 
             $rootScope.isRouteLoading = true;
-
-            dfApplicationData.loadApi(['user', 'role', 'app']);
-
+            
             // Set module links
             $scope.links = [
                 {
@@ -82,7 +73,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     label: 'Create',
                     path: 'create-user'
                 }
-
             ];
 
             // Set empty section options
@@ -97,8 +87,38 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             // Set empty search result message
             $scope.emptySearchResult = {
                 title: 'You have no Users that match your search criteria!',
-                text: '',
+                text: ''
             };
+
+            // load data
+
+            $scope.apiData = null;
+
+            $scope.loadTabData = function() {
+
+                var apis = ['user', 'role', 'app'];
+
+                dfApplicationData.getApiData(apis).then(
+                    function (response) {
+                        var newApiData = {};
+                        apis.forEach(function(value, index) {
+                            newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                        });
+                        $scope.apiData = newApiData;
+                    },
+                    function (error) {
+                        var messageOptions = {
+                            module: 'Users',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'There was an error loading data for the Users tab. Please try refreshing your browser.'
+                        };
+                        dfNotify.error(messageOptions);
+                    }
+                );
+            };
+
+            $scope.loadTabData();
         }
     ])
 
@@ -109,7 +129,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             restrict: 'E',
             scope: {
                 userData: '=?',
-                newUser: '=?'
+                newUser: '=?',
+                apiData: '=?'
             },
             templateUrl: MOD_USER_ASSET_PATH + 'views/df-user-details.html',
             link: function (scope, elem, attrs) {
@@ -145,9 +166,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
                 scope.loginAttribute = SystemConfigDataService.getSystemConfig().authentication.login_attribute;
+                
                 scope.user = null;
-                scope.roles = dfApplicationData.getApiData('role');
-                scope.apps = dfApplicationData.getApiData('app');
 
                 if (scope.newUser) {
                     scope.user = new User();
@@ -155,11 +175,40 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.sendEmailOnCreate = false;
 
+                scope._validateData = function () {
 
+                    if (scope.newUser) {
+                        if (!scope.setPassword && !scope.sendEmailOnCreate) {
+                            dfNotify.error({
+                                module: 'Users',
+                                type: 'error',
+                                message: 'Please select email invite or set password.'
+                            });
+                            return false;
+                        }
+                        if (scope.setPassword && scope.sendEmailOnCreate) {
+                            dfNotify.error({
+                                module: 'Users',
+                                type: 'error',
+                                message: 'Please select email invite or set password, but not both.'
+                            });
+                            return false;
+                        }
+                    }
+                    if (scope.setPassword && scope.password.new_password !== scope.password.verify_password) {
+                        dfNotify.error({
+                            module: 'Users',
+                            type: 'error',
+                            message: 'Passwords do not match.'
+                        });
+                        return false;
+                    }
+                    return true;
+                };
+                
                 // PUBLIC API
                 scope.saveUser = function () {
 
-                    // validate
                     if (!scope._validateData()) {
                         return;
                     }
@@ -171,13 +220,12 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     else {
                         scope._updateUser();
                     }
-
                 };
 
                 scope.closeUser = function () {
 
                     scope._closeUser();
-                }
+                };
 
 
                 // PRIVATE API
@@ -199,7 +247,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         scope.user = new User();
                     }
                     else {
-
                         scope.userData = null;
                     }
 
@@ -209,22 +256,10 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope._prepareUserData = function () {
 
+                    scope._preparePasswordData();
                     scope._prepareLookupKeyData();
-
                 };
-
-                scope._validateData = function () {
-                    if (scope.setPassword && scope.verifyPassword !== scope.user.record.password) {
-                        dfNotify.error({
-                            module: 'Users',
-                            type: 'error',
-                            message: 'Passwords not same.'
-                        });
-                        return false;
-                    }
-                    return true;
-                };
-
+                
                 // COMPLEX IMPLEMENTATION
                 scope._saveUser = function () {
 
@@ -239,8 +274,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         },
                         data: scope.user.record
                     };
-
-
+                    
                     scope._saveUserToServer(requestDataObj).then(
                         function(result) {
 
@@ -249,11 +283,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 provider: 'dreamfactory',
                                 type: 'success',
                                 message: 'User saved successfully.'
-                            }
+                            };
 
                             dfNotify.success(messageOptions);
 
-                            // This func comes from the SetUserPassword directive
+                            // This func comes from the dfSetUserPassword directive
                             // which is stored in dfutility.
                             scope._resetUserPasswordForm();
 
@@ -324,20 +358,17 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 provider: 'dreamfactory',
                                 type: 'success',
                                 message: 'User updated successfully.'
-                            }
+                            };
 
                             dfNotify.success(messageOptions);
 
-                            // This func comes from the SetUserPassword directive
+                            // This func comes from the dfSetUserPassword directive
                             // which is stored in dfutility.
                             scope._resetUserPasswordForm();
 
                             scope.user = new User(result);
 
-                            if (dfApplicationData.getAdminPrefs().settings.sections.user.autoClose) {
-
-                                scope.closeUser();
-                            }
+                            scope.closeUser();
 
                             scope.lookupKeys = scope.lookupKeys.filter(function (key) {
                                 return key.record.user_id !== null;
@@ -358,11 +389,9 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     ).finally(
                         function() {
 
-                            // console.log('User save finally');
+                            // console.log('Admin save finally');
                         }
                     )
-
-
                 };
 
                 scope._closeUser = function () {
@@ -385,50 +414,36 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 // WATCHERS
 
+                // this fires when a record is selected for editing
+                // userData is passed in to the directive as data-user-data
                 var watchUserData = scope.$watch('userData', function (newValue, oldValue) {
 
-                    if (!newValue) return false;
-
-                    scope.user = new User(newValue);
+                    if (newValue) {
+                        scope.user = new User(newValue);
+                    }
                 });
 
-                /*
-                var watchAppData = scope.$watch('apps', function (newValue, oldValue) {
+                var watchPassword = scope.$watch('setPassword', function (newValue) {
 
-                    if (!newValue) return false;
+                    if (newValue) {
 
-                    scope.apps = newValue;
+                        scope.password = {
+                            new_password: '',
+                            verify_password: ''
+                        };
+                    }
+                    else {
+                        scope.password = null;
+                        scope.identical = true;
+                    }
                 });
-
-                var watchRoleData = scope.$watch('roles', function (newValue, oldValue) {
-
-                    if (!newValue) return false;
-
-                    scope.roles = newValue;
-                });
-                */
 
                 // MESSAGES
 
                 scope.$on('$destroy', function(e) {
 
                     watchUserData();
-                    //watchAppData();
-                    //watchRoleData();
-                });
-
-                $rootScope.$on("app", function  (){
-
-                    scope.apps = dfApplicationData.getApiData('app');
-                });
-
-                $rootScope.$on("role", function  (){
-
-                    scope.roles = dfApplicationData.getApiData('role');
-                });
-
-                $rootScope.$on("user", function  (){
-                    scope.$broadcast('toolbar:paginate:limit:reset');
+                    watchPassword();
                 });
 
                 // HELP
@@ -468,29 +483,19 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             link: function(scope, elem, attrs) {
 
 
-                scope.inviteUserOnCreate = false;
+                scope.sendEmailOnCreate = false;
 
                 scope.systemConfig = SystemConfigDataService.getSystemConfig();
 
                 scope.invite = function() {
 
-                    scope._invite(scope.user.record.id);
-                };
-
-                scope._sendInvite = function (userId) {
-
-                    return  $http({
-                        url: INSTANCE_URL + '/api/v2/system/user/'+userId,
+                    $http({
+                        url: INSTANCE_URL + '/api/v2/system/user/' + scope.user.record.id,
                         method: 'PATCH',
                         params: {
                             send_invite: true
                         }
-                    })
-                };
-
-                scope._invite = function (userId) {
-
-                    scope._sendInvite(userId).then(
+                    }).then(
                         function(result) {
 
                             var messageOptions = {
@@ -502,8 +507,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             };
 
                             dfNotify.success(messageOptions);
-
-
                         },
                         function (reject) {
 
@@ -511,30 +514,18 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 module: 'Users',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject.data.error.message
-                            }
+                                message: reject
+                            };
 
                             dfNotify.error(messageOptions);
-
                         }
                     );
                 };
-
-                scope._callSendInvite = function (user) {
-
-                    if (scope.inviteUserOnCreate) {
-                        scope._invite(user.id);
-                    }
-                };
-
-
-                // @TODO: Send invite automatically
-
             }
         }
     }])
 
-    .directive('dfUserRoles', ['MOD_USER_ASSET_PATH', 'dfApplicationData', function(MOD_USER_ASSET_PATH, dfApplicationData) {
+    .directive('dfUserRoles', ['MOD_USER_ASSET_PATH', function(MOD_USER_ASSET_PATH) {
         return {
             restrict: 'E',
             scope: false,
@@ -542,11 +533,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             link: function (scope, elem, attrs) {
 
                 scope.roleToAppMap = {};
-                //scope.apps = [];
-                //scope.roles = [];
-
-                scope.roles = dfApplicationData.getApiData('role');
-                scope.apps = dfApplicationData.getApiData('app');
 
                 scope.$watch('user', function () {
                     if (!scope.user) return;
@@ -592,35 +578,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         });
                     }
                 };
-
-                var watchAppData = scope.$watch('apps', function (newValue, oldValue) {
-
-                    if (!newValue) return false;
-
-                    scope.apps = newValue;
-                });
-
-                var watchRoleData = scope.$watchCollection('roles', function (newValue, oldValue) {
-
-                    if (!newValue) return false;
-
-                    scope.roles = newValue;
-                });
-
-
-                // MESSAGES
-
-                scope.$on('$destroy', function(e) {
-
-                    watchAppData();
-                    watchRoleData();
-                });
-
             }
         };
     }])
 
-    .directive('dfUserLookupKeys', ['MOD_USER_ASSET_PATH', 'dfStringService', function(MOD_USER_ASSET_PATH, dfStringService) {
+    .directive('dfUserLookupKeys', ['MOD_USER_ASSET_PATH', function(MOD_USER_ASSET_PATH) {
 
         return {
             restrict: 'E',
@@ -646,7 +608,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         record: angular.copy(lookupKeyData || _new),
                         recordCopy: angular.copy(lookupKeyData || _new)
                     };
-                }
+                };
 
                 scope.lookupKeys = [];
 
@@ -683,7 +645,20 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         })
                     });
 
-                }
+                };
+
+                scope._preparePasswordData = function () {
+
+                    if (scope.setPassword) {
+                        // set password in user record
+                        scope.user.record.password = scope.password.new_password;
+                    } else {
+                        // delete password from user record
+                        if (scope.user.record.password) {
+                            delete scope.user.record.password;
+                        }
+                    }
+                };
 
                 scope._prepareLookupKeyData = function () {
 
@@ -744,7 +719,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             lk.__dfUI.unique = true;
 
-                        })
+                        });
 
                         return;
                     }
@@ -763,7 +738,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             }
                         })
                     })
-                })
+                });
 
                 var watchLookupKeys = scope.$watchCollection('lookupKeys', function (newValue, oldValue) {
 
@@ -774,7 +749,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     scope._isUniqueKey();
 
 
-                })
+                });
 
 
                 // MESSAGES
@@ -823,8 +798,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope.uploadFile = {
                     path: ''
                 };
-
-                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.user.manageViewMode;
 
                 scope.users = null;
 
@@ -875,9 +848,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.selectedUsers = [];
 
-                scope.roles = dfApplicationData.getApiData('role');
-
-
 
                 // PUBLIC API
 
@@ -917,18 +887,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     return dfApplicationData.deleteApiData('user', requestDataObj).$promise;
                 };
-
-                scope._getUserRoleName = function (roleId) {
-
-                    for (var i = 0; i < scope.roles.length; i++) {
-
-                        if (roleId === scope.roles[i].id) {
-                            return scope.roles[i].name;
-                        }
-                    }
-                }
-
-
 
                 // COMPLEX IMPLEMENTATION
 
@@ -1068,109 +1026,41 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     ).finally(
                             function() {
 
-                                // console.log('Delete Users Finally');
+                                // console.log('Delete Admins Finally');
                             }
                         )
                 };
 
 
-
                 // WATCHERS
 
-                var watchUsers = scope.$watch('users', function (newValue, oldValue) {
-
-                    if (newValue === null) {
-
-                        var _users = [];
-
-                        angular.forEach(dfApplicationData.getApiData('user'), function (user) {
-                            if (typeof user !== 'function') {
-                                _users.push(new ManagedUser(user));
-                            }
-                        });
-
-                        scope.users = _users;
-
-                        if (scope.users.length === 0) {
-                            scope.emptySectionOptions.active = true;
-                        }
-
-                        return;
-                    }
-
-
-                    if (newValue !== null && oldValue !== null) {
-
-                        if (newValue.length === 0 && oldValue.length === 0) {
-                            scope.emptySectionOptions.active = true;
-                        }
-                    }
-                });
-
-                var onUsersNav = $rootScope.$on('component-nav:reload:users', function (e) {
-
-                    var _users = [];
-
-                    angular.forEach(dfApplicationData.getApiData('user', null, true), function (user) {
-                        if (typeof user !== 'function') {
-                            _users.push(new ManagedApp(user));
-                        }
-                    });
-
-                    scope.users = _users;
-                });
-
+                // this fires when the API data changes
                 var watchApiData = scope.$watchCollection(function() {
 
-                    return dfApplicationData.getApiData('user');
+                    return dfApplicationData.getApiDataFromCache('user');
 
                 }, function (newValue, oldValue) {
 
                     var _users = [];
-
-                    angular.forEach(dfApplicationData.getApiData('user'), function (user) {
-
-                        _users.push(new ManagedUser(user));
-                    });
+                    
+                    if (newValue) {
+                        angular.forEach(newValue, function (user) {
+                            _users.push(new ManagedUser(user));
+                        });
+                        scope.emptySectionOptions.active = (_users.length === 0);
+                    }
 
                     scope.users = _users;
-
-                    return;
                 });
-
 
                 // MESSAGES
 
-                scope.$on('toolbar:paginate:user:update', function (e) {
+                scope.$on('$destroy', function (e) {
 
-                    var _users = [];
-
-                    angular.forEach(dfApplicationData.getApiData('user'), function (user) {
-
-                        var _user = new ManagedUser(user);
-
-                        var i = 0;
-
-                        while (i < scope.selectedUsers.length) {
-
-                            if (scope.selectedUsers[i] === _user.record.id) {
-
-                                _user.__dfUI.selected = true;
-                                break;
-                            }
-
-                            i++
-                        }
-
-                        _users.push(_user);
-                    });
-
-                    scope.users = _users;
-                });
-
-                scope.$on('$destroy', function(e) {
-                    watchUsers();
-                    onUsersNav();
+                    // Destroy watchers
+                    watchApiData();
+                    // when filter is changed the controller is reloaded and we get destroy event
+                    // the reset event tells pagination engine to update based on filter
                     scope.$broadcast('toolbar:paginate:user:reset');
                 });
 
@@ -1265,7 +1155,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             type: 'error',
                             provider: 'dreamfactory',
                             message: 'Acceptable file formats are csv, json, and xml.'
-                        }
+                        };
 
                         dfNotify.error(messageOptions);
 
@@ -1288,7 +1178,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 type: 'success',
                                 provider: 'dreamfactory',
                                 message: 'Users imported successfully.'
-                            }
+                            };
                             dfNotify.success(messageOptions);
 
 
@@ -1296,11 +1186,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         },
                         function (reject) {
-                            var detailError = '';
-                            if(reject.data && reject.data.error && reject.data.error.context){
-                                var errorNum = reject.data.error.context.errors[0];
-                                detailError = reject.data.error.message +' Detail: '+ reject.data.error.context.resource[errorNum];
-                            }
 
                             scope.importType = null;
                             scope.uploadFile.path = '';
@@ -1311,8 +1196,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: (detailError != '')? detailError : reject
-                            }
+                                message: reject
+                            };
 
                             dfNotify.error(messageOptions);
 
@@ -1378,4 +1263,4 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 }
             }
         }
-    }])
+    }]);

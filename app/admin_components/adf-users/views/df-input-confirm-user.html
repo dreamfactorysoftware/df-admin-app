@@ -1,26 +1,32 @@
 
+<div class="alert alert-info" data-ng-show="newUser">
+    <li class="fa fa-info-circle"></li>
+    For new Users you can send an email invite so they can set their own password, or set a password for them now.
+</div>
+
 <!-- Active when creating a User -->
-<div data-ng-show="newApp">
-    <div class="alert alert-info" data-ng-show="!systemConfig.invite_email_service_id">
-        <li class="fa fa-info-circle"></li>
-        If you would like to send an invite message via email, please see the system configuration to set up user invitations.
-    </div>
-
-    <div data-ng-show="systemConfig.invite_email_service_id">
-        <div class="checkbox">
-            <label>
-                <input id="users_details_basic_sendinvite_new" type="checkbox" data-ng-model="inviteUserOnCreate" data-ng-checked="inviteUserOnCreate" />
-                Send Email Invitation
-            </label>
-
-        </div>
+<div data-ng-show="newUser">
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" data-ng-model="sendEmailOnCreate" data-ng-checked="sendEmailOnCreate" />
+            Send Email Invite
+        </label>
     </div>
 </div>
 
-        <!-- Active when editing a user -->
-<div data-ng-show="!newApp">
-    <div data-ng-if="user.record.confirmed"><p id="users_details_basic_confirmed">Confirmed</p></div>
+<!-- Active when editing a user -->
+<div data-ng-show="!newUser">
+    <div data-ng-if="user.record.confirmed">
+        <p>
+            <label>Confirmed</label>
+            </br>Yes
+        </p>
+    </div>
     <div data-ng-if="!user.record.confirmed">
-        <button id="users_details_basic_sendinvite_edit" type="button" class="btn btn-default" data-ng-click="invite()"><i class="icon-envelope"></i> Send Invite</button>
+        <p>
+            <label>Confirmed</label>
+            </br>No&nbsp;&nbsp;
+            <button type="button" class="btn btn-default" data-ng-click="invite()"><i class="icon-envelope"></i> Send Invite</button>
+        </p>
     </div>
 </div>

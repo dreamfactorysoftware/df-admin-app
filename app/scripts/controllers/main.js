@@ -216,7 +216,7 @@ angular.module('dreamfactoryApp')
                     break;
                 }
             }
-        }
+        };
 
 
         // WATCHERS
@@ -224,14 +224,14 @@ angular.module('dreamfactoryApp')
 
         $scope.$watch('currentUser', function(newValue, oldValue) {
 
-            var groupedApp = SystemConfigDataService.getSystemConfig().app_group,
-                noGroupApp = SystemConfigDataService.getSystemConfig().no_group_app;
+            var config = SystemConfigDataService.getSystemConfig();
+            var groupedApp = config.app_group, noGroupApp = config.no_group_app;
 
             // There is no currentUser and there are apps.
             if (!newValue && ((groupedApp && groupedApp.length > 0) || (noGroupApp && noGroupApp.length > 0))) {
 
                 // Do we allow open registration
-                if (SystemConfigDataService.getSystemConfig().authentication.allow_open_registration) {
+                if (config.authentication.allow_open_registration) {
 
                     // yes
                     $scope._setActiveLinks($scope.topLevelLinks, ['support', 'launchpad', 'login', 'register']);
@@ -244,11 +244,11 @@ angular.module('dreamfactoryApp')
                 }
 
             }
-            // There is no currentUser and we don't allow guest users
-            else if (!newValue && !SystemConfigDataService.getSystemConfig().allow_guest_user) {
+            // There is no currentUser and no apps
+            else if (!newValue) {
 
                 // Do we allow open registration
-                if (SystemConfigDataService.getSystemConfig().authentication.allow_open_registration) {
+                if (config.authentication.allow_open_registration) {
 
                     // yes
                     $scope._setActiveLinks($scope.topLevelLinks, ['support', 'login', 'register']);
@@ -262,15 +262,11 @@ angular.module('dreamfactoryApp')
 
                     if ($location.path() === '/reset-password') {
 
-                        $location.url('/reset-password' + params.join('&'));
+                        $location.url('/reset-password?' + params.join('&'));
                     }
                     else if ($location.path() === '/user-invite'){
 
                         $location.url('/user-invite?' + params.join('&'));
-                    }
-                    else if ($location.path() === '/admin-invite'){
-
-                        $location.url('/admin-invite?' + params.join('&'));
                     }
                     else if ($location.path() === '/register-confirm'){
 
@@ -309,7 +305,7 @@ angular.module('dreamfactoryApp')
                 // Sets active links for user in the UI
                 $scope._setActiveLinks($scope.topLevelLinks, ['support', 'launchpad', 'user']);
             }
-        })
+        });
 
         $scope.$watch(function () {return UserDataService.getCurrentUser().name}, function (n, o) {
 
@@ -317,64 +313,27 @@ angular.module('dreamfactoryApp')
             if (!n) return;
 
             $scope.setTopLevelLinkValue('user', 'label', n);
-        })
+        });
 
-        // on $routeChangeSuccess show/hide admin nav and chat
+        // on $routeChangeSuccess show/hide admin top nav bar and chat
 
         $scope.$on('$routeChangeSuccess', function (e) {
 
-            var config, path;
-
-            // default chat settings
-
-            var enableLaunchpadChat = false;
-            var enableAdminChat = true;
-
-            // if value in config is true or false then use it, else use default
-
-            config = SystemConfigDataService.getSystemConfig();
-
-            if (config && config.hasOwnProperty('chat')) {
-
-                if (config.chat.hasOwnProperty('launchpad')) {
-                    if (config.chat.launchpad === true ||
-                        config.chat.launchpad === false) {
-                        enableLaunchpadChat = config.chat.launchpad;
-                    }
-                }
-
-                if (config.chat.hasOwnProperty('admin')) {
-                    if (config.chat.admin === true ||
-                        config.chat.admin === false) {
-                        enableAdminChat = config.chat.admin;
-                    }
-                }
-            }
+            var path;
 
             path = $location.path();
             switch (path) {
                 case '/launchpad':
-                    $scope.showAdminComponentNav = false;
-                    Comm100API.showChat(enableLaunchpadChat);
-                    break;
                 case '/profile':
-                    $scope.showAdminComponentNav = false;
-                    Comm100API.showChat(enableAdminChat);
-                    break;
                 case '/logout':
                     $scope.showAdminComponentNav = false;
-                    Comm100API.showChat(enableAdminChat);
                     break;
                 default:
-                    // this is not a launchpad or logout route so check is user is sys admin
-                    if ($scope.currentUser.is_sys_admin) {
-
-                        // yes.  show the component nav
-                        $scope.showAdminComponentNav = true;
-                    }
-                    Comm100API.showChat(enableAdminChat);
+                    $scope.showAdminComponentNav = ($scope.currentUser && $scope.currentUser.is_sys_admin === true);
                     break;
             }
+            // put chat behind login to avoid abuse
+            Comm100API.showChat(path !== '/login');
         })
     }])
 
@@ -383,7 +342,7 @@ angular.module('dreamfactoryApp')
     // We inject $location because we'll want to update our location on a successful
     // login and the UserEventsService from our DreamFactory User Management Module to be able
     // to respond to events generated from that module
-    .controller('LoginCtrl', ['dfAvailableApis', '$scope', '$window', '$location', '$timeout', 'UserDataService', 'UserEventsService', 'dfApplicationData', 'dfApplicationPrefs', 'SystemConfigDataService', 'dfNotify', function(dfAvailableApis, $scope, $window, $location, $timeout, UserDataService, UserEventsService, dfApplicationData, dfApplicationPrefs, SystemConfigDataService, dfNotify) {
+    .controller('LoginCtrl', ['$scope', '$window', '$location', '$timeout', 'UserDataService', 'UserEventsService', 'dfApplicationData', 'SystemConfigDataService', 'dfNotify', function($scope, $window, $location, $timeout, UserDataService, UserEventsService, dfApplicationData, SystemConfigDataService, dfNotify) {
 
         // Login options array
         $scope.loginOptions = {
@@ -402,7 +361,7 @@ angular.module('dreamfactoryApp')
                 type: 'success',
                 provider: 'dreamfactory',
                 message: 'Password reset successful.'
-            }
+            };
 
             dfNotify.success(messageOptions);
 
@@ -427,11 +386,6 @@ angular.module('dreamfactoryApp')
             // Set our parent's current user var
             $scope.$parent.currentUser = userDataObj;
 
-            // API Options
-            var options = {
-                apis: []
-            };
-
             //Login using OAuth...
             var queryString = location.search.substring(1);
 
@@ -446,32 +400,19 @@ angular.module('dreamfactoryApp')
                 // and disappear
                 $timeout(function () {
 
-                    // Set the apis we want
-                    options.apis = dfAvailableApis.getApis().apis;
-
-                    if (SystemConfigDataService.getSystemConfig().is_hosted) {
-                        options.apis = dfAvailableApis.getApis().addEventApi().apis;
-                    }
-
-                    // Init the app
-                    dfApplicationData.init(options.apis).then(
-                        function () {
-                            // Change our app location back to the home page
-                            if(queryString){
-                                // if logging in using oauth then do a full reload
-                                // is needed to remove oauth related info from url.
-                                var uri = $location.absUrl().split('?');
-                                $window.location.href = uri[0]+'#/home';
-                            } else {
-                                if ('user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
-                                    $location.url('/profile');
-                                } else {
-                                    $location.url('/home');
-                                }
-                            }
+                    // Change our app location back to the home page
+                    if (queryString) {
+                        // if logging in using oauth then do a full reload
+                        // is needed to remove oauth related info from url.
+                        var uri = $location.absUrl().split('?');
+                        $window.location.href = uri[0] + '#/home';
+                    } else {
+                        if ('user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
+                            $location.url('/profile');
+                        } else {
+                            $location.url('/home');
                         }
-                    );
-
+                    }
                 }, 250);
             }
 
@@ -480,9 +421,6 @@ angular.module('dreamfactoryApp')
 
                 // Set our parent's current user var
                 $scope.$parent.currentUser = userDataObj;
-
-                // Init the application
-                dfApplicationData.init();
 
                 // Send em to launchpad
                 if(queryString){
@@ -501,7 +439,7 @@ angular.module('dreamfactoryApp')
     // Our LogoutCtrl controller inherits from out TopLevelAppCtrl controller
     // This controller provides an attachment point for our logout functionality
     // We inject $location and the UserEventsService...same as the LoginCtrl.
-    .controller('LogoutCtrl', ['$scope', '$location', 'UserEventsService', 'dfApplicationData', 'SystemConfigDataService', function($scope, $location, UserEventsService, dfApplicationData, SystemConfigDataService) {
+    .controller('LogoutCtrl', ['$scope', '$location', 'UserEventsService', 'dfApplicationData', function($scope, $location, UserEventsService, dfApplicationData) {
 
         // Listen for the logout success message
         // then we...
@@ -512,8 +450,8 @@ angular.module('dreamfactoryApp')
             // and should be 'false'
             $scope.$parent.currentUser = userDataObj;
 
-            // Remove Application Object from sessionStorage on successful logout
-            dfApplicationData.destroyApplicationObj();
+            // Reset Application Object on successful logout
+            dfApplicationData.resetApplicationObj();
 
             // redirect
             $location.url('/login')
@@ -568,7 +506,7 @@ angular.module('dreamfactoryApp')
 
             // redirect to the app home page
             $location.url('/launchpad');
-        })
+        });
 
         $scope.$on(UserEventsService.login.loginError, function (e) {
             e.stopPropagation();
@@ -624,19 +562,16 @@ angular.module('dreamfactoryApp')
                 type: 'success',
                 provider: 'dreamfactory',
                 message: 'Registration Confirmation successful.'
-            }
+            };
 
             dfNotify.success(messageOptions);
 
             // Assign the user to the parent current user var
             $scope.$parent.currentUser = userDataObj;
 
-            // setup the app
-            dfApplicationData.init();
-
             // redirect to the app home page
             $location.url('/launchpad');
-        })
+        });
 
         // Handle a login error
         $scope.$on(UserEventsService.login.loginError, function(e, errMsg) {
@@ -647,7 +582,7 @@ angular.module('dreamfactoryApp')
     }])
 
     // Controls Reset of password
-    .controller('ResetPasswordEmailCtrl', ['$scope', '$location', 'dfApplicationData', 'dfAvailableApis', 'UserEventsService', 'SystemConfigDataService', 'dfNotify', '$timeout',  function($scope, $location, dfApplicationData, dfAvailableApis, UserEventsService, SystemConfigDataService, dfNotify, $timeout) {
+    .controller('ResetPasswordEmailCtrl', ['$scope', '$location', 'dfApplicationData', 'UserEventsService', 'SystemConfigDataService', 'dfNotify', '$timeout',  function($scope, $location, dfApplicationData, UserEventsService, SystemConfigDataService, dfNotify, $timeout) {
 
         // Login options array
         $scope.loginOptions = {
@@ -685,17 +620,12 @@ angular.module('dreamfactoryApp')
                 type: 'success',
                 provider: 'dreamfactory',
                 message: 'Password reset successful.'
-            }
+            };
 
             dfNotify.success(messageOptions);
 
             // Set our parent's current user var
             $scope.$parent.currentUser = userDataObj;
-
-            // API Options
-            var options = {
-                apis: []
-            };
 
             // Set services on application object
             // are we an admin
@@ -708,25 +638,12 @@ angular.module('dreamfactoryApp')
                 // and disappear
                 $timeout(function () {
 
-                    // Set the apis we want
-                    options.apis = dfAvailableApis.getApis().apis;
-
-                    if (SystemConfigDataService.getSystemConfig().is_hosted) {
-                        options.apis = dfAvailableApis.getApis().addEventApi().apis;
+                    // Change our app location back to the home page
+                    if ('user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
+                        $location.url('/profile');
+                    } else {
+                        $location.url('/home');
                     }
-
-                    // Init the app
-                    dfApplicationData.init(options.apis).then(
-                        function () {
-
-                            // Change our app location back to the home page
-                            if ('user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
-                                $location.url('/profile');
-                            } else {
-                                $location.url('/home');
-                            }
-                        }
-                    );
 
                 }, 250);
             }
@@ -736,9 +653,6 @@ angular.module('dreamfactoryApp')
 
                 // Set our parent's current user var
                 $scope.$parent.currentUser = userDataObj;
-
-                // Init the application
-                dfApplicationData.init();
 
                 // Send em to launchpad
                 $location.url('/launchpad');
@@ -764,7 +678,8 @@ angular.module('dreamfactoryApp')
             title: 'Invitation Confirmation'
         };
 
-        $scope.inviteType = ($location.$$path.indexOf('user') > -1) ? 'user' : 'admin';
+        // == is on purpose
+        $scope.inviteType = ($location.search().admin == 1) ? 'admin' : 'user';
 
         $scope.loginOptions = {
             showTemplate: false
@@ -798,15 +713,12 @@ angular.module('dreamfactoryApp')
                 type: 'success',
                 provider: 'dreamfactory',
                 message: 'User Confirmation successful.'
-            }
+            };
 
             dfNotify.success(messageOptions);
 
             // Assign the user to the parent current user var
             $scope.$parent.currentUser = userDataObj;
-
-            // setup the app
-            dfApplicationData.init();
 
             // redirect to the app home page
             $location.url('/launchpad');

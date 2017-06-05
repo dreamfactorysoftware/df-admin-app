@@ -11,52 +11,8 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                     templateUrl: MOD_PROFILE_ASSET_PATH + 'views/main.html',
                     controller: 'ProfileCtrl',
                     resolve: {
-                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
-                        checkProfileRoute: ['dfApplicationData', 'SystemConfigDataService', '$location', 'dfNotify', function (dfApplicationData, SystemConfigDataService, $location, dfNotify) {
-
-                            var currentUser = dfApplicationData.getCurrentUser(),
-                                sysConfig = SystemConfigDataService.getSystemConfig(),
-                                messageOptions = {};
-
-                            /*if (currentUser && currentUser.is_sys_admin && currentUser.session_id) {
-                             $location.url('/users');
-
-                             messageOptions = {
-                             module: 'DreamFactory Profile Module',
-                             type: 'warn',
-                             provider: 'dreamfactory',
-                             message: 'Profile not available as Admin.  Please edit the current user through the Users page.'
-                             }
-
-                             dfNotify.warn(messageOptions);
-                             return;
-                             }*/
-
-                            if (!currentUser && sysConfig.allow_guest_user) {
-
-                                messageOptions = {
-                                    module: 'DreamFactory Profile Module',
-                                    type: 'warn',
-                                    provider: 'dreamfactory',
-                                    message: 'Profile not available for guest users.'
-                                };
-
-                                dfNotify.warn(messageOptions);
-
-                                $location.url('/launchpad');
-                                return;
-                            }
-
-
-                            if (!currentUser && !sysConfig.allow_guest_user) {
-
+                        checkProfileRoute: ['UserDataService', '$location', function (UserDataService, $location) {
+                            if (!UserDataService.getCurrentUser()) {
                                 $location.url('/login');
                             }
                         }]
@@ -66,16 +22,36 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
         }])
     .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
-
     }])
-    .controller('ProfileCtrl', ['$scope', 'UserDataService', 'dfApplicationData', function ($scope, UserDataService, dfApplicationData) {
+    .controller('ProfileCtrl', ['$scope', 'UserDataService', 'dfApplicationData', 'dfNotify', '$http', 'INSTANCE_URL', function ($scope, UserDataService, dfApplicationData, dfNotify, $http, INSTANCE_URL) {
 
-        $scope.currentUser = UserDataService.getCurrentUser();
+        $scope.user = null;
+        $scope.isAdminUser = UserDataService.getCurrentUser().is_sys_admin;
+        $scope.resource = $scope.isAdminUser ? 'system/admin' : 'user';
 
-        dfApplicationData.loadApi(['admin']);
+        $http({
+            method: 'GET',
+            url: INSTANCE_URL + '/api/v2/' + $scope.resource + '/profile'
+        }).then(
+            function (result) {
+                $scope.user = result.data;
+                if($scope.user.adldap || $scope.user.oauth_provider) {
+                    angular.element('#set-password-section').hide();
+                    angular.element('#set-security-question-section').hide();
+                }
+            },
+            function (error) {
+                var messageOptions = {
+                    module: 'Profile',
+                    provider: 'dreamfactory',
+                    type: 'error',
+                    message: 'There was an error loading User Profile data. Please try refreshing your browser.'
+                };
+                dfNotify.error(messageOptions);
+            }
+        );
 
         // Set Title in parent
-        // $scope.$parent.title = $scope.currentUser.name + ' Profile';
         $scope.$parent.title = '';
 
         // Set module links
@@ -93,375 +69,210 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
         return {
 
             restrict: 'E',
-            scope: {},
+            scope: false,
             templateUrl: MOD_APPS_ASSET_PATH + 'views/df-edit-profile.html',
             link: function (scope, elem, attrs) {
 
+                var messageOptions, requestDataObj, session_token, existingUser;
+                var config = SystemConfigDataService.getSystemConfig();
+                scope.loginAttribute = config.authentication.login_attribute;
+                scope.bitnami_demo = config.platform.bitnami_demo;
 
-                var User = function (userData) {
-                    if(userData.adldap || userData.oauth_provider) {
-                        angular.element('#set-password-section').hide();
-                        angular.element('#set-security-question-section').hide();
-                    }
-                    return {
-                        __dfUI: {},
-                        record: angular.copy(userData),
-                        recordCopy: angular.copy(userData)
-                    }
-                }
-
-                var Password = function () {
-
-                    return {
-                        reset: true,
-                        login: false,
-                        old_password: null,
-                        new_password: null
-                    }
-                };
-
-                scope.loginAttribute = SystemConfigDataService.getSystemConfig().authentication.login_attribute;
-                scope.user = null;
-                scope.password = null;
-                scope.bitnami_demo = SystemConfigDataService.getSystemConfig().platform.bitnami_demo;
-
-                scope.apps = dfApplicationData.getApiData('app');
-
-
-                // PUBLIC API
                 scope.updateUser = function () {
-
-                    scope._updateUser();
+                    
+                    if (scope.setPassword) {
+                        // update password and profile. try to update password first. if it fails then don't update profile.
+                        scope.updatePassword();
+                    } else {
+                        // no password change. just update profile.
+                        scope.updateProfile(false);
+                    }
                 };
 
+                scope.updatePassword = function () {
 
-                // PRIVATE API
-                scope._getUserProfileFromServer = function () {
+                    // check for old, new, verify password values
 
-                    return $http({
-                        method: 'GET',
-                        url: INSTANCE_URL + '/api/v2/user/profile'
-                    })
+                    if (!scope.password.old_password || !scope.password.new_password || !scope.password.verify_password) {
+
+                        return;
+                    }
+
+                    // check that new and verify password values match
+                    if (scope.password.new_password !== scope.password.verify_password) {
+
+                        messageOptions = {
+                            module: 'Profile',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: 'Passwords do not match.'
+                        };
+
+                        dfNotify.error(messageOptions);
+                        return;
+                    }
+
+                    // password info looks ok, send to server
+
+                    requestDataObj = {
+
+                        params: {
+                            reset: false,
+                            login: true
+                        },
+                        data: {
+                            old_password: scope.password.old_password,
+                            new_password: scope.password.new_password
+                        }
+                    };
+
+                    scope.updateUserPasswordToServer(requestDataObj).then(
+
+                        function (result) {
+
+                            // update token if password was changed
+                            session_token = result.data.session_token;
+                            if (session_token) {
+                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = session_token;
+                                $cookies.PHPSESSID = session_token;
+
+                                existingUser = UserDataService.getCurrentUser();
+                                existingUser.session_token = session_token;
+                                existingUser.session_id = session_token;
+                                $cookieStore.put('CurrentUserObj', existingUser);
+                            }
+
+                            // success, now update profile
+                            scope.updateProfile(true);
+                        },
+
+                        function (reject) {
+
+                            var messageOptions = {
+                                module: 'Profile',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            };
+
+                            dfNotify.error(messageOptions);
+                        }
+                    )
                 };
 
-                scope._updateUserToServer = function (requestDataObj) {
+                scope.updateProfile = function (passwordUpdated) {
+
+                    requestDataObj = {
+                        params: {
+                            fields: '*'
+                        },
+                        data: scope.user,
+                        url: INSTANCE_URL + '/api/v2/' + scope.resource + '/profile'
+                    };
+
+                    scope.updateUserToServer(requestDataObj).then(
+
+                        function (result) {
+
+                            // update token if email was changed
+                            session_token = result.data.session_token;
+                            if (session_token) {
+                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = session_token;
+                                $cookies.PHPSESSID = session_token;
+
+                                existingUser = UserDataService.getCurrentUser();
+                                existingUser.session_token = session_token;
+                                existingUser.session_id = session_token;
+                                $cookieStore.put('CurrentUserObj', existingUser);
+                            }
+
+                            // Remove these properties if they have been set
+                            // before merging and setting current user obj in
+                            // user data service;
+
+                            if (scope.user.hasOwnProperty('security_question')) {
+                                delete scope.user.security_question;
+                            }
+
+                            if (scope.user.hasOwnProperty('security_answer')) {
+                                delete scope.user.security_answer;
+                            }
+
+                            UserDataService.setCurrentUser(dfObjectService.mergeObjects(scope.user, UserDataService.getCurrentUser()));
+
+                            // delete admin cache to force reload
+                            if (scope.isAdminUser) {
+                                dfApplicationData.deleteApiDataFromCache('admin');
+                            }
+
+                            // flags stored on utility directives
+                            scope.setPassword = false;
+                            scope.setQuestion = false;
+
+                            var message = passwordUpdated ? 'Profile and password' : 'Profile';
+
+                            messageOptions = {
+                                module: 'Profile',
+                                type: 'success',
+                                provider: 'dreamfactory',
+                                message: message + " updated successfully."
+                            };
+
+                            dfNotify.success(messageOptions);
+                        },
+
+                        function (reject) {
+
+                            var message = passwordUpdated ? 'Password updated successfully but Profile could not be saved.' : reject;
+
+                            var messageOptions = {
+                                module: 'Profile',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: message
+                            };
+
+                            dfNotify.error(messageOptions);
+                        }
+                    );
+                };
+
+                scope.updateUserToServer = function (requestDataObj) {
 
                     return $http({
                         method: 'PUT',
-                        url: INSTANCE_URL + '/api/v2/user/profile',
+                        url: INSTANCE_URL + '/api/v2/' + scope.resource + '/profile',
                         data: requestDataObj.data
                     })
                 };
 
-                scope._updateUsers = function (update) {
-
-                    update.url = INSTANCE_URL + '/api/v2/system/admin/profile';
-                    return dfApplicationData.updateApiData('admin', update).$promise;
-                };
-
-                scope._updateUserPasswordToServer = function (requestDataObj) {
+                scope.updateUserPasswordToServer = function (requestDataObj) {
 
                     return $http({
                         method: 'POST',
-                        url: INSTANCE_URL + '/api/v2/user/password',
+                        url: INSTANCE_URL + '/api/v2/' + scope.resource + '/password',
                         params: requestDataObj.params,
                         data: requestDataObj.data
                     })
                 };
 
-                scope._updateAdminPasswordToServer = function (requestDataObj) {
+                scope.$watch('setPassword', function (newValue) {
 
-                    return $http({
-                        method: 'POST',
-                        url: INSTANCE_URL + '/api/v2/system/admin/password',
-                        params: requestDataObj.params,
-                        data: requestDataObj.data
-                    })
-                };
+                    if (newValue) {
 
+                        scope.requireOldPassword = true;
 
-                // COMPLEX IMPLEMENTATION
-                scope._updateUser = function () {
-
-                    // If the user is an admin we have to update dfApplicationObj
-                    if (UserDataService.getCurrentUser().is_sys_admin) {
-
-                        // If the user is an admin we have to update dfApplicationObj
-                        var admindata = scope.user.record;
-                        admindata.id = UserDataService.getCurrentUser().id;
-
-                        var update = {
-                            params: {
-                                fields: '*'
-                            },
-                            data: admindata
+                        scope.password = {
+                            old_password: '',
+                            new_password: '',
+                            verify_password: ''
                         };
-
-
-                        scope._updateUsers(update).then(
-                            function (result) {
-
-                                // update token if email was changed
-                                var session_token = result.session_token || (result.data && result.data.session_token);
-                                if (session_token) {
-                                    $http.defaults.headers.common['X-DreamFactory-Session-Token'] = session_token;
-                                    $cookies.PHPSESSID = session_token;
-                                    
-                                    var existingUser = UserDataService.getCurrentUser();
-                                    existingUser.session_token = session_token;
-                                    existingUser.session_id = session_token;
-                                    $cookieStore.put('CurrentUserObj', existingUser);
-                                }
-
-                                var messageOptions = {
-                                    module: 'Profile',
-                                    type: 'success',
-                                    provider: 'dreamfactory',
-                                    message: "Profile updated successfully."
-                                };
-
-                                // Flag stored on df-set-security-question directive
-                                scope.setQuestion = false;
-
-                                dfNotify.success(messageOptions);
-
-                            },
-
-                            function (reject) {
-
-                                var messageOptions = {
-                                    module: 'Profile',
-                                    type: 'error',
-                                    provider: 'dreamfactory',
-                                    message: reject
-                                };
-
-                                dfNotify.error(messageOptions);
-                            }
-                        );
-
-                        // Remove these properties if they have been set
-                        // before merging and setting current user obj in
-                        // user data service;
-
-                        if (scope.user.record.hasOwnProperty('security_question')) {
-                            delete scope.user.record.security_question;
-                        }
-
-                        if (scope.user.record.hasOwnProperty('security_answer')) {
-                            delete scope.user.record.security_answer;
-                        }
-
-                        UserDataService.setCurrentUser(dfObjectService.mergeObjects(scope.user.record, UserDataService.getCurrentUser()));
-
-
-                        if (scope.setPassword) {
-
-
-                            var requestDataObj2 = {
-
-                                params: {
-                                    reset: scope.password.reset,
-                                    login: scope.password.login
-
-                                },
-                                data: {
-                                    old_password: scope.password.old_password,
-                                    new_password: scope.password.new_password
-                                }
-
-                            }
-
-                            scope._updateAdminPasswordToServer(requestDataObj2).then(
-                                function (result) {
-
-                                    var messageOptions = {
-                                        module: 'Profile',
-                                        type: 'success',
-                                        provider: 'dreamfactory',
-                                        message: "Password updated successfully."
-                                    };
-
-                                    dfNotify.success(messageOptions);
-
-                                    scope.setPassword = false;
-
-                                },
-
-                                function (reject) {
-
-                                    var messageOptions = {
-                                        module: 'Api Error',
-                                        type: 'error',
-                                        provider: 'dreamfactory',
-                                        message: reject
-                                    };
-
-                                    dfNotify.error(messageOptions);
-
-                                }
-                            )
-                        }
-                    } else {
-
-                        var requestDataObj1 = {
-                            data: scope.user.record
-                        };
-
-                        scope._updateUserToServer(requestDataObj1).then(
-                            function (result) {
-
-                                // update token if email was changed
-                                var session_token = result.session_token || result.data.session_token;
-                                if (session_token) {
-                                    $http.defaults.headers.common['X-DreamFactory-Session-Token'] = session_token;
-                                    $cookies.PHPSESSID = session_token;
-                                    
-                                    var existingUser = UserDataService.getCurrentUser();
-                                    existingUser.session_token = session_token;
-                                    existingUser.session_id = session_token;
-                                    $cookieStore.put('CurrentUserObj', existingUser);
-                                }
-                                
-                                var messageOptions = {
-                                    module: 'Profile',
-                                    type: 'success',
-                                    provider: 'dreamfactory',
-                                    message: "Profile updated successfully."
-                                };
-
-                                // Flag stored on df-set-security-question directive
-                                scope.setQuestion = false;
-
-                                dfNotify.success(messageOptions);
-
-                                // Remove these properties if they have been set
-                                // before merging and setting current user obj in
-                                // user data service;
-
-                                if (scope.user.record.hasOwnProperty('security_question')) {
-                                    delete scope.user.record.security_question;
-                                }
-
-                                if (scope.user.record.hasOwnProperty('security_answer')) {
-                                    delete scope.user.record.security_answer;
-                                }
-
-                                UserDataService.setCurrentUser(dfObjectService.mergeObjects(scope.user.record, UserDataService.getCurrentUser()));
-
-                            },
-                            function (reject) {
-
-                                var messageOptions = {
-                                    module: 'Api Error',
-                                    type: 'error',
-                                    provider: 'dreamfactory',
-                                    message: reject
-                                }
-
-                                dfNotify.error(messageOptions);
-                            }
-                        );
-
-                        if (scope.setPassword) {
-
-
-                            var requestDataObj2 = {
-
-                                params: {
-                                    reset: scope.password.reset,
-                                    login: scope.password.login
-
-                                },
-                                data: {
-                                    old_password: scope.password.old_password,
-                                    new_password: scope.password.new_password
-                                }
-
-                            }
-
-                            scope._updateUserPasswordToServer(requestDataObj2).then(
-                                function (result) {
-
-                                    var messageOptions = {
-                                        module: 'Profile',
-                                        type: 'success',
-                                        provider: 'dreamfactory',
-                                        message: "Password updated successfully."
-                                    };
-
-                                    dfNotify.success(messageOptions);
-
-                                    scope.setPassword = false;
-
-                                },
-
-                                function (reject) {
-
-                                    var messageOptions = {
-                                        module: 'Api Error',
-                                        type: 'error',
-                                        provider: 'dreamfactory',
-                                        message: reject
-                                    };
-
-                                    dfNotify.error(messageOptions);
-
-                                }
-                            )
-                        }
-                    }
-                };
-
-
-                var watchCurrentUser = scope.$watch('user', function (newValue, oldValue) {
-
-                    if (newValue === null) {
-
-                        scope._getUserProfileFromServer().then(
-                            function (result) {
-
-                                scope.user = new User(result.data);
-
-                            },
-                            function (reject) {
-
-                                var messageOptions = {
-                                    module: 'Api Error',
-                                    type: 'error',
-                                    provider: 'dreamfactory',
-                                    message: reject
-                                };
-
-                                dfNotify.error(messageOptions);
-
-                                scope.user = 'error';
-                            }
-                        )
-                    }
-                });
-
-                var watchSetPassword = scope.$watch('setPassword', function (n, o) {
-
-                    if (n) {
-
-                        // Flag stored on df-set-user-password directive
-                        scope.updatePassword = true;
-
-                        scope.password = new Password();
                     }
                     else {
                         scope.password = null;
+                        scope.identical = true;
                     }
                 });
-
-
-                scope.$on('$destroy', function (e) {
-
-                    watchCurrentUser();
-                    watchSetPassword();
-                })
-
             }
         }
     }]);

@@ -12,14 +12,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     templateUrl: MOD_LIMIT_ASSET_PATH + 'views/main.html',
                     controller: 'LimitCtl',
                     resolve: {
-                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
                         checkCurrentLimit: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -62,53 +54,13 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 }])
 
 .factory('editLimitService', [ function(){
-    return { record: {} };
-}])
-
-.service('updateLimitCacheData', [ function(){
-    this.mergeCacheData = function(limits, limitCache){
-        /* Enrich limits with limit cache data */
-        if(angular.isObject(limitCache)){
-
-            /* Precalc percentage for limits cache */
-            angular.forEach(limitCache, function(value, key){
-                if(value.attempts > 0){
-                    value.percent = (value.attempts / value.max) * 100;
-                } else {
-                    value.percent = 0;
-                }
-            });
-            /* Add limits cache to limits as object, Adjust max as necessary for updates on rate */
-            angular.forEach(limits, function(value){
-                /* need a zero and one for sorting purposes */
-                value.record.active = (value.record.is_active) ? 'active' : 'inactive';
-                var limitId = value.record.id;
-                value.record.cacheData = limitCache.filter(function(obj){
-                    return (obj.id == limitId);
-                })[0];
-                /* If value is being changed on an update, etc. */
-                if(value.record.rate != value.record.cacheData.max){
-                    value.record.cacheData.max = value.record.rate;
-                    if(value.record.cacheData.attempts > 0){
-                        value.record.cacheData.percent = (value.record.cacheData.attempts / value.record.cacheData.max) * 100;
-                    } else {
-                        value.record.cacheData.percent = 0;
-                    }
-                }
-                /* For filtering and sorting, add percent to the root record */
-                value.record.percent = value.record.cacheData.percent;
-            });
-        }
-    };
-
+    return { record: {}, recordCopy: {} };
 }])
 
 .controller('LimitCtl', ['INSTANCE_URL', '$rootScope', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function (INSTANCE_URL, $rootScope, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {
 
         $scope.$parent.title = 'Limits';
         $rootScope.isRouteLoading = true;
-
-        dfApplicationData.loadApi(['system', 'limit', 'role', 'service', 'user', 'limit_cache']);
 
         // Set module links
         $scope.links = [
@@ -158,12 +110,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
             active: false
         };
 
-        // Set empty search result message
-        $scope.emptySearchResult = {
-            title: 'You have no Limits that match your search criteria!',
-            text: ''
-        };
-
         $scope.hidden = {
             users : true,
             roles : true,
@@ -173,93 +119,161 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
         $scope.selectType = function(recordType) {
 
-            switch(recordType.value){
-                case 'instance':
-                    $scope.hidden = {
-                        users : true,
-                        roles : true,
-                        services: true,
-                        endpoint: true
-                    };
-                    break;
-                case 'instance.user':
-                    $scope.hidden = {
-                        users : false,
-                        roles : true,
-                        services: true,
-                        endpoint: true
-                    };
+            if (angular.isObject(recordType)) {
 
-                    break;
-                case 'instance.each_user':
-                    $scope.hidden = {
-                        users : true,
-                        roles : true,
-                        services: true,
-                        endpoint: true
-                    };
+                switch (recordType.value) {
+                    case 'instance':
+                        $scope.hidden = {
+                            users: true,
+                            roles: true,
+                            services: true,
+                            endpoint: true
+                        };
+                        break;
+                    case 'instance.user':
+                        $scope.hidden = {
+                            users: false,
+                            roles: true,
+                            services: true,
+                            endpoint: true
+                        };
 
-                    break;
-                case 'instance.service':
-                    $scope.hidden = {
-                        users : true,
-                        roles : true,
-                        services: false,
-                        endpoint: true
-                    };
-                    break;
-                case 'instance.role':
-                    $scope.hidden = {
-                        users : true,
-                        roles : false,
-                        services: true,
-                        endpoint: true
-                    };
-                    break;
-                case 'instance.user.service':
-                    $scope.hidden = {
-                        users : false,
-                        roles : true,
-                        services: false,
-                        endpoint: true
-                    };
-                    break;
-                case 'instance.each_user.service':
-                    $scope.hidden = {
-                        users : true,
-                        roles : true,
-                        services: false,
-                        endpoint: true
-                    };
-                    break;
-                case 'instance.service.endpoint':
-                    $scope.hidden = {
-                        users : true,
-                        roles : true,
-                        services: false,
-                        endpoint: false
-                    };
-                    break;
-                case 'instance.user.service.endpoint' :
-                    $scope.hidden = {
-                        users : false,
-                        roles : true,
-                        services: false,
-                        endpoint: false
-                    };
-                    break;
-                case 'instance.each_user.service.endpoint' :
-                    $scope.hidden = {
-                        users : true,
-                        roles : true,
-                        services: false,
-                        endpoint: false
-                    };
-                    break;
+                        break;
+                    case 'instance.each_user':
+                        $scope.hidden = {
+                            users: true,
+                            roles: true,
+                            services: true,
+                            endpoint: true
+                        };
+
+                        break;
+                    case 'instance.service':
+                        $scope.hidden = {
+                            users: true,
+                            roles: true,
+                            services: false,
+                            endpoint: true
+                        };
+                        break;
+                    case 'instance.role':
+                        $scope.hidden = {
+                            users: true,
+                            roles: false,
+                            services: true,
+                            endpoint: true
+                        };
+                        break;
+                    case 'instance.user.service':
+                        $scope.hidden = {
+                            users: false,
+                            roles: true,
+                            services: false,
+                            endpoint: true
+                        };
+                        break;
+                    case 'instance.each_user.service':
+                        $scope.hidden = {
+                            users: true,
+                            roles: true,
+                            services: false,
+                            endpoint: true
+                        };
+                        break;
+                    case 'instance.service.endpoint':
+                        $scope.hidden = {
+                            users: true,
+                            roles: true,
+                            services: false,
+                            endpoint: false
+                        };
+                        break;
+                    case 'instance.user.service.endpoint' :
+                        $scope.hidden = {
+                            users: false,
+                            roles: true,
+                            services: false,
+                            endpoint: false
+                        };
+                        break;
+                    case 'instance.each_user.service.endpoint' :
+                        $scope.hidden = {
+                            users: true,
+                            roles: true,
+                            services: false,
+                            endpoint: false
+                        };
+                        break;
+                }
             }
-
         };
 
+    $scope.$on('$destroy', function (e) {
+
+        // dump data if not on page 1
+        $scope.$broadcast('toolbar:paginate:limit:destroy');
+    });
+
+    $scope.limitEnabled = false;
+    $scope.subscription_required = false;
+
+    // load data
+
+    $scope.apiData = null;
+
+    $scope.loadTabData = function(init) {
+
+        var apis, newApiData;
+
+        var errorFunc = function (error) {
+            var messageOptions = {
+                module: 'Limits',
+                provider: 'dreamfactory',
+                type: 'error',
+                message: 'There was an error loading data for the Limits tab. Please try refreshing your browser.'
+            };
+            dfNotify.error(messageOptions);
+        };
+
+        // first get system data to decide whether to load other data
+        dfApplicationData.getApiData(['system']).then(
+            function (response) {
+                angular.forEach(response[0].resource, function (value) {
+                    if (value.name === 'limit') {
+                        $scope.limitEnabled = true;
+                    }
+                });
+                if (!$scope.limitEnabled) {
+                    // limits not enabled, disable UI
+                    $scope.subscription_required = true;
+                    /* Disable ability to navigate to create */
+                    $scope.links[1].path = $scope.links[0].path;
+                } else {
+                    // limits enabled, load other data
+                    apis = ['limit', 'role', 'service', 'user'];
+
+                    dfApplicationData.getApiData(apis).then(
+                        function (response) {
+                            newApiData = {};
+                            apis.forEach(function (value, index) {
+                                newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                            });
+                            $scope.apiData = newApiData;
+                            if (init) {
+                                $scope.$broadcast('toolbar:paginate:limit:load');
+                            }
+                        },
+                        // error getting other data
+                        errorFunc
+                    );
+                }
+            },
+            // error getting system data
+            errorFunc
+        );
+    };
+
+    $scope.loadTabData(true);
 
     }])
 
@@ -270,14 +284,17 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         'dfNotify',
         '$timeout',
         'editLimitService',
-        'updateLimitCacheData',
+        '$http',
+        'INSTANCE_URL',
         function ($rootScope,
             MOD_LIMIT_ASSET_PATH,
             dfApplicationData,
             dfNotify,
             $timeout,
             editLimitService,
-            updateLimitCacheData) {
+            $http,
+            INSTANCE_URL
+        ) {
 
         return {
             restrict: 'E',
@@ -292,24 +309,13 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         __dfUI: {
                             selected: false
                         },
-                        record: limitData
+                        record: limitData,
+                        recordCopy: limitData
                     }
                 };
 
-                // For file upload on import limits;
-                // there is a scope issue where the fileUpload directive
-                // accesses import limit's parent scope.  It's not as bad as it sounds
-                scope.uploadFile = {
-                    path: ''
-                };
-
-                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.user.manageViewMode;
-
                 scope.limits = null;
-                scope.limitEnabled = false;
                 scope.currentEditLimit = editLimitService;
-
-                scope.system = dfApplicationData.getApiData('system', null, true);
 
                 scope.fields = [
                     {
@@ -365,13 +371,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 };
 
                 scope.selectedLimits = [];
-
-                scope.limitCache;
-
-                scope.subscription_required = false;
-
-                scope.apiData = {};
-
 
                 // PUBLIC API
 
@@ -450,30 +449,38 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 };
 
                 scope._deleteCacheFromServer = function (requestDataObj) {
-                    return dfApplicationData.deleteApiData('limit_cache', requestDataObj).$promise;
+
+                    return $http({
+                        method: 'DELETE',
+                        url: INSTANCE_URL + '/api/v2/system/limit_cache',
+                        params: requestDataObj.params
+                    });
                 };
 
                 // COMPLEX IMPLEMENTATION
 
                 scope._editLimit = function (limit) {
 
-                    angular.copy(limit, scope.currentEditLimit.record);
+                    angular.copy(limit, scope.currentEditLimit);
 
-                    var limitType = limit.type;
-                    var limitPeriod = limit.period;
-                    var userId = limit.user_id;
+                    var limitType = limit.record.type;
+                    var limitPeriod = limit.record.period;
+                    var userId = limit.record.user_id;
 
                     scope.currentEditLimit.record.typeObj = scope.instanceTypes.filter(function(obj){
                         return (obj.value == limitType);
                     })[0];
+                    scope.currentEditLimit.recordCopy.typeObj = scope.currentEditLimit.record.typeObj;
                     scope.currentEditLimit.record.periodObj = scope.limitPeriods.filter(function(obj){
                         return (obj.value == limitPeriod);
                     })[0];
+                    scope.currentEditLimit.recordCopy.periodObj = scope.currentEditLimit.record.periodObj;
 
                     if(angular.isObject(scope.users)){
                         scope.currentEditLimit.record.user_id = scope.users.filter(function(obj){
                             return (obj.id == userId);
                         })[0];
+                        scope.currentEditLimit.recordCopy.user_id = scope.currentEditLimit.record.user_id;
 
                     }
                     scope.selectType(scope.currentEditLimit.record.typeObj);
@@ -484,7 +491,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 scope._deleteLimitCache = function (limit){
                     var requestDataObj = {
                         params: {
-                            id: limit.record.id
+                            ids: limit.record.id
                         }
                     };
 
@@ -499,11 +506,12 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                                 message: 'Limit counter successfully reset.'
                             };
 
-                            limit.record.cacheData.attempts = 0;
-                            limit.record.cacheData.percent = 0;
+                            angular.forEach(limit.record.limit_cache_by_limit_id, function(cache){
+                                cache.attempts = 0;
+                                cache.percent = 0;
+                            });
+
                             dfNotify.success(messageOptions);
-
-
                         },
 
                         function (reject) {
@@ -608,8 +616,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 scope._resetSelectedLimits = function () {
                     var requestDataObj = {
                         params: {
-                            ids: scope.selectedLimits.join(','),
-                            rollback: true
+                            ids: scope.selectedLimits.join(',')
                         }
                     };
 
@@ -628,8 +635,10 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             angular.forEach(scope.selectedLimits, function(value){
                                 scope.limits.filter(function(obj){
                                     if(obj.record.id == value){
-                                         obj.record.cacheData.attempts = 0;
-                                         obj.record.cacheData.percent = 0;
+                                        angular.forEach(obj.record.limit_cache_by_limit_id, function(cache){
+                                            cache.attempts = 0;
+                                            cache.percent = 0;
+                                        });
                                     }
                                 });
                             });
@@ -701,188 +710,55 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                             // console.log('Delete Limits Finally');
                         }
-                    )
+                    );
                 };
-
-                scope._determineLimitsStatus = function(systemData){
-                    if(angular.isObject(systemData)){
-                        angular.forEach(systemData, function(value){
-                            if(value.name == 'limit'){
-                                scope.limitEnabled = true;
-                            }
-                        });
-                        if(!scope.limitEnabled){
-                            scope.subscription_required = true;
-                            /* Disable ability to navigate to create */
-                            scope.links[1].path = scope.links[0].path;
-                            return;
-                        }
-                    }
-
-                };
-
 
                 // WATCHERS
 
-                var watchLimits = scope.$watch('limits', function (newValue, oldValue) {
+                // this fires when the API data changes
+                // apiData is passed in to the details directive as data-api-data
+                var watchLimitApiData = scope.$watchCollection('apiData.limit', function (newValue, oldValue) {
 
-                    if (newValue === null) {
+                    var _limits = [];
 
-                        var _limits = [];
-
-                        var limits = dfApplicationData.getApiData('limit');
-                        angular.forEach(limits, function (limit) {
+                    if (newValue) {
+                        angular.forEach(newValue, function (limit) {
                             _limits.push(new ManagedLimit(limit));
                         });
-                        scope.limits = _limits;
-
-                        updateLimitCacheData.mergeCacheData(scope.limits, scope.limitCache);
-                        return;
+                        scope.emptySectionOptions.active = (newValue.length === 0);
                     }
-
-
-                    if (newValue !== null && oldValue !== null) {
-
-                        if (newValue.length === 0 && oldValue.length === 0) {
-                            scope.emptySectionOptions.active = true;
-                        }
-                    }
-                });
-
-                var onLimitNav = $rootScope.$on('component-nav:reload:limit', function (e) {
-
-                    var _limits = [];
-
-                    angular.forEach(dfApplicationData.getApiData('limit', null, true), function (limit) {
-                        if (typeof limit !== 'function') {
-                            _limits.push(new ManagedLimit(limit));
-                        }
-                    });
 
                     scope.limits = _limits;
 
-                    updateLimitCacheData.mergeCacheData(scope.limits, scope.limitCache);
                 });
-
-
-                var watchApiData = scope.$watchCollection(function () {
-
-                    var limits =  dfApplicationData.getApiData('limit');
-                    if(angular.isDefined(limits) && limits.length === 0){
-                        scope.emptySectionOptions.active = true;
-                    }
-
-                    return limits;
-
-                }, function (newValue, oldValue) {
-
-                    var _limits = [];
-
-                    var limitData = dfApplicationData.getApiData('limit');
-
-                    angular.forEach(limitData, function (limit) {
-                        _limits.push(new ManagedLimit(limit));
-                    });
-
-                    scope.limits = _limits;
-                    updateLimitCacheData.mergeCacheData(scope.limits, scope.limitCache);
-
-
-                    if(angular.isDefined(newValue) && angular.isDefined(oldValue)){
-                        if (newValue.length === 0 && oldValue.length === 0) {
-                            scope.emptySectionOptions.active = true;
-                        }
-                    }
-
-                    return;
-                });
-
-
 
                 // MESSAGES
 
+                // broadcast by pagination code when new data is available
                 scope.$on('toolbar:paginate:limit:update', function (e) {
 
-                    var _limits = [];
-                    var limits = dfApplicationData.getApiData('limit');
-
-
-                    angular.forEach(limits, function (limit) {
-
-                        var _limit = new ManagedLimit(limit);
-
-                        var i = 0;
-
-                        while (i < scope.selectedLimits.length) {
-
-                            if (scope.selectedLimits[i] === _limit.record.id) {
-
-                                _limit.__dfUI.selected = true;
-                                break;
-                            }
-
-                            i++
-                        }
-
-                        _limits.push(_limit);
-                    });
-
-                    scope.limits = _limits;
-
+                    scope.loadTabData();
                 });
 
                 scope.$on('$destroy', function (e) {
-                    watchLimits();
-                    onLimitNav();
-                    scope.$broadcast('toolbar:paginate:limit:reset');
-
+                    // Destroy watchers
+                    watchLimitApiData();
                 });
 
                 scope.$watch('$viewContentLoaded',
-                    function (event) {
+                    function(event){
                         $rootScope.isRouteLoading = false;
                     }
                 );
-
-                $rootScope.$on("app", function  (){
-
-                    scope.apps = dfApplicationData.getApiData('app');
-                });
-
-                $rootScope.$on("user", function  (){
-
-                    scope.users = dfApplicationData.getApiData('user');
-                });
-
-                $rootScope.$on("role", function  (){
-
-                    scope.roles = dfApplicationData.getApiData('role');
-                });
-                $rootScope.$on("service", function  (){
-
-                    scope.services = dfApplicationData.getApiData('service');
-                });
-
-                $rootScope.$on("limit", function  (){
-                    scope.$broadcast('toolbar:paginate:limit:reset');
-                });
-
-                $rootScope.$on("limit_cache", function  (){
-
-                    scope.limitCache = dfApplicationData.getApiData('limit_cache');
-                    updateLimitCacheData.mergeCacheData(scope.limits, scope.limitCache);
-
-
-                });
-
-                scope.$on("system", function  () {
-                    scope.system = dfApplicationData.getApiData('system');
-                    scope._determineLimitsStatus(scope.system)
-                });
-
-
             }
         }
+    }])
+
+    .directive('dfLimitLoading', ['$rootScope', function($rootScope) {
+        return {
+            restrict: 'E',
+            template: "<div class='col-lg-12' ng-if='isRouteLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
+        };
     }])
 
 .directive('dfLimitDetails', [
@@ -897,7 +773,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
     '$cookieStore',
     '$rootScope',
     'editLimitService',
-    'updateLimitCacheData', function(
+    function(
         MOD_LIMIT_ASSET_PATH,
         dfApplicationData,
         dfNotify,
@@ -908,8 +784,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         UserDataService,
         $cookieStore,
         $rootScope,
-        editLimitService,
-        updateLimitCacheData) {
+        editLimitService
+        ) {
 
         return {
 
@@ -918,7 +794,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 limitData: '=?',
                 newLimit: '=newLimit',
                 selectType: '=?',
-                activeView: '=?'
+                activeView: '=?',
+                apiData: '=?'
             },
             templateUrl: MOD_LIMIT_ASSET_PATH + 'views/df-limit-details.html',
             link: function (scope, elem, attrs) {
@@ -936,6 +813,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                         role_id: null,
                         service_id: null,
                         type: null,
+                        endpoint: null,
                         user_id: null,
                         cacheData: {}
                     };
@@ -959,11 +837,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 if (scope.newLimit) {
                   scope.currentEditLimit = new Limit();
                 }
-
-                scope.apps = dfApplicationData.getApiData('app');
-                scope.services = dfApplicationData.getApiData('service');
-                scope.roles = dfApplicationData.getApiData('role');
-                scope.users = dfApplicationData.getApiData('user');
 
                 scope.verbs = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'];
 
@@ -999,7 +872,19 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                 scope.closeLimit = function () {
 
-                    scope._closeLimit();
+                    // perform some checks on app data
+
+                    if (!dfObjectService.compareObjectsAsJson(scope.currentEditLimit.record, scope.currentEditLimit.recordCopy)) {
+                        var record = angular.toJson(scope.currentEditLimit.record);
+                        var recordCopy = angular.toJson(scope.currentEditLimit.recordCopy);
+                        if (!dfNotify.confirmNoSave()) {
+
+                            return false;
+                        }
+
+                    }
+
+                    scope._resetLimitDetails();
                 };
 
                 /*/!** When API Endpoint is selected, need to map associative resource options *!/
@@ -1068,9 +953,59 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                
                 scope._validateData = function () {
-                    return true;
+                    var checkData = scope.currentEditLimit.record;
 
-                    //add limit validation here true / false
+                    if(checkData.typeObj == null) {
+                        var options = {
+                            module: 'Limit Create Error',
+                            message: 'Please select a limit type.',
+                            type: 'error'
+                        };
+                        dfNotify.error(options);
+                        return false;
+                    }
+
+                    if(checkData.name === null || checkData.name == ''){
+                        var options = {
+                            module: 'Limit Create Error',
+                            message: 'The limit name cannot be blank.',
+                            type: 'error'
+                        };
+                        dfNotify.error(options);
+                        return false;
+                    }
+
+                    if(!angular.isDefined(checkData.typeObj)){
+                        var options = {
+                            module: 'Limit Create Error',
+                            message: 'A Limit type must be selected.',
+                            type: 'error'
+                        };
+                        dfNotify.error(options);
+                        return false;
+                    }
+
+                    if(checkData.rate === null || checkData.rate == ''){
+                        var options = {
+                            module: 'Limit Create Error',
+                            message: 'The limit rate cannot be blank.',
+                            type: 'error'
+                        };
+                        dfNotify.error(options);
+                        return false;
+                    }
+                    /** Check for only integers */
+                    var reg = /^\d+$/;
+                    if(!reg.test(checkData.rate)){
+                        var options = {
+                            module: 'Limit Create Error',
+                            message: 'The limit rate must be an integer.',
+                            type: 'error'
+                        };
+                        dfNotify.error(options);
+                        return false;
+                    }
+                    return true;
                 };
 
                 // COMPLEX IMPLEMENTATION
@@ -1078,10 +1013,14 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     // perform some checks on app data
                     scope.saveData = scope._prepareLimitData();
+                    if(!scope.saveData){
+                        return false;
+                    }
 
                     var requestDataObj = {
                         params: {
                             fields: '*',
+                            related: 'service_by_service_id,role_by_role_id,user_by_user_id,limit_cache_by_limit_id'
                         },
                         data: scope.saveData
                     };
@@ -1098,8 +1037,11 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             };
 
                             dfNotify.success(messageOptions);
-                            scope._updateSavedLimit(result);
 
+                            // clean form
+                            scope._resetLimitDetails();
+
+                            scope.$emit('sidebar-nav:view:reset');
                         },
                         function (reject) {
 
@@ -1111,16 +1053,10 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             };
 
                             dfNotify.error(messageOptions);
-
                         }
                     ).finally(
-                            function() {
-                                /*reset the currentEditLimit */
-                                $rootScope.$broadcast('toolbar:paginate:limit:reset');
-                                scope.currentEditLimit.record = {};
-                                scope.activeView = scope.links[0];
-                            }
-                        )
+                        function() {}
+                    );
                 };
 
                 scope._updateLimit = function () {
@@ -1134,7 +1070,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     var requestDataObj = {
 
                         params: {
-                            fields: '*'
+                            fields: '*',
+                            related: 'service_by_service_id,role_by_role_id,user_by_user_id,limit_cache_by_limit_id'
                         },
                         data: scope.saveData
                     };
@@ -1150,8 +1087,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             };
 
                             dfNotify.success(messageOptions);
-                            scope._updateSavedLimit(result);
-
                         },
                         function (reject) {
 
@@ -1165,20 +1100,15 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                             dfNotify.error(messageOptions);
                         }
                     ).finally(
-                        function(test) {
-                            /*reset the currentEditLimit */
-                            $rootScope.$broadcast('toolbar:paginate:limit:reset');
+                        function() {}
+                    );
 
-                            scope.currentEditLimit.record = {};
-                            scope.activeView = scope.links[0];
-                        }
-                    )
-
-
+                    scope._resetLimitDetails();
                 };
 
                 /**
-                 * Strips out and prepares data for saving or updating in API model. Copies currentEditLimit to preserve
+                 * Strips out and prepares data for saving or updating in API model. Does some basic validations as well.
+                 * Copies currentEditLimit to preserve
                  * objects, etc.
                  * @private
                  */
@@ -1201,98 +1131,29 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     if(angular.isObject(saveData.service_by_service_id)){
                         saveData.service_id = saveData.service_by_service_id.id;
                     }
+                    var endpointTypes = [
+                        'instance.service.endpoint',
+                        'instance.user.service.endpoint',
+                        'instance.each_user.service.endpoint'
+                    ];
 
-                    /**
-                     * For building the endpoint
-                     */
-                    /*var pattern = /{(.*?)}/;
-
-                    if(angular.isDefined(saveData.resource)){
-                        var resourceBase = '';
-                        if(pattern.test(saveData.resource)){
-                            resourceBase += saveData.resource.replace(pattern, '');
-
-                        }
-                        if(angular.isDefined(saveData.resourceId)){
-                            resourceBase += saveData.resourceId;
-                        }
-                        saveData.endpoint = resourceBase;
+                    /** Endpoint check for blank */
+                    if(!saveData.endpoint || endpointTypes.indexOf(saveData.type) === -1)
+                    {
+                        saveData.endpoint = null;
                     }
-                    */
 
                     delete saveData.key_text;
-                    delete saveData.cacheData;
                     delete saveData.periodObj;
                     delete saveData.typeObj;
                     delete saveData.user_by_user_id;
                     delete saveData.role_by_role_id;
                     delete saveData.service_by_service_id;
+                    delete saveData.limit_cache_by_limit_id;
 
                     return saveData;
                 };
 
-                /**
-                 * This to be called after a successful limit update to place
-                 * service, role, user objects back in the limit model, updating
-                 * the table.
-                 * @private
-                 */
-                scope._updateSavedLimit = function (referenceLimit) {
-                    if(angular.isObject(scope.currentEditLimit.record.user_by_user_id)){
-                        referenceLimit.resource[0].user_by_user_id = scope.currentEditLimit.record.user_by_user_id;
-                    }
-                    if(angular.isObject(scope.currentEditLimit.record.role_by_role_id)){
-                        referenceLimit.resource[0].role_by_role_id = scope.currentEditLimit.record.role_by_role_id;
-                    }
-                    if(angular.isObject(scope.currentEditLimit.record.service_by_service_id)){
-                        referenceLimit.resource[0].service_by_service_id = scope.currentEditLimit.record.service_by_service_id;
-                    }
-
-                    /* Clear out any previous object references (if any) */
-                    switch(scope.currentEditLimit.record.type) {
-                        case 'instance':
-                        case 'instance.each_user':
-                            delete referenceLimit.user_by_user_id;
-                            delete referenceLimit.role_by_role_id;
-                            delete referenceLimit.service_by_service_id;
-                            break;
-                        case 'instance.user':
-                            delete referenceLimit.role_by_role_id;
-                            delete referenceLimit.service_by_service_id;
-                            break;
-                        case 'instance.service':
-                            delete referenceLimit.user_by_user_id;
-                            delete referenceLimit.role_by_role_id;
-                            break;
-                        case 'instance.role':
-                            delete referenceLimit.user_by_user_id;
-                            delete referenceLimit.service_by_service_id;
-                            break;
-                        case 'instance.user.service':
-                            delete referenceLimit.role_by_role_id;
-                            break;
-                        case 'instance.each_user.service':
-                            delete referenceLimit.user_by_user_id;
-                            delete referenceLimit.role_by_role_id;
-                            break;
-                    }
-                };
-
-                scope._closeLimit = function () {
-
-                    // perform some checks on app data
-
-                    if (!dfObjectService.compareObjectsAsJson(scope.limit.record, scope.limit.recordCopy)) {
-
-                        if (!dfNotify.confirmNoSave()) {
-
-                            return false;
-                        }
-
-                    }
-
-                    scope._resetLimitDetails();
-                };
 
 
                 // WATCHERS
@@ -1311,39 +1172,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 scope.$on('$destroy', function(e) {
                     scope._resetLimitDetails();
                     watchLimitData();
-                    //watchAppData();
-                    //watchRoleData();
                 });
-
-                $rootScope.$on("app", function  (){
-
-                    scope.apps = dfApplicationData.getApiData('app');
-                });
-
-                $rootScope.$on("user", function  (){
-
-                    scope.users = dfApplicationData.getApiData('user');
-                });
-
-                $rootScope.$on("role", function  (){
-
-                    scope.roles = dfApplicationData.getApiData('role');
-                });
-
-                $rootScope.$on("limit_cache", function  (){
-
-                    scope.limitCache = dfApplicationData.getApiData('limit_cache');
-                });
-
-                $rootScope.$on("service", function  () {
-
-                    scope.services = dfApplicationData.getApiData('service');
-
-                });
-
-
-
-
 
                 // HELP
 
@@ -1371,5 +1200,5 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 }
             }
         }
-    }])
+    }]);
 

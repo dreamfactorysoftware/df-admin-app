@@ -6,6 +6,6 @@
     <div class="col-md-10 df-section"  data-ng-class="activeView.path === 'manage-roles' ? 'df-section-3-round' : 'df-section-all-round'"  df-fs-height>
         <df-role-loading></df-role-loading>
         <df-manage-roles data-ng-if="activeView.path === 'manage-roles'"></df-manage-roles>
-        <df-role-details data-ng-if="activeView.path === 'create-role'" data-new-role="true"></df-role-details>
+        <df-role-details data-ng-if="activeView.path === 'create-role'" data-new-role="true" data-api-data="apiData"></df-role-details>
     </div>
 </div>

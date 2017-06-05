@@ -46,7 +46,7 @@
 						<div class="form-group" ng-hide="$parent.hidden.services">
 							<label>Service</label>
 							<select class="form-control" data-ng-model="currentEditLimit.record.service_by_service_id"
-									ng-options="service.name for service in services track by service.id"
+									ng-options="service.name for service in apiData.service track by service.id"
 									>
 								<option value="" >Please Select...</option>
 							</select>
@@ -55,7 +55,7 @@
 						<div class="form-group" ng-hide="$parent.hidden.users">
 							<label>User</label>
 							<select class="form-control" data-ng-model="currentEditLimit.record.user_by_user_id"
-							data-ng-options="user.name for user in users track by user.id" >
+							data-ng-options="user.name for user in apiData.user track by user.id" >
 								<option value="" >Please Select...</option>
 							</select>
 						</div>
@@ -70,7 +70,7 @@
 						<div class="form-group" ng-hide="$parent.hidden.roles">
 							<label>Role</label>
 							<select class="form-control" data-ng-model="currentEditLimit.record.role_by_role_id"
-									ng-options="role.name for role in roles track by role.id"	>
+									ng-options="role.name for role in apiData.role track by role.id"	>
 								<option value="" >Please Select...</option>
 							</select>
 						</div>

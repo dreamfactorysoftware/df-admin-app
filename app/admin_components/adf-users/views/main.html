@@ -6,6 +6,6 @@
     <div class="col-md-10 df-section" data-ng-class="activeView.path === 'manage-users' ? 'df-section-3-round' : 'df-section-all-round'" df-fs-height>
         <df-user-loading></df-user-loading>
         <df-manage-users data-ng-if="activeView.path === 'manage-users'"></df-manage-users>
-        <df-user-details data-ng-if="activeView.path === 'create-user'" data-new-user="true"></df-user-details>
+        <df-user-details data-ng-if="activeView.path === 'create-user'" data-new-user="true" data-api-data="apiData"></df-user-details>
     </div>
 </div>

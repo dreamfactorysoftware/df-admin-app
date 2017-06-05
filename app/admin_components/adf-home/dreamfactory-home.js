@@ -29,13 +29,6 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     templateUrl: MOD_HOME_ASSET_PATH + 'views/main.html',
                     controller: 'HomeCtrl',
                     resolve: {
-                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
                         checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -84,27 +77,16 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
             $scope.trustUrl = function (url) {
                 return $sce.trustAsResourceUrl(url);
-            }
+            };
 
             $scope.$parent.title = 'Home';
 
-            dfApplicationData.loadApi(['user', 'admin', 'service', 'app']);
-
-            var statsQueryParams = [].join('&');
-/*
-            var statsQueryParams = [
-                'total_users=' + dfApplicationData.getApiData('user', 'meta').count,
-                'total_admins=' + dfApplicationData.getApiData('admin', 'meta').count,
-                'total_services=' +  dfApplicationData.getApiData('service', 'meta').count,
-                'total_apps=' + dfApplicationData.getApiData('app', 'meta').count
-            ].join('&');
-*/
             // Set module links
             $scope.links = angular.copy(SystemConfigDataService.getSystemConfig().home_links) || [
                 {
                     name: 'welcome-home',
                     label: 'Welcome',
-                    href: "//www.dreamfactory.com/in_product_v2/welcome.html?" + statsQueryParams,
+                    href: "//www.dreamfactory.com/in_product_v2/welcome.html",
                     attributes: []
                 },
                 {
@@ -132,5 +114,5 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     link.label = link.name;
                 }
             });
-        }])
+        }]);
 

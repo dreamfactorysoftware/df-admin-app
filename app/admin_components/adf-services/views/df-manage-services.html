@@ -8,9 +8,8 @@
 
         <!-- Tool Bar -->
         <df-section-toolbar>
-            <df-toolbar-view-modes></df-toolbar-view-modes>
             <df-toolbar-paginate data-api="'service'" ></df-toolbar-paginate>
-            <div class="btn-group btn-group-sm hidden-xs df-btn-group" data-ng-if="currentViewMode === 'table'">
+            <div class="btn-group btn-group-sm hidden-xs df-btn-group">
                 <button class="btn btn-default" data-ng-click="deleteSelectedServices()" data-ng-disabled="selectedServices.length === 0" title="Delete selected services"><i class="fa fa-fw fa-trash"></i></button>
             </div>
             <div style="clear: both"></div>
@@ -23,8 +22,7 @@
 
         <div data-ng-show="services.length > 0">
 
-            <!-- Table View Mode -->
-            <div data-ng-if="currentViewMode === 'table'">
+            <div>
                 <table class="table table-responsive table-bordered table-striped table-hover table-condensed">
                     <thead>
                     <th></th>
@@ -57,66 +55,6 @@
                     </tr>
                     </tbody>
                 </table>
-
-            </div>
-
-            <!-- Thumbnail View Mode -->
-            <div data-ng-if="currentViewMode === 'thumbnails'">
-                <!-- Roles Listing -->
-                <div class="row">
-                    <div data-ng-repeat="service in services">
-                        <div class="col-sm-6 col-md-4 col-lg-3">
-                            <div class="thumbnail df-thumbnail">
-                                <div class="caption" data-ng-click="editService(service.record)" title="Edit service">
-                                    <div class="row">
-                                        <div class="col-xs-12">
-                                            <div class="df-thumbnail-title">
-                                                <h3>{{service.record.name}}</h3>
-                                            </div>
-
-                                            <div class="df-thumbnail-description">
-                                                <p>{{service.record.description}}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-xs-12">
-                                            <div class="btn-group btn-group-justified df-btn-group-justified">
-                                                <div class="btn-group btn-group-sm">
-                                                    <button type="button" class="btn btn-default" data-ng-click="editService(service.record)" title="Edit service"><i class="fa fa-fw fa-pencil"></i></button>
-                                                </div>
-                                                <div class="btn-group btn-group-sm ">
-                                                    <button type="button" class="btn btn-default" data-ng-click="deleteService(service)" data-ng-disabled="service.record.deletable == false" title="Delete service"><i class="fa fa-fw fa-trash"></i></button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- List View Mode -->
-            <div data-ng-if="currentViewMode === 'list'">
-                <ul class="list-group">
-                    <li class="list-group-item df-list-group-item" data-ng-repeat="service in services">
-                        <div class="row">
-                            <div data-ng-click="editService(service.record)" title="Edit service">
-                                <div class="col-xs-7">
-                                    {{service.record.name}}
-                                </div>
-                            </div>
-                            <div class="col-xs-5">
-                                <div class="btn-group btn-group-sm pull-right">
-                                    <button type="button" class="btn btn-default" data-ng-click="deleteService(service)" data-ng-disabled="service.record.deletable == false" title="Delete service"><i class="fa fa-fw fa-trash"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
             </div>
         </div>
     </div>
@@ -124,7 +62,7 @@
 
     <!-- Edit Service -->
     <div data-ng-show="currentEditService">
-        <df-service-details data-service-data="currentEditService" data-new-service="false"></df-service-details>
+        <df-service-details data-service-data="currentEditService" data-new-service="false" data-api-data="apiData"></df-service-details>
     </div>
 
 </div>

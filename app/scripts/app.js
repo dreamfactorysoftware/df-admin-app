@@ -41,7 +41,7 @@ angular
     ])
 
     // Set application version number
-    .constant('APP_VERSION', '2.7.0')
+    .constant('APP_VERSION', '2.8.0')
 
     // Set global url for this application
     .constant('INSTANCE_URL', '')
@@ -64,10 +64,10 @@ angular
                 templateUrl: 'views/login.html',
                 resolve: {
 
-                    checkLoginRoute: ['dfApplicationData', '$location', 'SystemConfigDataService', function (dfApplicationData, $location, SystemConfigDataService) {
+                    checkLoginRoute: ['UserDataService', '$location', 'SystemConfigDataService', function (UserDataService, $location, SystemConfigDataService) {
 
                         var systemConfig = SystemConfigDataService.getSystemConfig();
-                        var currentUser = dfApplicationData.getCurrentUser();
+                        var currentUser = UserDataService.getCurrentUser();
 
                         if (currentUser && currentUser.session_id) {
                             if (currentUser.is_sys_admin) {
@@ -92,10 +92,10 @@ angular
                 controller: 'RegisterCtrl',
                 resolve: {
 
-                    checkRegisterRoute: ['SystemConfigDataService', 'dfApplicationData', '$location', function (SystemConfigDataService, dfApplicationData, $location) {
+                    checkRegisterRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
 
                         var sysConfig = SystemConfigDataService.getSystemConfig(),
-                            currentUser = dfApplicationData.getCurrentUser();
+                            currentUser = UserDataService.getCurrentUser();
 
                         // No guest users and no open registration
                         if (!currentUser && !sysConfig.authentication.allow_open_registration) {
@@ -124,10 +124,10 @@ angular
                 controller: 'RegisterCompleteCtrl',
                 resolve: {
 
-                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'dfApplicationData', '$location', function (SystemConfigDataService, dfApplicationData, $location) {
+                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
 
                         var sysConfig = SystemConfigDataService.getSystemConfig(),
-                            currentUser = dfApplicationData.getCurrentUser();
+                            currentUser = UserDataService.getCurrentUser();
 
                         if (!currentUser && !sysConfig.authentication.allow_open_registration) {
                             $location.url('/login');
@@ -151,10 +151,10 @@ angular
                 controller: "RegisterConfirmCtrl",
                 resolve: {
 
-                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'dfApplicationData', '$location', function (SystemConfigDataService, dfApplicationData, $location) {
+                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
 
                         var sysConfig = SystemConfigDataService.getSystemConfig(),
-                            currentUser = dfApplicationData.getCurrentUser();
+                            currentUser = UserDataService.getCurrentUser();
 
                         if (!currentUser && !sysConfig.authentication.allow_open_registration) {
                             $location.url('/login');
@@ -178,9 +178,9 @@ angular
                 controller: 'ResetPasswordEmailCtrl',
                 resolve: {
 
-                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'dfApplicationData', '$location', function (SystemConfigDataService, dfApplicationData, $location) {
+                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
 
-                        var currentUser = dfApplicationData.getCurrentUser();
+                        var currentUser = UserDataService.getCurrentUser();
 
                         if (currentUser && currentUser.is_sys_admin) {
                             $location.url('/home');
@@ -201,31 +201,9 @@ angular
                 controller: 'UserInviteCtrl',
                 resolve: {
 
-                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'dfApplicationData', '$location', function (SystemConfigDataService, dfApplicationData, $location) {
+                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
 
-                        var currentUser = dfApplicationData.getCurrentUser();
-
-                        if (currentUser && currentUser.is_sys_admin) {
-                            $location.url('/home');
-                            return;
-                        }
-
-                        if (currentUser && !currentUser.is_sys_admin) {
-                            $location.url('/launchpad');
-                            return;
-                        }
-
-                    }]
-                }
-            })
-            .when('/admin-invite', {
-                templateUrl: 'views/user-invite.html',
-                controller: 'UserInviteCtrl',
-                resolve: {
-
-                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'dfApplicationData', '$location', function (SystemConfigDataService, dfApplicationData, $location) {
-
-                        var currentUser = dfApplicationData.getCurrentUser();
+                        var currentUser = UserDataService.getCurrentUser();
 
                         if (currentUser && currentUser.is_sys_admin) {
                             $location.url('/home');
@@ -245,9 +223,9 @@ angular
                 templateUrl: 'views/login.html',
                 resolve: {
 
-                    checkLoginRoute: ['dfApplicationData', '$location', 'SystemConfigDataService', function (dfApplicationData, $location, SystemConfigDataService) {
+                    checkLoginRoute: ['UserDataService', '$location', 'SystemConfigDataService', function (UserDataService, $location, SystemConfigDataService) {
 
-                        var currentUser = dfApplicationData.getCurrentUser();
+                        var currentUser = UserDataService.getCurrentUser();
 
                         if (currentUser && currentUser.session_id) {
                             if (currentUser.is_sys_admin) {
@@ -309,15 +287,4 @@ angular
                 }
             }
         }]);
-    }])
-
-    // Get the System Configuration and set in SystemConfigDataService
-    // This is a synchronous call because we need the system config before
-    // anything else should happen
-    .run(['SystemConfigDataService',
-        function(SystemConfigDataService) {
-
-            var SystemConfig = SystemConfigDataService.getSystemConfigFromServerSync();
-
-            SystemConfigDataService.setSystemConfig(SystemConfig);
     }]);

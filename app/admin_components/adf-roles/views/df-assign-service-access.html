@@ -39,7 +39,7 @@
 
         <ul class="list-group">
             <li class="list-group-item" data-ng-repeat="serviceAccess in roleServiceAccesses track by $index" ng-show="serviceAccess.record.role_id !== null">
-                <df-service-access data-service-access="serviceAccess" data-index="$index"></df-service-access>
+                <df-service-access data-service-access="serviceAccess" data-index="$index" data-api-data="apiData"></df-service-access>
             </li>
         </ul>
         <p ng-show="roleServiceAccesses.length === 0">

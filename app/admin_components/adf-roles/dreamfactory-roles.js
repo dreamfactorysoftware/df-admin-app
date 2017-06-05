@@ -11,14 +11,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     templateUrl: MOD_ROLES_ASSET_PATH + 'views/main.html',
                     controller: 'RolesCtrl',
                     resolve: {
-                        checkAppObj: ['dfApplicationData', function (dfApplicationData) {
-
-                            if (dfApplicationData.initInProgress) {
-
-                                return dfApplicationData.initDeferred.promise;
-                            }
-                        }],
-
                         checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
                             var currentUser = UserDataService.getCurrentUser(),
@@ -62,7 +54,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
     }])
 
-    .controller('RolesCtrl', ['$rootScope', '$scope', '$q', 'dfApplicationData', 'SystemConfigDataService', function ($rootScope, $scope, $q, dfApplicationData, SystemConfigDataService) {
+    .controller('RolesCtrl', ['$rootScope', '$scope', '$q', 'dfApplicationData', 'SystemConfigDataService', 'dfNotify', function ($rootScope, $scope, $q, dfApplicationData, SystemConfigDataService, dfNotify) {
 
         $scope.$parent.title = 'Roles';
 
@@ -83,8 +75,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
         ];
 
-        $scope.loading = dfApplicationData.loadApi(['role', 'service']);
-
         $scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
 
         // Set empty section options
@@ -95,6 +85,45 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             viewLink: $scope.links[1],
             active: false
         };
+
+        $scope.$on('$destroy', function (e) {
+
+            // dump data if not on page 1
+            $scope.$broadcast('toolbar:paginate:role:destroy');
+        });
+
+        // load data
+
+        $scope.apiData = null;
+
+        $scope.loadTabData = function(init) {
+
+            var apis = ['role', 'service', 'service_type'];
+
+            dfApplicationData.getApiData(apis).then(
+                function (response) {
+                    var newApiData = {};
+                    apis.forEach(function(value, index) {
+                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                    });
+                    $scope.apiData = newApiData;
+                    if (init) {
+                        $scope.$broadcast('toolbar:paginate:role:load');
+                    }
+                },
+                function (error) {
+                    var messageOptions = {
+                        module: 'Roles',
+                        provider: 'dreamfactory',
+                        type: 'error',
+                        message: 'There was an error loading data for the Roles tab. Please try refreshing your browser.'
+                    };
+                    dfNotify.error(messageOptions);
+                }
+            );
+        };
+
+        $scope.loadTabData(true);
     }])
 
     .directive('dfRoleDetails', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$q', 'SystemConfigDataService', 'dfSystemData', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, $q, SystemConfigDataService, dfSystemData) {
@@ -104,7 +133,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             restrict: 'E',
             scope: {
                 roleData: '=?',
-                newRole: '=?'
+                newRole: '=?',
+                apiData: '=?'
             },
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-role-details.html',
             link: function (scope, elem, attrs) {
@@ -213,13 +243,10 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     // reset tabs
                     angular.element('#basic-tab').trigger('click');
-                    scope.$broadcast('dfPaginate:reset:user');
-                    scope.$broadcast('dfPaginate:reset:app');
 
                     // reset errors
                     scope.lookupKeysError = false;
                     scope.basicInfoError = false;
-
                 };
 
 
@@ -371,9 +398,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         }
                     );
 
-                    if (dfApplicationData.getAdminPrefs().settings.sections.role.autoClose) {
-                        scope._resetRoleDetails();
-                    }
+                    scope._resetRoleDetails();
                 };
 
                 scope._deleteRole = function () {
@@ -437,57 +462,34 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope._resetRoleDetails();
                 };
 
-
                 // WATCHERS
-                var watchData = scope.$watch('roleData', function (newValue, oldValue) {
 
-                    if (!newValue) return false;
-                    if (scope.newRole) return false;
+                // this fires when a record is selected for editing
+                // roleData is passed in to the directive as data-role-data
+                var watchRoleData = scope.$watch('roleData', function (newValue, oldValue) {
 
-                    scope.role = new Role(newValue);
-                });
-
-
-                // MESSAGES
-                scope.$on('$destroy', function (e) {
-                    watchData();
-
-                    scope.$broadcast('dfPaginate:reset:records');
-                });
-
-
-
-                var watchService = scope.$watch('services', function (newValue, oldValue) {
-                    if (newValue === null) {
-
-                        scope.services = dfApplicationData.getApiData('service');
-
-                        if (scope.services[0].name !== 'All') {
-                            scope.services.unshift({id: null, name: 'All', components: ["", "*"]});
-                        }
+                    if (newValue && !scope.newRole) {
+                        scope.role = new Role(newValue);
                     }
-
                 });
 
-                var watchServiceData = scope.$watchCollection(function () {
-                    return dfApplicationData.getApiData('service')
-                }, function (newValue, oldValue) {
+                var watchServiceData = scope.$watchCollection('apiData.service', function (newValue, oldValue) {
 
                     if (!newValue) return;
 
-                    scope.services = dfApplicationData.getApiData('service');
+                    scope.services = angular.copy(newValue);
 
                     if (scope.services[0].name !== 'All') {
                         scope.services.unshift({id: null, name: 'All', components: ["", "*"]});
                     }
                 });
 
+                // MESSAGES
 
                 scope.$on('$destroy', function (e) {
-                    watchService();
+                    watchRoleData();
                     watchServiceData();
                 });
-
 
                 // HELP
                 scope.dfSimpleHelp = {
@@ -631,7 +633,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         provider: 'dreamfactory',
                         message: 'Service with id "' + serviceId + '" not found.'
 
-                    }
+                    };
 
                     dfNotify.error(messageOptions);
                 };
@@ -708,7 +710,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
         }
     }])
 
-    .directive('dfServiceAccess', ['MOD_ROLES_ASSET_PATH', 'dfNotify', '$http', 'INSTANCE_URL', function (MOD_ROLES_ASSET_PATH, dfNotify, $http, INSTANCE_URL) {
+    .directive('dfServiceAccess', ['MOD_ROLES_ASSET_PATH', 'dfNotify', '$http', 'INSTANCE_URL', 'serviceTypeToGroup', function (MOD_ROLES_ASSET_PATH, dfNotify, $http, INSTANCE_URL, serviceTypeToGroup) {
 
         return {
 
@@ -716,7 +718,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             replace: true,
             scope: {
                 serviceAccess: '=',
-                index: '='
+                index: '=',
+                apiData: '='
             },
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-service-access.html',
             link: function (scope, elem, attrs) {
@@ -849,7 +852,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         scope.serviceAccess.__dfUI.hasError = false;
 
                     }
-                }
+                };
 
 
                 // WATCHERS
@@ -875,31 +878,31 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.serviceAccess.record.service_id = newValue.id;
                     scope.serviceAccess.record.service.components = ['', '*'];
                     if ('All' !== scope.serviceAccess.record.service.name) {
-                        switch (scope.serviceAccess.record.type) {
-                            case 'rws':
-                            case 'nodejs':
-                            case 'php':
-                            case 'python':
-                            case 'v8js':
-                                break;
-                            default:
-                                scope._getComponents().then(
-                                    function (result) {
+                            var group = serviceTypeToGroup(scope.serviceAccess.record.service.type, scope.apiData['service_type']);
+                            if (group !== null) {
+                                switch (group) {
+                                    case 'Script':
+                                    case 'Email':
+                                        break;
+                                    default:
+                                        scope._getComponents().then(
+                                            function (result) {
 
-                                        scope.serviceAccess.record.service.components = result.data.resource;
-                                    },
+                                                scope.serviceAccess.record.service.components = result.data.resource;
+                                            },
 
-                                    function (reject) {
-                                        throw {
-                                            module: 'DreamFactory Utility Module',
-                                            type: 'error',
-                                            provider: 'dreamfactory',
-                                            exception: reject
-                                        }
-                                    }
-                                )
-                                break;
-                        }
+                                            function (reject) {
+                                                throw {
+                                                    module: 'DreamFactory Utility Module',
+                                                    type: 'error',
+                                                    provider: 'dreamfactory',
+                                                    exception: reject
+                                                }
+                                            }
+                                        );
+                                        break;
+                                }
+                            }
                     }
                     scope._checkForFailure();
                     scope._checkForFailure();
@@ -940,8 +943,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 };
 
                 scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
-
-                scope.currentViewMode = dfApplicationData.getAdminPrefs().settings.sections.role.manageViewMode;
 
                 scope.roles = null;
 
@@ -1179,100 +1180,36 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 // WATCHERS
 
-                var watchRoles = scope.$watchCollection('roles', function (newValue, oldValue) {
+                // this fires when the API data changes
+                // apiData is passed in to the details directive as data-api-data
+                var watchApiData = scope.$watchCollection('apiData.role', function (newValue, oldValue) {
 
-                    if (newValue === null) {
+                    var _roles = [];
 
-                        var _roles = [];
-
-                        angular.forEach(dfApplicationData.getApiData('role'), function (role) {
-                            if (typeof role !== 'function') {
-                                _roles.push(new ManagedRole(role));
-                            }
+                    if (newValue) {
+                        angular.forEach(newValue, function (role) {
+                            _roles.push(new ManagedRole(role));
                         });
-
-                        scope.roles = _roles;
-
-                        if (scope.roles.length === 0) {
-                            scope.emptySectionOptions.active = true;
-                        }
-
-                        return;
+                        scope.emptySectionOptions.active = (newValue.length === 0);
                     }
 
-                    if (newValue !== null && oldValue !== null) {
-                        if (newValue.length === 0 && oldValue.length === 0) {
-                            scope.emptySectionOptions.active = true;
-                        }
-                    }
-                });
-
-                var onRolesNav = $rootScope.$on('component-nav:reload:roles', function (e) {
-
-                    var _roles = [];
-
-                    angular.forEach(dfApplicationData.getApiData('role', null, true), function (role) {
-                        if (typeof role !== 'function') {
-                            _roles.push(new ManagedApp(role));
-                        }
-                    });
-
                     scope.roles = _roles;
-
-                });
-
-                var watchApiData = scope.$watchCollection(function () {
-
-                    return dfApplicationData.getApiData('role');
-
-                }, function (newValue, oldValue) {
-
-                    var _roles = [];
-
-                    angular.forEach(dfApplicationData.getApiData('role'), function (role) {
-
-                        _roles.push(new ManagedRole(role));
-                    });
-
-                    scope.roles = _roles;
-
-                    return;
                 });
 
 
                 // MESSAGES
+
+                // broadcast by pagination code when new data is available
                 scope.$on('toolbar:paginate:role:update', function (e) {
 
-                    var _roles = [];
-
-                    angular.forEach(dfApplicationData.getApiData('role'), function (role) {
-
-
-                        var _role = new ManagedRole(role);
-
-                        var i = 0;
-
-                        while (i < scope.selectedRoles.length) {
-
-                            if (scope.selectedRoles[i] === _role.record.id) {
-
-                                _role.__dfUI.selected = true;
-                                break;
-                            }
-
-                            i++
-                        }
-
-                        _roles.push(_role);
-                    });
-
-                    scope.roles = _roles;
+                    scope.loadTabData();
                 });
 
                 scope.$on('$destroy', function (e) {
-                    watchRoles();
-                    onRolesNav();
-                })
+
+                    // Destroy watchers
+                    watchApiData();
+                });
 
                 scope.$watch('$viewContentLoaded',
                     function(event){
@@ -1316,7 +1253,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         record: angular.copy(lookupKeyData || _new),
                         recordCopy: angular.copy(lookupKeyData || _new)
                     };
-                }
+                };
 
 
                 scope.roleLookUpKeys = [];
@@ -1368,7 +1305,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         })
                     });
 
-                }
+                };
 
 
                 // COMPLEX IMPLEMENTATION
@@ -1439,7 +1376,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                                 lk.__dfUI.unique = true;
                             }
                         })
-                    })
+                    });
 
                     scope.lookupKeysError = true;
                 });
@@ -1461,7 +1398,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     watchRole();
                     watchSameKeys();
                     watchLookupKeys();
-
                 });
             }
         }
