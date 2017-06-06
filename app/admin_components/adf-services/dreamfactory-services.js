@@ -1212,6 +1212,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         });
                         if (matches.length === 0) {
                             svc.singleton = false;
+                            svc.config_schema = null;
                             svc.subscription_required = true;
                             svc.subscription_type = 'Silver';
                             add.push(svc);
@@ -1225,6 +1226,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         });
                         if (matches.length === 0) {
                             svc.singleton = false;
+                            svc.config_schema = null;
                             svc.subscription_required = true;
                             svc.subscription_type = 'Gold';
                             add.push(svc);
