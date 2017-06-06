@@ -44,22 +44,22 @@ git checkout master
 git pull origin master
 git checkout develop
 git pull origin develop
-git flow release start 2.8.0
+git flow release start 2.8.1
 ```
 
 Bump the app version in app/scripts/app.js.
 
 ```
 // Set application version number
-.constant('APP_VERSION', '2.8.0')
+.constant('APP_VERSION', '2.8.1')
 ```
 
 ```
 grunt build
 git checkout -- dist/fonts app/index.html
 git add --all
-git commit -m "Release 2.8.0"
-git flow release finish 2.8.0
+git commit -m "Release 2.8.1"
+git flow release finish 2.8.1
 git push origin develop
 git checkout master
 git push origin master

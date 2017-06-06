@@ -26,33 +26,33 @@
         </button>
     </div>
 
-    <div class="form-group" data-ng-if="selectedSchema.config_schema != null">
+    <div class="form-group" data-ng-if="selectedSchema.config_schema">
         <br/>
         <label>Name</label>
         <df-simple-help data-options="dfSimpleHelp.name"></df-simple-help>
         <input id="services_info_name" class="form-control" data-ng-model="serviceInfo.record.name" type="text" required="" style="">
     </div>
 
-    <div class="form-group" data-ng-if="selectedSchema.config_schema != null">
+    <div class="form-group" data-ng-if="selectedSchema.config_schema">
         <label>Label</label>
         <df-simple-help data-options="dfSimpleHelp.label"></df-simple-help>
         <input id="services_info_label" class="form-control" data-ng-model="serviceInfo.record.label" type="text" required="" style="">
     </div>
 
-    <div class="form-group" data-ng-if="selectedSchema.config_schema != null">
+    <div class="form-group" data-ng-if="selectedSchema.config_schema">
         <label>Description</label>
         <df-simple-help data-options="dfSimpleHelp.description"></df-simple-help>
         <input id="services_info_description" class="form-control" data-ng-model="serviceInfo.record.description" type="text">
     </div>
 
-    <div class="form-group ng-scope" data-ng-if="selectedSchema.config_schema != null">
+    <div class="form-group ng-scope" data-ng-if="selectedSchema.config_schema">
         <div class="checkbox">
             <label><input id="services_info_active" data-ng-model="serviceInfo.record.is_active" type="checkbox">Active</label>
         </div>
     </div>
 
     <div data-ng-if="selectedSchema.subscription_required">
-        <br/><h4>This feature requires a DreamFactory {{selectedSchema.group === 'Log' ? 'Gold': 'Silver'}} product subscription.</h4> Email dspsales@dreamfactory.com or call +1-650-641-1800 for pricing information.
+        <br/><h4>This feature requires a DreamFactory {{selectedSchema.subscription_type}} product subscription.</h4> Email <a href="mailto:dspsales@dreamfactory.com" >dspsales@dreamfactory.com</a> or call +1-650-641-1800 for pricing information.
     </div>
 </div>
 

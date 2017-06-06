@@ -1125,6 +1125,115 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     this._storageType.url = regionObj.url;
                 };
 
+                scope.addMissingPaidServices = function (types) {
+
+                    // if these paid services are not in service_type array then add them with subscription_required = true
+
+                    var silverServices = [{
+                        "name": "adldap",
+                        "label": "Active Directory",
+                        "description": "A service for supporting Active Directory integration",
+                        "group": "LDAP"
+                    }, {
+                        "name": "ldap",
+                        "label": "Standard LDAP",
+                        "description": "A service for supporting Open LDAP integration",
+                        "group": "LDAP"
+                    }, {
+                        "name": "oidc",
+                        "label": "OpenID Connect",
+                        "description": "OpenID Connect service supporting SSO.",
+                        "group": "OAuth"
+                    }, {
+                        "name": "oauth_azure_ad",
+                        "label": "Azure Active Directory OAuth",
+                        "description": "OAuth service for supporting Azure Active Directory authentication and API access.",
+                        "group": "OAuth"
+                    }, {
+                        "name": "saml",
+                        "label": "SAML 2.0",
+                        "description": "SAML 2.0 service supporting SSO.",
+                        "group": "SSO"
+                    }, {
+                        "name": "ibmdb2",
+                        "label": "IBM DB2",
+                        "description": "Database service supporting IBM DB2 SQL connections.",
+                        "group": "Database"
+                    }, {
+                        "name": "oracle",
+                        "label": "Oracle",
+                        "description": "Database service supporting SQL connections.",
+                        "group": "Database"
+                    }, {
+                        "name": "salesforce_db",
+                        "label": "Salesforce",
+                        "description": "Database service with SOAP and/or OAuth authentication support for Salesforce connections.",
+                        "group": "Database"
+                    }, {
+                        "name": "soap",
+                        "label": "SOAP Service",
+                        "description": "A service to handle SOAP Services",
+                        "group": "Remote Service"
+                    }, {
+                        "name": "sqlanywhere",
+                        "label": "SAP SQL Anywhere",
+                        "description": "Database service supporting SAP SQL Anywhere connections.",
+                        "group": "Database"
+                    }, {
+                        "name": "sqlsrv",
+                        "label": "SQL Server",
+                        "description": "Database service supporting SQL Server connections.",
+                        "group": "Database"
+                    }, {
+                        "name": "apns",
+                        "label": "Apple Push Notification",
+                        "description": "Apple Push Notification Service Provider.",
+                        "group": "Notification"
+                    }, {
+                        "name": "gcm",
+                        "label": "GCM Push Notification",
+                        "description": "GCM Push Notification Service Provider.",
+                        "group": "Notification"
+                    }];
+
+                    var goldServices = [{
+                        "name": "logstash",
+                        "label": "Logstash",
+                        "description": "Logstash service.",
+                        "group": "Log"
+                    }];
+
+                    var add = [];
+
+                    angular.forEach(silverServices, function (svc) {
+
+                        var matches = types.filter(function (type) {
+                            return svc.name === type.name;
+                        });
+                        if (matches.length === 0) {
+                            svc.singleton = false;
+                            svc.subscription_required = true;
+                            svc.subscription_type = 'Silver';
+                            add.push(svc);
+                        }
+                    });
+
+                    angular.forEach(goldServices, function (svc) {
+
+                        var matches = types.filter(function (type) {
+                            return svc.name === type.name;
+                        });
+                        if (matches.length === 0) {
+                            svc.singleton = false;
+                            svc.subscription_required = true;
+                            svc.subscription_type = 'Gold';
+                            add.push(svc);
+                        }
+                    });
+
+                    return types.concat(add);
+                };
+
                 var watchEmailProvider = scope.$watch('_storageType.transport_type', function (newValue, oldValue) {
 
                     if (!newValue) return false;
@@ -1166,8 +1275,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 var watchServiceTypes = scope.$watchCollection('apiData.service_type', function (newValue, oldValue) {
 
                     if (newValue) {
-                        scope.hcv.serviceTypes = newValue;
+                        scope.hcv.serviceTypes = scope.addMissingPaidServices(newValue);
                         if (scope.newService) {
+                            // remove any non-creatable types like system or user
                             scope.hcv.serviceTypes = scope.hcv.serviceTypes
                                 .filter(function (el) {
                                     return !el.singleton;
@@ -1535,7 +1645,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope._changeDefinitionView();
 
-                    scope.hcv.serviceTypes = scope.apiData.service_type;
+                    scope.hcv.serviceTypes = scope.addMissingPaidServices(scope.apiData.service_type);
 
                     scope.handleFiles = function (files) {
                         if (!files) return;
@@ -1554,6 +1664,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     };
 
                     if (scope.newService) {
+                        // remove any non-creatable types like system or user
                         scope.hcv.serviceTypes = scope.hcv.serviceTypes
                             .filter(function (el) {
                                 return !el.singleton;
