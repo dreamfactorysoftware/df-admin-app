@@ -1425,6 +1425,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         .finally(function () {
 
                             Comm100API.showChat(scope.chatEnabled);
+                            // scope.chatEnabled tracks the state while on the Config tab
+                            dfApplicationData.deleteApiDataFromCache('custom');
                         })
                 };
 
@@ -1441,10 +1443,10 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 // normal tab data loading mechanism. The data is returned from cache since
                 // it was already loaded at login.
                 //
-                // When you change the value there's no need to update dfApplicationData cache
-                // or scope.apiData.custom. The chat visibility will be maintained at the last
-                // saved value until a logout or login occurs, at which time the dfApplicationData
-                // cache is cleared and /system/custom is loaded again from the server.
+                // When you change the value the dfApplicationData cache is cleared. The chat
+                // visibility will be maintained at the last saved value. Reloading the app,
+                // logging in again, or selecting the Config tab again will reload /system/custom
+                // from the server.
 
                 var watchCustom = scope.$watchCollection('apiData.custom', function (newValue, oldValue) {
 
