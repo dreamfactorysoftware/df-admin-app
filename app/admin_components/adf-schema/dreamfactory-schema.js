@@ -898,7 +898,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         return {
             restrict: 'E',
             scope: {
-                tableData: '='
+                tableData: '=',
+                apiData: '='
             },
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-table-template.html',
             transclude: true,
@@ -1045,8 +1046,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-table-create-view.html',
             controller: function($scope) {
 
-                $scope.currentCreateField = null;
-                $scope.currentCreateRelation = null;
                 $scope.viewMode = 'table';
                 $scope.table = {};
 
@@ -1200,8 +1199,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     scope.table = null;
                     scope.$emit('table', {notify: 'close'});
-                    scope.currentEditField = null;
-                    scope.currentEditRelation = null;
                 };
             }
         }
@@ -1223,8 +1220,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 var ctrl = this;
 
                 $scope.table = null;
-                $scope.currentEditField = null;
-                $scope.currentEditRelation = null;
                 $scope.viewMode = 'table';
                 $scope.isEditable = true;
 
@@ -1232,8 +1227,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 $scope.reset = function () {
 
                   $scope.table = null;
-                  $scope.currentEditField = null;
-                  $scope.currentEditRelation = null;
                   $scope.viewMode = 'table';
                   $scope.table = null;
                   $scope.currentTable = '';
@@ -2191,7 +2184,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             scope: {
                 relationData: '=',
                 currentTable: '=',
-                schemaData: '&'
+                schemaData: '&',
+                apiData: '='
             },
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-relation-details.html',
             link: function (scope, elem, attrs) {

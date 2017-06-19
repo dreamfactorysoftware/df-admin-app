@@ -1,4 +1,4 @@
-    <div data-ng-show="(currentEditField === null) && (currentEditRelation === null)">
+    <div>
 
         <div data-ng-show="!table.__dfUI.newTable" class="form-group well well-sm">
             <button type="button" class="btn btn-default btn-sm" data-ng-click="toggleViewMode()"
@@ -64,14 +64,4 @@
                 </button>
             </div>
         </div>
-    </div>
-
-    <div data-ng-show="currentEditField !== null">
-        <df-field-details data-field-data="currentEditField" data-current-table="table.record.name"
-                          data-current-service="table.currentService"></df-field-details>
-    </div>
-
-    <div data-ng-show="currentEditRelation !== null">
-        <df-relation-details data-relation-data="currentEditRelation" data-current-table="table.record.name"
-                          data-current-service="table.currentService"></df-relation-details>
     </div>

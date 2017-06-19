@@ -1,5 +1,5 @@
 
-    <div data-ng-show="(currentCreateField === null) && (currentCreateRelation === null)">
+    <div>
         <div data-ng-show="viewMode === 'table'">
             <div class="form-group">
                 <label>Table Name</label>
@@ -55,14 +55,4 @@
                 </button>
             </div>
         </div>
-    </div>
-
-    <div data-ng-show="currentCreateField !== null">
-        <df-field-details data-field-data="currentEditField" data-current-table="table.record.name"
-                          data-current-service="table.currentService"></df-field-details>
-    </div>
-
-    <div data-ng-show="currentCreateRelation !== null">
-        <df-relation-details data-relation-data="currentEditRelation" data-current-table="table.record.name"
-                          data-current-service="table.currentService"></df-relation-details>
     </div>
