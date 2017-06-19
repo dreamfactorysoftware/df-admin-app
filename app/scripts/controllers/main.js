@@ -224,87 +224,79 @@ angular.module('dreamfactoryApp')
 
         $scope.$watch('currentUser', function(newValue, oldValue) {
 
+            var links;
             var config = SystemConfigDataService.getSystemConfig();
             var groupedApp = config.app_group, noGroupApp = config.no_group_app;
 
-            // There is no currentUser and there are apps.
-            if (!newValue && ((groupedApp && groupedApp.length > 0) || (noGroupApp && noGroupApp.length > 0))) {
-
-                // Do we allow open registration
+            // Check for currentUser.
+            if (!newValue) {
+                // There is no currentUser. Check for apps.
+                if ((groupedApp && groupedApp.length > 0) || (noGroupApp && noGroupApp.length > 0)) {
+                    // There are apps so show launchpad option.
+                    links = ['support', 'launchpad', 'login'];
+                } else {
+                    // Hide launchpad option.
+                    links = ['support', 'login'];
+                }
+                // If open reg is enabled then show register option.
                 if (config.authentication.allow_open_registration) {
+                    links.push('register');
+                }
 
-                    // yes
-                    $scope._setActiveLinks($scope.topLevelLinks, ['support', 'launchpad', 'login', 'register']);
+                var params = [];
+                var UrlParams = $location.search();
 
+                Object.keys(UrlParams).forEach(function(key,index) {
+                    params.push(key + '=' + UrlParams[key]);
+                });
+
+                if ($location.path() === '/reset-password') {
+
+                    $location.url('/reset-password?' + params.join('&'));
+                }
+                else if ($location.path() === '/user-invite'){
+
+                    $location.url('/user-invite?' + params.join('&'));
+                }
+                else if ($location.path() === '/register-confirm'){
+
+                    $location.url('/register-confirm?' + params.join('&'));
                 }
                 else {
 
-                    // no
-                    $scope._setActiveLinks($scope.topLevelLinks, ['support', 'launchpad', 'login']);
+                    $location.url('/login');
                 }
-
+                // Not logged in. Hide chat.
+                Comm100API.showChat(false);
             }
-            // There is no currentUser and no apps
-            else if (!newValue) {
-
-                // Do we allow open registration
-                if (config.authentication.allow_open_registration) {
-
-                    // yes
-                    $scope._setActiveLinks($scope.topLevelLinks, ['support', 'login', 'register']);
-
-                    var params = [];
-                    var UrlParams = $location.search();
-
-                    Object.keys(UrlParams).forEach(function(key,index) {
-                        params.push(key + '=' + UrlParams[key]);
-                    });
-
-                    if ($location.path() === '/reset-password') {
-
-                        $location.url('/reset-password?' + params.join('&'));
-                    }
-                    else if ($location.path() === '/user-invite'){
-
-                        $location.url('/user-invite?' + params.join('&'));
-                    }
-                    else if ($location.path() === '/register-confirm'){
-
-                        $location.url('/register-confirm?' + params.join('&'));
-                    }
-                    else {
-
-                        $location.url('/login');
-                    }
+            else {
+                // We have a current user. Set name in menu button. Have to set this explicitly.
+                $scope.setTopLevelLinkValue('user', 'label', newValue.name);
+                if (newValue.is_sys_admin) {
+                    links = ['support', 'launchpad', 'admin', 'user'];
+                    // Enable/disable chat for admins. Default to enabled in case nothing is set in db or there's an error.
+                    var chatEnabled = true;
+                    dfApplicationData.getApiData(['custom']).then(
+                        function (response) {
+                            var custom = response[0].resource.filter(function(obj) {
+                                return (obj.name === 'chat');
+                            });
+                            if (custom.length > 0) {
+                                chatEnabled = Boolean(custom[0].value);
+                            }
+                        }
+                    ).finally(
+                        function() {
+                            Comm100API.showChat(chatEnabled);
+                        }
+                    )
                 }
                 else {
-
-                    // no
-                    $scope._setActiveLinks($scope.topLevelLinks, ['support', 'login']);
+                    links = ['support', 'launchpad', 'user'];
                 }
-
             }
 
-            // we have a current user.  Is that user an admin
-            else if (newValue.is_sys_admin) {
-
-                // Have to set this explicitly
-                $scope.setTopLevelLinkValue('user', 'label', newValue.name);
-
-                // Set active links fpr this user in the UI
-                $scope._setActiveLinks($scope.topLevelLinks, ['support', 'launchpad', 'admin', 'user']);
-
-            }
-
-            // is it a regular user
-            else if (!newValue.is_sys_admin) {
-
-                // Have to set this explicitly
-                $scope.setTopLevelLinkValue('user', 'label', newValue.name);
-
-                // Sets active links for user in the UI
-                $scope._setActiveLinks($scope.topLevelLinks, ['support', 'launchpad', 'user']);
-            }
+            $scope._setActiveLinks($scope.topLevelLinks, links);
         });
 
         $scope.$watch(function () {return UserDataService.getCurrentUser().name}, function (n, o) {
@@ -315,7 +307,7 @@ angular.module('dreamfactoryApp')
             $scope.setTopLevelLinkValue('user', 'label', n);
         });
 
-        // on $routeChangeSuccess show/hide admin top nav bar and chat
+        // on $routeChangeSuccess show/hide admin top nav bar
 
         $scope.$on('$routeChangeSuccess', function (e) {
 
@@ -332,8 +324,6 @@ angular.module('dreamfactoryApp')
                     $scope.showAdminComponentNav = ($scope.currentUser && $scope.currentUser.is_sys_admin === true);
                     break;
             }
-            // put chat behind login to avoid abuse
-            Comm100API.showChat(path !== '/login');
         })
     }])
 
