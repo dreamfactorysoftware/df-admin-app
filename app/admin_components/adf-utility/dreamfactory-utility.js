@@ -3119,14 +3119,9 @@ angular.module('dfUtility', ['dfApplication'])
 
         function pnotify (messageOptions) {
 
-
-
-            // Removed module title property as per Todd's request
-            // title: messageOptions.module,
-
             (function() {
 
-
+                PNotify.removeAll();
 
                 // Set PNotify options
                 PNotify.prototype.options.styling = "fontawesome";
@@ -3143,35 +3138,6 @@ angular.module('dfUtility', ['dfApplication'])
                     mouse_reset: false
                 })
             })();
-        }
-
-        function pnotifyConfirm (messageOptions) {
-
-
-            (function () {
-
-                // Set PNotify options
-                PNotify.prototype.options.styling = "fontawesome";
-
-                new PNotify({
-
-                    title: messageOptions.module,
-                    text: messageOptions.message,
-                    icon: 'fa fa-question-circle',
-                    hide: false,
-                    confirm: {
-                        confirm: true
-                    },
-                    buttons: {
-                        closer: false,
-                        sticker: false
-                    },
-                    history: {
-                        history: false
-                    }
-                })
-            })();
-
         }
 
         function parseDreamfactoryError (errorDataObj) {
