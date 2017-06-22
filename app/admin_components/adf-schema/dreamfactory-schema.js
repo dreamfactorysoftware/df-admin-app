@@ -871,7 +871,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         newApiData[value] = response[index].resource ? response[index].resource : response[index];
                         if (value === 'service') {
                             newApiData[value] = newApiData[value].filter(function(obj) {
-                                return ['mysql','pgsql','sqlite','sqlsrv','sqlanywhere','oracle','ibmdb2','firebird','aws_redshift_db','mongodb'].indexOf(obj.type) >= 0;
+                                return ['mysql','pgsql','sqlite','sqlsrv','sqlanywhere','oracle','ibmdb2','informix','firebird','aws_redshift_db','mongodb'].indexOf(obj.type) >= 0;
                             });
                         }
                     });
