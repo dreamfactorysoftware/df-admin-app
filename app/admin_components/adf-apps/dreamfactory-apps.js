@@ -113,7 +113,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         newApiData[value] = response[index].resource ? response[index].resource : response[index];
                         if (value === 'service') {
                             newApiData[value] = newApiData[value].filter(function (obj) {
-                                return ['local_file', 'aws_s3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage'].indexOf(obj.type) >= 0;
+                                return ['local_file', 'aws_s3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage', 'ftp_file', 'sftp_file'].indexOf(obj.type) >= 0;
                             });
                         }
                     });
