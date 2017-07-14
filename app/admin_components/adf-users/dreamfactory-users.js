@@ -150,7 +150,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         user_source: 0,
                         user_data: [],
                         password: null,
-                        user_lookup_by_user_id: [],
+                        lookup_by_user_id: [],
                         user_to_app_to_role_by_user_id: []
                     };
 
@@ -269,7 +269,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'user_to_app_to_role_by_user_id,user_lookup_by_user_id',
+                            related: 'user_to_app_to_role_by_user_id,lookup_by_user_id',
                             send_invite: scope.sendEmailOnCreate
                         },
                         data: scope.user.record
@@ -329,7 +329,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         params: {
                             fields: '*',
-                            related: 'user_to_app_to_role_by_user_id,user_lookup_by_user_id'
+                            related: 'user_to_app_to_role_by_user_id,lookup_by_user_id'
                         },
                         data: scope.user.record
                     };
@@ -669,7 +669,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         tempArr.push(lk.record);
                     });
 
-                    scope.user.record.user_lookup_by_user_id = tempArr;
+                    scope.user.record.lookup_by_user_id = tempArr;
                 };
 
 
@@ -695,11 +695,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     if (!newValue) return;
 
-                    if (newValue.record.hasOwnProperty('user_lookup_by_user_id') && newValue.record.user_lookup_by_user_id.length > 0) {
+                    if (newValue.record.hasOwnProperty('lookup_by_user_id') && newValue.record.lookup_by_user_id.length > 0) {
 
                         scope.lookupKeys = [];
 
-                        angular.forEach(newValue.record.user_lookup_by_user_id, function (lookupKeyData) {
+                        angular.forEach(newValue.record.lookup_by_user_id, function (lookupKeyData) {
 
                             scope.lookupKeys.push(new LookupKey(lookupKeyData))
 

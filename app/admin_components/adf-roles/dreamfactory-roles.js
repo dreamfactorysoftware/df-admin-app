@@ -149,7 +149,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         default_app_id: null,
                         role_service_access_by_role_id: [],
                         id: null,
-                        role_lookup_by_role_id: []
+                        lookup_by_role_id: []
                     };
 
                     roleData = roleData || newRole;
@@ -283,7 +283,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'role_service_access_by_role_id,role_lookup_by_role_id'
+                            related: 'role_service_access_by_role_id,lookup_by_role_id'
                         },
                         data: scope.role.record
                     };
@@ -336,7 +336,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'role_service_access_by_role_id,role_lookup_by_role_id'
+                            related: 'role_service_access_by_role_id,lookup_by_role_id'
                         },
                         data: scope.role.record
                     };
@@ -1287,7 +1287,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     });
 
 
-                    scope.role.record.role_lookup_by_role_id = tempArr;
+                    scope.role.record.lookup_by_role_id = tempArr;
                 };
 
                 scope._isUniqueKey = function () {
@@ -1337,7 +1337,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     else {
 
                         scope.roleLookUpKeys = [];
-                        angular.forEach(newValue.record.role_lookup_by_role_id, function (lkObj) {
+                        angular.forEach(newValue.record.lookup_by_role_id, function (lkObj) {
 
                             scope.roleLookUpKeys.push(new LookUpKey(lkObj));
                         })
