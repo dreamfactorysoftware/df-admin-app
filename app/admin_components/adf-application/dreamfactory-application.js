@@ -268,6 +268,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                     eventlist: {
                         as_list: true
                     },
+                    event_script: {
+                        as_list: true
+                    },
                     limit: {
                         include_count: true,
                         limit: limit,
