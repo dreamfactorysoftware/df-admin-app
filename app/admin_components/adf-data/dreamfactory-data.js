@@ -117,7 +117,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
             if (newValue) {
 
                 $scope.services = newValue.filter(function (obj) {
-                    return ['mysql', 'pgsql', 'sqlite', 'sqlsrv', 'sqlanywhere', 'oracle', 'ibmdb2', 'firebird', 'aws_redshift_db'].indexOf(obj.type) >= 0;
+                    return ['mysql', 'pgsql', 'sqlite', 'sqlsrv', 'sqlanywhere', 'oracle', 'ibmdb2', 'informix', 'firebird', 'aws_redshift_db'].indexOf(obj.type) >= 0;
                 });
             }
         });
@@ -143,7 +143,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
                         module: 'Data',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading the Data tab. Please try refreshing your browser.'
+                        message: 'There was an error loading the Data tab. Please try refreshing your browser and logging in again.'
                     };
                     dfNotify.error(messageOptions);
                 }

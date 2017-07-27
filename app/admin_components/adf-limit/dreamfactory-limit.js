@@ -230,7 +230,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 module: 'Limits',
                 provider: 'dreamfactory',
                 type: 'error',
-                message: 'There was an error loading data for the Limits tab. Please try refreshing your browser.'
+                message: 'There was an error loading data for the Limits tab. Please try refreshing your browser and logging in again.'
             };
             dfNotify.error(messageOptions);
         };

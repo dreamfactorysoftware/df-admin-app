@@ -95,19 +95,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope._loadSampleScript(type);
             };
 
-            $scope.highlightScript = function () {
-                $http({
-                    method: 'GET',
-                    url: INSTANCE_URL + '/api/v2/system/event_script',
-                    params: {
-                        as_list: true
-                    }
-                }).then(function (result) {
-                    $scope.highlightedEvents = result.data.resource;
-                    $scope.events.$$isHighlighted = $scope.highlightEvent($scope.events);
-                })
-            };
-
             $scope.handleFiles = function (files) {
                 if (!files)return;
                 var file = files && files[0];
@@ -127,39 +114,13 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.handleGitFiles = function (data) {
 
                 if (!data)return;
-
-                        $scope.currentScriptObj.content = data;
-                        $scope.$apply();
-
+                $scope.currentScriptObj.content = data;
+                $scope.$apply();
             };
-
 
             $scope.githubModalShow = function () {
 
                 $rootScope.$broadcast('githubShowModal', $scope.serviceTypeConfig);
-            };
-
-            $scope.__getDataFromHttpResponse = function (httpResponseObj) {
-
-                if (!httpResponseObj) return [];
-
-                if (httpResponseObj.hasOwnProperty('data')) {
-
-                    if (httpResponseObj.data.hasOwnProperty('record')) {
-
-                        return httpResponseObj.data.record;
-
-                    } else if (httpResponseObj.data.hasOwnProperty('resource')) {
-
-                        return httpResponseObj.data.resource;
-
-                    } else {
-
-                        return httpResponseObj.data;
-                    }
-                } else {
-
-                }
             };
 
             $scope.isHostedSystem = SystemConfigDataService.getSystemConfig().is_hosted;
@@ -175,14 +136,20 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope.loadTabData = function() {
 
-                var apis = ['event', 'script_type'];
+                var apis = ['event', 'script_type', 'event_script'];
 
-                dfApplicationData.getApiData(apis).then(
+                // force refresh to always load from server
+                dfApplicationData.getApiData(apis, true).then(
                     function (response) {
                         var newApiData = {};
                         apis.forEach(function(value, index) {
                             newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                            if (value === 'event') {
+                                // used for highlighting in ui
+                                newApiData['event_lookup'] = $scope.buildEventLookup(newApiData[value]);
+                            }
                         });
+
                         $scope.apiData = newApiData;
                     },
                     function (error) {
@@ -190,7 +157,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             module: 'Scripts',
                             provider: 'dreamfactory',
                             type: 'error',
-                            message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser.'
+                            message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.'
                         };
                         dfNotify.error(messageOptions);
                     }
@@ -199,179 +166,292 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope.loadTabData();
 
-            $scope.uppercaseVerbLabels = true;
-            $scope.allowedVerbs = ['get', 'post', 'put', 'patch', 'delete'];
-
             $scope.allowedScriptFormats = ['js','php','py', 'txt'];
 
             // Keep track of what's going on in the module
             $scope.currentServiceObj = null;
-            $scope.currentPathObj = null;
+            $scope.currentResourceObj = null;
+            $scope.currentEndpointObj = null;
             $scope.currentScriptObj = null;
+            $scope.menuPathArr = [];
 
             // Stuff for the editor
             $scope.editor = null;
             $scope.isEditorClean = true;
-            $scope.menuPathArr = [];
 
             // PUBLIC API
-            $scope.setService = function (name, eventObj) {
 
-                $scope._setService(name, eventObj);
-            };
+            // expand a single generic endpoint to full list using parameter arrays
 
-            $scope.setPath = function (name, pathObj) {
+            $scope.explodeEndpoint = function (endpointName, parameter) {
 
-                $scope._setPath(name, pathObj);
-            };
+                var endpoints = [endpointName];
 
-            $scope.setScript = function (scriptIdStr) {
-
-                $scope._setScript(scriptIdStr);
-            };
-
-            $scope.setEventList = function (name, verb, verbs, events) {
-                $scope.cachePath = { // Ugly, but needed for "back" functionality
-                    verbs: $scope.currentPathObj.verbs,
-                    name: $scope.currentPathObj.name
-                };
-                $scope._setEventList(name, verb, verbs, events);
-            };
-
-            $scope.clearEventList = function () {
-                if ($scope.currentPathObj.events) {
-                    $scope.cachePath.name = $scope.currentPathObj.name;
-                    $scope.cachePath.verb = $scope.currentPathObj.verb;
-                    $scope.cachePath.verbs = $scope.currentPathObj.verbs;
-                    $scope.cachePath.events = $scope.currentPathObj.events;
-
-                    $scope.currentPathObj.events = null;
-                    $scope.currentPathObj.verb = null;
-                    $scope.currentPathObj.verbs = null;
+                if (parameter !== null) {
+                    if (endpointName.indexOf("{") >= 0 && endpointName.indexOf("}") >= 0) {
+                        angular.forEach(parameter, function (paramArray, paramName) {
+                            angular.forEach(paramArray, function (itemName) {
+                                endpoints.push(endpointName.replace("{" + paramName + "}", itemName));
+                            });
+                        });
+                    }
                 }
+
+                return endpoints;
             };
+
+            // given a script name, allows an easy way to determine which service, resource, endpoint to highlight
+            // this function should only be called once after each time event data is loaded
+
+            $scope.buildEventLookup = function (eventData) {
+
+                var newData = angular.copy(eventData);
+                var lookupData = {}, lookupObj;
+
+                angular.forEach(newData, function (resources, serviceName) {
+                    angular.forEach(resources, function (resourceData, resourceName) {
+                        angular.forEach(resourceData.endpoints, function (endpointName) {
+                            lookupObj = {
+                                'service': serviceName,
+                                'resource': resourceName,
+                                'endpoint': endpointName
+                            };
+                            lookupData[endpointName] = lookupObj;
+                            if (resourceData.parameter !== null) {
+                                if (endpointName.indexOf("{") >= 0 && endpointName.indexOf("}") >= 0) {
+                                    angular.forEach(resourceData.parameter, function (paramArray, paramName) {
+                                        angular.forEach(paramArray, function (itemName) {
+                                            lookupData[endpointName.replace("{" + paramName + "}", itemName)] = lookupObj;
+                                        });
+                                    });
+                                }
+                            }
+                        });
+                    });
+                });
+                return lookupData;
+            };
+
+            // return true if there are any event scripts for this service
+
+            $scope.highlightService = function (serviceName) {
+
+                return $scope.apiData.event_script.some(function(scriptName) {
+                    var event = $scope.apiData.event_lookup[scriptName];
+                    if (event) {
+                        if (event.service === serviceName) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+            };
+
+            // return true if there are any event scripts for this resource
+
+            $scope.highlightResource = function (resourceName) {
+
+                return $scope.apiData.event_script.some(function(scriptName) {
+                    var event = $scope.apiData.event_lookup[scriptName];
+                    if (event) {
+                        return event.resource === resourceName;
+                    }
+                    return false;
+                });
+            };
+
+            // return true if there are any event scripts for this endpoint
+
+            $scope.highlightEndpoint = function (endpointName) {
+
+                return $scope.apiData.event_script.some(function(scriptName) {
+                    var event = $scope.apiData.event_lookup[scriptName];
+                    if (event) {
+                        return event.endpoint === endpointName;
+                    }
+                    return false;
+                });
+            };
+
+            // return true if there is an event script with this name
+
+            $scope.highlightExplodedEndpoint = function (endpointName) {
+
+                return $scope.apiData.event_script.some(function(scriptName) {
+                    return scriptName === endpointName;
+                });
+            };
+
+            // select a service and display all resources for that service
+
+            $scope.selectService = function (serviceName, resources) {
+
+                $scope.menuPathArr.push(serviceName);
+                $scope.currentServiceObj = {"name": serviceName, "resources": resources};
+            };
+
+            // select a resource and display all endpoints for that resource
+
+            $scope.selectResource = function (resourceName, resource) {
+
+                $scope.menuPathArr.push(resourceName);
+                $scope.currentResourceObj = {"name": resourceName, "endpoints": resource.endpoints, "parameter": resource.parameter};
+            };
+
+            // select an endpoint and show exploded list of endpoints
+
+            $scope.selectEndpoint = function (endpointName) {
+
+                var endpoints;
+
+                $scope.menuPathArr.push(endpointName);
+                endpoints = $scope.explodeEndpoint(endpointName, $scope.currentResourceObj.parameter);
+                $scope.currentEndpointObj = {"name": endpointName, "endpoints": endpoints};
+            };
+
+            // load the editor
+
+            $scope.setScript = function (scriptName) {
+
+                $scope.menuPathArr.push(scriptName);
+
+                var requestDataObj = {
+
+                    name: scriptName,
+                    params: {}
+                };
+
+                $http({
+                    method: 'GET',
+                    url: INSTANCE_URL + '/api/v2/system/event_script/' + requestDataObj.name,
+                    params: requestDataObj.params
+                }).then(
+                    function (result) {
+
+                        $scope.currentScriptObj = result.data;
+                        $scope.currentScriptObj.__newScript = false;
+                        $scope.editor.session.setValue($scope.currentScriptObj.content);
+                    },
+
+                    function (reject) {
+
+                        $scope.currentScriptObj = new ScriptObj(scriptName, null, null);
+                    }
+                ).finally(
+                    function () {
+                    }
+                )
+            };
+
+            // save script to server
 
             $scope.saveScript = function () {
 
-                $scope._saveScript();
+                if (!$scope.currentScriptObj.name) {
+                    alert('Please enter a script name.');
+                    return false;
+                }
+
+                $scope.currentScriptObj.content = $scope.editor.getValue() || ' ';
+                var requestDataObj = {
+
+                    name: $scope.currentScriptObj.name,
+                    params: {},
+                    data: $scope.currentScriptObj
+                };
+
+                $http({
+                    method: 'POST',
+                    url: INSTANCE_URL + '/api/v2/system/event_script/' + requestDataObj.name,
+                    params: requestDataObj.params,
+                    data: requestDataObj.data
+                }).then(
+                    function (result) {
+
+                        $scope.editor.session.getUndoManager().reset();
+                        $scope.editor.session.getUndoManager().markClean();
+                        $scope.isEditorClean = true;
+                        $scope.currentScriptObj.__newScript = false;
+
+                        // Needs to be replaced with angular messaging
+                        $(function () {
+                            new PNotify({
+                                title: 'Scripts',
+                                type: 'success',
+                                text: 'Script "' + $scope.currentScriptObj.name + '" saved successfully.'
+                            });
+                        });
+                    },
+
+                    function (reject) {
+
+                        throw {
+                            module: 'Scripts',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            exception: reject
+                        }
+                    }
+                ).finally(
+                    function () {
+                        $scope.loadTabData();
+                    }
+                )
             };
+
+            // delete script from server
 
             $scope.deleteScript = function () {
 
                 if (dfNotify.confirm('Delete ' + $scope.currentScriptObj.name + '?')) {
 
-                    $scope._deleteScript();
+                    var requestDataObj = {
+
+                        name: $scope.currentScriptObj.name,
+                        params: {}
+                    };
+
+                    $http({
+                        method: 'DELETE',
+                        url: INSTANCE_URL + '/api/v2/system/event_script/' + requestDataObj.name,
+                        params: requestDataObj.params
+                    }).then(
+                        function (result) {
+
+                            // Needs to be replaced with angular messaging
+                            $(function () {
+                                new PNotify({
+                                    title: 'Scripts',
+                                    type: 'success',
+                                    text: 'Script deleted successfully.'
+                                });
+                            });
+
+                            $scope.menuPathArr.pop();
+                            $scope.currentScriptObj = null;
+                            $scope.editor.session.getUndoManager().reset();
+                            $scope.editor.session.getUndoManager().markClean();
+                        },
+
+                        function (reject) {
+
+                            throw {
+                                module: 'Scripts',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                exception: reject
+                            }
+
+                        }
+                    ).finally(
+                        function () {
+                            $scope.loadTabData();
+                        }
+                    )
                 }
-            };
-
-
-            // PRIVATE API
-
-            // Retrieves associated path(s) data for an event
-            $scope._getEventFromServer = function (requestDataObj) {
-
-                return $http({
-                    method: 'GET',
-                    url: INSTANCE_URL + '/api/v2/' + requestDataObj.eventName,
-                    params: requestDataObj.params
-                })
-
-            };
-
-            // Retrieves script object from server
-            $scope._getScriptFromServer = function (requestDataObj) {
-
-                return $http({
-                    method: 'GET',
-                    url: INSTANCE_URL + '/api/v2/system/event_script/' + requestDataObj.name,
-                    params: requestDataObj.params
-                })
-            };
-
-            // Save script object to server
-            $scope._saveScriptToServer = function (requestDataObj) {
-
-                return $http({
-                    method: 'POST',
-                    url: INSTANCE_URL + '/api/v2/system/event_script/' + requestDataObj.name,
-                    params: requestDataObj.params,
-                    data: requestDataObj.data
-                }).then($scope.highlightScript);
-            };
-
-            // Delete a script from the server
-            $scope._deleteScriptFromServer = function (requestDataObj) {
-
-                return $http({
-                    method: 'DELETE',
-                    url: INSTANCE_URL + '/api/v2/system/event_script/' + requestDataObj.name,
-                    params: requestDataObj.params
-                }).then($scope.highlightScript);
-            };
-
-            // Check for event paths with {variable} in their path property
-            $scope._isVariablePath = function (path) {
-
-                return path.path.indexOf("}") != "-1";
-            };
-
-            // Resets everything.  Stepping backwards through menuBack() to get all
-            // the checks.
-            $scope._resetAll = function () {
-
-                if ($scope.menuPathArr.length === 0 || !$scope.menuBack()) return false;
-
-                while ($scope.menuPathArr.length !== 0) {
-                    $scope._menuBack();
-                }
-
-                return true;
             };
 
             // COMPLEX IMPLEMENTATION
-
-            $scope.highlightEvent = function (evt) {
-                var flag = false;
-                for (var item in evt) {
-                    if (typeof(evt[item]) == 'boolean') continue;
-
-                    evt[item].$$isHighlighted = $scope.highlightCurrentServiceObj({
-                        paths: evt[item]
-                    });
-
-                    if (evt[item].$$isHighlighted) {
-                        flag = true;
-                    }
-                }
-                return flag;
-            };
-
-            $scope._setService = function (name, eventObj) {
-
-                $scope.menuPathArr = angular.copy([name]);
-                $scope.currentServiceObj = {"name": name, "paths": eventObj};
-
-                $scope.highlightCurrentServiceObj($scope.currentServiceObj);
-                return false;
-            };
-
-            $scope.highlightCurrentServiceObj = function (currentServiceObj) {
-                var flag = false;
-
-                for (var item in currentServiceObj.paths) {
-                    if (typeof(currentServiceObj.paths[item]) == 'boolean') continue;
-
-                    currentServiceObj.paths[item].$$isHighlighted = $scope.highlightCurrentPathObj({
-                        verbs: constructPaths(item, currentServiceObj.paths[item].verb, currentServiceObj.paths[item].parameter)
-                    });
-
-                    if (currentServiceObj.paths[item].$$isHighlighted) {
-                        flag = true;
-                    }
-                }
-
-                return flag;
-            };
 
             $scope._loadSampleScript = function (type) {
 
@@ -412,210 +492,18 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 )
             };
 
-            var constructPaths = function (name, verbList, parameter) {
-                var newEventName;
-                var newVerbList = angular.copy(verbList);
-                if (name.indexOf("{") >= 0 && name.indexOf("}") >= 0) {
-                    if (parameter) {
-                        angular.forEach(verbList, function (eventArray, verbName) {
-                            angular.forEach(parameter, function (paramArray, paramName) {
-                                angular.forEach(paramArray, function (itemName, itemIndex) {
-                                    angular.forEach(eventArray, function (eventName, eventIndex) {
-                                        newEventName = eventName.replace("{" + paramName + "}", itemName);
-                                        newVerbList[verbName].push(newEventName);
-                                    });
-                                });
-                            });
-                        });
-                    }
-                }
-
-                return newVerbList;
-            };
-
-
-            $scope._setPath = function (name, pathObj) {
-                $scope.menuPathArr.push(name);
-
-                var newVerbList = constructPaths(name, pathObj.verb, pathObj.parameter);
-
-                $scope.currentPathObj = {"name": name, "verbs": newVerbList};
-                $scope.highlightCurrentPathObj($scope.currentPathObj);
-            };
-
-
-            $scope.highlightCurrentPathObj = function (currentPathObj) {
-                var flag = false;
-                for (var verb in currentPathObj.verbs) {
-                    if (typeof(currentPathObj.verbs[verb]) == 'boolean') continue;
-
-                    var exists = currentPathObj.verbs[verb].filter(function (item) {
-                        return $scope.highlightedEvents.some(function (evt) {
-                            return evt === item
-                        });
-                    }).length;
-
-                    if (exists) {
-                        flag = true;
-                        currentPathObj.verbs[verb].$$isHighlighted = true;
-                    }
-                }
-
-                return flag;
-            };
-
-            $scope._setEventList = function (name, verb, verbs, events) {
-                $scope.currentPathObj.name = name;
-                $scope.currentPathObj.events = events;
-                $scope.currentPathObj.verb = verb;
-                $scope.currentPathObj.verbs = verbs;
-
-                if (name) {
-                    $scope.menuPathArr.push("[" + verb.toUpperCase() + "] " + name);
-                }
-
-            };
-
-            $scope.isHighlightedItem = function (evt) {
-                return $scope.highlightedEvents && $scope.highlightedEvents.filter(function (item) {
-                        return item === evt;
-                    }).length;
-            };
-
-            $scope._setScript = function (scriptIdStr) {
-                var requestDataObj = {
-
-                    name: scriptIdStr,
-                    params: {}
-                };
-
-                $scope._getScriptFromServer(requestDataObj).then(
-                    function (result) {
-
-                        $scope.currentScriptObj = $scope.__getDataFromHttpResponse(result);
-                        $scope.currentScriptObj.__newScript = false;
-                        $scope.editor.session.setValue($scope.currentScriptObj.content);
-                        $scope.menuPathArr.push(scriptIdStr);
-                    },
-
-                    function (reject) {
-
-                        $scope.currentScriptObj = new ScriptObj(scriptIdStr, null, null);
-                        $scope.menuPathArr.push(scriptIdStr);
-                    }
-                ).finally(
-                    function () {
-                        // console.log('get Script finally')
-                    }
-                )
-            };
-
-            $scope._saveScript = function () {
-
-                if (!$scope.currentScriptObj.name) {
-                    alert('Please enter a script name.');
-                    return false;
-                }
-
-                $scope.currentScriptObj.content = $scope.editor.getValue() || ' ';
-                var requestDataObj = {
-
-                    name: $scope.currentScriptObj.name,
-                    params: {},
-                    data: $scope.currentScriptObj
-                };
-
-                $scope._saveScriptToServer(requestDataObj).then(
-                    function (result) {
-
-                        $scope.editor.session.getUndoManager().reset();
-                        $scope.editor.session.getUndoManager().markClean();
-                        $scope.isEditorClean = true;
-                        $scope.currentScriptObj.__newScript = false;
-
-                        // Needs to be replaced with angular messaging
-                        $(function () {
-                            new PNotify({
-                                title: 'Scripts',
-                                type: 'success',
-                                text: 'Script "' + $scope.currentScriptObj.name + '" saved successfully.'
-                            });
-                        });
-                    },
-
-                    function (reject) {
-
-                        throw {
-                            module: 'Scripts',
-                            type: 'error',
-                            provider: 'dreamfactory',
-                            exception: reject
-                        }
-                    }
-                ).finally(
-                    function () {
-
-                        // console.log('Script Save finally function.')
-                    }
-                )
-            };
-
-            $scope._deleteScript = function () {
-
-                var requestDataObj = {
-
-                    name: $scope.currentScriptObj.name,
-                    params: {}
-                };
-
-                $scope._deleteScriptFromServer(requestDataObj).then(
-                    function (result) {
-
-                        // Needs to be replaced with angular messaging
-                        $(function () {
-                            new PNotify({
-                                title: 'Scripts',
-                                type: 'success',
-                                text: 'Script deleted successfully.'
-                            });
-                        });
-
-                        $scope.menuPathArr = $scope.menuPathArr.slice(0, 2);
-                        $scope._setEventList($scope.cachePath.name, $scope.cachePath.verb, $scope.cachePath.verbs, $scope.cachePath.events);
-
-                        $scope.currentScriptObj = null;
-                        $scope.editor.session.getUndoManager().reset();
-                        $scope.editor.session.getUndoManager().markClean();
-                    },
-
-                    function (reject) {
-
-                        throw {
-                            module: 'Scripts',
-                            type: 'error',
-                            provider: 'dreamfactory',
-                            exception: reject
-                        }
-
-                    }
-                ).finally(
-                    function () {
-
-                    }
-                )
-            };
-
             $scope.menuOpen = true;
 
             // PUBLIC API
+
             $scope.toggleMenu = function () {
 
-                $scope._toggleMenu();
+                $scope.menuOpen = !$scope.menuOpen;
             };
 
             $scope.menuBack = function () {
 
-                // Check if we have chnaged the script
+                // Check if we have changed the script
                 if (!$scope.isEditorClean) {
 
                     // Script has been changed.  Confirm close.
@@ -629,13 +517,17 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     }
                 }
 
-                $scope._menuBack();
+                if ($scope.menuPathArr.length > 0) {
+                    $scope.menuPathArr.pop();
+                    $scope.currentScriptObj = null;
+                }
+
                 return true;
             };
 
             $scope.updateEditor = function (scriptType) {
                 var mode = 'text';
-                if (['nodejs', 'v8js'].indexOf(scriptType) !== -1) {
+                if (scriptType === 'nodejs' || scriptType === 'v8js') {
                     mode = 'javascript';
                 } else if (scriptType) {
                     mode = scriptType;
@@ -645,7 +537,9 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope.jumpTo = function (index) {
 
-                $scope._jumpTo(index);
+                while ($scope.menuPathArr.length - 1 !== index) {
+                    $scope.menuBack();
+                }
             };
 
 
@@ -664,56 +558,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
 
             // COMPLEX IMPLEMENTATION
-            $scope._menuBack = function () {
-
-                switch ($scope.menuPathArr.length) {
-
-                    case 0:
-                        break;
-
-                    case 1:
-                        $scope.menuPathArr = [];
-                        $scope.highlightEvent($scope.events);
-                        break;
-
-                    case 2:
-                        $scope.menuPathArr = $scope.menuPathArr.slice(0, 1);
-                        $scope.highlightCurrentServiceObj($scope.currentServiceObj);
-                        break;
-
-                    case 3:
-                        // Two cases for 4-length. Check whether we are
-                        // at the end of the path, or there's one more
-                        // level
-                        if ($scope.currentPathObj.events) {
-                            $scope.menuPathArr = $scope.menuPathArr.slice(0, 1);
-                            $scope.setPath($scope.cachePath.name, {verb: $scope.cachePath.verbs});
-                            $scope._clearScriptEditor();
-                        } else {
-                          $scope.menuPathArr = $scope.menuPathArr.slice(0, 1);
-                        }
-
-                        break;
-
-                    case 4:
-                        $scope._clearScriptEditor();
-                        $scope.menuPathArr = $scope.menuPathArr.slice(0, 2);
-                        $scope._setEventList($scope.cachePath.name, $scope.cachePath.verb, $scope.cachePath.verbs, $scope.cachePath.events);
-                        break;
-                }
-            };
-
-            $scope._jumpTo = function (index) {
-
-                while ($scope.menuPathArr.length - 1 !== index) {
-                    $scope.menuBack();
-                }
-            };
-
-            $scope._toggleMenu = function () {
-
-                $scope.menuOpen = !scope.menuOpen;
-            };
 
             $scope.$broadcast('script:loaded:success');
 
@@ -789,32 +633,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             });
 
-            var watchEventApiData = $scope.$watchCollection('apiData.event', function (newValue, oldValue) {
-
-                if (newValue) {
-
-                    $scope.events = newValue;
-                    $scope.highlightScript();
-                }
-            });
-
-            var watchScriptTypeApiData = $scope.$watchCollection('apiData.script_type', function (newValue, oldValue) {
-
-                if (newValue) {
-
-                    $scope.scriptTypes = newValue;
-                }
-            });
-
-
-
             $scope.$on('$destroy', function (e) {
 
                 watchGithubURL();
                 watchGithubCredUser();
                 watchGithubCredPass();
-                watchEventApiData();
-                watchScriptTypeApiData();
             });
         }])
 
@@ -825,10 +648,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             restrict: 'E',
             scope: false,
             templateUrl: MODSCRIPTING_ASSET_PATH + 'views/script-sidebar-menu.html',
-            link: function (scope, elem, attrs) {
-
-
-            }
+            link: function (scope, elem, attrs) {}
         }
     }])
 
@@ -845,8 +665,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             templateUrl: MODSCRIPTING_ASSET_PATH + 'views/df-ace-samples.html',
             link: function (scope, elem, attrs) {
                 scope.viewer = ace.edit('ide_samples');
-
-
             }
         }
 

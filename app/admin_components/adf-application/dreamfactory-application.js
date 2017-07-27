@@ -236,18 +236,18 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                     },
                     role: {
                         include_count: true,
-                        related: 'role_service_access_by_role_id,role_lookup_by_role_id',
+                        related: 'role_service_access_by_role_id,lookup_by_role_id',
                         limit: limit
                     },
                     admin: {
                         include_count: true,
                         limit: limit,
-                        related: 'user_lookup_by_user_id'
+                        related: 'lookup_by_user_id'
                     },
                     user: {
                         include_count: true,
                         limit: limit,
-                        related: 'user_lookup_by_user_id,user_to_app_to_role_by_user_id'
+                        related: 'lookup_by_user_id,user_to_app_to_role_by_user_id'
                     },
                     service: {
                         include_count: true,
@@ -266,6 +266,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                         scriptable: true
                     },
                     eventlist: {
+                        as_list: true
+                    },
+                    event_script: {
                         as_list: true
                     },
                     limit: {

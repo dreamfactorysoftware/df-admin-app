@@ -106,7 +106,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         module: 'Services',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading data for the Services tab. Please try refreshing your browser.'
+                        message: 'There was an error loading data for the Services tab. Please try refreshing your browser and logging in again.'
                     };
                     dfNotify.error(messageOptions);
                 }
@@ -1212,6 +1212,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         });
                         if (matches.length === 0) {
                             svc.singleton = false;
+                            svc.config_schema = null;
                             svc.subscription_required = true;
                             svc.subscription_type = 'Silver';
                             add.push(svc);
@@ -1225,6 +1226,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         });
                         if (matches.length === 0) {
                             svc.singleton = false;
+                            svc.config_schema = null;
                             svc.subscription_required = true;
                             svc.subscription_type = 'Gold';
                             add.push(svc);
@@ -2198,7 +2200,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                         module: 'Services',
                                         provider: 'dreamfactory',
                                         type: 'error',
-                                        message: 'There was an error loading the service. Please try refreshing your browser.'
+                                        message: 'There was an error loading the service. Please try refreshing your browser and logging in again.'
                                     };
                                     dfNotify.error(messageOptions);
                                 }

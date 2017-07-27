@@ -120,7 +120,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             module: 'Admins',
                             provider: 'dreamfactory',
                             type: 'error',
-                            message: 'There was an error loading data for the Admins tab. Please try refreshing your browser.'
+                            message: 'There was an error loading data for the Admins tab. Please try refreshing your browser and logging in again.'
                         };
                         dfNotify.error(messageOptions);
                     }
@@ -156,7 +156,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         user_source: 0,
                         user_data: [],
                         password: null,
-                        user_lookup_by_user_id: []
+                        lookup_by_user_id: []
                     };
 
                     adminData = adminData || _admin;
@@ -271,7 +271,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'user_lookup_by_user_id',
+                            related: 'lookup_by_user_id',
                             send_invite: scope.sendEmailOnCreate
                         },
                         data: scope.admin.record
@@ -329,7 +329,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         params: {
                             fields: '*',
-                            related: 'user_lookup_by_user_id'
+                            related: 'lookup_by_user_id'
                         },
                         data: scope.admin.record
                     };
@@ -601,7 +601,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         tempArr.push(lk.record);
                     });
 
-                    scope.admin.record.user_lookup_by_user_id = tempArr;
+                    scope.admin.record.lookup_by_user_id = tempArr;
                 };
 
 
@@ -627,11 +627,11 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     if (!newValue) return;
 
-                    if (newValue.record.hasOwnProperty('user_lookup_by_user_id') && newValue.record.user_lookup_by_user_id.length > 0) {
+                    if (newValue.record.hasOwnProperty('lookup_by_user_id') && newValue.record.lookup_by_user_id.length > 0) {
 
                         scope.lookupKeys = [];
 
-                        angular.forEach(newValue.record.user_lookup_by_user_id, function (lookupKeyData) {
+                        angular.forEach(newValue.record.lookup_by_user_id, function (lookupKeyData) {
 
                             scope.lookupKeys.push(new LookupKey(lookupKeyData))
 

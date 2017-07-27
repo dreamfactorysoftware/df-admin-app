@@ -34,9 +34,9 @@
                                 <div data-ng-class="menuOpen ? 'hidden-xs col-sm-7 col-md-8' : 'col-xs-12'">
                                     <ol id="scripting-bc-nav" class="breadcrumb">
                                         <li data-ng-if="menuPathArr.length === 0"></li>
-                                        <li data-ng-repeat="path in menuPathArr track by $index" data-ng-class="menuPathArr.length -1 === $index ? 'active':''">
-                                            <a data-ng-click="jumpTo($index)" data-ng-if="menuPathArr.length -1 !== $index">{{path}}</a>
-                                            <span data-ng-if="menuPathArr.length -1 === $index">{{path}}</span>
+                                        <li data-ng-repeat="path in menuPathArr track by $index" data-ng-class="menuPathArr.length - 1 === $index ? 'active':''">
+                                            <a data-ng-click="jumpTo($index)" data-ng-if="menuPathArr.length - 1 !== $index">{{path}}</a>
+                                            <span data-ng-if="menuPathArr.length - 1 === $index">{{path}}</span>
                                         </li>
                                     </ol>
                                     <df-ace-editor-scripting data-script-type="$parent.$parent.currentScriptObj.type" data-current-edit-obj="$parent.$parent.currentScriptObj.content" data-is-clean="$parent.$parent.isEditorClean" data-editor="$parent.$parent.editor"></df-ace-editor-scripting>
