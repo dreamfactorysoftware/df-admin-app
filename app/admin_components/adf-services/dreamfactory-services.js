@@ -106,7 +106,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         module: 'Services',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading data for the Services tab. Please try refreshing your browser.'
+                        message: 'There was an error loading data for the Services tab. Please try refreshing your browser and logging in again.'
                     };
                     dfNotify.error(messageOptions);
                 }
@@ -2200,7 +2200,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                         module: 'Services',
                                         provider: 'dreamfactory',
                                         type: 'error',
-                                        message: 'There was an error loading the service. Please try refreshing your browser.'
+                                        message: 'There was an error loading the service. Please try refreshing your browser and logging in again.'
                                     };
                                     dfNotify.error(messageOptions);
                                 }

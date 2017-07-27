@@ -127,7 +127,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         module: 'Apps',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading data for the Apps tab. Please try refreshing your browser.'
+                        message: 'There was an error loading data for the Apps tab. Please try refreshing your browser and logging in again.'
                     };
                     dfNotify.error(messageOptions);
                 }

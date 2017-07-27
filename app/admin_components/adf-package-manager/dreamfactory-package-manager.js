@@ -123,7 +123,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                         module: 'Packages',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading data for the Packages tab. Please try refreshing your browser.'
+                        message: 'There was an error loading data for the Packages tab. Please try refreshing your browser and logging in again.'
                     };
                     dfNotify.error(messageOptions);
                 }

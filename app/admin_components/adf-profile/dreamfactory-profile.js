@@ -45,7 +45,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                     module: 'Profile',
                     provider: 'dreamfactory',
                     type: 'error',
-                    message: 'There was an error loading User Profile data. Please try refreshing your browser.'
+                    message: 'There was an error loading User Profile data. Please try refreshing your browser and logging in again.'
                 };
                 dfNotify.error(messageOptions);
             }

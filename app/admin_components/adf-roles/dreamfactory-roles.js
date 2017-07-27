@@ -116,7 +116,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         module: 'Roles',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading data for the Roles tab. Please try refreshing your browser.'
+                        message: 'There was an error loading data for the Roles tab. Please try refreshing your browser and logging in again.'
                     };
                     dfNotify.error(messageOptions);
                 }

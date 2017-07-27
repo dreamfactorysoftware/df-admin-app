@@ -229,7 +229,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             module: 'Config',
                             provider: 'dreamfactory',
                             type: 'error',
-                            message: 'There was an error loading data for the Config tab. Please try refreshing your browser.'
+                            message: 'There was an error loading data for the Config tab. Please try refreshing your browser and logging in again.'
                         };
                         dfNotify.error(messageOptions);
                     }

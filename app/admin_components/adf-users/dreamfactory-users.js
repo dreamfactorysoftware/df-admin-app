@@ -111,7 +111,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             module: 'Users',
                             provider: 'dreamfactory',
                             type: 'error',
-                            message: 'There was an error loading data for the Users tab. Please try refreshing your browser.'
+                            message: 'There was an error loading data for the Users tab. Please try refreshing your browser and logging in again.'
                         };
                         dfNotify.error(messageOptions);
                     }

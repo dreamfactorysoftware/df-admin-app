@@ -143,7 +143,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
                         module: 'Data',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading the Data tab. Please try refreshing your browser.'
+                        message: 'There was an error loading the Data tab. Please try refreshing your browser and logging in again.'
                     };
                     dfNotify.error(messageOptions);
                 }

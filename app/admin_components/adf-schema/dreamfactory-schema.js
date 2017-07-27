@@ -882,7 +882,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         module: 'Schema',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading data for the Schema tab. Please try refreshing your browser.'
+                        message: 'There was an error loading data for the Schema tab. Please try refreshing your browser and logging in again.'
                     };
                     dfNotify.error(messageOptions);
                 }

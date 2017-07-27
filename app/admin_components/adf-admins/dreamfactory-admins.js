@@ -120,7 +120,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             module: 'Admins',
                             provider: 'dreamfactory',
                             type: 'error',
-                            message: 'There was an error loading data for the Admins tab. Please try refreshing your browser.'
+                            message: 'There was an error loading data for the Admins tab. Please try refreshing your browser and logging in again.'
                         };
                         dfNotify.error(messageOptions);
                     }

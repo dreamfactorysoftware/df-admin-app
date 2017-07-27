@@ -157,7 +157,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             module: 'Scripts',
                             provider: 'dreamfactory',
                             type: 'error',
-                            message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser.'
+                            message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.'
                         };
                         dfNotify.error(messageOptions);
                     }
