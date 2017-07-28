@@ -1,7 +1,7 @@
 'use strict';
 
 
-angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfSwaggerEditor', 'swagger-editor'])
+angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
     .constant('MOD_SERVICES_ROUTER_PATH', '/services')
     .constant('MOD_SERVICES_ASSET_PATH', 'admin_components/adf-services/')
     .config(['$routeProvider', 'MOD_SERVICES_ROUTER_PATH', 'MOD_SERVICES_ASSET_PATH',

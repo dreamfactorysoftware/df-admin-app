@@ -33,7 +33,6 @@ angular
         'dfHelp',
         'dfLaunchPad',
         'dfWidgets',
-        'dfSwaggerEditor',
         'dfApiDocs',
         'dfFileManager',
         'dfPackageManager',
