@@ -32,7 +32,6 @@ angular
         'dfApplication',
         'dfHelp',
         'dfLaunchPad',
-        'dfWidgets',
         'dfApiDocs',
         'dfFileManager',
         'dfPackageManager',
