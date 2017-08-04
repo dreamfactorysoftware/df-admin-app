@@ -1160,6 +1160,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         "description": "Database service supporting IBM DB2 SQL connections.",
                         "group": "Database"
                     }, {
+                        "name": "informix",
+                        "label": "IBM Informix",
+                        "description": "Database service supporting IBM Informix SQL connections.",
+                        "group": "Database"
+                    }, {
                         "name": "oracle",
                         "label": "Oracle",
                         "description": "Database service supporting SQL connections.",
