@@ -45,7 +45,7 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
                                 // app.js
                                 throw {
                                     routing: true
-                                }
+                                };
                             }
 
                             // There is a currentUser but they are not an admin
@@ -58,7 +58,7 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
                                 // app.js
                                 throw {
                                     routing: true
-                                }
+                                };
                             }
 
                             defer.resolve();
@@ -71,7 +71,7 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
 
 
     }])
-    .controller('ApiDocsCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
+    .controller('ApiDocsCtrl', ['$scope', function($scope) {
 
         $scope.$parent.title = 'API Docs';
 
@@ -84,27 +84,28 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
             }
         ];
     }])
-    .directive('swagger', ['MOD_APIDOCS_ASSET_PATH', '$window', '$location', function(MOD_APIDOCS_ASSET_PATH, $window, $location ) {
+    .directive('apiDocs', ['MOD_APIDOCS_ASSET_PATH', '$location', function(MOD_APIDOCS_ASSET_PATH, $location) {
 
         return {
             restrict: 'E',
             scope: {},
-            templateUrl: MOD_APIDOCS_ASSET_PATH + 'views/swagger.html',
+            templateUrl: MOD_APIDOCS_ASSET_PATH + 'views/apidocs.html',
             link: function( scope, elem, attrs ) {
 
+                var port;
 
                 scope.server = $location.protocol() + '://' + $location.host();
 
-                if ($location.port()) {
-                    scope.server += ':' + $location.port() + '/df-swagger-ui/dist/index.html'
+                port = $location.port();
+                if (port) {
+                    scope.server += ':' + port;
                 }
-                else {
-                    scope.server += '/df-swagger-ui/dist/index.html'
-                }
+
+                scope.server += "/df-api-docs-ui/dist/index.html?admin_app=1";
 
                 scope.$broadcast('apidocs:loaded');
             }
-        }
+        };
     }])
 
 

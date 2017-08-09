@@ -742,9 +742,9 @@ angular.module('dfUtility', ['dfApplication'])
                     winWidth = $(window).width();
 
                 // If this is the swagger iframe
-                if (_elem.is('#swagger')) {
+                if (_elem.is('#apidocs')) {
 
-                    _elem.attr('height', winHeight - 200 + 'px');
+                    _elem.attr('height', winHeight - 25 + 'px');
                 }
                 // If this is the swagger iframe
                 else if (_elem.is('#file-manager')) {
