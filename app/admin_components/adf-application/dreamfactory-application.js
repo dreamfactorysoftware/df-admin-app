@@ -3,21 +3,6 @@
 
 angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 'ngProgress'])
 
-    .factory('httpRequestInterceptor', function () {
-        return {
-            request: function (config) {
-
-                config.headers['X-UA-Compatible'] = 'IE=Edge';
-
-                return config;
-            }
-        };
-    })
-
-    .config(function ($httpProvider) {
-        $httpProvider.interceptors.push('httpRequestInterceptor');
-    })
-
     .run(['dfApplicationData', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', 'ngProgressFactory',
         function (dfApplicationData, UserDataService, SystemConfigDataService, $location, $rootScope, ngProgressFactory) {
 
