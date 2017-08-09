@@ -13,7 +13,7 @@
         </div>
 
         <div class="form-group ng-scope">
-            <label>Upload a script file</label>
+            <label>Import a script file</label>
             <div>
             <label class="btn btn-default btn-file btn-sm" ng-disabled="!isEditable">
                 Select Desktop File... <input type="file" style="display: none;" accept=".json,.yml,.yaml" onclick="this.value = null;" onchange="angular.element(this).scope().handleDefinitionFiles(this.files)" ng-model="filename" ng-disabled="!isEditable">

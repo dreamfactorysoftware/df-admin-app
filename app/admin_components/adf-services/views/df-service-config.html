@@ -21,7 +21,7 @@
             <df-simple-help data-options="field" data-ng-if="field.description"></df-simple-help>
 
             <div data-ng-if="field.type == 'text' && field.name == 'content'">
-                <label>Upload a script file</label>
+                <label>Import a script file</label>
                 <div>
                   <label class="btn btn-default btn-file btn-sm">
                       Select Desktop File... <input type="file" id="services_details_config_filepick_{{$index}}"  style="display: none;" accept="{{allowedConfigFormats}}" onclick="this.value = null;" onchange="angular.element(this).scope().handleFiles(this.files)" ng-model="filename">
