@@ -236,7 +236,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                     },
                     service: {
                         include_count: true,
-                        limit: limit
+                        limit: limit,
+                        related: 'service_doc_by_service_id'
                     },
                     email_template: {
                         include_count: true
