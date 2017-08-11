@@ -92,7 +92,7 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_APIDOCS_ASSET_PATH + 'views/apidocs.html',
             link: function( scope, elem, attrs ) {
 
-                scope.server = INSTANCE_URL + "/df-api-docs-ui/dist/index.html";
+                scope.server = INSTANCE_URL + "/df-api-docs-ui/dist/index.html?admin_app=1";
 
                 scope.$broadcast('apidocs:loaded');
             }
