@@ -67,7 +67,7 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
                     }
                 });
         }])
-    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
+    .run([function () {
 
 
     }])
@@ -84,7 +84,7 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
             }
         ];
     }])
-    .directive('apiDocs', ['MOD_APIDOCS_ASSET_PATH', '$location', function(MOD_APIDOCS_ASSET_PATH, $location) {
+    .directive('apiDocs', ['MOD_APIDOCS_ASSET_PATH', 'INSTANCE_URL', function(MOD_APIDOCS_ASSET_PATH, INSTANCE_URL) {
 
         return {
             restrict: 'E',
@@ -92,16 +92,7 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_APIDOCS_ASSET_PATH + 'views/apidocs.html',
             link: function( scope, elem, attrs ) {
 
-                var port;
-
-                scope.server = $location.protocol() + '://' + $location.host();
-
-                port = $location.port();
-                if (port) {
-                    scope.server += ':' + port;
-                }
-
-                scope.server += "/df-api-docs-ui/dist/index.html?admin_app=1";
+                scope.server = INSTANCE_URL + "/df-api-docs-ui/dist/index.html";
 
                 scope.$broadcast('apidocs:loaded');
             }

@@ -757,17 +757,18 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
 
             responseError: function (reject) {
 
-
-                // If we get an error from any of the
-                // login / register pages, ignore it.
-                // No need to pop up a login.
                 switch ($location.path()) {
 
+                    // If we get an error from any of the
+                    // login / register pages, ignore it.
+                    // No need to pop up a login.
                     case '/login':
                     case '/user-invite':
                     case '/register-confirm':
                     case '/register':
                     case '/register-complete':
+                    // apidocs has its own login
+                    case '/apidocs':
                         break;
 
                     default:
