@@ -202,6 +202,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     var token = scope.getQueryParameter("session_token");
                     var oauth_code = scope.getQueryParameter("code");
                     var oauth_state = scope.getQueryParameter("state");
+                    var oauth_token = scope.getQueryParameter("oauth_token");
                     var uri = $location.absUrl().split('?');
                     var baseUrl = uri[0];
 
@@ -234,7 +235,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                 scope.loginDirect = false;
                             }
                         );
-                    } else if(oauth_code || oauth_state){
+                    } else if((oauth_code && oauth_state) || oauth_token) {
                         scope.loginWaiting = true;
                         scope.showOAuth = false;
                         $http.post(INSTANCE_URL + '/api/v2/user/session?oauth_callback=true&' + location.search.substring(1)).then(
