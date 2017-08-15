@@ -1199,6 +1199,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         "label": "GCM Push Notification",
                         "description": "GCM Push Notification Service Provider.",
                         "group": "Notification"
+                    }, {
+                        "name": "mqtt",
+                        "label": "MQTT Client",
+                        "description": "MQTT Client based on Mosquitto.",
+                        "group": "IoT"
                     }];
 
                     var goldServices = [{
