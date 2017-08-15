@@ -772,10 +772,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                         break;
 
                     default:
-                        if (reject.status !== 401) break;
                         if (reject.config.ignore401) break;
+                        if (reject.status !== 401 && reject.status !== 403) break;
 
-                        if ((reject.status === 401 || reject.data.error.code === 401)  && reject.config.url.indexOf('/session') === -1) {
+                        if ((reject.status === 401 || reject.data.error.code === 401 || reject.status === 403 || reject.data.error.code === 403)  && reject.config.url.indexOf('/session') === -1) {
                             if (reject.data.error.message === 'Token has expired' || reject.config.url.indexOf('/profile') !== -1) {
                                 //  put session
                                 return putSession(reject);
