@@ -138,21 +138,47 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 $scope.dataLoading = true;
 
-                var apis = ['event', 'script_type', 'event_script'];
+                // always load event scripts from server
+                var primaryApis = ['event_script'];
 
-                // force refresh to always load from server
-                dfApplicationData.getApiData(apis, true).then(
+                // only load these one time as they should not change as scripts are created/deleted
+                // this is particularly important for 'event' as it can be slow when there are many services
+                var secondaryApis = ['event', 'script_type'];
+
+                // for primaryApis force refresh to always load from server
+                dfApplicationData.getApiData(primaryApis, true).then(
                     function (response) {
                         var newApiData = {};
-                        apis.forEach(function(value, index) {
+                        primaryApis.forEach(function(value, index) {
                             newApiData[value] = response[index].resource ? response[index].resource : response[index];
-                            if (value === 'event') {
-                                // used for highlighting in ui
-                                newApiData['event_lookup'] = $scope.buildEventLookup(newApiData[value]);
-                            }
                         });
-
-                        $scope.apiData = newApiData;
+                        // loading from cache is ok for secondaryApis, unless the tab is just loaded ($scope.apiData === null)
+                        // in that case load from server to pick up any new events resulting from new services, tables, etc
+                        // when a script is created or deleted $scope.apiData will not be null and data comes from cache
+                        dfApplicationData.getApiData(secondaryApis, ($scope.apiData === null)).then(
+                            function (response) {
+                                secondaryApis.forEach(function(value, index) {
+                                    newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                                    if (value === 'event') {
+                                        // used for highlighting in ui
+                                        newApiData['event_lookup'] = $scope.buildEventLookup(newApiData[value]);
+                                    }
+                                });
+                                // all done
+                                $scope.apiData = newApiData;
+                            },
+                            function (error) {
+                                var messageOptions = {
+                                    module: 'Scripts',
+                                    provider: 'dreamfactory',
+                                    type: 'error',
+                                    message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.'
+                                };
+                                dfNotify.error(messageOptions);
+                            }
+                        ).finally(function () {
+                            $scope.dataLoading = false;
+                        });
                     },
                     function (error) {
                         var messageOptions = {
@@ -162,10 +188,9 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.'
                         };
                         dfNotify.error(messageOptions);
+                        $scope.dataLoading = false;
                     }
-                ).finally(function () {
-                    $scope.dataLoading = false;
-                });
+                );
             };
 
             $scope.loadTabData();
