@@ -222,9 +222,9 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 };
 
-                scope.closeUser = function () {
+                scope.closeUser = function (prompt) {
 
-                    scope._closeUser();
+                    scope._closeUser(prompt);
                 };
 
 
@@ -368,7 +368,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             scope.user = new User(result);
 
-                            scope.closeUser();
+                            scope.closeUser(false);
 
                             scope.lookupKeys = scope.lookupKeys.filter(function (key) {
                                 return key.record.user_id !== null;
@@ -394,18 +394,17 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     )
                 };
 
-                scope._closeUser = function () {
+                scope._closeUser = function (prompt) {
 
                     // perform some checks on app data
                     scope._prepareUserData();
 
-                    if (!dfObjectService.compareObjectsAsJson(scope.user.record, scope.user.recordCopy)) {
+                    if (prompt && !dfObjectService.compareObjectsAsJson(scope.user.record, scope.user.recordCopy)) {
 
                         if (!dfNotify.confirmNoSave()) {
 
-                            return false;
+                            return;
                         }
-
                     }
 
                     scope._resetUserDetails();
