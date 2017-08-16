@@ -108,6 +108,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
         $scope.loadTabData = function() {
 
+            $scope.dataLoading = true;
+
             var apis = ['service', 'service_type', 'environment', 'package', 'app'];
 
             dfApplicationData.getApiData(apis, true).then(
@@ -127,7 +129,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                     };
                     dfNotify.error(messageOptions);
                 }
-            );
+            ).finally(function () {
+                $scope.dataLoading = false;
+            });
         };
 
         $scope.loadTabData();
@@ -912,4 +916,11 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                 });
             }
         }
+    }])
+
+    .directive('dfPackageLoading', [function() {
+        return {
+            restrict: 'E',
+            template: "<div class='col-lg-12' ng-if='dataLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
+        };
     }]);
