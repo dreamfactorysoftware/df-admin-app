@@ -3,21 +3,6 @@
 
 angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 'ngProgress'])
 
-    .factory('httpRequestInterceptor', function () {
-        return {
-            request: function (config) {
-
-                config.headers['X-UA-Compatible'] = 'IE=Edge';
-
-                return config;
-            }
-        };
-    })
-
-    .config(function ($httpProvider) {
-        $httpProvider.interceptors.push('httpRequestInterceptor');
-    })
-
     .run(['dfApplicationData', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', 'ngProgressFactory',
         function (dfApplicationData, UserDataService, SystemConfigDataService, $location, $rootScope, ngProgressFactory) {
 
@@ -251,7 +236,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                     },
                     service: {
                         include_count: true,
-                        limit: limit
+                        limit: limit,
+                        related: 'service_doc_by_service_id'
                     },
                     email_template: {
                         include_count: true
@@ -771,24 +757,24 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
 
             responseError: function (reject) {
 
-
-                // If we get an error from any of the
-                // login / register pages, ignore it.
-                // No need to pop up a login.
                 switch ($location.path()) {
 
+                    // If we get an error from any of the
+                    // login / register pages, ignore it.
+                    // No need to pop up a login.
                     case '/login':
                     case '/user-invite':
                     case '/register-confirm':
                     case '/register':
                     case '/register-complete':
+                    // apidocs has its own login
+                    case '/apidocs':
                         break;
 
                     default:
-                        if (reject.status !== 401) break;
                         if (reject.config.ignore401) break;
 
-                        if ((reject.status === 401 || reject.data.error.code === 401)  && reject.config.url.indexOf('/session') === -1) {
+                        if ((reject.status === 401 || reject.data.error.code === 401) && reject.config.url.indexOf('/session') === -1) {
                             if (reject.data.error.message === 'Token has expired' || reject.config.url.indexOf('/profile') !== -1) {
                                 //  put session
                                 return putSession(reject);
@@ -797,11 +783,14 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                                 // refresh session
                                 return refreshSession(reject);
                             }
+                        } else if (reject.status === 403 || reject.data.error.code === 403) {
+                            // refresh session
+                            return refreshSession(reject);
                         }
+                        break;
                 }
-
 
                 return $q.reject(reject);
             }
-        }
+        };
     }]);

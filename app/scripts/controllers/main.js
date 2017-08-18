@@ -131,6 +131,11 @@ angular.module('dreamfactoryApp')
                 path: '/services'
             },
             {
+                name: 'apidocs',
+                label: 'API Docs',
+                path: '/apidocs'
+            },
+            {
                 name: 'schema',
                 label: 'Schema',
                 path: '/schema'
@@ -150,11 +155,6 @@ angular.module('dreamfactoryApp')
                 name: 'scripts',
                 label: 'Scripts',
                 path: '/scripts'
-            },
-            {
-                name: 'apidocs',
-                label: 'API Docs',
-                path: '/apidocs'
             },
             {
                 name: 'config',

@@ -1,7 +1,7 @@
 'use strict';
 
 
-angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfSwaggerEditor', 'swagger-editor'])
+angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
     .constant('MOD_SERVICES_ROUTER_PATH', '/services')
     .constant('MOD_SERVICES_ASSET_PATH', 'admin_components/adf-services/')
     .config(['$routeProvider', 'MOD_SERVICES_ROUTER_PATH', 'MOD_SERVICES_ASSET_PATH',
@@ -242,8 +242,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         default:
                             delete scope.service.record.service_doc_by_service_id;
                             delete scope.service.recordCopy.service_doc_by_service_id;
-                            scope.service.record.doc = null;
-                            scope.service.recordCopy.doc = null;
+                            scope.service.record.service_doc_by_service_id = null;
+                            scope.service.recordCopy.service_doc_by_service_id = null;
                     }
                 };
 
@@ -1160,6 +1160,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "description": "Database service supporting IBM DB2 SQL connections.",
                         "group": "Database"
                     }, {
+                        "name": "informix",
+                        "label": "IBM Informix",
+                        "description": "Database service supporting IBM Informix SQL connections.",
+                        "group": "Database"
+                    }, {
                         "name": "oracle",
                         "label": "Oracle",
                         "description": "Database service supporting SQL connections.",
@@ -1194,6 +1199,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "label": "GCM Push Notification",
                         "description": "GCM Push Notification Service Provider.",
                         "group": "Notification"
+                    }, {
+                        "name": "mqtt",
+                        "label": "MQTT Client",
+                        "description": "MQTT Client based on Mosquitto.",
+                        "group": "IoT"
                     }];
 
                     var goldServices = [{
@@ -2742,17 +2752,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope._prepareServiceDefinitionData = function () {
 
                     if (scope.currentEditor === null) {
-                      scope.service.record.doc = null;
+                      scope.service.record.service_doc_by_service_id = [];
                       return;
                     }
 
                     if (scope.currentEditor.session.getValue() === "") {
-                        scope.service.record.doc = null;
+                        scope.service.record.service_doc_by_service_id = [];
                     }
                     else {
-                        scope.service.record.doc = scope.service.record.doc || {};
-                        scope.service.record.doc.content = scope.currentEditor.session.getValue();
-                        scope.service.record.doc.format = parseInt(scope.serviceDefinitionFormat);
+                        scope.service.record.service_doc_by_service_id[0] = scope.service.record.service_doc_by_service_id[0] || {};
+                        scope.service.record.service_doc_by_service_id[0].content = scope.currentEditor.session.getValue();
+                        scope.service.record.service_doc_by_service_id[0].format = parseInt(scope.serviceDefinitionFormat);
                     }
                 };
 
@@ -2813,16 +2823,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     if (!newValue) return;
 
-                    if (newValue.record.hasOwnProperty('doc') && newValue.record.doc) {
-                        if(!newValue.record.doc.content) {
+                    if (newValue.record.hasOwnProperty('service_doc_by_service_id') && newValue.record.service_doc_by_service_id[0]) {
+                        if(!newValue.record.service_doc_by_service_id[0].content) {
                             scope.currentFile = '';
                         } else {
-                            if (newValue.record.doc.format === 0) {
-                                scope.currentFile = angular.fromJson(newValue.record.doc.content);
+                            if (newValue.record.service_doc_by_service_id[0].format === 0) {
+                                scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
                                 scope.serviceDefinitionFormat = 0;
                             }
                             else {
-                                scope.currentFile = newValue.record.doc.content;
+                                scope.currentFile = newValue.record.service_doc_by_service_id[0].content;
                                 scope.serviceDefinitionFormat = 1;
                             }
                         }

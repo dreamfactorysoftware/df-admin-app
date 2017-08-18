@@ -32,8 +32,6 @@ angular
         'dfApplication',
         'dfHelp',
         'dfLaunchPad',
-        'dfWidgets',
-        'dfSwaggerEditor',
         'dfApiDocs',
         'dfFileManager',
         'dfPackageManager',
@@ -41,7 +39,7 @@ angular
     ])
 
     // Set application version number
-    .constant('APP_VERSION', '2.9.0')
+    .constant('APP_VERSION', '2.10.0')
 
     // Set global url for this application
     .constant('INSTANCE_URL', '')

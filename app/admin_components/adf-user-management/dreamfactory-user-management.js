@@ -189,13 +189,22 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     }
 
                     //////////////////////[Arif's changes for OAuth and Auto-Login using URL param]//////////////////////
-                    var queryString = location.search.substring(1);
+                    scope.getQueryParameter = function (key) {
+                        key = key.replace(/[*+?^$.\[\]{}()|\\\/]/g, "\\$&");
+                        var match = window.location.search.match(new RegExp("[?&]" + key + "=([^&]+)(&|$)"));
+                        var result = match && decodeURIComponent(match[1].replace(/\+/g, " "));
+                        if (result) {
+                            return result;
+                        }
+                        return '';
+                    };
+
+                    var token = scope.getQueryParameter("session_token");
+                    var oauth_code = scope.getQueryParameter("code");
+                    var oauth_state = scope.getQueryParameter("state");
+                    var oauth_token = scope.getQueryParameter("oauth_token");
                     var uri = $location.absUrl().split('?');
-                    var params = uri[1];
-                    var token = "";
-                    if(params && params.indexOf('session_token') !== -1){
-                        token = params.substring(14);
-                    }
+                    var baseUrl = uri[0];
 
                     if(token !== ""){
                         scope.loginWaiting = true;
@@ -222,14 +231,14 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             // failure method
                             function (result){
                                 // Reload the admin app to remove session_token param from url and show the login prompt.
-                                window.location.href = uri[0]+'#/login';
+                                window.location.href = baseUrl +'#/login';
                                 scope.loginDirect = false;
                             }
                         );
-                    } else if(queryString){
+                    } else if((oauth_code && oauth_state) || oauth_token) {
                         scope.loginWaiting = true;
                         scope.showOAuth = false;
-                        $http.post(INSTANCE_URL + '/api/v2/user/session?oauth_callback=true&' + queryString).then(
+                        $http.post(INSTANCE_URL + '/api/v2/user/session?oauth_callback=true&' + location.search.substring(1)).then(
                             // success method
                             function (result) {
 
