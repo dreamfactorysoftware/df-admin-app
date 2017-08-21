@@ -60,7 +60,7 @@
     $(document).ready(function(){
         $('.dropdown-menu').find('ul').toggle(false);
 
-        $('.dropdown-submenu a.sub').on("click", function(e){
+        $('.dropdown-submenu a.sub').hover(function(e){
             $('.dropdown-menu').find('ul').toggle(false);
             $(this).next('ul').toggle();
             e.stopPropagation();

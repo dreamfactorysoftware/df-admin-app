@@ -205,7 +205,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
         // retrieves API settings
         function _getApiPrefs() {
 
-            var limit = 50;
+            var limit = 100;
 
             return {
                 data: {
