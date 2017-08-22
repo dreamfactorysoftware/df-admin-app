@@ -4,7 +4,7 @@
     <df-simple-help data-options="dfSimpleHelp.serviceType"></df-simple-help><br/>
 
     <div class="dropdown" data-ng-if="newService">
-        <button id="services_info_type" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" data-ng-disabled="!servicesReady">
+        <button id="services_info_type" class="btn btn-default dropdown-toggle" onclick="clearMenu()" type="button" data-toggle="dropdown" data-ng-disabled="!servicesReady">
             {{selectedSchema.label || 'Select Service Type'}}
             <span class="caret"></span>
         </button>
@@ -57,14 +57,31 @@
 </div>
 
 <script>
+    function clearMenu(){
+        $('.dropdown-menu').find('ul').hide();
+    }
+
     $(document).ready(function(){
+        var lastPageY = 0;
+
         $('.dropdown-menu').find('ul').toggle(false);
 
         $('.dropdown-submenu a.sub').hover(function(e){
-            $('.dropdown-menu').find('ul').toggle(false);
-            $(this).next('ul').toggle();
+            if(e.pageY != lastPageY){
+                $('.dropdown-menu').find('ul').hide();
+                $(this).next('ul').toggle();
+            } else {
+                $('#services_info_type').click();
+                $(".df-section").scrollTop(0);
+                $('#services_info_type').click();
+            }
+
+            lastPageY = e.pageY;
             e.stopPropagation();
             e.preventDefault();
+        }, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
         });
     });
 </script>
