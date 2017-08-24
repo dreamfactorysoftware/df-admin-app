@@ -141,7 +141,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         "mutable": true,
                         "deletable": true,
                         "config": {},
-                        "doc": ''
+                        "service_doc_by_service_id": []
                     };
 
                     serviceData = serviceData || newService;
@@ -353,7 +353,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                     var requestDataObj = {
                         params: {
-                            fields: '*'
+                            fields: '*',
+                            related: 'service_doc_by_service_id'
                         },
                         data: data
                     };
@@ -410,7 +411,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                     var requestDataObj = {
                         params: {
-                            fields: '*'
+                            fields: '*',
+                            related: 'service_doc_by_service_id'
                         },
                         data: data
                     };
@@ -2751,12 +2753,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 scope._prepareServiceDefinitionData = function () {
 
-                    if (scope.currentEditor === null) {
-                      scope.service.record.service_doc_by_service_id = [];
-                      return;
-                    }
-
-                    if (scope.currentEditor.session.getValue() === "") {
+                    if (scope.currentEditor === null || scope.currentEditor.session.getValue() === "") {
                         scope.service.record.service_doc_by_service_id = [];
                     }
                     else {
