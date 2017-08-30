@@ -46,7 +46,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 // app.js
                                 throw {
                                     routing: true
-                                }
+                                };
                             }
 
                             // There is a currentUser but they are not an admin
@@ -59,7 +59,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 // app.js
                                 throw {
                                     routing: true
-                                }
+                                };
                             }
 
                             defer.resolve();
@@ -81,7 +81,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 return {
                     record: angular.copy(systemConfigData),
                     recordCopy: angular.copy(systemConfigData)
-                }
+                };
             };
 
             $scope.getCacheEnabledServices = function () {
@@ -116,6 +116,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.es = SystemConfigEventsService.systemConfigController;
             
             // PUBLIC API
+
+            $scope.getCacheEnabledServices();
 
             $scope.links = [
 
@@ -300,7 +302,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             };
 
                             dfNotify.error(messageOptions);
-                        })
+                        });
 
                 };
 
@@ -328,7 +330,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             };
 
                             dfNotify.error(messageOptions);
-                        })
+                        });
                 };
             }
         }
@@ -372,7 +374,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             },
                             record: angular.copy(corsEntryData),
                             recordCopy: angular.copy(corsEntryData)
-                        }
+                        };
                     };
 
 
@@ -489,7 +491,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                     break;
                                 }
 
-                                i++
+                                i++;
                             }
 
                             var messageOptions = {
@@ -541,7 +543,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 dfNotify.error(messageOptions);
 
                             }
-                        )
+                        );
                     };
 
                     scope._saveCorsEntry = function (template) {
@@ -601,7 +603,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 dfNotify.error(messageOptions);
                             }
-                        )
+                        );
                     };
 
                     scope._updateCorsEntry = function (template) {
@@ -641,7 +643,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 dfNotify.error(messageOptions);
 
                             }
-                        )
+                        );
                     };
 
                     scope.helpTextCors = {
@@ -684,7 +686,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             scope.corsEntries = [];
                             angular.forEach(newValue, function (cors) {
                                 scope.corsEntries.push(new CorsEntry(cors));
-                            })
+                            });
                         }
                     });
 
@@ -693,7 +695,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         watchCorsEntries();
                     });
                 }
-            }
+            };
         }])
 
     .directive('dreamfactoryEmailTemplates', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfNotify',
@@ -709,7 +711,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     var EmailTemplate = function (emailTemplateData) {
 
                         function genTempId() {
-                            return Math.floor(Math.random() * 100000)
+                            return Math.floor(Math.random() * 100000);
                         }
 
                         var _new = {
@@ -738,7 +740,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             },
                             record: angular.copy(emailTemplateData),
                             recordCopy: angular.copy(emailTemplateData)
-                        }
+                        };
                     };
 
 
@@ -857,7 +859,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                     break;
                                 }
 
-                                i++
+                                i++;
                             }
 
                             var messageOptions = {
@@ -910,7 +912,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 dfNotify.error(messageOptions);
 
                             }
-                        )
+                        );
                     };
 
                     scope._saveEmailTemplate = function (template) {
@@ -969,7 +971,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 dfNotify.error(messageOptions);
                             }
-                        )
+                        );
                     };
 
                     scope._updateEmailTemplate = function (template) {
@@ -1008,7 +1010,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 dfNotify.error(messageOptions);
 
                             }
-                        )
+                        );
                     };
 
                     scope.helpText = {
@@ -1041,7 +1043,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             scope.emailTemplates = [];
                             angular.forEach(newValue, function (email) {
                                 scope.emailTemplates.push(new EmailTemplate(email));
-                            })
+                            });
                         }
                     });
 
@@ -1084,7 +1086,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             },
                             record: angular.copy(lookupKeyData),
                             recordCopy: angular.copy(lookupKeyData)
-                        }
+                        };
                     };
 
 
@@ -1203,7 +1205,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                     break;
                                 }
 
-                                i++
+                                i++;
                             }
 
                             var messageOptions = {
@@ -1256,7 +1258,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 dfNotify.error(messageOptions);
 
                             }
-                        )
+                        );
                     };
 
                     scope._saveLookup = function (lookup) {
@@ -1316,7 +1318,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 dfNotify.error(messageOptions);
                             }
-                        )
+                        );
                     };
 
                     scope._updateLookup = function (lookup) {
@@ -1356,7 +1358,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 dfNotify.error(messageOptions);
 
                             }
-                        )
+                        );
                     };
 
                     var watchGlobalLookupKeys = scope.$watchCollection('apiData.lookup', function (newValue, oldValue) {
@@ -1366,7 +1368,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             scope.globalLookups = [];
                             angular.forEach(newValue, function (lookup) {
                                 scope.globalLookups.push(new Lookup(lookup));
-                            })
+                            });
                         }
                     });
 
@@ -1375,7 +1377,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         watchGlobalLookupKeys();
                     });
                 }
-            }
+            };
         }])
 
     .directive('dreamfactoryLiveChatConfig', ['MODSYSCONFIG_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfApplicationData', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, INSTANCE_URL, $http, dfApplicationData, dfNotify) {
@@ -1427,7 +1429,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             Comm100API.showChat(scope.chatEnabled);
                             // scope.chatEnabled tracks the state while on the Config tab
                             dfApplicationData.deleteApiDataFromCache('custom');
-                        })
+                        });
                 };
 
                 // The purpose of this watcher is to init scope.chatEnabled and
@@ -1470,7 +1472,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     watchCustom();
                 });
             }
-        }
+        };
     }])
 
     .service('SystemConfigEventsService', [function () {
@@ -1481,7 +1483,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 updateSystemConfigSuccess: 'update:systemconfig:success',
                 updateSystemConfigError: 'update:systemconfig:error'
             }
-        }
+        };
     }])
 
     // sys config as seen by unauthenticated user
@@ -1516,7 +1518,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     type: 'error',
                     provider: 'dreamfactory',
                     exception: 'XMLHTTPRequest Failure:  getSystemConfigFromServer() Failed retrieve config.  Please contact your system administrator.'
-                }
+                };
             }
         }
 
@@ -1529,6 +1531,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 }
                 return systemConfig;
             }
-        }
+        };
     }
     ]);
