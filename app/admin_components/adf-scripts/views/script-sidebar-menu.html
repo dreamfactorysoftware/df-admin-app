@@ -58,17 +58,44 @@
                             data-ng-change="updateEditor(currentScriptObj.type)">
                     </select>
                 </div>
-                <div class="form-group">
-                      <label>Import a script file</label><br>
-                      <span>From Desktop:&nbsp;</span>
-                      <label class="btn btn-default btn-file btn-sm">
-                          Select File... <input type="file" style="display: none;"  onclick="this.value = null;" onchange="angular.element(this).scope().handleFiles(this.files)" ng-model="filename">
-                      </label>
-                </div>
-                <div class="form-group">
-                    <span>From GitHub:&nbsp;&nbsp;&nbsp;</span>
-                    <button type="button" class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShow()">Select File...</button>
-                </div>
+                <fieldset style="all:inherit; border: 2px solid #d3d3d3; padding:8px; border-radius:5px">
+                    <legend style="all:inherit; font-weight:bold;">Import a script file</legend>
+                    <div class="form-group">
+                          <span>From Desktop:&nbsp;</span>
+                          <label class="btn btn-default btn-file btn-sm">
+                              Select File... <input type="file" style="display: none;"  onclick="this.value = null;" onchange="angular.element(this).scope().handleFiles(this.files)" ng-model="filename">
+                          </label>
+                    </div>
+                    <div class="form-group">
+                        <span>From GitHub:&nbsp;&nbsp;&nbsp;</span>
+                        <button type="button" class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShow()">Select File...</button>
+                    </div>
+                </fieldset>
+                <br>
+                <fieldset style="all:inherit; border: 2px solid #d3d3d3; padding:8px; border-radius:5px">
+                    <legend style="all:inherit; font-weight:bold;">Link to a service</legend>
+                    <div class="form-group">
+                        <span>Service: </span>
+                        <select id="selected_service" class="input-sm"
+                                data-ng-model="selectedService"
+                                data-ng-options="item as item.label for item in serviceList track by item.id"
+                                data-ng-change="selectServiceLink(selectedService)">
+                        </select>
+                    </div>
+                    <div class="from-group" ng-show="serviceBranchTag">
+                        <span>Branch/Tag: </span>
+                        <input id="selected_service_ref" class="form-control input-sm" data-ng-model="selectedServiceRef" ng-keyup="setSelectedServiceRef(selectedServiceRef)" />
+                    </div>
+                    <div class="form-group">
+                        <span>Path: </span>
+                        <input id="selected_service_path" class="form-control input-sm" data-ng-model="selectedServicePath"  ng-keyup="setSelectedServicePath(selectedServicePath)" />
+                    </div>
+                    <div align="right">
+                        <a class="btn btn-small btn-primary" data-ng-click="pullLatestScript()">
+                            <i class="fa fa-refresh"></i> Refresh
+                        </a>
+                    </div>
+                </fieldset>
                 <div class="form-inline">
                     <div class="checkbox">
                         <label>

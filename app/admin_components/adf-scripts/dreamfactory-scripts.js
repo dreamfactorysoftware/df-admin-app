@@ -77,6 +77,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope.serviceTypeConfig = 'scripts';
 
+            $scope.selectedService = null;
+            $scope.selectedServicePath = null;
+            $scope.selectedServiceRef = null;
+            $scope.serviceBranchTag = false;
+            $scope.serviceList = [];
+
             // Loosely defined script object for when a script is non-existent.
             var ScriptObj = function (scriptId, scriptLanguage, scriptData) {
 
@@ -193,7 +199,106 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 );
             };
 
+            $scope.loadServiceList = function () {
+                $http({
+                    method: 'GET',
+                    url: INSTANCE_URL + '/api/v2/system/service',
+                    params: {
+                        fields:"id,name,label,type",
+                        filter:"type in ('local_file', 'ftp_file', 'sftp_file', 'webdav_file', 's3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage', 'github', 'gitlab')"
+                    }
+                }).then(
+                    function (result) {
+
+                        $scope.serviceList = result.data.resource;
+                    },
+
+                    function (error) {
+
+                        var messageOptions = {
+                            module: 'Scripts',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.'
+                        };
+                        dfNotify.error(messageOptions);
+                    }
+                )
+            };
+
+            $scope.selectServiceLink = function(service){
+                if(service.type === 'github' || service.type === 'gitlab'){
+                    $scope.serviceBranchTag = true;
+                } else {
+                    $scope.serviceBranchTag = false;
+                }
+                $scope.selectedService = service;
+            };
+
+            $scope.setSelectedServicePath = function(v) {
+                $scope.selectedServicePath = v;
+            };
+
+            $scope.setSelectedServiceRef = function(v) {
+                $scope.selectedServiceRef = v;
+            };
+
+            $scope.pullLatestScript = function(){
+                if(!$scope.selectedService || !$scope.selectedServicePath){
+                    alert('Please choose a service and enter a valid path before you pull your latest script.');
+                    return false;
+                }
+                var serviceName = $scope.selectedService.name;
+                var servicePath = $scope.selectedServicePath;
+                var serviceRef = 'master';
+                if($scope.selectedServiceRef){
+                    serviceRef = $scope.selectedServiceRef;
+                }
+
+                var url = INSTANCE_URL + '/api/v2/' + serviceName;
+
+                if($scope.selectedService && ($scope.selectedService.type === 'github' || $scope.selectedService.type === 'gitlab')){
+                    var repoName = servicePath.substring(0, servicePath.indexOf('/'));
+                    var repoPath = servicePath.substring(servicePath.indexOf('/')+1);
+                    var params = {
+                        path: repoPath,
+                        branch: serviceRef,
+                        content: 1
+                    };
+                    url = url + '/_repo/' + repoName;
+                } else {
+                    url = url + '/' + servicePath;
+                }
+
+                $http({
+                    method: 'GET',
+                    url: url,
+                    params: params
+                }).then(
+                    function (result) {
+                        $scope.currentScriptObj.content = result.data;
+
+                        return new PNotify({
+                            title: 'Scripts',
+                            type: 'success',
+                            text: 'Successfully pulled the latest script from source.'
+                        });
+                    },
+
+                    function (error) {
+
+                        return new PNotify({
+                            title: 'Scripts',
+                            type: 'error',
+                            text: 'There was an error pulling the latest script from your service. Please make sure your service, path and permissions are correct and try again.'
+                        });
+                    }
+                ).finally(function () {
+                })
+            };
+
             $scope.loadTabData();
+            $scope.loadServiceList();
 
             $scope.allowedScriptFormats = ['js','php','py', 'txt'];
 
@@ -338,6 +443,24 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.currentEndpointObj = {"name": endpointName, "endpoints": endpoints};
             };
 
+            $scope.resetServiceLink = function(){
+                $scope.selectedService = null;
+                $scope.selectedServicePath = null;
+                $scope.selectedServiceRef = null;
+                $scope.serviceBranchTag = false;
+
+                // Doing this manual old school thing to sync up the ui element (text fields)
+                // with the variables in $scope. For some reason these variables -
+                // $scope.selectedServicePath and $scope.selectedServiceRef do no update
+                // the ui when they change
+                var pathElm = angular.element( document.querySelector( '#selected_service_path' ) );
+                var refElm = angular.element( document.querySelector( '#selected_service_ref' ) );
+                var serviceElm = angular.element( document.querySelector( '#selected_service' ) );
+                pathElm[0].value = '';
+                refElm[0].value = '';
+                serviceElm[0].value = '';
+            };
+
             // load the editor
 
             $scope.setScript = function (scriptName) {
@@ -356,14 +479,42 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     params: requestDataObj.params
                 }).then(
                     function (result) {
-
+                        $scope.resetServiceLink();
                         $scope.currentScriptObj = result.data;
                         $scope.currentScriptObj.__newScript = false;
                         $scope.editor.session.setValue($scope.currentScriptObj.content);
+
+                        angular.forEach($scope.serviceList, function(service, key){
+                            if(service.id === result.data.storage_service_id){
+                                $scope.selectedService = service;
+                                return true;
+                            }
+                        });
+
+                        $scope.selectedServicePath = result.data.storage_path;
+                        $scope.selectedServiceRef = result.data.scm_reference;
+
+                        // Doing this manual old school thing to sync up the ui element (text fields)
+                        // with the variables in $scope. For some reason these variables -
+                        // $scope.selectedServicePath and $scope.selectedServiceRef do no update
+                        // the ui when they change
+                        var pathElm = angular.element( document.querySelector( '#selected_service_path' ) );
+                        var refElm = angular.element( document.querySelector( '#selected_service_ref' ) );
+                        var serviceElm = angular.element( document.querySelector( '#selected_service' ) );
+                        pathElm[0].value = result.data.storage_path;
+                        refElm[0].value = result.data.scm_reference;
+                        serviceElm[0].value = $scope.selectedService.id || '';
+
+                        $scope.serviceBranchTag = false;
+                        if($scope.selectedService && ($scope.selectedService.type === 'github' || $scope.selectedService.type === 'gitlab')){
+                            $scope.serviceBranchTag = true;
+                            if(!$scope.selectedServiceRef){
+                                $scope.selectedServiceRef
+                            }
+                        }
                     },
-
                     function (reject) {
-
+                        $scope.resetServiceLink();
                         $scope.currentScriptObj = new ScriptObj(scriptName, null, null);
                     }
                 ).finally(
@@ -381,7 +532,20 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     return false;
                 }
 
+                if($scope.selectedService && $scope.selectedService.id) {
+                    $scope.currentScriptObj.storage_service_id = $scope.selectedService.id;
+                    if(!$scope.selectedServicePath){
+                        alert('Please enter path to your script file for linking with a service.');
+                        return false;
+                    }
+                    $scope.currentScriptObj.storage_path = $scope.selectedServicePath;
+                    $scope.currentScriptObj.scm_reference = null;
+                    if($scope.serviceBranchTag){
+                        $scope.currentScriptObj.scm_reference = $scope.selectedServiceRef;
+                    }
+                }
                 $scope.currentScriptObj.content = $scope.editor.getValue() || ' ';
+
                 var requestDataObj = {
 
                     name: $scope.currentScriptObj.name,
@@ -531,6 +695,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             $scope.menuBack = function () {
+                $scope.resetServiceLink();
 
                 // Check if we have changed the script
                 if (!$scope.isEditorClean) {
