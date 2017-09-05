@@ -2233,6 +2233,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.typeOptions = [
                     {name: "Belongs To", value: "belongs_to"},
+                    {name: "Has One", value: "has_one"},
                     {name: "Has Many", value: "has_many"},
                     {name: "Many To Many", value: "many_many"}
                 ];

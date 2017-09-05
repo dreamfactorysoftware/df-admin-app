@@ -1859,8 +1859,8 @@ angular.module('dfUtility', ['dfApplication'])
                         if (scope.$parent.service !== null) {
 
                             if (scope.$parent.service.record.hasOwnProperty('service_doc_by_service_id')) {
-                                if (scope.$parent.service.record.service_doc_by_service_id[0]) {
-                                    var format = scope.$parent.service.record.service_doc_by_service_id[0].format;
+                                if (scope.$parent.service.record.service_doc_by_service_id) {
+                                    var format = scope.$parent.service.record.service_doc_by_service_id.format;
                                     switch (format) {
                                         case 0:
                                             dataFormat = 'json';

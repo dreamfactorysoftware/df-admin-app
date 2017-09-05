@@ -141,7 +141,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         "mutable": true,
                         "deletable": true,
                         "config": {},
-                        "service_doc_by_service_id": []
+                        "service_doc_by_service_id": {}
                     };
 
                     serviceData = serviceData || newService;
@@ -2754,12 +2754,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 scope._prepareServiceDefinitionData = function () {
 
                     if (scope.currentEditor === null || scope.currentEditor.session.getValue() === "") {
-                        scope.service.record.service_doc_by_service_id = [];
+                        scope.service.record.service_doc_by_service_id = {};
                     }
                     else {
-                        scope.service.record.service_doc_by_service_id[0] = scope.service.record.service_doc_by_service_id[0] || {};
-                        scope.service.record.service_doc_by_service_id[0].content = scope.currentEditor.session.getValue();
-                        scope.service.record.service_doc_by_service_id[0].format = parseInt(scope.serviceDefinitionFormat);
+                        scope.service.record.service_doc_by_service_id = scope.service.record.service_doc_by_service_id || {};
+                        scope.service.record.service_doc_by_service_id.content = scope.currentEditor.session.getValue();
+                        scope.service.record.service_doc_by_service_id.format = parseInt(scope.serviceDefinitionFormat);
                     }
                 };
 
@@ -2820,16 +2820,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                     if (!newValue) return;
 
-                    if (newValue.record.hasOwnProperty('service_doc_by_service_id') && newValue.record.service_doc_by_service_id[0]) {
-                        if(!newValue.record.service_doc_by_service_id[0].content) {
+                    if (newValue.record.hasOwnProperty('service_doc_by_service_id') && newValue.record.service_doc_by_service_id) {
+                        if(!newValue.record.service_doc_by_service_id.content) {
                             scope.currentFile = '';
                         } else {
-                            if (newValue.record.service_doc_by_service_id[0].format === 0) {
-                                scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id[0].content);
+                            if (newValue.record.service_doc_by_service_id.format === 0) {
+                                scope.currentFile = angular.fromJson(newValue.record.service_doc_by_service_id.content);
                                 scope.serviceDefinitionFormat = 0;
                             }
                             else {
-                                scope.currentFile = newValue.record.service_doc_by_service_id[0].content;
+                                scope.currentFile = newValue.record.service_doc_by_service_id.content;
                                 scope.serviceDefinitionFormat = 1;
                             }
                         }
