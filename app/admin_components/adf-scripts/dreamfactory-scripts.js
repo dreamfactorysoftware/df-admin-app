@@ -508,9 +508,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         $scope.serviceBranchTag = false;
                         if($scope.selectedService && ($scope.selectedService.type === 'github' || $scope.selectedService.type === 'gitlab')){
                             $scope.serviceBranchTag = true;
-                            if(!$scope.selectedServiceRef){
-                                $scope.selectedServiceRef
-                            }
                         }
                     },
                     function (reject) {

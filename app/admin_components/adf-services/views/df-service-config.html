@@ -16,7 +16,7 @@
         </div>
 
 
-        <div class="form-group ng-scope" data-ng-if="field.type != 'boolean'">
+        <div class="form-group ng-scope" data-ng-if="field.type != 'boolean' && field.name !== 'storage_service_id' && field.name !== 'storage_path' && field.name !== 'scm_reference'">
             <label>{{ field.label }}</label>
             <df-simple-help data-options="field" data-ng-if="field.description"></df-simple-help>
 
@@ -28,10 +28,30 @@
                   </label>
                   <button type="button" id="services_details_config_file_{{$index}}"  class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShowConfig()">Select GitHub File...</button>
                 </div>
+                <label>Link to a service</label>
+                <div>
+                    <span>Service: </span>
+                    <select id="selected_service" class="input-sm"
+                            data-ng-model="selectedService"
+                            data-ng-options="item as item.label for item in serviceList track by item.id"
+                            data-ng-change="selectServiceLink(selectedService)">
+                    </select>
+                    <span class="from-group" ng-show="serviceBranchTag">
+                        <span>Branch/Tag: </span>
+                        <input id="selected_service_ref" class="form-inline input-sm" data-ng-model="selectedServiceRef" ng-keyup="setSelectedServiceRef(selectedServiceRef)" />
+                    </span>
+                    <span class="form-group">
+                        <span>Path: </span>
+                        <input id="selected_service_path" class="form-inline input-sm" data-ng-model="selectedServicePath"  ng-keyup="setSelectedServicePath(selectedServicePath)" />
+                    </span>
+                    <a class="btn btn-small btn-primary" data-ng-click="pullLatestScript()">
+                        <i class="fa fa-refresh"></i> Refresh
+                    </a>
+                </div>
             </div>
         </div>
 
-        <input class="form-control" data-ng-if="field.type == 'string'"
+        <input class="form-control" data-ng-if="field.type == 'string' && field.name !== 'storage_path' && field.name !== 'scm_reference'"
                id="services_details_config_string_{{$index}}"
                data-ng-model="serviceInfo.record.config[field.name]"
                type="text" data-ng-required="field.required"/>
@@ -48,7 +68,7 @@
 
         <df-ace-editor-scripting data-script-type="serviceInfo.record.type" data-current-edit-obj="serviceInfo.record.config[field.name]" data-is-clean="isEditorClean" data-editor="$parent.$parent.editor" data-ng-if="field.type == 'text' && field.name == 'content'"></df-ace-editor-scripting>
 
-        <input class="form-control" data-ng-if="field.type == 'integer'"
+        <input class="form-control" data-ng-if="field.type == 'integer' && field.name !== 'storage_service_id'"
                id="services_details_config_integer_{{$index}}"
                data-ng-model="serviceInfo.record.config[field.name]"
                type="number" data-ng-required="field.required">

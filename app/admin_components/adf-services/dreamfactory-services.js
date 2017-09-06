@@ -225,17 +225,21 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 };
 
                 scope._prepareServiceData = function () {
-
                     scope._prepareServiceInfoData();
                     scope._prepareServiceConfigData();
 
                     switch (scope.service.record.type) {
 
                         case 'rws':
+                            scope._prepareServiceDefinitionData();
+                            break;
                         case 'nodejs':
                         case 'php':
                         case 'python':
                         case 'v8js':
+                            scope.service.record.config.storage_service_id = scope.selectedService.id;
+                            scope.service.record.config.storage_path = scope.selectedServicePath;
+                            scope.service.record.config.scm_reference = scope.selectedServiceRef;
                             scope._prepareServiceDefinitionData();
                             break;
 
@@ -1505,7 +1509,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
             }
         }
     }])
-    .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', '$rootScope', 'dfNotify', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache, $rootScope, dfNotify) {
+    .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', '$rootScope', 'dfNotify', '$http', 'INSTANCE_URL', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache, $rootScope, dfNotify, $http, INSTANCE_URL) {
 
 
         return {
@@ -1538,6 +1542,113 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 scope.customConfig = [];
                 scope.servicesReady = false;
+
+                scope.selectedService = null;
+                scope.selectedServicePath = null;
+                scope.selectedServiceRef = null;
+                scope.serviceBranchTag = false;
+                scope.serviceList = [];
+
+                scope.loadServiceList = function () {
+                    $http({
+                        method: 'GET',
+                        url: INSTANCE_URL + '/api/v2/system/service',
+                        params: {
+                            fields:"id,name,label,type",
+                            filter:"type in ('local_file', 'ftp_file', 'sftp_file', 'webdav_file', 's3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage', 'github', 'gitlab')"
+                        }
+                    }).then(
+                        function (result) {
+
+                            scope.serviceList = result.data.resource;
+                        },
+
+                        function (error) {
+
+                            var messageOptions = {
+                                module: 'Scripts',
+                                provider: 'dreamfactory',
+                                type: 'error',
+                                message: 'There was an error loading data for the Services tab. Please try refreshing your browser and logging in again.'
+                            };
+                            dfNotify.error(messageOptions);
+                        }
+                    )
+                };
+
+                scope.loadServiceList();
+
+                scope.selectServiceLink = function(service){
+                    if(service.type === 'github' || service.type === 'gitlab'){
+                        scope.serviceBranchTag = true;
+                    } else {
+                        scope.serviceBranchTag = false;
+                    }
+                    scope.selectedService = service;
+                };
+
+                scope.setSelectedServicePath = function(v) {
+                    scope.selectedServicePath = v;
+                };
+
+                scope.setSelectedServiceRef = function(v) {
+                    scope.selectedServiceRef = v;
+                };
+
+                scope.pullLatestScript = function(){
+                    if(!scope.selectedService || !scope.selectedServicePath){
+                        alert('Please choose a service and enter a valid path before you pull your latest script.');
+                        return false;
+                    }
+                    var serviceName = scope.selectedService.name;
+                    var servicePath = scope.selectedServicePath;
+                    var serviceRef = 'master';
+                    if(scope.selectedServiceRef){
+                        serviceRef = scope.selectedServiceRef;
+                    }
+
+                    var url = INSTANCE_URL + '/api/v2/' + serviceName;
+
+                    if(scope.selectedService && (scope.selectedService.type === 'github' || scope.selectedService.type === 'gitlab')){
+                        var repoName = servicePath.substring(0, servicePath.indexOf('/'));
+                        var repoPath = servicePath.substring(servicePath.indexOf('/')+1);
+                        var params = {
+                            path: repoPath,
+                            branch: serviceRef,
+                            content: 1
+                        };
+                        url = url + '/_repo/' + repoName;
+                    } else {
+                        url = url + '/' + servicePath;
+                    }
+
+                    $http({
+                        method: 'GET',
+                        url: url,
+                        params: params
+                    }).then(
+                        function (result) {
+                            //$scope.currentScriptObj.content = result.data;
+                            scope.serviceInfo.record.config['content'] = result.data;
+
+                            return new PNotify({
+                                title: 'Scripts',
+                                type: 'success',
+                                text: 'Successfully pulled the latest script from source.'
+                            });
+                        },
+
+                        function (error) {
+
+                            return new PNotify({
+                                title: 'Scripts',
+                                type: 'error',
+                                text: 'There was an error pulling the latest script from your service. Please make sure your service, path and permissions are correct and try again.'
+                            });
+                        }
+                    ).finally(function () {
+                    })
+                };
 
                 scope.githubModalShowConfig = function () {
 
@@ -2136,6 +2247,28 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                     // Create a ServiceConfig object
                     scope.serviceInfo = new ServiceConfig(newValue.record);
+
+                    switch (newValue.record.type) {
+                        case 'nodejs':
+                        case 'php':
+                        case 'python':
+                        case 'v8js':
+                            angular.forEach(scope.serviceList, function(service, key){
+                                if(service.id === newValue.record.config.storage_service_id){
+                                    scope.selectedService = service;
+                                }
+                            });
+                            scope.selectedServiceRef = newValue.record.config.scm_reference;
+                            scope.selectedServicePath = newValue.record.config.storage_path;
+                            scope.serviceBranchTag = false;
+                            if(scope.selectedService && (scope.selectedService.type === 'github' || scope.selectedService.type === 'gitlab')){
+                                scope.serviceBranchTag = true;
+                            }
+
+                            break;
+                        default:
+                            break;
+                    }
 
                     scope.selectedSchema = scope.hcv.serviceTypes && scope.hcv.serviceTypes.filter(function (item) {
                             return scope.serviceInfo && scope.serviceInfo.record && item.name === scope.serviceInfo.record.type;
