@@ -32,8 +32,6 @@ angular.module('dfUtility', ['dfApplication'])
                   var url_params = url.substr(url.indexOf('.com/') + 5);
                   var url_array = url_params.split('/');
 
-                  var github_api_url = '';
-
                   var owner = '';
                   var repo = '';
                   var branch = '';
@@ -52,7 +50,7 @@ angular.module('dfUtility', ['dfApplication'])
                       path = url_array.splice(4, url_array.length - 4).join('/');
                   }
 
-                  github_api_url = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path + '?ref=' + branch;
+                  var github_api_url = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path + '?ref=' + branch;
 
                   var username = angular.copy(scope.githubModal.username);
                   var password = angular.copy(scope.githubModal.password);
@@ -67,7 +65,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                       headers: {
                           'X-DreamFactory-API-Key': undefined,
-                          'X-DreamFactory-Session-Token': undefined,
+                          'X-DreamFactory-Session-Token': undefined
                       },
                       ignore401: true
                   })
@@ -91,18 +89,14 @@ angular.module('dfUtility', ['dfApplication'])
                               mode = 'json';
                               break;
                           default:
-                              mode = 'javascript'
+                              mode = 'javascript';
                       }
 
-                      if (scope['editor'] !== undefined) {
-                          console.log('editor - utility');
+                      if (scope.editor) {
                           var decodedString = atob(response.data.content);
-                          scope['editor'].session.setValue(decodedString);
-                          scope['editor'].session.setMode({path: 'ace/mode/' + mode, inline: true});
-                          scope['editor'].focus();
-                          scope.currentScriptObj = {
-                              content: decodedString
-                          };
+                          scope.editor.session.setValue(decodedString);
+                          scope.editor.session.setMode({path: 'ace/mode/' + mode, inline: true});
+                          scope.editor.focus();
                       }
 
                       var element = angular.element('#' + scope['target']);
@@ -124,14 +118,14 @@ angular.module('dfUtility', ['dfApplication'])
                           scope.modalError = {
                               visible: true,
                               message: 'Error: Authentication failed.'
-                          }
+                          };
                       }
 
                       if (response.status === 404) {
                           scope.modalError = {
                               visible: true,
                               message: 'Error: The file could not be found.'
-                          }
+                          };
                       }
                   });
               };
@@ -159,7 +153,7 @@ angular.module('dfUtility', ['dfApplication'])
                   scope.modalError = {
                       visible: false,
                       message: ''
-                  }
+                  };
               });
 
               var watchGithubCredPass = scope.$watch('githubModal.password', function (newValue, oldValue) {
@@ -169,7 +163,7 @@ angular.module('dfUtility', ['dfApplication'])
                   scope.modalError = {
                       visible: false,
                       message: ''
-                  }
+                  };
               });
 
               var watchGithubURL = scope.$watch('githubModal.url', function (newValue, oldValue) {
@@ -214,7 +208,7 @@ angular.module('dfUtility', ['dfApplication'])
                     scope.modalError = {
                         visible: true,
                         message: 'Error: Invalid file format. Only ' + formats + ' file format(s) allowed'
-                    }
+                    };
                   }
               });
 
@@ -1688,15 +1682,11 @@ angular.module('dfUtility', ['dfApplication'])
         return {
             restrict: 'E',
             scope: {
-                directData: '=?',
-                currentEditor: '=?',
-                serviceName: '=?',
-                fileName: '=?',
-                filePath: '=?',
-                isUserCustom: '=?',
-                isClean: '=?',
+                inputType: '=?', // object for schema mgr, string for service def
+                inputContent: '=?',
+                inputFormat: '=?', // json for schema mgr, json or yaml for service def
                 isEditable: '=?',
-                hideGutter: '=?'
+                currentEditor: '=?'
             },
             templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-ace-editor.html',
             link: function (scope, elem, attrs) {
@@ -1706,51 +1696,20 @@ angular.module('dfUtility', ['dfApplication'])
                 var _elem = $(elem),
                     _rand = Math.floor((Math.random() * 100) + 1);
 
-                _elem.children('.ide-attach').append($compile('<div id="ide_' + _rand + '" class="df-fs-height" style="height:400px"></div>')(scope))
+                _elem.children('.ide-attach').append($compile('<div id="ide_' + _rand + '" class="df-fs-height" style="height:400px"></div>')(scope));
 
                 scope.editor = null;
-                scope.currentScriptObj = '';
-                scope.backupDoc = '';
-                scope.hideGutter = scope.hideGutter || true;
+                scope.currentContent = {"content": ""};
+                scope.verbose = false;
 
                 // PRIVATE API
-                scope._getFileFromServer = function (requestDataObj) {
-
-                    return $http({
-                        method: 'GET',
-                        url: INSTANCE_URL + '/rest' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
-                        cache: false,
-                        params: requestDataObj.params
-                    })
-                };
-
-                scope._saveFileOnServer = function (requestDataObj) {
-
-                    return $http({
-                        method: 'PUT',
-                        url: INSTANCE_URL + '/rest' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
-                        headers: {
-                            'Content-Type': 'text/plain'
-                        },
-                        data: {
-                            post_body: requestDataObj.body
-                        }
-                    })
-                };
-
-                scope._deleteFileOnServer = function (requestDataObj) {
-
-                    return $http({
-
-                        method: 'DELETE',
-                        url: INSTANCE_URL + '/rest' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
-                        params: {
-                            script_id:requestDataObj.scriptId
-                        }
-                    })
-                };
 
                 scope._setEditorInactive = function (stateBool) {
+
+                    if (scope.verbose) {
+                        console.log("_setEditorInactive", stateBool);
+                    }
+
                     stateBool = stateBool || false;
 
                     if (stateBool) {
@@ -1770,134 +1729,84 @@ angular.module('dfUtility', ['dfApplication'])
                     }
                 };
 
-                scope._loadEditor = function (contents, mode, inactive) {
+                scope._setEditorMode = function (mode) {
 
-                    inactive = inactive || false;
+                    if (scope.verbose) {
+                        console.log("_setEditorMode", mode);
+                    }
+
+                    scope.editor.session.setMode({
+                        path: "ace/mode/" + mode,
+                        v: Date.now()
+                    });
+                };
+
+                scope._loadEditor = function (contents) {
+
+                    if (scope.verbose) {
+                        console.log("_loadEditor", contents);
+                    }
 
                     scope.editor = ace.edit('ide_' + _rand);
 
-                    scope.editor.renderer.setShowGutter(scope.hideGutter);
-
-                    if (mode === false) {
-                        scope.editor.session.setMode("ace/mode/javascript");
-                        scope.editor.session.setMode({
-                            path: "ace/mode/javascript",
-                            v: Date.now()
-                        });
-                    }
-                    else {
-                        scope.editor.session.setMode({
-                            path: "ace/mode/" + mode,
-                            v: Date.now()
-                        });
-                    }
-
-                    scope._setEditorInactive(inactive);
+                    scope.editor.renderer.setShowGutter(true);
 
                     scope.editor.session.setValue(contents);
 
-                    scope.editor.on('input', function() {
-                        scope.$apply(function() {
-                            scope.isClean = scope.editor.session.getUndoManager().isClean();
-                        });
-                    });
-
                     scope.editor.on('blur', function () {
                         scope.$apply(function () {
-                            try {
-                                scope.directData = JSON.parse(scope.editor.getValue());
-                            } catch (e) {}
+                            scope.currentContent = {"content": scope.editor.getValue()};
                         });
                     });
                 };
 
-                scope._cleanEditor = function () {
-
-                    scope.editor.session.getUndoManager().reset();
-                    scope.editor.session.getUndoManager().markClean();
-                };
-
-
                 // WATCHERS AND INIT
-                var watchScriptFileName = scope.$watch('fileName', function (newValue, oldValue) {
 
-                    if (newValue === 'samples') return false;
+                // we get json objects from schema editor, convert them to strings here
+                // service defs will already be strings
 
-                    if (!newValue) {
-                        scope._loadEditor('', false, true);
-                        return false;
+                scope.$watch('inputContent', function (newValue) {
+
+                    if (scope.verbose) {
+                        console.log('inputContent', newValue);
                     }
-
-                    var requestDataObj = {
-                        serviceName: scope.serviceName,
-                        fileName: newValue,
-                        params: {
-                            // is_user_script: scope.isUserCustom,
-                            // include_body: true,
-                            include_body: true
+                    if (newValue && newValue.content !== undefined) {
+                        var content = newValue.content;
+                        if (scope.inputType === 'object') {
+                            content = angular.toJson(content, true);
                         }
-                    };
-
-                    scope._getFileFromServer(requestDataObj).then(
-                        function(result) {
-                            scope.currentScript = result.data;
-                            scope._loadEditor(result.data.script_body, false);
-                        },
-                        function(reject) {
-
-                            scope._loadEditor('', false);
-                        }
-                    )
-                });
-
-
-                var watchDirectData = scope.$watch('directData', function (newValue, oldValue) {
-
-                    var dataFormat = null;
-
-                    if (scope.$parent.hasOwnProperty('service')) {
-                        if (scope.$parent.service !== null) {
-
-                            if (scope.$parent.service.record.hasOwnProperty('service_doc_by_service_id')) {
-                                if (scope.$parent.service.record.service_doc_by_service_id) {
-                                    var format = scope.$parent.service.record.service_doc_by_service_id.format;
-                                    switch (format) {
-                                        case 0:
-                                            dataFormat = 'json';
-                                            break;
-                                        case 1:
-                                            dataFormat = 'yaml';
-                                            break;
-                                        default:
-                                            dataFormat = 'json';
-                                    }
-                                }
-                            }
-                        }
+                        scope.currentContent = {"content": content};
                     }
 
-                    if (!newValue) {
-                        scope._loadEditor('', false, true);
-                        return false;
-                    }
+                }, true);
 
-                    // Format JSON
-                    try {
-                        newValue = angular.fromJson(newValue);
-                        newValue = JSON.stringify(newValue, null, '\t');
-                    } catch (e) {
-                        // Not a valid json
-                    }
+                // load editor with new text content
 
-                    scope._loadEditor(newValue, dataFormat, !scope.isEditable);
-                    scope.backupDoc = angular.copy(newValue);
+                scope.$watch('currentContent', function (newValue) {
+
+                    if (scope.verbose) {
+                        console.log('currentContent', newValue);
+                    }
+                    scope._loadEditor(newValue.content);
                     scope.currentEditor = scope.editor;
 
                 }, true);
 
+                scope.$watch('inputFormat', function (newValue) {
 
-                var watchIsEditable = scope.$watch('isEditable', function (newValue, oldValue) {
+                    if (scope.verbose) {
+                        console.log('inputFormat', newValue);
+                    }
+                    if (newValue) {
+                        scope._setEditorMode(newValue);
+                    }
+                });
 
+                scope.$watch('isEditable', function (newValue) {
+
+                    if (scope.verbose) {
+                        console.log('isEditable', newValue);
+                    }
                     scope.editor.setOptions({
                         readOnly: !newValue,
                         highlightActiveLine: true,
@@ -1905,92 +1814,6 @@ angular.module('dfUtility', ['dfApplication'])
                     });
 
                     scope.editor.renderer.$cursorLayer.element.style.opacity=100;
-                });
-
-
-                // MESSAGES
-                scope.$on('$destroy', function (e) {
-
-                    watchScriptFileName();
-                    watchDirectData();
-                });
-
-                scope.$on('save:script', function(e) {
-
-                    var requestDataObj = {
-                        serviceName: scope.serviceName,
-                        fileName: scope.fileName,
-                        body:  scope.editor.getValue() || " "
-                    };
-
-                    scope._saveFileOnServer(requestDataObj).then(
-                        function(result) {
-
-                            scope._cleanEditor();
-                            // Needs to be replaced with angular messaging
-                            $(function(){
-                                new PNotify({
-                                    title: 'Scripts',
-                                    type:  'success',
-                                    text:  'Script saved successfully.'
-                                });
-                            });
-
-                        },
-                        function(reject) {
-
-                            throw {
-                                module: 'DreamFactory System Config Module',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                exception: reject
-                            }
-                        }
-                    )
-                });
-
-                scope.$on('delete:script', function (e) {
-
-                    var requestDataObj = {
-                        serviceName: scope.serviceName,
-                        fileName: scope.fileName,
-                        scriptId:  scope.currentScriptObj.script_id
-                    };
-
-                    scope._deleteFileOnServer(requestDataObj).then(
-                        function(result) {
-
-                            scope.editor.setValue('', false);
-                            scope._cleanEditor();
-
-                            $(function(){
-                                new PNotify({
-                                    title: 'Scripts',
-                                    type:  'success',
-                                    text:  'Script deleted successfully.'
-                                });
-                            });
-                        },
-                        function(reject) {
-
-                            throw {
-                                module: 'DreamFactory System Config Module',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                exception: reject
-                            }
-                        }
-                    )
-                });
-
-                scope.$on('load:direct', function (e, dataObj) {
-
-                    scope._loadEditor(dataObj, false);
-                });
-
-                scope.$on('reload:script', function (e, mode) {
-
-                    scope._loadEditor(scope.backupDoc, mode);
                 });
             }
         }

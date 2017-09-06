@@ -873,8 +873,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             templateUrl: MODSCRIPTING_ASSET_PATH + 'views/df-ace-editor.html',
             link: function (scope, elem, attrs) {
 
-                scope.backupDoc = '';
-
                 // PRIVATE API
                 scope._setEditorInactive = function (stateBool) {
 
@@ -913,8 +911,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     }
 
                     scope.editor.session.setMode("ace/mode/" + mode);
-
-                    scope.backupDoc = angular.copy(contents);
 
                     scope._setEditorInactive(inactive);
 
