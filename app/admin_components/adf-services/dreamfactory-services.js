@@ -237,9 +237,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         case 'php':
                         case 'python':
                         case 'v8js':
-                            scope.service.record.config.storage_service_id = scope.selectedService.id;
-                            scope.service.record.config.storage_path = scope.selectedServicePath;
-                            scope.service.record.config.scm_reference = scope.selectedServiceRef;
+                            scope.service.record.config.storage_service_id = (scope.selectedService)? scope.selectedService.id : null;
+                            scope.service.record.config.storage_path = (scope.selectedServicePath)? scope.selectedServicePath : null;
+                            scope.service.record.config.scm_reference = (scope.selectedServiceRef)? scope.selectedServiceRef : null;
                             scope._prepareServiceDefinitionData();
                             break;
 
