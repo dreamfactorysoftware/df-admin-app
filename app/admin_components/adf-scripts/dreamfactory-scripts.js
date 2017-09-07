@@ -487,7 +487,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         angular.forEach($scope.serviceList, function(service, key){
                             if(service.id === result.data.storage_service_id){
                                 $scope.selectedService = service;
-                                return true;
                             }
                         });
 
@@ -503,7 +502,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         var serviceElm = angular.element( document.querySelector( '#selected_service' ) );
                         pathElm[0].value = result.data.storage_path;
                         refElm[0].value = result.data.scm_reference;
-                        serviceElm[0].value = $scope.selectedService.id || '';
+                        serviceElm[0].value = ($scope.selectedService)? $scope.selectedService.id : '';
 
                         $scope.serviceBranchTag = false;
                         if($scope.selectedService && ($scope.selectedService.type === 'github' || $scope.selectedService.type === 'gitlab')){
@@ -913,6 +912,10 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     scope.editor.session.setMode("ace/mode/" + mode);
 
                     scope._setEditorInactive(inactive);
+
+                    if(typeof contents === 'object'){
+                        contents = JSON.stringify(contents);
+                    }
 
                     scope.editor.session.setValue(contents);
 
