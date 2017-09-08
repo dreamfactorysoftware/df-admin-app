@@ -200,33 +200,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 );
             };
 
-            $scope.loadServiceList = function () {
-                $http({
-                    method: 'GET',
-                    url: INSTANCE_URL + '/api/v2/system/service',
-                    params: {
-                        fields:"id,name,label,type",
-                        filter:"type in ('local_file', 'ftp_file', 'sftp_file', 'webdav_file', 's3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage', 'github', 'gitlab')"
-                    }
-                }).then(
-                    function (result) {
-                        $scope.serviceList = result.data.resource;
-                        $scope.serviceList.unshift(null);
-                    },
-
-                    function (error) {
-
-                        var messageOptions = {
-                            module: 'Scripts',
-                            provider: 'dreamfactory',
-                            type: 'error',
-                            message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.'
-                        };
-                        dfNotify.error(messageOptions);
-                    }
-                )
-            };
-
             $scope.selectServiceLink = function(service){
                 $scope.serviceBranchTag = false;
                 $scope.selectedService = null;
