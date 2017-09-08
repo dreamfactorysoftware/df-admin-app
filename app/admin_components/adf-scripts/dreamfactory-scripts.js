@@ -80,7 +80,9 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.selectedService = null;
             $scope.selectedServicePath = null;
             $scope.selectedServiceRef = null;
+            $scope.selectedServiceRepo = null;
             $scope.serviceBranchTag = false;
+            $scope.disableRefreshButton = true;
             $scope.serviceList = [];
 
             // Loosely defined script object for when a script is non-existent.
@@ -209,8 +211,13 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     }
                 }).then(
                     function (result) {
-
                         $scope.serviceList = result.data.resource;
+                        $scope.serviceList.unshift({
+                            id:null,
+                            name:'none',
+                            label:'None',
+                            type:'none'
+                        })
                     },
 
                     function (error) {
@@ -227,29 +234,53 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             $scope.selectServiceLink = function(service){
-                if(service.type === 'github' || service.type === 'gitlab'){
-                    $scope.serviceBranchTag = true;
+                $scope.serviceBranchTag = false;
+                $scope.selectedService = null;
+                if(service) {
+                    if (service.type === 'github' || service.type === 'gitlab') {
+                        $scope.serviceBranchTag = true;
+                    }
+                    $scope.selectedService = service;
                 } else {
-                    $scope.serviceBranchTag = false;
+                    $scope.resetServiceLink();
                 }
-                $scope.selectedService = service;
+                $scope.enableDisableRefresh();
             };
 
             $scope.setSelectedServicePath = function(v) {
                 $scope.selectedServicePath = v;
+                $scope.enableDisableRefresh();
             };
-
+            $scope.setSelectedServiceRepo = function(v) {
+                $scope.selectedServiceRepo = v;
+                $scope.enableDisableRefresh();
+            };
             $scope.setSelectedServiceRef = function(v) {
                 $scope.selectedServiceRef = v;
+                $scope.enableDisableRefresh();
+            };
+
+            $scope.enableDisableRefresh = function() {
+                if($scope.selectedService){
+                    var type = $scope.selectedService.type;
+                }
+
+                if((type === 'github' || type === 'gitlab') && $scope.selectedService && $scope.selectedServiceRepo && $scope.selectedServicePath){
+                    $scope.disableRefreshButton = false;
+                } else if ($scope.selectedService && $scope.selectedServicePath){
+                    $scope.disableRefreshButton = false;
+                } else {
+                    $scope.disableRefreshButton = true;
+                }
             };
 
             $scope.pullLatestScript = function(){
-                if(!$scope.selectedService || !$scope.selectedServicePath){
-                    alert('Please choose a service and enter a valid path before you pull your latest script.');
+                if($scope.disableRefreshButton){
                     return false;
                 }
                 var serviceName = $scope.selectedService.name;
                 var servicePath = $scope.selectedServicePath;
+                var serviceRepo = $scope.selectedServiceRepo;
                 var serviceRef = 'master';
                 if($scope.selectedServiceRef){
                     serviceRef = $scope.selectedServiceRef;
@@ -258,14 +289,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 var url = INSTANCE_URL + '/api/v2/' + serviceName;
 
                 if($scope.selectedService && ($scope.selectedService.type === 'github' || $scope.selectedService.type === 'gitlab')){
-                    var repoName = servicePath.substring(0, servicePath.indexOf('/'));
-                    var repoPath = servicePath.substring(servicePath.indexOf('/')+1);
                     var params = {
-                        path: repoPath,
+                        path: servicePath,
                         branch: serviceRef,
                         content: 1
                     };
-                    url = url + '/_repo/' + repoName;
+                    url = url + '/_repo/' + serviceRepo;
                 } else {
                     url = url + '/' + servicePath;
                 }
@@ -447,7 +476,9 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.selectedService = null;
                 $scope.selectedServicePath = null;
                 $scope.selectedServiceRef = null;
+                $scope.selectedServiceRepo = null;
                 $scope.serviceBranchTag = false;
+                $scope.disableRefreshButton = true;
 
                 // Doing this manual old school thing to sync up the ui element (text fields)
                 // with the variables in $scope. For some reason these variables -
@@ -455,9 +486,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 // the ui when they change
                 var pathElm = angular.element( document.querySelector( '#selected_service_path' ) );
                 var refElm = angular.element( document.querySelector( '#selected_service_ref' ) );
+                var repoElm = angular.element( document.querySelector( '#selected_service_repo') );
                 var serviceElm = angular.element( document.querySelector( '#selected_service' ) );
                 pathElm[0].value = '';
                 refElm[0].value = '';
+                repoElm[0].value = '';
                 serviceElm[0].value = '';
             };
 
@@ -492,22 +525,26 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                         $scope.selectedServicePath = result.data.storage_path;
                         $scope.selectedServiceRef = result.data.scm_reference;
+                        $scope.selectedServiceRepo = result.data.scm_repository;
 
                         // Doing this manual old school thing to sync up the ui element (text fields)
                         // with the variables in $scope. For some reason these variables -
-                        // $scope.selectedServicePath and $scope.selectedServiceRef do no update
+                        // $scope.selectedServicePath, $scope.selectedServiceRepo, and $scope.selectedServiceRef do no update
                         // the ui when they change
                         var pathElm = angular.element( document.querySelector( '#selected_service_path' ) );
                         var refElm = angular.element( document.querySelector( '#selected_service_ref' ) );
                         var serviceElm = angular.element( document.querySelector( '#selected_service' ) );
+                        var repoElm = angular.element( document.querySelector( '#selected_service_repo' ) );
                         pathElm[0].value = result.data.storage_path;
                         refElm[0].value = result.data.scm_reference;
+                        repoElm[0].value = result.data.scm_repository;
                         serviceElm[0].value = ($scope.selectedService)? $scope.selectedService.id : '';
 
                         $scope.serviceBranchTag = false;
                         if($scope.selectedService && ($scope.selectedService.type === 'github' || $scope.selectedService.type === 'gitlab')){
                             $scope.serviceBranchTag = true;
                         }
+                        $scope.enableDisableRefresh();
                     },
                     function (reject) {
                         $scope.resetServiceLink();
@@ -530,15 +567,18 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 if($scope.selectedService && $scope.selectedService.id) {
                     $scope.currentScriptObj.storage_service_id = $scope.selectedService.id;
-                    if(!$scope.selectedServicePath){
-                        alert('Please enter path to your script file for linking with a service.');
-                        return false;
-                    }
                     $scope.currentScriptObj.storage_path = $scope.selectedServicePath;
                     $scope.currentScriptObj.scm_reference = null;
+                    $scope.currentScriptObj.scm_repository = null;
                     if($scope.serviceBranchTag){
                         $scope.currentScriptObj.scm_reference = $scope.selectedServiceRef;
+                        $scope.currentScriptObj.scm_repository = $scope.selectedServiceRepo;
                     }
+                } else {
+                    $scope.currentScriptObj.storage_service_id = null;
+                    $scope.currentScriptObj.storage_path = null;
+                    $scope.currentScriptObj.scm_reference = null;
+                    $scope.currentScriptObj.scm_repository = null;
                 }
                 $scope.currentScriptObj.content = $scope.editor.getValue() || ' ';
 

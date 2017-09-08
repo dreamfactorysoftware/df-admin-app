@@ -16,7 +16,7 @@
         </div>
 
 
-        <div class="form-group ng-scope" data-ng-if="field.type != 'boolean' && field.name !== 'storage_service_id' && field.name !== 'storage_path' && field.name !== 'scm_reference'">
+        <div class="form-group ng-scope" data-ng-if="field.type != 'boolean' && field.name !== 'storage_service_id' && field.name !== 'storage_path' && field.name !== 'scm_reference' && field.name !== 'scm_repository'">
             <label>{{ field.label }}</label>
             <df-simple-help data-options="field" data-ng-if="field.description"></df-simple-help>
 
@@ -37,21 +37,25 @@
                             data-ng-change="selectServiceLink(selectedService)">
                     </select>
                     <span class="from-group" ng-show="serviceBranchTag">
+                        <span>Repository: </span>
+                        <input size="10" id="selected_service_repo" class="form-inline input-sm" data-ng-model="selectedServiceRepo" ng-keyup="setSelectedServiceRepo(selectedServiceRepo)" />
+                    </span>
+                    <span class="from-group" ng-show="serviceBranchTag">
                         <span>Branch/Tag: </span>
-                        <input id="selected_service_ref" class="form-inline input-sm" data-ng-model="selectedServiceRef" ng-keyup="setSelectedServiceRef(selectedServiceRef)" />
+                        <input size="10" id="selected_service_ref" class="form-inline input-sm" data-ng-model="selectedServiceRef" ng-keyup="setSelectedServiceRef(selectedServiceRef)" />
                     </span>
                     <span class="form-group">
                         <span>Path: </span>
                         <input id="selected_service_path" class="form-inline input-sm" data-ng-model="selectedServicePath"  ng-keyup="setSelectedServicePath(selectedServicePath)" />
                     </span>
-                    <a class="btn btn-small btn-primary" data-ng-click="pullLatestScript()">
+                    <a data-ng-disabled="disableRefreshButton" class="btn btn-sm btn-primary" data-ng-click="pullLatestScript()">
                         <i class="fa fa-refresh"></i> Refresh
                     </a>
                 </div>
             </div>
         </div>
 
-        <input class="form-control" data-ng-if="field.type == 'string' && field.name !== 'storage_path' && field.name !== 'scm_reference'"
+        <input class="form-control" data-ng-if="field.type == 'string' && field.name !== 'storage_path' && field.name !== 'scm_reference' && field.name !== 'scm_repository'"
                id="services_details_config_string_{{$index}}"
                data-ng-model="serviceInfo.record.config[field.name]"
                type="text" data-ng-required="field.required"/>

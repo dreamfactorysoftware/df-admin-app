@@ -83,6 +83,10 @@
                         </select>
                     </div>
                     <div class="from-group" ng-show="serviceBranchTag">
+                        <span>Repository: </span>
+                        <input id="selected_service_repo" class="form-control input-sm" data-ng-model="selectedServiceRepo" ng-keyup="setSelectedServiceRepo(selectedServiceRepo)" />
+                    </div>
+                    <div class="from-group" ng-show="serviceBranchTag">
                         <span>Branch/Tag: </span>
                         <input id="selected_service_ref" class="form-control input-sm" data-ng-model="selectedServiceRef" ng-keyup="setSelectedServiceRef(selectedServiceRef)" />
                     </div>
@@ -91,7 +95,7 @@
                         <input id="selected_service_path" class="form-control input-sm" data-ng-model="selectedServicePath"  ng-keyup="setSelectedServicePath(selectedServicePath)" />
                     </div>
                     <div align="right">
-                        <a class="btn btn-small btn-primary" data-ng-click="pullLatestScript()">
+                        <a data-ng-disabled="disableRefreshButton" class="btn btn-sm btn-primary" data-ng-click="pullLatestScript()">
                             <i class="fa fa-refresh"></i> Refresh
                         </a>
                     </div>

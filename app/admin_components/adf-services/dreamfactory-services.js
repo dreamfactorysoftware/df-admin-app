@@ -240,6 +240,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             scope.service.record.config.storage_service_id = (scope.selectedService)? scope.selectedService.id : null;
                             scope.service.record.config.storage_path = (scope.selectedServicePath)? scope.selectedServicePath : null;
                             scope.service.record.config.scm_reference = (scope.selectedServiceRef)? scope.selectedServiceRef : null;
+                            scope.service.record.config.scm_repository = (scope.selectedServiceRepo)? scope.selectedServiceRepo : null;
                             scope._prepareServiceDefinitionData();
                             break;
 
@@ -1546,7 +1547,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 scope.selectedService = null;
                 scope.selectedServicePath = null;
                 scope.selectedServiceRef = null;
+                scope.selectedServiceRepo = null;
                 scope.serviceBranchTag = false;
+                scope.disableRefreshButton = true;
                 scope.serviceList = [];
 
                 scope.loadServiceList = function () {
@@ -1561,6 +1564,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         function (result) {
 
                             scope.serviceList = result.data.resource;
+                            scope.serviceList.unshift({
+                                id:null,
+                                name:'none',
+                                label:'None',
+                                type:'none'
+                            })
                         },
 
                         function (error) {
@@ -1579,29 +1588,51 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 scope.loadServiceList();
 
                 scope.selectServiceLink = function(service){
-                    if(service.type === 'github' || service.type === 'gitlab'){
-                        scope.serviceBranchTag = true;
-                    } else {
-                        scope.serviceBranchTag = false;
+                    scope.serviceBranchTag = false;
+                    scope.selectedService = null;
+                    if(service) {
+                        if (service.type === 'github' || service.type === 'gitlab') {
+                            scope.serviceBranchTag = true;
+                        }
+                        scope.selectedService = service;
                     }
-                    scope.selectedService = service;
+                    scope.enableDisableRefresh();
                 };
 
                 scope.setSelectedServicePath = function(v) {
                     scope.selectedServicePath = v;
+                    scope.enableDisableRefresh();
                 };
-
+                scope.setSelectedServiceRepo = function(v) {
+                    scope.selectedServiceRepo = v;
+                    scope.enableDisableRefresh();
+                };
                 scope.setSelectedServiceRef = function(v) {
                     scope.selectedServiceRef = v;
+                    scope.enableDisableRefresh();
+                };
+
+                scope.enableDisableRefresh = function() {
+                    if(scope.selectedService){
+                        var type = scope.selectedService.type;
+                    }
+
+                    if((type === 'github' || type === 'gitlab') && scope.selectedService && scope.selectedServiceRepo && scope.selectedServicePath){
+                        scope.disableRefreshButton = false;
+                    } else if (scope.selectedService && scope.selectedServicePath){
+                        scope.disableRefreshButton = false;
+                    } else {
+                        scope.disableRefreshButton = true;
+                    }
                 };
 
                 scope.pullLatestScript = function(){
-                    if(!scope.selectedService || !scope.selectedServicePath){
-                        alert('Please choose a service and enter a valid path before you pull your latest script.');
+                    if(scope.disableRefreshButton){
                         return false;
                     }
                     var serviceName = scope.selectedService.name;
                     var servicePath = scope.selectedServicePath;
+                    var serviceRepo = scope.selectedServiceRepo;
                     var serviceRef = 'master';
                     if(scope.selectedServiceRef){
                         serviceRef = scope.selectedServiceRef;
@@ -1610,14 +1641,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     var url = INSTANCE_URL + '/api/v2/' + serviceName;
 
                     if(scope.selectedService && (scope.selectedService.type === 'github' || scope.selectedService.type === 'gitlab')){
-                        var repoName = servicePath.substring(0, servicePath.indexOf('/'));
-                        var repoPath = servicePath.substring(servicePath.indexOf('/')+1);
                         var params = {
-                            path: repoPath,
+                            path: servicePath,
                             branch: serviceRef,
                             content: 1
                         };
-                        url = url + '/_repo/' + repoName;
+                        url = url + '/_repo/' + serviceRepo;
                     } else {
                         url = url + '/' + servicePath;
                     }
@@ -1628,7 +1657,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         params: params
                     }).then(
                         function (result) {
-                            //$scope.currentScriptObj.content = result.data;
                             scope.serviceInfo.record.config['content'] = result.data;
 
                             return new PNotify({
@@ -1746,9 +1774,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 scope.getReferences = function (key, valueField) {
                     var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
-                    return dfApplicationObjApis[key].record.map(function (item) {
-                        return {name: item.name, value: item[valueField] || item.id };
-                    });
+                    if(dfApplicationObjApis && dfApplicationObjApis[key] && dfApplicationObjApis[key].record) {
+                        return dfApplicationObjApis[key].record.map(function (item) {
+                            return {name: item.name, value: item[valueField] || item.id};
+                        });
+                    }
                 };
 
                 scope.hcv = new dfServiceValues();
@@ -2258,12 +2288,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                                 }
                             });
                             scope.selectedServiceRef = newValue.record.config.scm_reference;
+                            scope.selectedServiceRepo = newValue.record.config.scm_repository;
                             scope.selectedServicePath = newValue.record.config.storage_path;
                             scope.serviceBranchTag = false;
                             if(scope.selectedService && (scope.selectedService.type === 'github' || scope.selectedService.type === 'gitlab')){
                                 scope.serviceBranchTag = true;
                             }
-
+                            scope.enableDisableRefresh();
                             break;
                         default:
                             break;
