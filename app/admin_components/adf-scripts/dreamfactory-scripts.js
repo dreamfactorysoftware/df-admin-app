@@ -83,7 +83,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.selectedServiceRepo = null;
             $scope.serviceBranchTag = false;
             $scope.disableRefreshButton = true;
-            $scope.serviceList = [];
 
             // Loosely defined script object for when a script is non-existent.
             var ScriptObj = function (scriptId, scriptLanguage, scriptData) {
@@ -151,7 +150,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 // only load these one time as they should not change as scripts are created/deleted
                 // this is particularly important for 'event' as it can be slow when there are many services
-                var secondaryApis = ['event', 'script_type'];
+                var secondaryApis = ['event', 'script_type', 'service_link'];
 
                 // for primaryApis force refresh to always load from server
                 dfApplicationData.getApiData(primaryApis, true).then(
@@ -161,7 +160,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             newApiData[value] = response[index].resource ? response[index].resource : response[index];
                         });
                         // loading from cache is ok for secondaryApis, unless the tab is just loaded ($scope.apiData === null)
-                        // in that case load from server to pick up any new events resulting from new services, tables, etc
+                        // in that case load from server to pick up any new services, tables, etc
                         // when a script is created or deleted $scope.apiData will not be null and data comes from cache
                         dfApplicationData.getApiData(secondaryApis, ($scope.apiData === null)).then(
                             function (response) {
@@ -199,38 +198,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         $scope.dataLoading = false;
                     }
                 );
-            };
-
-            $scope.loadServiceList = function () {
-                $http({
-                    method: 'GET',
-                    url: INSTANCE_URL + '/api/v2/system/service',
-                    params: {
-                        fields:"id,name,label,type",
-                        filter:"type in ('local_file', 'ftp_file', 'sftp_file', 'webdav_file', 's3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage', 'github', 'gitlab')"
-                    }
-                }).then(
-                    function (result) {
-                        $scope.serviceList = result.data.resource;
-                        $scope.serviceList.unshift({
-                            id:null,
-                            name:'none',
-                            label:'None',
-                            type:'none'
-                        })
-                    },
-
-                    function (error) {
-
-                        var messageOptions = {
-                            module: 'Scripts',
-                            provider: 'dreamfactory',
-                            type: 'error',
-                            message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.'
-                        };
-                        dfNotify.error(messageOptions);
-                    }
-                )
             };
 
             $scope.selectServiceLink = function(service){
@@ -327,7 +294,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             $scope.loadTabData();
-            $scope.loadServiceList();
 
             $scope.allowedScriptFormats = ['js','php','py', 'txt'];
 
@@ -517,7 +483,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         $scope.currentScriptObj.__newScript = false;
                         $scope.editor.session.setValue($scope.currentScriptObj.content);
 
-                        angular.forEach($scope.serviceList, function(service, key){
+                        angular.forEach($scope.apiData['service_link'], function(service, key){
                             if(service.id === result.data.storage_service_id){
                                 $scope.selectedService = service;
                             }

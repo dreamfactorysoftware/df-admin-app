@@ -78,7 +78,7 @@
                         <span>Service: </span>
                         <select id="selected_service" class="input-sm"
                                 data-ng-model="selectedService"
-                                data-ng-options="item as item.label for item in serviceList track by item.id"
+                                data-ng-options="item as item.label for item in apiData['service_link'] track by item.id"
                                 data-ng-change="selectServiceLink(selectedService)">
                         </select>
                     </div>

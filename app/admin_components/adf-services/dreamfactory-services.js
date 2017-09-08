@@ -88,7 +88,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
         $scope.loadTabData = function(init) {
 
             // eventlist is loaded only as needed to improve user experience
-            var apis = ['service', 'service_type', 'environment'];
+            var apis = ['service', 'service_link', 'service_type', 'environment'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -1543,42 +1543,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 scope.selectedServiceRepo = null;
                 scope.serviceBranchTag = false;
                 scope.disableRefreshButton = true;
-                scope.serviceList = [];
-
-                scope.loadServiceList = function () {
-                    $http({
-                        method: 'GET',
-                        url: INSTANCE_URL + '/api/v2/system/service',
-                        params: {
-                            fields:"id,name,label,type",
-                            filter:"type in ('local_file', 'ftp_file', 'sftp_file', 'webdav_file', 's3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage', 'github', 'gitlab')"
-                        }
-                    }).then(
-                        function (result) {
-
-                            scope.serviceList = result.data.resource;
-                            scope.serviceList.unshift({
-                                id:null,
-                                name:'none',
-                                label:'None',
-                                type:'none'
-                            })
-                        },
-
-                        function (error) {
-
-                            var messageOptions = {
-                                module: 'Scripts',
-                                provider: 'dreamfactory',
-                                type: 'error',
-                                message: 'There was an error loading data for the Services tab. Please try refreshing your browser and logging in again.'
-                            };
-                            dfNotify.error(messageOptions);
-                        }
-                    )
-                };
-
-                scope.loadServiceList();
 
                 scope.selectServiceLink = function(service){
                     scope.serviceBranchTag = false;
@@ -2275,7 +2239,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         case 'php':
                         case 'python':
                         case 'v8js':
-                            angular.forEach(scope.serviceList, function(service, key){
+                            angular.forEach(scope.apiData['service_link'], function(service, key){
                                 if(service.id === newValue.record.config.storage_service_id){
                                     scope.selectedService = service;
                                 }
