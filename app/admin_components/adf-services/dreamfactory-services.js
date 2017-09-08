@@ -141,7 +141,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         "mutable": true,
                         "deletable": true,
                         "config": {},
-                        "service_doc_by_service_id": {}
+                        "service_doc_by_service_id": null
                     };
 
                     serviceData = serviceData || newService;
@@ -322,33 +322,26 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 // COMPLEX IMPLEMENTATION
                 scope._saveService = function () {
-                    var error = false;
 
-                    if (!scope.serviceInfo.record.config.hasOwnProperty('content') && (
-                      (scope.serviceInfo.record.type === 'nodejs') ||
-                      (scope.serviceInfo.record.type === 'php') ||
-                      (scope.serviceInfo.record.type === 'python') ||
-                      (scope.serviceInfo.record.type === 'v8js'))) {
-                        error = true;
-                    }
+                    if (scope.serviceInfo.record.type === 'nodejs' ||
+                        scope.serviceInfo.record.type === 'php' ||
+                        scope.serviceInfo.record.type === 'python' ||
+                        scope.serviceInfo.record.type === 'v8js') {
 
-                    if (scope.serviceInfo.record.config.hasOwnProperty('content')) {
-                        if (!scope.serviceInfo.record.config.content.length) {
-                            error = true;
+                        var config = scope.serviceInfo.record.config;
+                        if (!config.hasOwnProperty('content') || config.content.length === 0) {
+
+                            var messageOptions = {
+                                module: 'Service Save Error',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: "Content is required and can't be empty"
+                            };
+
+                            dfNotify.error(messageOptions);
+
+                            return;
                         }
-                    }
-
-                    if (error) {
-                        var messageOptions = {
-                            module: 'Service Save Error',
-                            type: 'error',
-                            provider: 'dreamfactory',
-                            message: 'Content is required and can\'t be empty'
-                        };
-
-                        dfNotify.error(messageOptions);
-
-                        return;
                     }
 
                     scope._prepareServiceData();
@@ -2889,10 +2882,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                     var doc;
 
-                    // service doc will be deleted if editor is empty
                     var content = scope.currentEditor.session.getValue();
                     if (content === "") {
-                        doc = {};
+                        // this will delete existing service doc if there is one
+                        doc = null;
                     } else {
                         doc = scope.service.record.service_doc_by_service_id;
                         doc.content = content;
