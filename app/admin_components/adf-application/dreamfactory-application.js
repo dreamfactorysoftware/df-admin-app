@@ -84,6 +84,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                     case 'eventlist':
                         params['api'] = 'event';
                         break;
+                    case 'service_link':
+                        params['api'] = 'service';
+                        break;
                     default:
                         params['api'] = api;
                         break;
@@ -238,6 +241,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                         include_count: true,
                         limit: limit,
                         related: 'service_doc_by_service_id'
+                    },
+                    service_link: {
+                        include_count: true,
+                        filter:"type in ('local_file', 'ftp_file', 'sftp_file', 'webdav_file', 's3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage', 'github', 'gitlab')"
                     },
                     email_template: {
                         include_count: true

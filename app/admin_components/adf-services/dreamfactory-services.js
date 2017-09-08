@@ -88,7 +88,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
         $scope.loadTabData = function(init) {
 
             // eventlist is loaded only as needed to improve user experience
-            var apis = ['service', 'service_type', 'environment'];
+            var apis = ['service', 'service_link', 'service_type', 'environment'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -2281,7 +2281,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         case 'python':
                         case 'v8js':
                             scope.selectedService = null;
-                            angular.forEach(scope.serviceList, function(service, key){
+                            angular.forEach(scope.apiData['service_link'], function(service, key){
                                 if(service && service.id === newValue.record.config.storage_service_id){
                                     scope.selectedService = service;
                                 }
