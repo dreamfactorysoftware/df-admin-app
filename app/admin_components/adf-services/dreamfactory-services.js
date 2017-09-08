@@ -1555,14 +1555,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         }
                     }).then(
                         function (result) {
-
                             scope.serviceList = result.data.resource;
-                            scope.serviceList.unshift({
-                                id:null,
-                                name:'none',
-                                label:'None',
-                                type:'none'
-                            })
+                            scope.serviceList.unshift(null);
                         },
 
                         function (error) {
@@ -1580,6 +1574,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 scope.loadServiceList();
 
+                scope.resetServiceLink = function(){
+                    scope.selectedService = null;
+                    scope.selectedServicePath = null;
+                    scope.selectedServiceRef = null;
+                    scope.selectedServiceRepo = null;
+                    scope.serviceBranchTag = false;
+                    scope.disableRefreshButton = true;
+                };
+
                 scope.selectServiceLink = function(service){
                     scope.serviceBranchTag = false;
                     scope.selectedService = null;
@@ -1588,6 +1591,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             scope.serviceBranchTag = true;
                         }
                         scope.selectedService = service;
+                    } else {
+                        scope.resetServiceLink();
                     }
                     scope.enableDisableRefresh();
                 };
@@ -2275,8 +2280,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         case 'php':
                         case 'python':
                         case 'v8js':
+                            scope.selectedService = null;
                             angular.forEach(scope.serviceList, function(service, key){
-                                if(service.id === newValue.record.config.storage_service_id){
+                                if(service && service.id === newValue.record.config.storage_service_id){
                                     scope.selectedService = service;
                                 }
                             });

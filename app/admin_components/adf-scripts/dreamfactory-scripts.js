@@ -212,12 +212,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }).then(
                     function (result) {
                         $scope.serviceList = result.data.resource;
-                        $scope.serviceList.unshift({
-                            id:null,
-                            name:'none',
-                            label:'None',
-                            type:'none'
-                        })
+                        $scope.serviceList.unshift(null);
                     },
 
                     function (error) {
@@ -518,7 +513,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         $scope.editor.session.setValue($scope.currentScriptObj.content);
 
                         angular.forEach($scope.serviceList, function(service, key){
-                            if(service.id === result.data.storage_service_id){
+                            if(service && service.id === result.data.storage_service_id){
                                 $scope.selectedService = service;
                             }
                         });
@@ -538,13 +533,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         pathElm[0].value = result.data.storage_path;
                         refElm[0].value = result.data.scm_reference;
                         repoElm[0].value = result.data.scm_repository;
-                        serviceElm[0].value = ($scope.selectedService)? $scope.selectedService.id : '';
+                        serviceElm[0].value = ($scope.selectedService)? $scope.selectedService.id : null;
 
                         $scope.serviceBranchTag = false;
                         if($scope.selectedService && ($scope.selectedService.type === 'github' || $scope.selectedService.type === 'gitlab')){
                             $scope.serviceBranchTag = true;
                         }
-                        $scope.enableDisableRefresh();
                     },
                     function (reject) {
                         $scope.resetServiceLink();
@@ -552,6 +546,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     }
                 ).finally(
                     function () {
+                        $scope.enableDisableRefresh();
                     }
                 )
             };
