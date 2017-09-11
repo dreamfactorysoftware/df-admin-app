@@ -44,7 +44,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                 // app.js
                                 throw {
                                     routing: true
-                                }
+                                };
                             }
 
                             // There is a currentUser but they are not an admin
@@ -57,7 +57,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                 // app.js
                                 throw {
                                     routing: true
-                                }
+                                };
                             }
 
                             defer.resolve();
@@ -77,33 +77,39 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope.serviceTypeConfig = 'scripts';
 
-            $scope.selectedService = null;
-            $scope.selectedServicePath = null;
-            $scope.selectedServiceRef = null;
-            $scope.selectedServiceRepo = null;
-            $scope.serviceBranchTag = false;
-            $scope.disableRefreshButton = true;
+            $scope.newScript = true;
+            $scope.disableServiceLinkRefresh = true;
+            $scope.selections = {
+                "service": null
+            };
 
             // Loosely defined script object for when a script is non-existent.
-            var ScriptObj = function (scriptId, scriptLanguage, scriptData) {
+            var ScriptObj = function (name) {
 
                 return {
-                    name: scriptId,
-                    type: scriptLanguage || 'v8js',
-                    content: scriptData || '',
+                    name: name,
+                    type: 'v8js',
+                    content: '',
                     is_active: false,
                     allow_event_modification: false,
-                    __newScript: true
-                }
+                    storage_service_id: null,
+                    scm_repository: null,
+                    scm_reference: null,
+                    storage_path: null
+                };
             };
 
             $scope.scriptSamplesSelect = function (type) {
+
                 $scope.sampleSelect = type;
                 $scope._loadSampleScript(type);
             };
 
             $scope.handleFiles = function (files) {
-                if (!files)return;
+
+                if (!files) {
+                    return;
+                }
                 var file = files && files[0];
                 if (file) {
                     var reader = new FileReader();
@@ -113,14 +119,16 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         $scope.$apply();
                     };
                     reader.onerror = function (evt) {
-                        console.log('error')
-                    }
+                        console.log('error');
+                    };
                 }
             };
 
             $scope.handleGitFiles = function (data) {
 
-                if (!data)return;
+                if (!data) {
+                    return;
+                }
                 $scope.currentScriptObj.content = data;
                 $scope.$apply();
             };
@@ -134,7 +142,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             // Sample Scripts
             $scope.samplesScripts = null;
-            // $scope.sampleScripts = new ScriptObj('sample-scripts', 'v8js', getSampleScripts.data);
 
             // load data
             // Allows for building of events dynamically on the client
@@ -200,62 +207,36 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 );
             };
 
-            $scope.selectServiceLink = function(service){
-                $scope.serviceBranchTag = false;
-                $scope.selectedService = null;
-                if(service) {
-                    if (service.type === 'github' || service.type === 'gitlab') {
-                        $scope.serviceBranchTag = true;
+            $scope.getRefreshEnable = function() {
+
+                var type, enable = false;
+
+                if ($scope.currentScriptObj && $scope.selections.service) {
+                    type = $scope.selections.service.type;
+                    if (type === 'github' || type === 'gitlab') {
+                        if ($scope.currentScriptObj.scm_repository && $scope.currentScriptObj.scm_reference && $scope.currentScriptObj.storage_path) {
+                            enable = true;
+                        }
+                    } else {
+                        if ($scope.currentScriptObj.storage_path) {
+                            enable = true;
+                        }
                     }
-                    $scope.selectedService = service;
-                } else {
-                    $scope.resetServiceLink();
-                }
-                $scope.enableDisableRefresh();
-            };
-
-            $scope.setSelectedServicePath = function(v) {
-                $scope.selectedServicePath = v;
-                $scope.enableDisableRefresh();
-            };
-            $scope.setSelectedServiceRepo = function(v) {
-                $scope.selectedServiceRepo = v;
-                $scope.enableDisableRefresh();
-            };
-            $scope.setSelectedServiceRef = function(v) {
-                $scope.selectedServiceRef = v;
-                $scope.enableDisableRefresh();
-            };
-
-            $scope.enableDisableRefresh = function() {
-                if($scope.selectedService){
-                    var type = $scope.selectedService.type;
                 }
 
-                if((type === 'github' || type === 'gitlab') && $scope.selectedService && $scope.selectedServiceRepo && $scope.selectedServicePath){
-                    $scope.disableRefreshButton = false;
-                } else if ($scope.selectedService && $scope.selectedServicePath){
-                    $scope.disableRefreshButton = false;
-                } else {
-                    $scope.disableRefreshButton = true;
-                }
+                return enable;
             };
 
             $scope.pullLatestScript = function(){
-                if($scope.disableRefreshButton){
-                    return false;
-                }
-                var serviceName = $scope.selectedService.name;
-                var servicePath = $scope.selectedServicePath;
-                var serviceRepo = $scope.selectedServiceRepo;
-                var serviceRef = 'master';
-                if($scope.selectedServiceRef){
-                    serviceRef = $scope.selectedServiceRef;
-                }
+
+                var serviceName = $scope.selections.service.name;
+                var serviceRepo = $scope.currentScriptObj.scm_repository;
+                var serviceRef = $scope.currentScriptObj.scm_reference;
+                var servicePath = $scope.currentScriptObj.storage_path;
 
                 var url = INSTANCE_URL + '/api/v2/' + serviceName;
 
-                if($scope.selectedService && ($scope.selectedService.type === 'github' || $scope.selectedService.type === 'gitlab')){
+                if($scope.selections.service && ($scope.selections.service.type === 'github' || $scope.selections.service.type === 'gitlab')){
                     var params = {
                         path: servicePath,
                         branch: serviceRef,
@@ -290,7 +271,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         });
                     }
                 ).finally(function () {
-                })
+                });
             };
 
             $scope.loadTabData();
@@ -438,26 +419,15 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.currentEndpointObj = {"name": endpointName, "endpoints": endpoints};
             };
 
-            $scope.resetServiceLink = function(){
-                $scope.selectedService = null;
-                $scope.selectedServicePath = null;
-                $scope.selectedServiceRef = null;
-                $scope.selectedServiceRepo = null;
-                $scope.serviceBranchTag = false;
-                $scope.disableRefreshButton = true;
+            $scope.getServiceById = function (id) {
 
-                // Doing this manual old school thing to sync up the ui element (text fields)
-                // with the variables in $scope. For some reason these variables -
-                // $scope.selectedServicePath and $scope.selectedServiceRef do no update
-                // the ui when they change
-                var pathElm = angular.element( document.querySelector( '#selected_service_path' ) );
-                var refElm = angular.element( document.querySelector( '#selected_service_ref' ) );
-                var repoElm = angular.element( document.querySelector( '#selected_service_repo') );
-                var serviceElm = angular.element( document.querySelector( '#selected_service' ) );
-                pathElm[0].value = '';
-                refElm[0].value = '';
-                repoElm[0].value = '';
-                serviceElm[0].value = '';
+                var matches = $scope.apiData['service_link'].filter(function(service){
+                    return service.id === id;
+                });
+                if (matches.length === 0) {
+                    return null;
+                }
+                return matches[0];
             };
 
             // load the editor
@@ -478,49 +448,21 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     params: requestDataObj.params
                 }).then(
                     function (result) {
-                        $scope.resetServiceLink();
                         $scope.currentScriptObj = result.data;
-                        $scope.currentScriptObj.__newScript = false;
+                        $scope.newScript = false;
+                        $scope.selections.service = $scope.getServiceById($scope.currentScriptObj.storage_service_id);
                         $scope.editor.session.setValue($scope.currentScriptObj.content);
-
-
-                        angular.forEach($scope.apiData['service_link'], function(service, key){
-                            if(service && service.id === result.data.storage_service_id){
-                                $scope.selectedService = service;
-                            }
-                        });
-
-                        $scope.selectedServicePath = result.data.storage_path;
-                        $scope.selectedServiceRef = result.data.scm_reference;
-                        $scope.selectedServiceRepo = result.data.scm_repository;
-
-                        // Doing this manual old school thing to sync up the ui element (text fields)
-                        // with the variables in $scope. For some reason these variables -
-                        // $scope.selectedServicePath, $scope.selectedServiceRepo, and $scope.selectedServiceRef do no update
-                        // the ui when they change
-                        var pathElm = angular.element( document.querySelector( '#selected_service_path' ) );
-                        var refElm = angular.element( document.querySelector( '#selected_service_ref' ) );
-                        var serviceElm = angular.element( document.querySelector( '#selected_service' ) );
-                        var repoElm = angular.element( document.querySelector( '#selected_service_repo' ) );
-                        pathElm[0].value = result.data.storage_path;
-                        refElm[0].value = result.data.scm_reference;
-                        repoElm[0].value = result.data.scm_repository;
-                        serviceElm[0].value = ($scope.selectedService)? $scope.selectedService.id : null;
-
-                        $scope.serviceBranchTag = false;
-                        if($scope.selectedService && ($scope.selectedService.type === 'github' || $scope.selectedService.type === 'gitlab')){
-                            $scope.serviceBranchTag = true;
-                        }
                     },
                     function (reject) {
-                        $scope.resetServiceLink();
-                        $scope.currentScriptObj = new ScriptObj(scriptName, null, null);
+                        $scope.currentScriptObj = new ScriptObj(scriptName);
+                        $scope.newScript = true;
+                        $scope.selections.service = null;
                     }
                 ).finally(
                     function () {
                         $scope.enableDisableRefresh();
                     }
-                )
+                );
             };
 
             // save script to server
@@ -528,26 +470,40 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.saveScript = function () {
 
                 if (!$scope.currentScriptObj.name) {
-                    alert('Please enter a script name.');
-                    return false;
+                    return;
                 }
 
-                if($scope.selectedService && $scope.selectedService.id) {
-                    $scope.currentScriptObj.storage_service_id = $scope.selectedService.id;
-                    $scope.currentScriptObj.storage_path = $scope.selectedServicePath;
-                    $scope.currentScriptObj.scm_reference = null;
-                    $scope.currentScriptObj.scm_repository = null;
-                    if($scope.serviceBranchTag){
-                        $scope.currentScriptObj.scm_reference = $scope.selectedServiceRef;
-                        $scope.currentScriptObj.scm_repository = $scope.selectedServiceRepo;
-                    }
+                // sanitize service link config before saving
+                // send nulls not empty strings
+                // if no service selected send null for everything
+
+                // service to link to
+                $scope.currentScriptObj.storage_service_id = ($scope.selections.service ? $scope.selections.service.id : null);
+
+                // repo is allowed for github or gitlab, replace empty string with null
+                if ($scope.selections.service &&
+                    ($scope.selections.service.type === 'github' || $scope.selections.service.type === 'gitlab')) {
+                    $scope.currentScriptObj.scm_repository = ($scope.currentScriptObj.scm_repository ? $scope.currentScriptObj.scm_repository : null);
                 } else {
-                    $scope.currentScriptObj.storage_service_id = null;
-                    $scope.currentScriptObj.storage_path = null;
-                    $scope.currentScriptObj.scm_reference = null;
                     $scope.currentScriptObj.scm_repository = null;
                 }
-                $scope.currentScriptObj.content = $scope.editor.getValue() || ' ';
+
+                // ref is allowed for github or gitlab, replace empty string with null
+                if ($scope.selections.service &&
+                    ($scope.selections.service.type === 'github' || $scope.selections.service.type === 'gitlab')) {
+                    $scope.currentScriptObj.scm_reference = ($scope.currentScriptObj.scm_reference ? $scope.currentScriptObj.scm_reference : null);
+                }  else {
+                    $scope.currentScriptObj.scm_reference = null;
+                }
+
+                // path is allowed for any link service, replace empty string with null
+                if ($scope.selections.service) {
+                    $scope.currentScriptObj.storage_path = ($scope.currentScriptObj.storage_path ? $scope.currentScriptObj.storage_path : null);
+                }  else {
+                    $scope.currentScriptObj.storage_path = null;
+                }
+
+                $scope.currentScriptObj.content = $scope.editor.getValue();
 
                 var requestDataObj = {
 
@@ -567,7 +523,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         $scope.editor.session.getUndoManager().reset();
                         $scope.editor.session.getUndoManager().markClean();
                         $scope.isEditorClean = true;
-                        $scope.currentScriptObj.__newScript = false;
+                        $scope.newScript = false;
 
                         // Needs to be replaced with angular messaging
                         $(function () {
@@ -586,13 +542,13 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             type: 'error',
                             provider: 'dreamfactory',
                             exception: reject
-                        }
+                        };
                     }
                 ).finally(
                     function () {
                         $scope.loadTabData();
                     }
-                )
+                );
             };
 
             // delete script from server
@@ -636,14 +592,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 exception: reject
-                            }
+                            };
 
                         }
                     ).finally(
                         function () {
                             $scope.loadTabData();
                         }
-                    )
+                    );
                 }
             };
 
@@ -685,7 +641,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     function (reject) {
                         dfNotify.error(reject)
                     }
-                )
+                );
             };
 
             $scope.menuOpen = true;
@@ -698,7 +654,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             $scope.menuBack = function () {
-                $scope.resetServiceLink();
 
                 // Check if we have changed the script
                 if (!$scope.isEditorClean) {
@@ -768,7 +723,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.modalError = {
                     visible: false,
                     message: ''
-                }
+                };
             });
 
             var watchGithubCredPass = $scope.$watch('githubModal.password', function (newValue, oldValue) {
@@ -778,7 +733,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.modalError = {
                     visible: false,
                     message: ''
-                }
+                };
             });
 
             var watchGithubURL = $scope.$watch('githubModal.url', function (newValue, oldValue) {
@@ -817,17 +772,29 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         $scope.modalError = {
                             visible: false,
                             message: ''
-                        }
+                        };
                     }, function errorCallback(response) {
 
                         if (response.status === 404) {
                             $scope.modalError = {
                                 visible: true,
                                 message: 'Error: The repository could not be found.'
-                            }
+                            };
                         }
                     });
                 }
+            });
+
+            var watchCurrentScriptObj = $scope.$watchCollection('currentScriptObj', function (newValue, oldValue) {
+
+                if (newValue) {
+                    $scope.disableServiceLinkRefresh = !$scope.getRefreshEnable();
+                }
+            });
+
+            var watchSelections = $scope.$watchCollection('selections', function (newValue, oldValue) {
+
+                $scope.disableServiceLinkRefresh = !$scope.getRefreshEnable();
             });
 
             $scope.$on('$destroy', function (e) {
@@ -835,6 +802,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 watchGithubURL();
                 watchGithubCredUser();
                 watchGithubCredPass();
+                watchCurrentScriptObj();
+                watchSelections();
             });
         }])
 
@@ -846,7 +815,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             scope: false,
             templateUrl: MODSCRIPTING_ASSET_PATH + 'views/script-sidebar-menu.html',
             link: function (scope, elem, attrs) {}
-        }
+        };
     }])
 
     .directive('dfAceSamplesSelect', ['INSTANCE_URL', 'MODSCRIPTING_ASSET_PATH', '$http', '$timeout', function (INSTANCE_URL, MODSCRIPTING_ASSET_PATH, $http, $timeout) {
@@ -863,7 +832,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             link: function (scope, elem, attrs) {
                 scope.viewer = ace.edit('ide_samples');
             }
-        }
+        };
 
     }])
     .directive('dfAceEditorScripting', ['INSTANCE_URL', 'MODSCRIPTING_ASSET_PATH', '$http', '$timeout', function (INSTANCE_URL, MODSCRIPTING_ASSET_PATH, $http, $timeout) {

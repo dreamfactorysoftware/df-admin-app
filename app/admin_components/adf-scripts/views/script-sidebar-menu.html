@@ -58,6 +58,26 @@
                             data-ng-change="updateEditor(currentScriptObj.type)">
                     </select>
                 </div>
+                <div class="form-inline">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" data-ng-model="currentScriptObj.is_active"/>
+                            &nbsp;
+                            Active
+                        </label>
+                    </div>
+                </div>
+                <div data-ng-if="currentScriptObj.name.indexOf('pre_process') >= 0 || currentScriptObj.name.indexOf('post_process') >= 0" class="form-inline">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" data-ng-model="currentScriptObj.allow_event_modification"/>
+                            &nbsp;
+                            <span data-ng-if="currentScriptObj.name.indexOf('pre_process') >= 0">Allow script to modify request payload</span>
+                            <span data-ng-if="currentScriptObj.name.indexOf('post_process') >= 0">Allow script to modify response payload</span>
+                        </label>
+                    </div>
+                </div>
+                <br/>
                 <fieldset style="all:inherit; border: 2px solid #d3d3d3; padding:8px; border-radius:5px">
                     <legend style="all:inherit; font-weight:bold;">Import a script file</legend>
                     <div class="form-group">
@@ -77,49 +97,31 @@
                     <div class="form-group">
                         <span>Service: </span>
                         <select id="selected_service" class="input-sm"
-                                data-ng-model="selectedService"
-                                data-ng-options="item as item.label for item in apiData['service_link'] track by item.id"
-                                data-ng-change="selectServiceLink(selectedService)">
+                                data-ng-model="selections.service"
+                                data-ng-options="item as item.label for item in apiData['service_link'] track by item.id">
+                            <option value="">-- None --</option>
                         </select>
                     </div>
-                    <div class="from-group" ng-show="serviceBranchTag">
+                    <div class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab')">
                         <span>Repository: </span>
-                        <input id="selected_service_repo" class="form-control input-sm" data-ng-model="selectedServiceRepo" ng-keyup="setSelectedServiceRepo(selectedServiceRepo)" />
+                        <input id="selected_service_repo" class="form-control input-sm" data-ng-model="currentScriptObj.scm_repository" />
                     </div>
-                    <div class="from-group" ng-show="serviceBranchTag">
+                    <div class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab')">
                         <span>Branch/Tag: </span>
-                        <input id="selected_service_ref" class="form-control input-sm" data-ng-model="selectedServiceRef" ng-keyup="setSelectedServiceRef(selectedServiceRef)" />
+                        <input id="selected_service_ref" class="form-control input-sm" data-ng-model="currentScriptObj.scm_reference" />
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" ng-show="selections.service">
                         <span>Path: </span>
-                        <input id="selected_service_path" class="form-control input-sm" data-ng-model="selectedServicePath"  ng-keyup="setSelectedServicePath(selectedServicePath)" />
+                        <input id="selected_service_path" class="form-control input-sm" data-ng-model="currentScriptObj.storage_path" />
                     </div>
-                    <div align="right">
-                        <a data-ng-disabled="disableRefreshButton" class="btn btn-sm btn-primary" data-ng-click="pullLatestScript()">
+                    <div align="right" ng-show="selections.service">
+                        <button type="button" class="btn btn-small btn-primary"
+                                data-ng-click="pullLatestScript()"
+                                data-ng-disabled="disableServiceLinkRefresh">
                             <i class="fa fa-refresh"></i> Refresh
-                        </a>
+                        </button>
                     </div>
                 </fieldset>
-                <div class="form-inline">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" data-ng-model="currentScriptObj.is_active"/>
-                            &nbsp;
-                            Active
-                        </label>
-                    </div>
-                </div>
-
-                <div data-ng-if="currentScriptObj.name.indexOf('pre_process') >= 0 || currentScriptObj.name.indexOf('post_process') >= 0" class="form-inline">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" data-ng-model="currentScriptObj.allow_event_modification"/>
-                            &nbsp;
-                            <span data-ng-if="currentScriptObj.name.indexOf('pre_process') >= 0">Allow script to modify request payload</span>
-                            <span data-ng-if="currentScriptObj.name.indexOf('post_process') >= 0">Allow script to modify response payload</span>
-                        </label>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

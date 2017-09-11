@@ -32,25 +32,28 @@
                 <div>
                     <span>Service: </span>
                     <select id="selected_service" class="input-sm"
-                            data-ng-model="selectedService"
-                            data-ng-options="item as item.label for item in apiData['service_link'] track by item.id"
-                            data-ng-change="selectServiceLink(selectedService)">
+                            data-ng-model="selections.service"
+                            data-ng-options="item as item.label for item in apiData['service_link'] track by item.id">
+                        <option value="">-- None --</option>
                     </select>
-                    <span class="from-group" ng-show="serviceBranchTag">
+                    <span class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab')">
                         <span>Repository: </span>
-                        <input size="10" id="selected_service_repo" class="form-inline input-sm" data-ng-model="selectedServiceRepo" ng-keyup="setSelectedServiceRepo(selectedServiceRepo)" />
+                        <input size="10" id="selected_service_repo" class="form-inline input-sm" data-ng-model="serviceInfo.record.config.scm_repository" />
                     </span>
-                    <span class="from-group" ng-show="serviceBranchTag">
+                    <span class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab')">
                         <span>Branch/Tag: </span>
-                        <input size="10" id="selected_service_ref" class="form-inline input-sm" data-ng-model="selectedServiceRef" ng-keyup="setSelectedServiceRef(selectedServiceRef)" />
+                        <input size="10" id="selected_service_ref" class="form-inline input-sm" data-ng-model="serviceInfo.record.config.scm_reference" />
                     </span>
-                    <span class="form-group">
+                    <span class="form-group" ng-show="selections.service">
                         <span>Path: </span>
-                        <input id="selected_service_path" class="form-inline input-sm" data-ng-model="selectedServicePath"  ng-keyup="setSelectedServicePath(selectedServicePath)" />
+                        <input id="selected_service_path" class="form-inline input-sm" data-ng-model="serviceInfo.record.config.storage_path" />
                     </span>
-                    <a data-ng-disabled="disableRefreshButton" class="btn btn-sm btn-primary" data-ng-click="pullLatestScript()">
+                    <button type="button" class="btn btn-sm btn-primary"
+                            data-ng-show="selections.service"
+                            data-ng-click="pullLatestScript()"
+                            data-ng-disabled="disableServiceLinkRefresh">
                         <i class="fa fa-refresh"></i> Refresh
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>

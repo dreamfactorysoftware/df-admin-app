@@ -23,7 +23,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                                 throw {
                                     routing: true
-                                }
+                                };
                             }
 
                             // There is a currentUser but they are not an admin
@@ -33,7 +33,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                                 throw {
                                     routing: true
-                                }
+                                };
                             }
 
                             defer.resolve();
@@ -152,7 +152,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                           if (serviceData.config[key] && serviceData.config[key].constructor === Object) {
                             var arr = [];
                             Object.keys(serviceData.config[key]).forEach(function (objKey) {
-                                arr.push({ key: objKey, value: serviceData.config[key][objKey] })
+                                arr.push({ key: objKey, value: serviceData.config[key][objKey] });
                             });
                             serviceData.config[key] = arr;
                           }
@@ -167,7 +167,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         },
                         record: angular.copy(serviceData),
                         recordCopy: angular.copy(serviceData)
-                    }
+                    };
                 };
 
                 scope.service = null;
@@ -225,31 +225,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 };
 
                 scope._prepareServiceData = function () {
+
                     scope._prepareServiceInfoData();
-                    scope._prepareServiceConfigData();
-
-                    switch (scope.service.record.type) {
-
-                        case 'rws':
-                            scope._prepareServiceDefinitionData();
-                            break;
-                        case 'nodejs':
-                        case 'php':
-                        case 'python':
-                        case 'v8js':
-                            scope.service.record.config.storage_service_id = (scope.selectedService)? scope.selectedService.id : null;
-                            scope.service.record.config.storage_path = (scope.selectedServicePath)? scope.selectedServicePath : null;
-                            scope.service.record.config.scm_reference = (scope.selectedServiceRef)? scope.selectedServiceRef : null;
-                            scope.service.record.config.scm_repository = (scope.selectedServiceRepo)? scope.selectedServiceRepo : null;
-                            scope._prepareServiceDefinitionData();
-                            break;
-
-                        default:
-                            delete scope.service.record.service_doc_by_service_id;
-                            delete scope.service.recordCopy.service_doc_by_service_id;
-                            scope.service.record.service_doc_by_service_id = null;
-                            scope.service.recordCopy.service_doc_by_service_id = null;
-                    }
+                    scope._prepareServiceDefinitionData();
                 };
 
                 scope._trimRequestDataObj = function (requestObj) {
@@ -276,7 +254,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     scope._storageType = requestObj.config;
 
                     return requestObj;
-                }
+                };
 
                 scope._resetServiceDetails = function () {
 
@@ -501,8 +479,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                             // console.log('Delete Service Finally')
                         }
-                    )
-
+                    );
                 };
 
                 scope._closeService = function () {
@@ -579,11 +556,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         scope.dfLargeHelp.serviceDef = {
                             title: 'Service Definition Overview',
                             text: 'For the service <b>' + newValue['label'] + '</b> you can specify a definition below. Refer to the <a target="_blank" href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md" title="Link to Swagger">OpenAPI docs</a> for details, or build and export your own from <a target="_blank" href="http://editor.swagger.io/#/" title="Link to Swagger Editor">here</a>.'
-                        },
+                        };
+
                         scope.dfLargeHelp.serviceDefReadOnly = {
                             title: 'Service Definition Overview',
                             text: 'The service definition for <b>' + newValue['label'] + '</b>\'s service type is pre-defined and can not be edited.'
-                        }
+                        };
                     }
                 });
 
@@ -620,9 +598,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         title: 'Service Definition Overview',
                         text: 'The service definition for this service type is pre-defined and can not be edited.'
                     }
-                }
+                };
             }
-        }
+        };
     }])
     .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', '$rootScope', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache, $rootScope) {
 
@@ -657,7 +635,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         __dfUI: {},
                         record: data,
                         recordCopy: angular.copy(data)
-                    }
+                    };
                 };
 
                 scope._sortArray = function(groupsArray, orderArray) {
@@ -739,6 +717,45 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 };
 
                 scope._prepareServiceInfoData = function () {
+
+                    switch (scope.serviceInfo.record.type) {
+
+                        case 'nodejs':
+                        case 'php':
+                        case 'python':
+                        case 'v8js':
+                            // sanitize service link config before saving
+                            // send nulls not empty strings
+                            // if no service selected send null for everything
+
+                            // service to link to
+                            scope.serviceInfo.record.config.storage_service_id = (scope.selections.service ? scope.selections.service.id : null);
+
+                            // repo is allowed for github or gitlab, replace empty string with null
+                            if (scope.selections.service &&
+                                (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab')) {
+                                scope.serviceInfo.record.config.scm_repository = (scope.serviceInfo.record.config.scm_repository ? scope.serviceInfo.record.config.scm_repository : null);
+                            } else {
+                                scope.serviceInfo.record.config.scm_repository = null;
+                            }
+
+                            // ref is allowed for github or gitlab, replace empty string with null
+                            if (scope.selections.service &&
+                                (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab')) {
+                                scope.serviceInfo.record.config.scm_reference = (scope.serviceInfo.record.config.scm_reference ? scope.serviceInfo.record.config.scm_reference : null);
+                            }  else {
+                                scope.serviceInfo.record.config.scm_reference = null;
+                            }
+
+                            // path is allowed for any link service, replace empty string with null
+                            if (scope.selections.service) {
+                                scope.serviceInfo.record.config.storage_path = (scope.serviceInfo.record.config.storage_path ? scope.serviceInfo.record.config.storage_path : null);
+                            }  else {
+                                scope.serviceInfo.record.config.storage_path = null;
+                            }
+                            break;
+                    }
+
                     scope.service.record = dfObjectService.mergeObjects(scope.serviceInfo.record, scope.service.record);
                 };
 
@@ -762,7 +779,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             // nothing to do
                             break;
                         case "azure blob":
-                            delete scope._storageType.PartitionKey
+                            delete scope._storageType.PartitionKey;
                             break;
                         case "rackspace cloudfiles":
                         case "openstack object storage":
@@ -775,7 +792,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 scope._prepareSF = function () {
 
                     return scope._storageType;
-                }
+                };
 
                 scope._prepareNoSQL = function () {
 
@@ -785,7 +802,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         case "azure tables":
                             var temp = angular.copy(scope._storageType);
                             if (temp.hasOwnProperty('private_paths')) {
-                                delete temp.private_paths
+                                delete temp.private_paths;
                             }
                             return temp;
                         case "couchdb":
@@ -1310,7 +1327,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                                 typeObj[String(obj.group)] = [];
                             }
 
-                            typeObj[String(obj.group)].push({name: obj.name, label: obj.label})
+                            typeObj[String(obj.group)].push({name: obj.name, label: obj.label});
 
                             return obj.group;
                         });
@@ -1525,7 +1542,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         __dfUI: {},
                         record: data,
                         recordCopy: angular.copy(data)
-                    }
+                    };
                 };
 
                 scope.allowedConfigFormats = '.json,.js,.php,.py,.python,.yaml,.yml';
@@ -1537,78 +1554,41 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 scope.customConfig = [];
                 scope.servicesReady = false;
 
-                scope.selectedService = null;
-                scope.selectedServicePath = null;
-                scope.selectedServiceRef = null;
-                scope.selectedServiceRepo = null;
-                scope.serviceBranchTag = false;
-                scope.disableRefreshButton = true;
-
-                scope.resetServiceLink = function(){
-                    scope.selectedService = null;
-                    scope.selectedServicePath = null;
-                    scope.selectedServiceRef = null;
-                    scope.selectedServiceRepo = null;
-                    scope.serviceBranchTag = false;
-                    scope.disableRefreshButton = true;
+                scope.disableServiceLinkRefresh = true;
+                scope.selections = {
+                    "service": null
                 };
 
-                scope.selectServiceLink = function(service){
-                    scope.serviceBranchTag = false;
-                    scope.selectedService = null;
-                    if(service) {
-                        if (service.type === 'github' || service.type === 'gitlab') {
-                            scope.serviceBranchTag = true;
+                scope.getRefreshEnable = function() {
+
+                    var type, enable = false;
+
+                    if (scope.selections.service) {
+                        type = scope.selections.service.type;
+                        if (type === 'github' || type === 'gitlab') {
+                            if (scope.serviceInfo.record.config.scm_repository && scope.serviceInfo.record.config.scm_reference && scope.serviceInfo.record.config.storage_path) {
+                                enable = true;
+                            }
+                        } else {
+                            if (scope.serviceInfo.record.config.storage_path) {
+                                enable = true;
+                            }
                         }
-                        scope.selectedService = service;
-                    } else {
-                        scope.resetServiceLink();
-                    }
-                    scope.enableDisableRefresh();
-                };
-
-                scope.setSelectedServicePath = function(v) {
-                    scope.selectedServicePath = v;
-                    scope.enableDisableRefresh();
-                };
-                scope.setSelectedServiceRepo = function(v) {
-                    scope.selectedServiceRepo = v;
-                    scope.enableDisableRefresh();
-                };
-                scope.setSelectedServiceRef = function(v) {
-                    scope.selectedServiceRef = v;
-                    scope.enableDisableRefresh();
-                };
-
-                scope.enableDisableRefresh = function() {
-                    if(scope.selectedService){
-                        var type = scope.selectedService.type;
                     }
 
-                    if((type === 'github' || type === 'gitlab') && scope.selectedService && scope.selectedServiceRepo && scope.selectedServicePath){
-                        scope.disableRefreshButton = false;
-                    } else if (scope.selectedService && scope.selectedServicePath){
-                        scope.disableRefreshButton = false;
-                    } else {
-                        scope.disableRefreshButton = true;
-                    }
+                    return enable;
                 };
 
                 scope.pullLatestScript = function(){
-                    if(scope.disableRefreshButton){
-                        return false;
-                    }
-                    var serviceName = scope.selectedService.name;
-                    var servicePath = scope.selectedServicePath;
-                    var serviceRepo = scope.selectedServiceRepo;
-                    var serviceRef = 'master';
-                    if(scope.selectedServiceRef){
-                        serviceRef = scope.selectedServiceRef;
-                    }
+
+                    var serviceName = scope.selections.service.name;
+                    var serviceRepo = scope.serviceInfo.record.config.scm_repository;
+                    var serviceRef = scope.serviceInfo.record.config.scm_reference;
+                    var servicePath = scope.serviceInfo.record.config.storage_path;
 
                     var url = INSTANCE_URL + '/api/v2/' + serviceName;
 
-                    if(scope.selectedService && (scope.selectedService.type === 'github' || scope.selectedService.type === 'gitlab')){
+                    if(scope.selections.service && (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab')){
                         var params = {
                             path: servicePath,
                             branch: serviceRef,
@@ -1643,7 +1623,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             });
                         }
                     ).finally(function () {
-                    })
+                    });
                 };
 
                 scope.githubModalShowConfig = function () {
@@ -1668,7 +1648,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     }
 
                     var schema = scope.selectedSchema.config_schema.filter(function (item) {
-                        return item.name == key
+                        return item.name == key;
                     })[0] || {};
 
                     if (schema.items instanceof Array) {
@@ -1713,7 +1693,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     var customConfigs = scope.customConfig.filter(function (config) {
                         return config.applicableTo.some(function (item) {
                             return item === selectedType;
-                        })
+                        });
                     });
 
                     customConfigs.forEach(function (item) {
@@ -1721,7 +1701,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                                 return schema.name == item.name;
                             })[0] || {};
 
-                        angular.extend(obj, item)
+                        angular.extend(obj, item);
                     });
 
                     if (scope.selectedSchema.hasOwnProperty('config_schema') && scope.selectedSchema.config_schema !== null) {
@@ -1781,7 +1761,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                                 scope.$apply();
                             };
                             reader.onerror = function (evt) {
-                            }
+                            };
                         }
                     };
 
@@ -1862,11 +1842,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             scope.service.record.config.options = {};
                         }
                     }
-                };
-
-                scope._prepareServiceConfigData = function () {
-
-                    scope.service.record = dfObjectService.mergeObjects(scope.serviceInfo.record, scope.service.record);
                 };
 
                 scope._prepareRWS = function () {
@@ -2236,6 +2211,18 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 });
 
+                scope.getServiceById = function (id) {
+
+                    var matches = scope.apiData['service_link'].filter(function(service){
+                        return service.id === id;
+                    });
+                    if (matches.length === 0) {
+                        return null;
+                    }
+                    return matches[0];
+                };
+
+
                 // Watch the service for changes.
                 var watchService = scope.$watch('service', function (newValue, oldValue) {
 
@@ -2250,20 +2237,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         case 'php':
                         case 'python':
                         case 'v8js':
-                            scope.selectedService = null;
-                            angular.forEach(scope.apiData['service_link'], function(service, key){
-                                if(service && service.id === newValue.record.config.storage_service_id){
-                                    scope.selectedService = service;
-                                }
-                            });
-                            scope.selectedServiceRef = newValue.record.config.scm_reference;
-                            scope.selectedServiceRepo = newValue.record.config.scm_repository;
-                            scope.selectedServicePath = newValue.record.config.storage_path;
-                            scope.serviceBranchTag = false;
-                            if(scope.selectedService && (scope.selectedService.type === 'github' || scope.selectedService.type === 'gitlab')){
-                                scope.serviceBranchTag = true;
-                            }
-                            scope.enableDisableRefresh();
+                            scope.selections.service = scope.getServiceById(scope.serviceInfo.record.config.storage_service_id);
                             break;
                         default:
                             break;
@@ -2286,8 +2260,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     // complicated and verbose. Originally, we didn't want to repeat certain sections of code but...
                     // it may make sense to do so in this case.)
                     scope._renderServiceFields(scope.serviceInfo.record.type);
-
-
                 });
 
                 var watchSelectedSchema = scope.$watch('selectedSchema', function (newValue, oldValue) {
@@ -2383,6 +2355,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     }
                 });
 
+                var watchConfig = scope.$watchCollection('serviceInfo.record.config', function (newValue, oldValue) {
+
+                    scope.disableServiceLinkRefresh = !scope.getRefreshEnable();
+                });
+
+                var watchSelections = scope.$watchCollection('selections', function (newValue, oldValue) {
+
+                    scope.disableServiceLinkRefresh = !scope.getRefreshEnable();
+                });
 
                 scope.$on('$destroy', function (e) {
 
@@ -2390,6 +2371,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     watchEmailProvider();
                     watchSelectedSchema();
                     watchEventList();
+                    watchConfig();
+                    watchSelections();
                 });
 
                 // HELP
@@ -2887,18 +2870,33 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 scope._prepareServiceDefinitionData = function () {
 
-                    var doc;
+                    switch (scope.service.record.type) {
 
-                    var content = scope.currentEditor.session.getValue();
-                    if (content === "") {
-                        // this will delete existing service doc if there is one
-                        doc = null;
-                    } else {
-                        doc = scope.service.record.service_doc_by_service_id;
-                        doc.content = content;
-                        doc.format = (scope.serviceDefinitionFormat === 'json' ? 0 : 1);
+                        case 'rws':
+                        case 'nodejs':
+                        case 'php':
+                        case 'python':
+                        case 'v8js':
+                            var doc;
+
+                            var content = scope.currentEditor.session.getValue();
+                            if (content === "") {
+                                // this will delete existing service doc if there is one
+                                doc = null;
+                            } else {
+                                doc = scope.service.record.service_doc_by_service_id || {};
+                                doc.content = content;
+                                doc.format = (scope.serviceDefinitionFormat === 'json' ? 0 : 1);
+                            }
+                            scope.service.record.service_doc_by_service_id = doc;
+                            break;
+
+                        default:
+                            delete scope.service.record.service_doc_by_service_id;
+                            delete scope.service.recordCopy.service_doc_by_service_id;
+                            scope.service.record.service_doc_by_service_id = null;
+                            scope.service.recordCopy.service_doc_by_service_id = null;
                     }
-                    scope.service.record.service_doc_by_service_id = doc;
                 };
 
                 scope.handleDefinitionFiles = function (files) {
@@ -3252,7 +3250,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
             //    microsoft_sql_server_prefix = "sqlsrv"
             //}else{
 
-            microsoft_sql_server_prefix = "dblib"
+            microsoft_sql_server_prefix = "dblib";
             //}
 
             var values = {
