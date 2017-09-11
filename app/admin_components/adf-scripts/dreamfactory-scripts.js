@@ -253,12 +253,25 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     params: params
                 }).then(
                     function (result) {
-                        $scope.currentScriptObj.content = result.data;
 
-                        return new PNotify({
-                            title: 'Scripts',
-                            type: 'success',
-                            text: 'Successfully pulled the latest script from source.'
+                        $http({
+                            method:'DELETE',
+                            url: INSTANCE_URL + '/api/v2/system/cache/_event/' + $scope.currentScriptObj.name
+                        }).then(
+                            function(rs){
+
+                            },
+                            function(err) {
+                                console.log('Failed to clear even scipt cache.')
+                            }
+                        ).finally(function(){
+                            $scope.currentScriptObj.content = result.data;
+
+                            return new PNotify({
+                                title: 'Scripts',
+                                type: 'success',
+                                text: 'Successfully pulled the latest script from source.'
+                            });
                         });
                     },
 

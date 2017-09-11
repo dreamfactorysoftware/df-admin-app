@@ -1605,13 +1605,26 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         params: params
                     }).then(
                         function (result) {
-                            scope.serviceInfo.record.config['content'] = result.data;
+                            $http({
+                                method:'DELETE',
+                                url: INSTANCE_URL + '/api/v2/system/cache/' + scope.serviceInfo.record.name
+                            }).then(
+                                function(rs){
 
-                            return new PNotify({
-                                title: 'Scripts',
-                                type: 'success',
-                                text: 'Successfully pulled the latest script from source.'
+                                },
+                                function(err){
+                                    console.log('Failed to clear scripting service cache.');
+                                }
+                            ).finally(function(){
+                                scope.serviceInfo.record.config['content'] = result.data;
+
+                                return new PNotify({
+                                    title: 'Scripts',
+                                    type: 'success',
+                                    text: 'Successfully pulled the latest script from source.'
+                                });
                             });
+
                         },
 
                         function (error) {
