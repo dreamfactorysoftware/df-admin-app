@@ -308,18 +308,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         scope.serviceInfo.record.type === 'v8js') {
 
                         var config = scope.serviceInfo.record.config;
-                        if (!config.hasOwnProperty('content') || config.content.length === 0) {
-
-                            var messageOptions = {
-                                module: 'Service Save Error',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: "Content is required and can't be empty"
-                            };
-
-                            dfNotify.error(messageOptions);
-
-                            return;
+                        if (!config.hasOwnProperty('content')) {
+                            config.content = '';
                         }
                     }
 
