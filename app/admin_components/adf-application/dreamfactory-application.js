@@ -59,7 +59,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
 
         function _loadOne(api, forceRefresh) {
 
-            var params;
+            var params, options;
             var debugLevel = 0;
             var deferred = $q.defer();
 
@@ -73,6 +73,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                 if (!params) {
                     params = {};
                 }
+                options = null;
                 // add required api param used by resource to build url
                 // this allows for aliasing so the same api can be called with different query params
                 // for example event = system/event but eventlist = system/event?as_list=true
@@ -85,13 +86,14 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                         params['api'] = 'event';
                         break;
                     case 'service_link':
-                        params['api'] = 'service';
+                        // for this call use /api/v2 not /api/v2/system
+                        options = {'url': INSTANCE_URL + '/api/v2'};
                         break;
                     default:
                         params['api'] = api;
                         break;
                 }
-                dfSystemData.resource().get(params).$promise.then(
+                dfSystemData.resource(options).get(params).$promise.then(
                     function (response) {
                         dfApplicationObj.apis[api] = response;
                         if (debugLevel >= 1) console.log('_loadOne(' + api + '): ok from server', dfApplicationObj.apis[api]);
@@ -243,8 +245,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 
                         related: 'service_doc_by_service_id'
                     },
                     service_link: {
-                        include_count: true,
-                        filter:"type in ('local_file', 'ftp_file', 'sftp_file', 'webdav_file', 's3', 'azure_blob', 'rackspace_cloud_files', 'openstack_object_storage', 'github', 'gitlab')"
+                        group:"source control,file"
                     },
                     email_template: {
                         include_count: true

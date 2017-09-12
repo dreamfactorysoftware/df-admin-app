@@ -94,7 +94,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 function (response) {
                     var newApiData = {};
                     apis.forEach(function(value, index) {
-                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                        if (value === 'service_link') {
+                            newApiData[value] = response[index].services;
+                        } else {
+                            newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                        }
                     });
                     $scope.apiData = newApiData;
                     if (init) {

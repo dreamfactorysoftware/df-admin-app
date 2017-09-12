@@ -172,7 +172,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         dfApplicationData.getApiData(secondaryApis, ($scope.apiData === null)).then(
                             function (response) {
                                 secondaryApis.forEach(function(value, index) {
-                                    newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                                    if (value === 'service_link') {
+                                        newApiData[value] = response[index].services;
+                                    } else {
+                                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                                    }
                                     if (value === 'event') {
                                         // used for highlighting in ui
                                         newApiData['event_lookup'] = $scope.buildEventLookup(newApiData[value]);
