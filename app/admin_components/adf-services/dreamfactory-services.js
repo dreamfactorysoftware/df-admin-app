@@ -150,8 +150,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                     serviceData = serviceData || newService;
 
+                    // Convert object from config types to array. Used with config.options.
+                    // This will be undone by normalizeKeyValuePairs() on Save or Update.
+                    //
+                    // {"username":"bn_df","password":"23e4bedd53"}
+                    //
+                    // becomes
+                    //
+                    // [{"key":"username","value":"bn_df"},{"key":"password","value":"23e4bedd53"}]
+
                     if (serviceData && serviceData.config) {
-                        // Convert object from config types to array
                         Object.keys(serviceData.config).forEach(function(key) {
                           if (serviceData.config[key] && serviceData.config[key].constructor === Object) {
                             var arr = [];
@@ -161,8 +169,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             serviceData.config[key] = arr;
                           }
                         });
-
-
                     }
 
                     return {
@@ -278,6 +284,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 };
 
+
+                // Convert array back to object. Used with config.options.
+                //
+                // [{"key":"username","value":"bn_df"},{"key":"password","value":"23e4bedd53"}]
+                //
+                // becomes
+                //
+                // {"username":"bn_df","password":"23e4bedd53"}
 
                 var normalizeKeyValuePairs = function () {
 
