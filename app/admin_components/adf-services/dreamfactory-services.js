@@ -1616,6 +1616,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     var serviceRepo = scope.serviceInfo.record.config.scm_repository;
                     var serviceRef = scope.serviceInfo.record.config.scm_reference;
                     var servicePath = scope.serviceInfo.record.config.storage_path;
+                    var pathSeg = servicePath.split('.');
+                    var fileExt = pathSeg.pop();
+                    fileExt = (fileExt)? fileExt.toLowerCase() : false;
+
+                    if(!fileExt || (fileExt !== 'js' && fileExt !== 'php' && fileExt !== 'py')){
+                        return new PNotify({
+                            title: 'Scripts',
+                            type: 'error',
+                            text: 'Invalid script file provided. Only supported files are .js, .php, and .py'
+                        });
+                    }
 
                     var url = INSTANCE_URL + '/api/v2/' + serviceName;
 
