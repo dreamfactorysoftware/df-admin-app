@@ -1567,6 +1567,22 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     "service": null
                 };
 
+                scope.handleFiles = function (element) {
+
+                    var file = element.files && element.files[0];
+                    if (file) {
+                        var reader = new FileReader();
+                        reader.readAsText(file, "UTF-8");
+                        reader.onload = function (evt) {
+                            scope.$apply(function() {
+                                scope.serviceInfo.record.config["content"] = evt.target.result;
+                            });
+                        };
+                        reader.onerror = function (evt) {
+                        };
+                    }
+                };
+
                 scope.getRefreshEnable = function() {
 
                     var type, enable = false;
@@ -1770,21 +1786,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     scope._resetServiceDef();
 
                     scope.hcv.serviceTypes = scope.addMissingPaidServices(scope.apiData.service_type);
-
-                    scope.handleFiles = function (files) {
-                        if (!files) return;
-                        var file = files && files[0];
-                        if (file) {
-                            var reader = new FileReader();
-                            reader.readAsText(file, "UTF-8");
-                            reader.onload = function (evt) {
-                                scope.serviceInfo.record.config["content"] = evt.target.result;
-                                scope.$apply();
-                            };
-                            reader.onerror = function (evt) {
-                            };
-                        }
-                    };
 
                     if (scope.newService) {
                         // remove any non-creatable types like system or user

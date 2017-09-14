@@ -105,21 +105,18 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope._loadSampleScript(type);
             };
 
-            $scope.handleFiles = function (files) {
+            $scope.handleFiles = function (element) {
 
-                if (!files) {
-                    return;
-                }
-                var file = files && files[0];
+                var file = element.files && element.files[0];
                 if (file) {
                     var reader = new FileReader();
                     reader.readAsText(file, "UTF-8");
                     reader.onload = function (evt) {
-                        $scope.currentScriptObj.content = evt.target.result;
-                        $scope.$apply();
+                        $scope.$apply(function() {
+                            $scope.currentScriptObj.content = evt.target.result;
+                        });
                     };
                     reader.onerror = function (evt) {
-                        console.log('error');
                     };
                 }
             };
