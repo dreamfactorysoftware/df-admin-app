@@ -1603,7 +1603,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     return enable;
                 };
 
-                scope.pullLatestScript = function(){
+                scope.resetServiceLink = function () {
+
+                    scope.serviceInfo.record.config.scm_repository = null;
+                    scope.serviceInfo.record.config.scm_reference = null;
+                    scope.serviceInfo.record.config.storage_path = null;
+                };
+
+                scope.pullLatestScript = function () {
 
                     var serviceName = scope.selections.service.name;
                     var serviceRepo = scope.serviceInfo.record.config.scm_repository;

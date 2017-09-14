@@ -33,7 +33,8 @@
                     <span>Service: </span>
                     <select id="selected_service" class="input-sm"
                             data-ng-model="selections.service"
-                            data-ng-options="item as item.label for item in apiData['service_link'] track by item.id">
+                            data-ng-options="item as item.label for item in apiData['service_link'] track by item.id"
+                            data-ng-change="resetServiceLink()">
                         <option value="">-- None --</option>
                     </select>
                     <span class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab')">

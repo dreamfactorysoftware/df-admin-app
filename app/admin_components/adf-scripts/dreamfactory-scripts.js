@@ -228,7 +228,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 return enable;
             };
 
-            $scope.pullLatestScript = function(){
+            $scope.resetServiceLink = function () {
+
+                $scope.currentScriptObj.scm_repository = null;
+                $scope.currentScriptObj.scm_reference = null;
+                $scope.currentScriptObj.storage_path = null;
+            };
+
+            $scope.pullLatestScript = function () {
 
                 var serviceName = $scope.selections.service.name;
                 var serviceRepo = $scope.currentScriptObj.scm_repository;
