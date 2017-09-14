@@ -192,7 +192,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 // PUBLIC API
                 scope.saveService = function () {
-
+                    var fileTypeCheck = scope.checkScriptFileType();
+                    if( fileTypeCheck !== 1){
+                        return fileTypeCheck;
+                    }
                     if (scope.newService) {
 
                         scope._saveService();
@@ -1610,22 +1613,51 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     scope.serviceInfo.record.config.storage_path = null;
                 };
 
+                scope.checkScriptFileType = function() {
+                    var scriptType = scope.serviceInfo.record.type;
+                    if(scriptType === 'nodejs' || scriptType === 'v8js' || scriptType === 'php' || scriptType === 'python') {
+                        var servicePath = scope.serviceInfo.record.config.storage_path;
+                        var error = '';
+                        var pathSeg = servicePath.split('.');
+                        var fileExt = pathSeg.pop();
+                        fileExt = (fileExt) ? fileExt.toLowerCase() : false;
+
+
+                        if (!fileExt || (fileExt !== 'js' && fileExt !== 'php' && fileExt !== 'py' && fileExt !== 'txt')) {
+                            error = 'Invalid script file provided for service linking. Only supported files are .js, .php, .py, and .txt.';
+                        } else if (fileExt === 'txt') {
+                            error = '';
+                        } else if ((scriptType === 'nodejs' || scriptType === 'v8js') && fileExt !== 'js') {
+                            error = 'Invalid script selected for ' + scriptType + ' script type. Please select a file with .js extension.';
+                        } else if (fileExt !== 'php' && scriptType === 'php') {
+                            error = 'Invalid script selected for ' + scriptType + ' script type. Please select a file with .php extension.';
+                        } else if (fileExt !== 'py' && scriptType === 'python') {
+                            error = 'Invalid script selected for ' + scriptType + ' script type. Please select a file with .py extension.';
+                        }
+
+                        if (error !== '') {
+                            return new PNotify({
+                                title: 'Scripts',
+                                type: 'error',
+                                text: error
+                            });
+                        } else {
+                            return 1;
+                        }
+                    } else {
+                        return 1;
+                    }
+                };
+
                 scope.pullLatestScript = function () {
 
                     var serviceName = scope.selections.service.name;
                     var serviceRepo = scope.serviceInfo.record.config.scm_repository;
                     var serviceRef = scope.serviceInfo.record.config.scm_reference;
                     var servicePath = scope.serviceInfo.record.config.storage_path;
-                    var pathSeg = servicePath.split('.');
-                    var fileExt = pathSeg.pop();
-                    fileExt = (fileExt)? fileExt.toLowerCase() : false;
-
-                    if(!fileExt || (fileExt !== 'js' && fileExt !== 'php' && fileExt !== 'py')){
-                        return new PNotify({
-                            title: 'Scripts',
-                            type: 'error',
-                            text: 'Invalid script file provided. Only supported files are .js, .php, and .py'
-                        });
+                    var fileTypeCheck = scope.checkScriptFileType();
+                    if( fileTypeCheck !== 1){
+                        return fileTypeCheck;
                     }
 
                     var url = INSTANCE_URL + '/api/v2/' + serviceName;
