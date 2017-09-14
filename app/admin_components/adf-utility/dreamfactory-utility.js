@@ -25,7 +25,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                   var url = angular.copy(scope.githubModal.url);
 
-                  if (url === null) {
+                  if (!url ) {
                       return;
                   }
 
