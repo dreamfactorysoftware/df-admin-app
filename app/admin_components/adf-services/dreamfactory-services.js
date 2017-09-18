@@ -192,10 +192,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 // PUBLIC API
                 scope.saveService = function () {
-                    var fileTypeCheck = scope.checkScriptFileType();
-                    if( fileTypeCheck !== 1){
-                        return fileTypeCheck;
-                    }
+
                     if (scope.newService) {
 
                         scope._saveService();
@@ -1614,39 +1611,29 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 };
 
                 scope.checkScriptFileType = function() {
+
+                    var error = '';
                     var scriptType = scope.serviceInfo.record.type;
-                    if(scriptType === 'nodejs' || scriptType === 'v8js' || scriptType === 'php' || scriptType === 'python') {
-                        var servicePath = scope.serviceInfo.record.config.storage_path;
-                        var error = '';
-                        var pathSeg = servicePath.split('.');
-                        var fileExt = pathSeg.pop();
-                        fileExt = (fileExt) ? fileExt.toLowerCase() : false;
-
-
-                        if (!fileExt || (fileExt !== 'js' && fileExt !== 'php' && fileExt !== 'py' && fileExt !== 'txt')) {
-                            error = 'Invalid script file provided for service linking. Only supported files are .js, .php, .py, and .txt.';
-                        } else if (fileExt === 'txt') {
-                            error = '';
-                        } else if ((scriptType === 'nodejs' || scriptType === 'v8js') && fileExt !== 'js') {
-                            error = 'Invalid script selected for ' + scriptType + ' script type. Please select a file with .js extension.';
-                        } else if (fileExt !== 'php' && scriptType === 'php') {
-                            error = 'Invalid script selected for ' + scriptType + ' script type. Please select a file with .php extension.';
-                        } else if (fileExt !== 'py' && scriptType === 'python') {
-                            error = 'Invalid script selected for ' + scriptType + ' script type. Please select a file with .py extension.';
+                    if (scriptType === 'nodejs' || scriptType === 'v8js' || scriptType === 'php' || scriptType === 'python') {
+                        if (scope.selections.service && scope.selections.service.id) {
+                            // convert null to empty string before looking for file extension
+                            var servicePath = scope.serviceInfo.record.config.storage_path ? scope.serviceInfo.record.config.storage_path : "";
+                            var pathSeg = servicePath.split('.');
+                            var fileExt = pathSeg.pop().toLowerCase();
+                            if (!fileExt) {
+                                error = 'No file path provided for service linking.';
+                            } else if (fileExt !== 'js' && fileExt !== 'php' && fileExt !== 'py' && fileExt !== 'txt') {
+                                error = 'Invalid file path provided for service linking. Only supported file types are .js, .php, .py, and .txt.';
+                            } else if ((scriptType === 'nodejs' || scriptType === 'v8js') && fileExt !== 'js') {
+                                error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .js extension.';
+                            } else if (fileExt !== 'php' && scriptType === 'php') {
+                                error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .php extension.';
+                            } else if (fileExt !== 'py' && scriptType === 'python') {
+                                error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .py extension.';
+                            }
                         }
-
-                        if (error !== '') {
-                            return new PNotify({
-                                title: 'Scripts',
-                                type: 'error',
-                                text: error
-                            });
-                        } else {
-                            return 1;
-                        }
-                    } else {
-                        return 1;
                     }
+                    return error;
                 };
 
                 scope.pullLatestScript = function () {
@@ -1655,9 +1642,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     var serviceRepo = scope.serviceInfo.record.config.scm_repository;
                     var serviceRef = scope.serviceInfo.record.config.scm_reference;
                     var servicePath = scope.serviceInfo.record.config.storage_path;
-                    var fileTypeCheck = scope.checkScriptFileType();
-                    if( fileTypeCheck !== 1){
-                        return fileTypeCheck;
+                    var fileTypeError = scope.checkScriptFileType();
+                    if (fileTypeError) {
+                        var messageOptions = {
+                            module: 'Services',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: fileTypeError
+                        };
+                        dfNotify.error(messageOptions);
+                        return;
                     }
 
                     var url = INSTANCE_URL + '/api/v2/' + serviceName;
@@ -1689,25 +1683,30 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                                 function(err){
                                     console.log('Failed to clear scripting service cache.');
                                 }
-                            ).finally(function(){
+                            ).finally(function() {
+
                                 scope.serviceInfo.record.config['content'] = result.data;
 
-                                return new PNotify({
-                                    title: 'Scripts',
+                                var messageOptions = {
+                                    module: 'Services',
+                                    provider: 'dreamfactory',
                                     type: 'success',
-                                    text: 'Successfully pulled the latest script from source.'
-                                });
+                                    message: 'Successfully pulled the latest script from source.'
+                                };
+                                dfNotify.error(messageOptions);
                             });
 
                         },
 
                         function (error) {
 
-                            return new PNotify({
-                                title: 'Scripts',
+                            var messageOptions = {
+                                module: 'Services',
+                                provider: 'dreamfactory',
                                 type: 'error',
-                                text: 'There was an error pulling the latest script from your service. Please make sure your service, path and permissions are correct and try again.'
-                            });
+                                message: 'There was an error pulling the latest script from your service. Please make sure your service, path and permissions are correct and try again.'
+                            };
+                            dfNotify.error(messageOptions);
                         }
                     ).finally(function () {
                     });
