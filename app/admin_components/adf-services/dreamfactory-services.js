@@ -1622,14 +1622,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             var fileExt = pathSeg.pop().toLowerCase();
                             if (!fileExt) {
                                 error = 'No file path provided for service linking.';
-                            } else if (fileExt !== 'js' && fileExt !== 'php' && fileExt !== 'py' && fileExt !== 'txt') {
-                                error = 'Invalid file path provided for service linking. Only supported file types are .js, .php, .py, and .txt.';
-                            } else if ((scriptType === 'nodejs' || scriptType === 'v8js') && fileExt !== 'js') {
-                                error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .js extension.';
-                            } else if (fileExt !== 'php' && scriptType === 'php') {
-                                error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .php extension.';
-                            } else if (fileExt !== 'py' && scriptType === 'python') {
-                                error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .py extension.';
+                            } else if (fileExt !== 'txt') {
+                                if (fileExt !== 'js' && fileExt !== 'php' && fileExt !== 'py') {
+                                    error = 'Invalid file path provided for service linking. Only supported file types are .js, .php, .py, and .txt.';
+                                } else if ((scriptType === 'nodejs' || scriptType === 'v8js') && fileExt !== 'js') {
+                                    error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .js extension.';
+                                } else if (fileExt !== 'php' && scriptType === 'php') {
+                                    error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .php extension.';
+                                } else if (fileExt !== 'py' && scriptType === 'python') {
+                                    error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .py extension.';
+                                }
                             }
                         }
                     }
