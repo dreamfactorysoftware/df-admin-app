@@ -776,26 +776,9 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 // PRIVATE API
                 scope.allowFilters = function () {
 
-                    switch (scope.serviceAccess.record.service.type) {
-
-                        case "sqlite":
-                        case "mysql":
-                        case "pgsql":
-                        case "sqlsrv":
-                        case "sqlanywhere":
-                        case "oracle":
-                        case "ibmdb2":
-                        case "mongo_db":
-                        case "aws_dynamodb":
-                        case "aws_simpledb":
-                        case "azure_table":
-                        case "couch_db":
-                        case "salesforce_db":
-                            scope.serviceAccess.__dfUI.allowFilters = true;
-                            break;
-                        default:
-                            scope.serviceAccess.__dfUI.allowFilters = false;
-                    }
+                    var type = scope.serviceAccess.record.service.type;
+                    var group = serviceTypeToGroup(type, scope.apiData['service_type']);
+                    scope.serviceAccess.__dfUI.allowFilters = (group === 'Database' && type !== 'couchdb');
                 };
 
 

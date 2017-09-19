@@ -38,8 +38,12 @@
         <div data-ng-show="viewMode === 'json'" class="row">
 
             <div class="col-xs-12">
-                <df-ace-editor data-direct-data="table.record" data-is-editable="isEditable"
-                               data-is-clean="isEditorClean" data-current-editor="editor"></df-ace-editor>
+                <df-ace-editor data-input-type="'object'"
+                               data-input-content="{content: table.record}"
+                               data-input-format="'json'"
+                               data-is-editable="isEditable"
+                               data-current-editor="editor">
+                </df-ace-editor>
             </div>
 
         </div>

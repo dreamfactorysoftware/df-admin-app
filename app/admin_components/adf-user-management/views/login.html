@@ -37,7 +37,7 @@
                                 <div class="input-group" data-ng-class="emailError ? 'has-error' : ''">
                                     <span class="input-group-addon"><i class="fa fa-fw {{userField.icon}}"></i></span>
                                     <input type="{{userField.type}}" id="df-login-email" name="df-login-email" placeholder="{{userField.text}}"
-                                           data-ng-model="creds.email" class="form-control" required>
+                                           data-ng-model="creds.email" class="form-control" ng-required="false">
                                 </div>
                             </div>
                             <div data-ng-if="!hidePasswordField">
@@ -45,7 +45,7 @@
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
                                         <input type="password" id="df-login-password" name="df-login-password" placeholder="Enter Password"
-                                               data-ng-model="creds.password" class="form-control" required>
+                                               data-ng-model="creds.password" class="form-control" ng-required="false">
                                     </div>
                                 </div>
                                 <div class="form-group" data-ng-if="allowForeverSessions">

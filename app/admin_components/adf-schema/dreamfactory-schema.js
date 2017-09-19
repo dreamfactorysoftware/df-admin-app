@@ -2233,6 +2233,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.typeOptions = [
                     {name: "Belongs To", value: "belongs_to"},
+                    {name: "Has One", value: "has_one"},
                     {name: "Has Many", value: "has_many"},
                     {name: "Many To Many", value: "many_many"}
                 ];
@@ -2732,60 +2733,25 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 };
 
                 scope.uploadEditor = null;
-                scope.uploadIsEditorClean = true;
                 scope.uploadIsEditable = true;
-
-                var listener = function () {
-
-                    $timeout(function () {
-
-                        if (!scope.uploadEditor.session.$annotations) return;
-                        var canDo = scope.uploadEditor.session.$annotations.some(function (item) {
-                            if (item.type === 'error') return true;
-                            else return false;
-                        });
-
-                        if (canDo) {
-                            $('.btn-upload-schema').addClass('disabled');
-                        } else {
-                            $('.btn-upload-schema').removeClass('disabled');
-                        }
-                    }, 500);
-                };
-
-                var editorWatch = scope.$watch('uploadEditor', function (newValue) {
-
-                    if (!newValue) {
-                        return;
-                    }
-
-                    scope.$watch(function () {
-                        return scope.uploadEditor.session.$annotations;
-                    }, function () {
-                        listener();
-                    });
-
-                    scope.uploadEditor.on('input', function (value) {
-
-                        if (scope.uploadEditor && !scope.uploadEditor.getValue()) {
-
-                            $('.btn-upload-schema').addClass('disabled');
-                            return;
-                        }
-                        listener();
-                    });
-                });
-
-                // MESSAGES
-                scope.$on('$destroy', function (e) {
-
-                    editorWatch();
-                });
-
 
                 scope.uploadSchema = function () {
 
-                    var editorData = angular.fromJson(scope.uploadEditor.getValue());
+                    var messageOptions;
+
+                    try {
+                        var editorData = angular.fromJson(scope.uploadEditor.getValue());
+                    } catch(e) {
+                        messageOptions = {
+                            module: 'Validation Error',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: 'The schema JSON is not valid.'
+                        };
+
+                        dfNotify.error(messageOptions);
+                        return;
+                    }
 
                     var tableList = StateService.get('dfservice').components;
 
@@ -2795,12 +2761,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     if (index !== -1) {
 
-                        var messageOptions = {
-
+                        messageOptions = {
                             module: 'Validation Error',
                             type: 'error',
                             provider: 'dreamfactory',
-                            message: 'The name already exists'
+                            message: 'The table name already exists.'
                         };
 
                         dfNotify.error(messageOptions);
@@ -2848,13 +2813,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 });
                             });
 
-
-                            scope.uploadEditor.session.getUndoManager().reset();
-                            scope.uploadEditor.session.getUndoManager().markClean();
-                            scope.uploadIsEditorClean = true;
-
                             var curService = StateService.get('dfservice');
-
 
                             var component = {
                                 __dfUI: {
@@ -2907,13 +2866,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 };
 
                 scope._closeUploadSchema = function () {
-
-                    if (!scope.uploadIsEditorClean) {
-                        if (!dfNotify.confirm('You have unsaved changes.  Continue without saving?')) {
-
-                            return;
-                        }
-                    }
 
                     scope.$emit('table', {notify: 'close'});
                 }

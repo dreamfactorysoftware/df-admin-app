@@ -31,7 +31,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" ng-click="githubModalCancel()">Cancel</button>
-              <button type="submit" class="btn btn-primary" ng-click="githubUpload()">Upload</button>
+              <button type="submit" class="btn btn-primary" ng-click="githubUpload()" ng-disabled="!githubModal.url">Upload</button>
             </div>
         </form>
     </div>
