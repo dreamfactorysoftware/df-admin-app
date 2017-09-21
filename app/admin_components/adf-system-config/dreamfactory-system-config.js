@@ -453,24 +453,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         }
                     };
 
-
-                    // PRIVATE API
-                    scope._saveCorsEntryToServer = function (requestDataObj) {
-
-                        return dfApplicationData.saveApiData('cors', requestDataObj).$promise;
-                    };
-
-                    scope._updateCorsEntryToServer = function (requestDataObj) {
-
-                        return dfApplicationData.updateApiData('cors', requestDataObj).$promise;
-                    };
-
-                    scope._deleteCorsEntryFromServer = function (requestDataObj) {
-
-                        return dfApplicationData.deleteApiData('cors', requestDataObj).$promise;
-                    };
-
-
                     // PRIVATE API
                     scope._addCorsEntry = function () {
                         scope.corsEntries.push(new CorsEntry());
@@ -516,7 +498,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
 
-                        scope._deleteCorsEntryFromServer(requestDataObj).then(
+                        dfApplicationData.deleteApiData('cors', requestDataObj).$promise.then(
+
                             function (result) {
 
                                 var messageOptions = {
@@ -556,7 +539,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             data: template.record
                         };
 
-                        scope._saveCorsEntryToServer(requestDataObj).then(
+                        dfApplicationData.saveApiData('cors', requestDataObj).$promise.then(
+
                             function (result) {
 
 
@@ -617,7 +601,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
 
-                        scope._updateCorsEntryToServer(requestDataObj).then(
+                        dfApplicationData.updateApiData('cors', requestDataObj).$promise.then(
+
                             function (result) {
 
                                 var messageOptions = {
@@ -821,23 +806,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
 
                     // PRIVATE API
-                    scope._saveEmailTemplateToServer = function (requestDataObj) {
-
-                        return dfApplicationData.saveApiData('email_template', requestDataObj).$promise;
-                    };
-
-                    scope._updateEmailTemplateToServer = function (requestDataObj) {
-
-                        return dfApplicationData.updateApiData('email_template', requestDataObj).$promise;
-                    };
-
-                    scope._deleteEmailTemplateFromServer = function (requestDataObj) {
-
-                        return dfApplicationData.deleteApiData('email_template', requestDataObj).$promise;
-                    };
-
-
-                    // PRIVATE API
                     scope._addEmailTemplate = function () {
 
                         scope.emailTemplates.push(new EmailTemplate());
@@ -885,7 +853,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
 
-                        scope._deleteEmailTemplateFromServer(requestDataObj).then(
+                        dfApplicationData.deleteApiData('email_template', requestDataObj).$promis.then(
+
                             function (result) {
 
                                 var messageOptions = {
@@ -924,7 +893,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             data: template.record
                         };
 
-                        scope._saveEmailTemplateToServer(requestDataObj).then(
+                        dfApplicationData.saveApiData('email_template', requestDataObj).$promise.then(
+
                             function (result) {
 
 
@@ -984,7 +954,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
 
-                        scope._updateEmailTemplateToServer(requestDataObj).then(
+                        dfApplicationData.updateApiData('email_template', requestDataObj).$promise.then(
+
                             function (result) {
 
                                 var messageOptions = {
@@ -1165,24 +1136,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         }
                     };
 
-
-                    // PRIVATE API
-                    scope._saveLookupToServer = function (requestDataObj) {
-
-                        return dfApplicationData.saveApiData('lookup', requestDataObj).$promise;
-                    };
-
-                    scope._updateLookupToServer = function (requestDataObj) {
-
-                        return dfApplicationData.updateApiData('lookup', requestDataObj).$promise;
-                    };
-
-                    scope._deleteLookupFromServer = function (requestDataObj) {
-
-                        return dfApplicationData.deleteApiData('lookup', requestDataObj).$promise;
-                    };
-
-
                     // PRIVATE API
                     scope._addLookup = function () {
 
@@ -1231,7 +1184,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
 
-                        scope._deleteLookupFromServer(requestDataObj).then(
+                        dfApplicationData.deleteApiData('lookup', requestDataObj).$promise.then(
+
                             function (result) {
 
                                 var messageOptions = {
@@ -1271,7 +1225,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             data: lookup.record
                         };
 
-                        scope._saveLookupToServer(requestDataObj).then(
+                        dfApplicationData.saveApiData('lookup', requestDataObj).$promise.then(
+
                             function (result) {
 
 
@@ -1332,7 +1287,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
 
-                        scope._updateLookupToServer(requestDataObj).then(
+                        dfApplicationData.updateApiData('lookup', requestDataObj).$promise.then(
+
                             function (result) {
 
                                 var messageOptions = {

@@ -3,7 +3,6 @@
     <!-- Form Title -->
     <df-details-header data-new="newApp" data-api-name="'Application'" data-name="app.record.name"></df-details-header>
 
-
     <!-- Create Application Form -->
     <form name="create-application" data-ng-submit="saveApp()">
         <div>
@@ -122,12 +121,9 @@
             <div class="col-xs-12">
 
                 <div class="form-group">
-                    <div data-ng-if="newApp">
+                    <div>
                         <input id="apps_details_save" class="btn btn-default btn-primary" type="submit" value="Save" />
-                    </div>
-                    <div data-ng-if="!newApp">
-                        <input id="apps_details_save" class="btn btn-default btn-primary" type="submit" value="Save" />
-                        <button id="apps_details_cancel" type="button" class="btn btn-default" data-ng-click="closeApp()">Cancel</button>
+                        <button id="apps_details_cancel" type="button" class="btn btn-default" data-ng-click="cancelEditor()">Cancel</button>
                     </div>
                 </div>
 

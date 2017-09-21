@@ -4,8 +4,8 @@
     </div>
     <div class="col-md-10 df-section" data-ng-class="activeView.path === 'manage-apps' ? 'df-section-3-round' : 'df-section-all-round'" df-fs-height >
         <df-app-loading></df-app-loading>
-        <df-manage-apps data-ng-if="activeView.path === 'manage-apps'"></df-manage-apps>
-        <df-app-details data-ng-if="activeView.path === 'create-app'" data-new-app="true" data-api-data="apiData"></df-app-details>
-        <df-import-app data-ng-if="activeView.path === 'import-app'" data-api-data="apiData"></df-import-app>
+        <df-manage-apps data-ng-if="!dataLoading && activeView.path === 'manage-apps'"></df-manage-apps>
+        <df-app-details data-ng-if="!dataLoading && activeView.path === 'create-app'" data-new-app="true" data-api-data="apiData"></df-app-details>
+        <df-import-app data-ng-if="!dataLoading && activeView.path === 'import-app'" data-api-data="apiData"></df-import-app>
     </div>
 </div>

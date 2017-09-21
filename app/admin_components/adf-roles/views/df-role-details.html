@@ -54,12 +54,9 @@
 
 
         <div class="form-group">
-            <div data-ng-if="newRole">
+            <div>
                 <input id="roles_details_save" class="btn btn-default btn-primary" type="submit" value="Save" />
-            </div>
-            <div data-ng-if="!newRole">
-                <input id="roles_details_save" class="btn btn-default btn-primary" type="submit" value="Save" />
-                <button id="roles_details_cancel" type="button" class="btn btn-default" data-ng-click="closeRole()">Cancel</button>
+                <button id="roles_details_cancel" type="button" class="btn btn-default" data-ng-click="cancelEditor()">Cancel</button>
             </div>
         </div>
     </form>

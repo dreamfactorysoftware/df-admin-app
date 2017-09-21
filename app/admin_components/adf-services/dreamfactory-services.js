@@ -44,14 +44,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
         }])
     .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
-
     }])
 
     .controller('ServicesCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', function ($rootScope, $scope, dfApplicationData, dfNotify) {
 
         $scope.$parent.title = 'Services';
-
-        $rootScope.isRouteLoading = true;
 
         // Set module links
         $scope.links = [
@@ -87,6 +84,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
         $scope.loadTabData = function(init) {
 
+            $scope.dataLoading = true;
+
             // eventlist is loaded only as needed to improve user experience
             var apis = ['service', 'service_link', 'service_type', 'environment'];
 
@@ -114,7 +113,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     };
                     dfNotify.error(messageOptions);
                 }
-            );
+            ).finally(function () {
+                $scope.dataLoading = false;
+            });
         };
 
         $scope.loadTabData(true);
@@ -208,9 +209,21 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     scope._deleteService();
                 };
 
-                scope.closeService = function () {
+                scope.cancelEditor = function () {
 
-                    scope._closeService();
+                    // merge data from UI into current edit record
+                    scope._prepareServiceData();
+
+                    // then compare to original edit record
+                    if (!dfObjectService.compareObjectsAsJson(scope.service.record, scope.service.recordCopy)) {
+
+                        if (!dfNotify.confirmNoSave()) {
+
+                            return false;
+                        }
+                    }
+
+                    scope.closeEditor();
                 };
 
                 scope.testSetting = function () {
@@ -219,20 +232,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
 
                 // PRIVATE API
-                scope._saveServiceToServer = function (requestDataObj) {
-
-                    return dfApplicationData.saveApiData('service', requestDataObj).$promise;
-                };
-
-                scope._updateServiceToServer = function (requestDataObj) {
-
-                    return dfApplicationData.updateApiData('service', requestDataObj).$promise;
-                };
-
-                scope._deleteServiceFromServer = function (requestDataObj) {
-
-                    return dfApplicationData.deleteApiData('service', requestDataObj).$promise;
-                };
 
                 scope._prepareServiceData = function () {
 
@@ -248,40 +247,18 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     return requestObj;
                 };
 
-                scope._restoreRequestDataObj = function (requestObj) {
-                    if (requestObj.resource) {
-                        requestObj = requestObj.resource;
-                    }
+                scope.closeEditor = function () {
 
-                    if (!requestObj.hasOwnProperty.call(config, 'options'))
-                        return requestObj;
+                    // same object as currentEditService used in ng-show
+                    scope.serviceData = null;
 
-                    if (requestObj.config.options && requestObj.config.options.hasOwnProperty('ssl'))
-                        requestObj.config.options_ctrl = true;
-                    else
-                        requestObj.config.options_ctrl = false;
-
-                    scope._storageType = requestObj.config;
-
-                    return requestObj;
-                };
-
-                scope._resetServiceDetails = function () {
-
-
-                    if (scope.newService) {
-
-                        scope.service = new Service();
-                    }
-                    else {
-
-                        scope.serviceData = null;
-                    }
-
+                    scope.service = new Service();
 
                     // reset tabs
                     angular.element('#info-tab').trigger('click');
 
+                    // force to manage view
+                    scope.$emit('sidebar-nav:view:reset');
                 };
 
 
@@ -331,6 +308,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         }
                     }
 
+                    // merge data from UI into current edit record
                     scope._prepareServiceData();
 
                     var data = normalizeKeyValuePairs();
@@ -345,7 +323,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                     requestDataObj = scope._trimRequestDataObj(requestDataObj);
 
-                    scope._saveServiceToServer(requestDataObj).then(
+                    dfApplicationData.saveApiData('service', requestDataObj).$promise.then(
+
                         function (result) {
 
                             var messageOptions = {
@@ -356,14 +335,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                             };
 
-                            scope.service = new Service(result);
                             dfNotify.success(messageOptions);
 
-
-                            // clean form
-                            scope._resetServiceDetails();
-
-                            scope.$emit('sidebar-nav:view:reset');
+                            scope.closeEditor();
                         },
 
                         function (reject) {
@@ -377,18 +351,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             };
 
                             dfNotify.error(messageOptions);
-
                         }
                     ).finally(
                         function () {
 
-                            // console.log('Save Services finally')
                         }
                     );
                 };
 
                 scope._updateService = function () {
 
+                    // merge data from UI into current edit record
                     scope._prepareServiceData();
 
                     var data = normalizeKeyValuePairs();
@@ -403,23 +376,20 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                     requestDataObj = scope._trimRequestDataObj(requestDataObj);
 
-                    scope._updateServiceToServer(requestDataObj).then(
-                        function (result) {
+                    dfApplicationData.updateApiData('service', requestDataObj).$promise.then(
 
+                        function (result) {
 
                             var messageOptions = {
                                 module: 'Services',
                                 type: 'success',
                                 provider: 'dreamfactory',
                                 message: 'Service updated successfully'
-
                             };
 
-                            result = scope._restoreRequestDataObj(result);
-
                             dfNotify.success(messageOptions);
-                            scope.service = new Service(result);
 
+                            scope.closeEditor();
                         },
 
                         function (reject) {
@@ -433,16 +403,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             };
 
                             dfNotify.error(messageOptions);
-
                         }
                     ).finally(
                         function () {
 
-                            // console.log('Update Service finally')
                         }
                     );
-
-                    scope._resetServiceDetails();
                 };
 
                 scope._deleteService = function () {
@@ -452,8 +418,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         data: scope.service.record
                     };
 
+                    dfApplicationData.deleteApiData('service', requestDataObj).$promise.then(
 
-                    scope._deleteServiceFromServer(requestDataObj).then(
                         function (result) {
 
                             // notify success
@@ -467,7 +433,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             dfNotify.success(messageOptions);
 
                             scope.service = null;
-
                         },
 
                         function (reject) {
@@ -477,7 +442,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 message: reject
-
                             };
 
                             dfNotify.error(messageOptions);
@@ -485,24 +449,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     ).finally(
                         function () {
 
-                            // console.log('Delete Service Finally')
                         }
                     );
-                };
-
-                scope._closeService = function () {
-
-                    scope._prepareServiceData();
-
-                    if (!dfObjectService.compareObjectsAsJson(scope.service.record, scope.service.recordCopy)) {
-
-                        if (!dfNotify.confirmNoSave()) {
-
-                            return false;
-                        }
-                    }
-
-                    scope._resetServiceDetails();
                 };
 
                 scope._testSetting = function () {
@@ -541,14 +489,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
 
                 // WATCHERS
+
                 var watchData = scope.$watch('serviceData', function (newValue, oldValue) {
 
                     // No data.  Return
-                    if (!newValue) return false;
+                    if (!newValue) {
+                        return false;
+                    }
 
                     // We're creating a service.  The default is a Remote Web Service
                     // The Service obj is already set to create one of these so Return
-                    if (scope.newService) return false;
+                    if (scope.newService) {
+                        return false;
+                    }
 
                     // We have passed in data from an existing service.  Let's create
                     // a new Service obj from that data.
@@ -575,18 +528,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 // MESSAGES
                 scope.$on('$destroy', function (e) {
+
                     watchData();
                 });
 
 
                 // HELP
                 scope.dfHelp = {
+
                     createService: {
                         title: 'Create Service Information',
                         text: 'Create Service information help text'
                     }
                 };
-
 
                 scope.dfLargeHelp = {
 
@@ -612,7 +566,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
     }])
     .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', '$rootScope', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache, $rootScope) {
 
-
         return {
             restrict: 'E',
             scope: false,
@@ -637,7 +590,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     };
 
                     var data = angular.copy(serviceInfoData) || _new;
-
 
                     return {
                         __dfUI: {},
@@ -710,7 +662,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         }
                     });
                 };
-
 
                 scope._prepareServiceNoSQLData = function () {
 
@@ -840,7 +791,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 scope._dsnToFields = function (dsn) {
 
-
                     function nth_ocurrence(str, needle, nth) {
 
                         for (var i = 0; i < str.length; i++) {
@@ -852,7 +802,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         }
                         return false;
                     }
-
 
                     dsn = dsn || scope._storageType.dsn;
 
@@ -866,11 +815,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             scope.sql_server_host_identifier = "host";
                             scope.sql_server_db_identifier = "sid";
 
-
                             scope._storageType['host'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_host_identifier), nth_ocurrence(dsn, ')', 2)).split("=")[1];
                             scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), nth_ocurrence(dsn, ')', 6)).split("=")[1];
                             break;
-
 
                         case 'ibm':
                             scope.sql_server_host_identifier = "HOSTNAME";
@@ -886,7 +833,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             scope.sql_server_host_identifier = "Server";
                             scope.sql_server_db_identifier = "Database";
 
-
                         default:
 
                             scope.sql_server_host_identifier = "host";
@@ -894,15 +840,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                             scope._storageType['host'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_host_identifier), dsn.indexOf(";")).split("=")[1];
 
-
                             if (dsn.indexOf('port=') > dsn.indexOf(scope.sql_server_db_identifier)) {
                                 scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), nth_ocurrence(dsn, ';', 2)).split("=")[1];
-
                             }
                             else if (dsn.indexOf('port=') > dsn.indexOf(scope.sql_server_db_identifier)) {
                                 scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), dsn.length).split("=")[1];
                             }
-
                     }
                 };
 
@@ -979,7 +922,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             string += scope.sql_server_host_identifier + '=' + scope._storageType.host + ';';
                             string += scope.sql_server_db_identifier + '=' + scope._storageType.dbname;
                     }
-
 
                     scope._storageType.dsn = string;
                 };
@@ -1126,13 +1068,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                                 ], true);
                             break;
 
-
                         default:
                             scope._buildFieldSet(
                                 null, true);
                             break;
                     }
-
                 };
 
                 scope._renderServiceFields = function (serviceType) {
@@ -1273,16 +1213,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 var watchEmailProvider = scope.$watch('_storageType.transport_type', function (newValue, oldValue) {
 
-                    if (!newValue) return false;
+                    if (!newValue) {
+                        return false;
+                    }
                     scope._renderAdditionalEmailFields();
-
                 });
 
                 // Watch the service for changes.
                 var watchService = scope.$watch('service', function (newValue, oldValue) {
 
                     // We don't have a service.  Don't do anything.
-                    if (!newValue) return false;
+                    if (!newValue) {
+                        return false;
+                    }
 
                     // Create a ServiceInfo object
                     scope.serviceInfo = new ServiceInfo(newValue.record);
@@ -1295,7 +1238,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         scope.decorateSchema();
                     }
 
-
                     // We set this to null and then during the _renderServiceFields function
                     // a storage type will be assigned
                     scope._storageType = null;
@@ -1305,7 +1247,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     // complicated and verbose. Originally, we didn't want to repeat certain sections of code but...
                     // it may make sense to do so in this case.)
                     scope._renderServiceFields(scope.serviceInfo.record.type);
-
                 });
 
                 // watch service types for changes
@@ -1321,8 +1262,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                                 });
                         }
 
-                        if (!scope.serviceInfo.record)
+                        if (!scope.serviceInfo.record) {
                             return;
+                        }
 
                         scope.selectedSchema = scope.hcv.serviceTypes.filter(function (item) {
                             return item.name === scope.serviceInfo.record.type;
@@ -1368,6 +1310,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 });
 
                 scope.$on('$destroy', function (e) {
+
                     watchService();
                     watchServiceTypes();
                     watchEmailProvider();
@@ -1524,9 +1467,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         title: 'Push Notification Service Vendor',
                         text: 'Select a Push Notfication Service Provider'
                     }
-                }
+                };
             }
-        }
+        };
     }])
     .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfServiceValues', 'dfApplicationData', 'dfObjectService', 'dfStorageTypeFactory', '$compile', '$templateCache', '$rootScope', 'dfNotify', '$http', 'INSTANCE_URL', function (MOD_SERVICES_ASSET_PATH, dfServiceValues, dfApplicationData, dfObjectService, dfStorageTypeFactory, $compile, $templateCache, $rootScope, dfNotify, $http, INSTANCE_URL) {
 
@@ -1856,7 +1799,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     scope.servicesReady = true;
                 };
 
-
                 scope._script = {};
                 scope.serviceInfo = {};
                 scope._storageType = {};
@@ -1864,7 +1806,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                 scope.sql_server_host_identifier = null;
                 scope.sql_server_db_identifier = null;
-
 
                 scope._buildFieldSet = function (fieldSetArray, append) {
 
@@ -1903,7 +1844,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         }
                     });
                 };
-
 
                 scope._prepareServiceNoSQLData = function () {
 
@@ -2003,7 +1943,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         return false;
                     }
 
-
                     dsn = dsn || scope._storageType.dsn;
 
                     if (!dsn) return;
@@ -2021,7 +1960,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), nth_ocurrence(dsn, ')', 6)).split("=")[1];
                             break;
 
-
                         case 'ibm':
                             scope.sql_server_host_identifier = "HOSTNAME";
                             scope.sql_server_db_identifier = "DATABASE";
@@ -2036,14 +1974,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             scope.sql_server_host_identifier = "Server";
                             scope.sql_server_db_identifier = "Database";
 
-
                         default:
 
                             scope.sql_server_host_identifier = "host";
                             scope.sql_server_db_identifier = "dbname";
 
                             scope._storageType['host'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_host_identifier), dsn.indexOf(";")).split("=")[1];
-
 
                             if (dsn.indexOf('port=') > dsn.indexOf(scope.sql_server_db_identifier)) {
                                 scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), nth_ocurrence(dsn, ';', 2)).split("=")[1];
@@ -2052,14 +1988,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             else if (dsn.indexOf('port=') > dsn.indexOf(scope.sql_server_db_identifier)) {
                                 scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), dsn.length).split("=")[1];
                             }
-
                     }
                 };
 
                 scope._updateDsn = function () {
 
                     var string = '';
-
 
                     switch (scope._storageType.prefix) {
 
@@ -2114,7 +2048,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                     return scope._storageType.prefix + ':' + scope.sql_server_host_identifier + '=' + scope._storageType.host + ';' + scope.sql_server_db_identifier + '=' + scope._storageType.dbname
                 };
-
 
                 scope._renderAdditionalEmailFields = function () {
 
@@ -2300,7 +2233,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 var watchService = scope.$watch('service', function (newValue, oldValue) {
 
                     // We don't have a service.  Don't do anything.
-                    if (!newValue) return false;
+                    if (!newValue) {
+                        return false;
+                    }
 
                     // Create a ServiceConfig object
                     scope.serviceInfo = new ServiceConfig(newValue.record);
@@ -2339,7 +2274,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                     var loadEvents, i;
 
-                    if (!newValue) return;
+                    if (!newValue) {
+                        return;
+                    }
 
                     // set allowed file types
                     switch (newValue.name) {
@@ -2612,7 +2549,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-manage-services.html',
             link: function (scope, elem, attrs) {
 
-
                 var ManagedService = function (serviceData) {
 
                     return {
@@ -2671,6 +2607,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
 
                 // PUBLIC API
+
                 scope.toggleViewMode = function (mode) {
 
                     scope._toggleViewMode(mode);
@@ -2704,14 +2641,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     scope._setSelected(service);
                 };
 
-
-                // PRIVATE API
-                scope._deleteFromServer = function (requestDataObj) {
-
-                    return dfApplicationData.deleteApiData('service', requestDataObj).$promise;
-                };
-
-
                 // COMPLEX IMPLEMENTATION
 
                 scope._editService = function (service) {
@@ -2727,7 +2656,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     };
 
 
-                    scope._deleteFromServer(requestDataObj).then(
+                    dfApplicationData.deleteApiData('service', requestDataObj).$promise.then(
+
                         function (result) {
 
                             // notify success
@@ -2747,7 +2677,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                                 // This will remove the service from the selected
                                 // service array
                                 scope.setSelected(service);
-
                             }
 
                             scope.$broadcast('toolbar:paginate:service:delete');
@@ -2763,12 +2692,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             };
 
                             dfNotify.error(messageOptions);
-
                         }
                     ).finally(
                         function () {
 
-                            // console.log('Delete Service Finally')
                         }
                     )
                 };
@@ -2799,7 +2726,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             return;
                         }
 
-                        i++
+                        i++;
                     }
 
                     service.__dfUI.selected = true;
@@ -2816,8 +2743,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         }
                     };
 
+                    dfApplicationData.deleteApiData('service', requestDataObj).$promise.then(
 
-                    scope._deleteFromServer(requestDataObj).then(
                         function (result) {
 
                             var messageOptions = {
@@ -2845,12 +2772,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             };
 
                             dfNotify.error(messageOptions);
-
                         }
                     ).finally(
                         function () {
 
-                            // console.log('Delete Services Finally');
                         }
                     )
                 };
@@ -2888,20 +2813,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     // Destroy watchers
                     watchApiData();
                 });
-
-                scope.$watch('$viewContentLoaded',
-                    function(event){
-                        $rootScope.isRouteLoading = false;
-                    }
-                );
             }
         }
     }])
 
-    .directive('dfServiceLoading', ['$rootScope', function($rootScope) {
+    .directive('dfServiceLoading', [function() {
         return {
             restrict: 'E',
-            template: "<div class='col-lg-12' ng-if='isRouteLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
+            template: "<div class='col-lg-12' ng-if='dataLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
         };
     }])
 
@@ -3068,7 +2987,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
             if (!data || !Object.keys(data).length > 0) {
                 data = null;
             }
-
 
             var AWS = function (data) {
 
@@ -3278,7 +3196,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 }
             };
 
-
             switch (storageType) {
 
                 case 'aws':
@@ -3309,7 +3226,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
         }
     }])
     .factory('dfServiceValues', ['SystemConfigDataService', function (SystemConfigDataService) {
-
 
         return function () {
 

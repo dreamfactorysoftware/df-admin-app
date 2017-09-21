@@ -28,7 +28,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                                 // app.js
                                 throw {
                                     routing: true
-                                }
+                                };
                             }
 
                             // There is a currentUser but they are not an admin
@@ -41,7 +41,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                                 // app.js
                                 throw {
                                     routing: true
-                                }
+                                };
                             }
 
                             defer.resolve();
@@ -53,7 +53,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
     .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
-
     }])
 
     .controller('AppsCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', function ($rootScope, $scope, dfApplicationData, dfNotify) {
@@ -62,8 +61,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         // Set Title in parent
         $scope.$parent.title = 'Apps';
 
-        $rootScope.isRouteLoading = true;
-        
         // Set module links
         $scope.links = [
             {
@@ -104,6 +101,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
         $scope.loadTabData = function(init) {
 
+            $scope.dataLoading = true;
+
             var apis = ['app', 'role', 'service'];
 
             dfApplicationData.getApiData(apis).then(
@@ -131,7 +130,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     };
                     dfNotify.error(messageOptions);
                 }
-            );
+            ).finally(function () {
+                $scope.dataLoading = false;
+            });
         };
 
         $scope.loadTabData(true);
@@ -181,7 +182,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         },
                         record: angular.copy(appData),
                         recordCopy: angular.copy(appData)
-                    }
+                    };
                 };
 
                 scope.currentServer = dfServerInfoService.currentServer();
@@ -222,12 +223,19 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     else {
                         scope._updateApp();
                     }
-
                 };
 
-                scope.closeApp = function () {
+                scope.cancelEditor = function () {
 
-                    scope._closeApp();
+                    if (!dfObjectService.compareObjectsAsJson(scope.app.record, scope.app.recordCopy)) {
+
+                        if (!dfNotify.confirmNoSave()) {
+
+                            return;
+                        }
+                    }
+
+                    scope.closeEditor();
                 };
 
 
@@ -268,31 +276,21 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     }
 
                     return _app.record;
-
                 };
 
-                scope._saveAppToServer = function (requestDataObj) {
+                scope.closeEditor = function () {
 
-                    return dfApplicationData.saveApiData('app', requestDataObj).$promise;
-                };
+                    // same object as currentEditApp used in ng-show
+                    scope.appData = null;
 
-                scope._updateAppToServer = function (requestDataObj) {
+                    scope.app = new App();
 
-                    return dfApplicationData.updateApiData('app', requestDataObj).$promise;
-                };
-
-                scope._resetAppDetails = function () {
-
-                    if (scope.newApp) {
-                        scope.app = new App();
-                    }
-                    else {
-
-                        scope.appData = null;
-                    }
+                    // force to manage view
+                    scope.$emit('sidebar-nav:view:reset');
                 };
 
                 // COMPLEX IMPLEMENTATION
+
                 scope._saveApp = function () {
 
                     // Create our request obj
@@ -305,7 +303,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     };
 
                     // send to the server
-                    scope._saveAppToServer(requestDataObj).then(
+                    dfApplicationData.saveApiData('app', requestDataObj).$promise.then(
+
                         function (result) {
 
                             // notify success
@@ -318,10 +317,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                             dfNotify.success(messageOptions);
 
-                            // clean form
-                            scope._resetAppDetails();
-
-                            scope.$emit('sidebar-nav:view:reset');
+                            scope.closeEditor();
                         },
 
                         function (reject) {
@@ -333,15 +329,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                                 message: reject
                             };
 
-
                             dfNotify.error(messageOptions);
                         }
                     ).finally(
                         function () {
 
-                            // console.log('Save App Finally')
                         }
-                    )
+                    );
                 };
 
                 scope._updateApp = function () {
@@ -356,7 +350,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     };
 
                     // send to the server
-                    scope._updateAppToServer(requestDataObj).then(
+                    dfApplicationData.updateApiData('app', requestDataObj).$promise.then(
+
                         function (result) {
 
                             // notify success
@@ -369,12 +364,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                             dfNotify.success(messageOptions);
 
-                            scope.app = new App(result.resource);
-
-
-                            // clean form
-                            // reset app
-                            scope._resetAppDetails();
+                            scope.closeEditor();
                         },
 
                         function (reject) {
@@ -386,30 +376,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                                 message: reject
                             };
 
-
                             dfNotify.error(messageOptions);
                         }
                     ).finally(
                         function () {
 
-                            // console.log('Save App Finally')
                         }
-                    )
-                };
-
-                scope._closeApp = function () {
-
-
-                    if (!dfObjectService.compareObjectsAsJson(scope.app.record, scope.app.recordCopy)) {
-
-                        if (!dfNotify.confirmNoSave()) {
-
-                            return false;
-                        }
-                    }
-
-
-                    scope._resetAppDetails();
+                    );
                 };
 
                 // WATCHERS
@@ -434,6 +407,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 });
 
                 // MESSAGES
+
                 scope.$on('$destroy', function (e) {
 
                     // Destroy watchers
@@ -484,9 +458,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         title: "Assign a Default Role",
                         text: 'Unauthenticated or guest users of the app will have this role.'
                     }
-                }
+                };
             }
-        }
+        };
     }])
 
     .directive('dfManageApps', ['$rootScope', 'MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfReplaceParams', 'dfNotify', '$window', function ($rootScope, MOD_APPS_ASSET_PATH, dfApplicationData, dfReplaceParams, dfNotify, $window) {
@@ -506,7 +480,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             selected: false
                         },
                         record: appData
-                    }
+                    };
                 };
 
                 scope.apps = null;
@@ -552,6 +526,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
 
                 // PUBLIC API
+
                 scope.launchApp = function (app) {
 
                     scope._launchApp(app);
@@ -560,11 +535,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 scope.editApp = function (app) {
 
                     scope._editApp(app);
-                };
-
-                scope.exportApp = function (app) {
-
-                    scope._exportApp(app);
                 };
 
                 scope.deleteApp = function (app) {
@@ -602,13 +572,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
 
                 // PRIVATE API
-                scope._deleteFromServer = function (requestDataObj) {
-
-                    return dfApplicationData.deleteApiData('app', requestDataObj).$promise;
-                };
-
 
                 // COMPLEX IMPLEMENTATION
+
                 scope._launchApp = function (app) {
 
                     $window.open(dfReplaceParams(app.record.launch_url, app.record.name));
@@ -617,11 +583,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 scope._editApp = function (app) {
 
                     scope.currentEditApp = app;
-                };
-
-                scope._exportApp = function (app) {
-
-
                 };
 
                 scope._deleteApp = function (app) {
@@ -635,8 +596,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         data: app.record
                     };
 
+                    dfApplicationData.deleteApiData('app', requestDataObj).$promise.then(
 
-                    scope._deleteFromServer(requestDataObj).then(
                         function (result) {
 
                             // notify success
@@ -666,14 +627,12 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             };
 
                             dfNotify.success(messageOptions);
-
                         }
                     ).finally(
                         function () {
 
-                            // console.log('Delete App Finally')
                         }
-                    )
+                    );
                 };
 
                 scope._orderOnSelect = function (fieldObj) {
@@ -701,12 +660,11 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             return;
                         }
 
-                        i++
+                        i++;
                     }
 
                     app.__dfUI.selected = true;
                     scope.selectedApps.push(app.record.id);
-
                 };
 
                 scope._deleteSelectedApps = function () {
@@ -720,8 +678,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         }
                     };
 
+                    dfApplicationData.deleteApiData('app', requestDataObj).$promise.then(
 
-                    scope._deleteFromServer(requestDataObj).then(
                         function (result) {
 
                             var messageOptions = {
@@ -749,15 +707,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                                 message: reject
                             };
 
-
                             dfNotify.error(messageOptions);
                         }
                     ).finally(
                         function () {
 
-                            // console.log('Delete Apps Finally');
                         }
-                    )
+                    );
                 };
 
                 // WATCHERS
@@ -791,20 +747,14 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     // Destroy watchers
                     watchApiData();
                 });
-
-                scope.$watch('$viewContentLoaded',
-                    function(event){
-                        $rootScope.isRouteLoading = false;
-                    }
-                );
             }
-        }
+        };
     }])
 
-    .directive('dfAppLoading', ['$rootScope', function($rootScope) {
+    .directive('dfAppLoading', [function() {
       return {
         restrict: 'E',
-        template: "<div class='col-lg-12' ng-if='isRouteLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
+          template: "<div class='col-lg-12' ng-if='dataLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
       };
     }])
 
@@ -892,6 +842,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
 
                 // PUBLIC API
+
                 scope.submitApp = function () {
 
                     if (!scope.appPath) {
@@ -931,7 +882,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     if (scope._isAppPathUrl(scope.appPath)) {
                         _options['headers'] = {
                             "Content-Type": 'application/json'
-                        }
+                        };
                     }
                     else {
                         _options['headers'] = {"Content-Type": undefined};
@@ -939,7 +890,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     }
 
                     return dfApplicationData.saveApiData('app', _options).$promise;
-
                 };
 
                 scope._isDFPackage = function (appPathStr) {
@@ -958,6 +908,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
 
                 // COMPLEX IMPLEMENTATION
+
                 scope._loadSampleApp = function (appObj) {
 
                     scope.appPath = appObj.package_url;
@@ -973,7 +924,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             import_url: scope.appPath,
                             storage_service_id: scope.storageService.id,
                             storage_container: scope.storageContainer
-                        }
+                        };
                     }
                     else {
 
@@ -987,10 +938,11 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                         // fd.append("files", $('input[type=file]')[0].files[0]);
                         // fd.append("text", 'asdfasdsfasdfasdf');
-                        requestDataObj = fd
+                        requestDataObj = fd;
                     }
 
                     scope._importAppToServer(requestDataObj).then(
+
                         function (result) {
 
                             var messageOptions = {
@@ -1001,7 +953,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             };
 
                             dfNotify.success(messageOptions);
-
                         },
                         function (reject) {
 
@@ -1014,11 +965,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             };
 
                             dfNotify.error(messageOptions);
-
-
                         }
-                    )
-                        .finally(
+                    ).finally(
                         function (success) {
 
                             scope._resetImportApp();
@@ -1028,16 +976,18 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                                 if (angular.isObject(d)) {
                                     return angular.toJson(d);
                                 }
-                            }
+                            };
                         }
-                    )
+                    );
                 };
 
                 // WATCHERS
 
                 var watchUploadFile = scope.$watch('uploadFile', function (n, o) {
 
-                    if (!n) return;
+                    if (!n) {
+                        return;
+                    }
 
                     scope.appPath = n.name;
                 });
@@ -1051,14 +1001,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 });
 
                 // HELP
+
                 scope.dfHelp = {
                     applicationName: {
                         title: 'Application Name',
                         text: 'This is some help text that will be displayed in the help window'
                     }
-                }
-
-
+                };
             }
-        }
+        };
     }]);
