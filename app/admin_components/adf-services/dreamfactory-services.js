@@ -239,14 +239,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     scope._prepareServiceDefinitionData();
                 };
 
-                scope._trimRequestDataObj = function (requestObj) {
-
-                    if (requestObj.data.hasOwnProperty.call(config, 'options_ctrl'))
-                        delete requestObj.data.config.options_ctrl;
-
-                    return requestObj;
-                };
-
                 scope.closeEditor = function () {
 
                     // same object as currentEditService used in ng-show
@@ -260,7 +252,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     // force to manage view
                     scope.$emit('sidebar-nav:view:reset');
                 };
-
 
                 // Convert array back to object. Used with config.options.
                 //
@@ -295,6 +286,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                 };
 
                 // COMPLEX IMPLEMENTATION
+
                 scope._saveService = function () {
 
                     if (scope.serviceInfo.record.type === 'nodejs' ||
@@ -321,8 +313,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         data: data
                     };
 
-                    requestDataObj = scope._trimRequestDataObj(requestDataObj);
-
                     dfApplicationData.saveApiData('service', requestDataObj).$promise.then(
 
                         function (result) {
@@ -337,7 +327,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                             dfNotify.success(messageOptions);
 
-                            scope.closeEditor();
+                            if (scope.selections.saveAndClose) {
+                                scope.closeEditor();
+                            } else {
+                                scope.service = new Service(result.resource);
+                            }
                         },
 
                         function (reject) {
@@ -374,8 +368,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                         data: data
                     };
 
-                    requestDataObj = scope._trimRequestDataObj(requestDataObj);
-
                     dfApplicationData.updateApiData('service', requestDataObj).$promise.then(
 
                         function (result) {
@@ -389,7 +381,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
 
                             dfNotify.success(messageOptions);
 
-                            scope.closeEditor();
+                            if (scope.selections.saveAndClose) {
+                                scope.closeEditor();
+                            } else {
+                                scope.service = new Service(result);
+                            }
                         },
 
                         function (reject) {
@@ -3068,17 +3064,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                     user: null,
                     pwd: null,
                     db: null,
-                    options: {},
-                    options_ctrl: null
-
+                    options: {}
                 };
 
                 if (data) {
-                    if (data.options.hasOwnProperty('ssl'))
-                        data.options_ctrl = true;
-                    else
-                        data.options_ctrl = false;
-
                     return dfObjectService.mergeObjects(data, _new);
                 }
                 else {
