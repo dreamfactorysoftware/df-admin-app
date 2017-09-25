@@ -330,7 +330,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates'])
                             if (scope.selections.saveAndClose) {
                                 scope.closeEditor();
                             } else {
-                                scope.service = new Service(result.resource);
+                                scope.service = new Service(result.resource[0]);
                             }
                         },
 
