@@ -3,13 +3,13 @@
     <df-details-header data-new="newService" data-api-name="'Service'"
                        data-name="service.record.name"></df-details-header>
 
-    <form data-ng-submit="saveService(saveAndClose)" autocomplete="off">
+    <form data-ng-submit="saveOrUpdateService(saveAndClose)" autocomplete="off">
 
         <ul class="nav nav-tabs" data-role="tablist">
             <li class="active"><a showtab href="#info" id="info-tab">Info</a></li>
-            <li><a showtab href="#config" id="config-tab" ng-click="refreshEditor()">Config</a></li>
+            <li><a showtab href="#config" id="config-tab">Config</a></li>
             <li>
-                <a showtab href="#service-definition" id="service-definition-tab" ng-click="refreshEditor()">Service Definition</a>
+                <a showtab href="#service-definition" id="service-definition-tab">Service Definition</a>
             </li>
         </ul>
 
@@ -38,7 +38,7 @@
                        type="submit"
                        value="Save"
                        data-ng-click="selections.saveAndClose=false"/>
-                <input data-ng-if="selectedSchema.config_schema"
+                <input data-ng-if="!newService && selectedSchema.config_schema"
                        id="services_details_save_close"
                        class="btn btn-default btn-primary save-service-btn"
                        type="submit"

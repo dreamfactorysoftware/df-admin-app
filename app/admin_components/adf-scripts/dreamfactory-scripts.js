@@ -75,7 +75,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.$parent.title = 'Scripts';
             $scope.sampleSelect = null;
 
-            $scope.serviceTypeConfig = 'scripts';
+            $scope.scriptGitHubTarget = 'scripts';
 
             $scope.newScript = true;
             $scope.disableServiceLinkRefresh = true;
@@ -132,7 +132,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope.githubModalShow = function () {
 
-                $rootScope.$broadcast('githubShowModal', $scope.serviceTypeConfig);
+                $rootScope.$broadcast('githubShowModal', $scope.scriptGitHubTarget);
             };
 
             $scope.isHostedSystem = SystemConfigDataService.getSystemConfig().is_hosted;
