@@ -1676,8 +1676,10 @@ angular.module('dfUtility', ['dfApplication'])
         }
     ])
 
-    // Creates an Ace Editor.  Currently specific to scripting and service definition stuff.
-    .directive('dfAceEditor', ['INSTANCE_URL', 'MOD_UTILITY_ASSET_PATH', '$http', '$compile', function (INSTANCE_URL, MOD_UTILITY_ASSET_PATH, $http, $compile) {
+    // this directive is for the schema editor and service def content
+    // it is essentially the same as dfAceEditorScripting and should be kept in sync until they can be consolidated
+
+  .directive('dfAceEditor', ['INSTANCE_URL', 'MOD_UTILITY_ASSET_PATH', '$http', '$compile', function (INSTANCE_URL, MOD_UTILITY_ASSET_PATH, $http, $compile) {
 
         return {
             restrict: 'E',
@@ -1752,12 +1754,6 @@ angular.module('dfUtility', ['dfApplication'])
                     scope.editor.renderer.setShowGutter(true);
 
                     scope.editor.session.setValue(contents);
-
-                    scope.editor.on('blur', function () {
-                        scope.$apply(function () {
-                            scope.currentContent = {"content": scope.editor.getValue()};
-                        });
-                    });
                 };
 
                 // WATCHERS AND INIT
@@ -1816,7 +1812,7 @@ angular.module('dfUtility', ['dfApplication'])
                     scope.editor.renderer.$cursorLayer.element.style.opacity=100;
                 });
             }
-        }
+        };
     }])
 
     // Helper for uploading a file.  Gets the file from an upload mechanism and sets

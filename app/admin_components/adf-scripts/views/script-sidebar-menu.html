@@ -54,8 +54,7 @@
                     <label>Script Type/Language</label>
                     <select class="form-control input-sm"
                             data-ng-model="currentScriptObj.type"
-                            data-ng-options="scriptType.name as scriptType.label for scriptType in apiData.script_type"
-                            data-ng-change="updateEditor(currentScriptObj.type)">
+                            data-ng-options="scriptType.name as scriptType.label for scriptType in apiData.script_type">
                     </select>
                 </div>
                 <div class="form-inline">

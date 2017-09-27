@@ -31,7 +31,7 @@
                                data-input-content="{content: serviceDefinition.content}"
                                data-input-format="serviceDefinition.format == 0 ? 'json' : 'yaml'"
                                data-is-editable="isEditable"
-                               data-current-editor="currentEditor">
+                               data-current-editor="serviceDefEditor">
                 </df-ace-editor>
             </div>
         </div>
@@ -42,4 +42,4 @@
     </div>
 </div>
 
-<df-github-modal editor="currentEditor" accept="allowedDefinitionFormats" target="serviceDefGitHubTarget"></df-github-modal>
+<df-github-modal editor="serviceDefEditor" accept="allowedDefinitionFormats" target="serviceDefGitHubTarget"></df-github-modal>

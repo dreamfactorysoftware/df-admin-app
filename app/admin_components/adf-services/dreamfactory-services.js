@@ -626,6 +626,28 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     );
                 };
 
+                // Refresh the editors when switching tabs
+
+                scope.refreshServiceConfigEditor = function() {
+
+                    var editor = scope.serviceConfigEditor;
+                    if (editor) {
+                        editor.renderer.updateText();
+                        editor.resize(true);
+                        editor.focus();
+                    }
+                };
+
+                scope.refreshServiceDefEditor = function() {
+
+                    var editor = scope.serviceDefEditor;
+                    if (editor) {
+                        editor.renderer.updateText();
+                        editor.resize(true);
+                        editor.focus();
+                    }
+                };
+
                 // WATCHERS
 
                 var watchServiceData = scope.$watch('serviceData', function (newValue, oldValue) {
@@ -1425,10 +1447,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         type === 'python' ||
                         type === 'v8js') {
 
-                        // for new script services if you didn't edit config it will be empty
-                        if (!config.hasOwnProperty('content')) {
-                            config.content = '';
-                        }
+                        config.content = scope.serviceConfigEditor.getValue();
 
                         // sanitize service link config before saving
                         // send nulls not empty strings
@@ -1475,7 +1494,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-definition.html',
             link: function (scope, elem, attrs) {
 
-                scope.currentEditor = null;
+                scope.serviceDefEditor = null;
                 scope.allowedDefinitionFormats = ['json', 'yml', 'yaml'];
                 scope.serviceDefGitHubTarget = 'definition';
 
@@ -1518,7 +1537,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'php':
                         case 'python':
                         case 'v8js':
-                            var content = scope.currentEditor.session.getValue();
+                            var content = scope.serviceDefEditor.getValue();
                             if (content !== "") {
                                 doc = scope.serviceDetails.record.service_doc_by_service_id || {};
                                 doc.content = content;

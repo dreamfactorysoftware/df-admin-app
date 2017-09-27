@@ -1466,7 +1466,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     if (scope.viewMode === 'table') {
 
-                        scope.table.record = angular.fromJson(scope.editor.getValue());
+                        scope.table.record = angular.fromJson(scope.schemaJsonEditor.getValue());
                     }
                 };
 
@@ -1506,11 +1506,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope._validateJSON = function () {
 
                     try {
-                        var result = JSON.parse(scope.editor.getValue());
+                        var result = JSON.parse(scope.schemaJsonEditor.getValue());
 
                         if (result) {
 
-                            scope.editor.setValue(angular.toJson(result, true), -1);
+                            scope.schemaJsonEditor.setValue(angular.toJson(result, true), -1);
                             return true;
                         }
                     }
@@ -2732,7 +2732,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     recordCopy: null
                 };
 
-                scope.uploadEditor = null;
+                scope.uploadSchemaEditor = null;
                 scope.uploadIsEditable = true;
 
                 scope.uploadSchema = function () {
@@ -2740,7 +2740,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     var messageOptions;
 
                     try {
-                        var editorData = angular.fromJson(scope.uploadEditor.getValue());
+                        var editorData = angular.fromJson(scope.uploadSchemaEditor.getValue());
                     } catch(e) {
                         messageOptions = {
                             module: 'Validation Error',
@@ -2788,7 +2788,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         params: {
                             include_schema: true
                         },
-                        data: angular.fromJson(scope.uploadEditor.getValue())
+                        data: angular.fromJson(scope.uploadSchemaEditor.getValue())
                     };
 
                     scope._saveSchemaToServer(requestDataObj).then(

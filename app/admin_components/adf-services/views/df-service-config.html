@@ -74,7 +74,13 @@
                data-ng-model="serviceConfig[field.name]"
                type="text" data-ng-required="field.required"/>
 
-        <df-ace-editor-scripting data-script-type="serviceInfo.type" data-current-edit-obj="serviceConfig[field.name]" data-is-clean="isEditorClean" data-editor="$parent.$parent.editor" data-ng-if="field.type == 'text' && field.name == 'content'"></df-ace-editor-scripting>
+        <df-ace-editor-scripting data-ng-if="field.type == 'text' && field.name == 'content'"
+                                 data-input-script-type="'string'"
+                                 data-input-script-content="{content: serviceConfig[field.name]}"
+                                 data-input-script-format="serviceInfo.type"
+                                 data-is-script-editable="true"
+                                 data-current-script-editor="$parent.$parent.serviceConfigEditor">
+        </df-ace-editor-scripting>
 
         <input class="form-control" data-ng-if="field.type == 'integer' && field.name !== 'storage_service_id'"
                id="services_details_config_integer_{{$index}}"
@@ -280,4 +286,4 @@
 
 </div>
 
-<df-github-modal editor="editor" accept="allowedConfigGitFormats" target="serviceConfigGitHubTarget"></df-github-modal>
+<df-github-modal editor="serviceConfigEditor" accept="allowedConfigGitFormats" target="serviceConfigGitHubTarget"></df-github-modal>
