@@ -1815,6 +1815,149 @@ angular.module('dfUtility', ['dfApplication'])
         };
     }])
 
+    // this directive is for script service content and event script content
+    // it is essentially the same as dfAceEditor and should be kept in sync until they can be consolidated
+
+    .directive('dfAceEditorScripting', ['MODSCRIPTING_ASSET_PATH', function (MODSCRIPTING_ASSET_PATH) {
+
+        return {
+            restrict: 'E',
+            scope: {
+                inputScriptType: '=?', // string
+                inputScriptContent: '=?',
+                inputScriptFormat: '=?', // script type
+                isScriptEditable: '=?',
+                currentScriptEditor: '=?'
+            },
+            templateUrl: MODSCRIPTING_ASSET_PATH + 'views/df-ace-editor.html',
+            link: function (scope, elem, attrs) {
+
+               window.define = window.define || ace.define;
+
+                scope.editor = null;
+                scope.currentScriptContent = {"content": ""};
+                scope.scriptVerbose = false;
+
+                // PRIVATE API
+
+                scope._setScriptEditorInactive = function (stateBool) {
+
+                    if (scope.scriptVerbose) {
+                        console.log("_setScriptEditorInactive", stateBool);
+                    }
+
+                    stateBool = stateBool || false;
+
+                    if (stateBool) {
+                        scope.editor.setOptions({
+                            readOnly: true,
+                            highlightActiveLine: false,
+                            highlightGutterLine: false
+                        });
+                        scope.editor.renderer.$cursorLayer.element.style.opacity=0;
+                    } else {
+                        scope.editor.setOptions({
+                            readOnly: false,
+                            highlightActiveLine: true,
+                            highlightGutterLine: true
+                        });
+                        scope.editor.renderer.$cursorLayer.element.style.opacity=100;
+                    }
+                };
+
+                scope._setScriptEditorMode = function (mode) {
+
+                    if (scope.scriptVerbose) {
+                        console.log("_setScriptEditorMode", mode);
+                    }
+
+                    scope.editor.session.setMode({
+                        path: "ace/mode/" + mode,
+                        v: Date.now()
+                    });
+                };
+
+                scope._loadScriptEditor = function (contents) {
+
+                    if (scope.scriptVerbose) {
+                        console.log("_loadScriptEditor", contents);
+                    }
+
+                    scope.editor = ace.edit('ide');
+
+                    scope.editor.renderer.setShowGutter(true);
+
+                    scope.editor.session.setValue(contents);
+                };
+
+                // WATCHERS AND INIT
+
+                // we get json objects from schema editor, convert them to strings here
+                // service defs will already be strings
+
+                scope.$watch('inputScriptContent', function (newValue) {
+
+                    if (scope.scriptVerbose) {
+                        console.log('inputScriptContent', newValue);
+                    }
+                    var content = "";
+                    if (newValue && newValue.content !== undefined) {
+                        content = newValue.content;
+                        if (scope.inputScriptType === 'object') {
+                            content = angular.toJson(content, true);
+                        }
+                    }
+                    scope.currentScriptContent = {"content": content};
+
+                }, true);
+
+                // load editor with new text content
+
+                scope.$watch('currentScriptContent', function (newValue) {
+
+                    if (scope.scriptVerbose) {
+                        console.log('currentScriptContent', newValue);
+                    }
+                    scope._loadScriptEditor(newValue.content);
+                    scope.currentScriptEditor = scope.editor;
+
+                }, true);
+
+                scope.$watch('inputScriptFormat', function (newValue) {
+
+                    if (scope.scriptVerbose) {
+                        console.log('inputScriptFormat', newValue);
+                    }
+                    if (newValue) {
+                        if (newValue === 'nodejs' || newValue === 'v8js') {
+                            newValue = 'javascript';
+                        }
+                        scope._setScriptEditorMode(newValue);
+                    }
+                });
+
+                scope.$watch('isScriptEditable', function (newValue) {
+
+                    if (scope.scriptVerbose) {
+                        console.log('isScriptEditable', newValue);
+                    }
+                    scope.editor.setOptions({
+                        readOnly: !newValue,
+                        highlightActiveLine: true,
+                        highlightGutterLine: true
+                    });
+
+                    scope.editor.renderer.$cursorLayer.element.style.opacity=100;
+                });
+
+                scope.$on('$destroy', function (e) {
+
+                    scope.editor.destroy();
+                });
+            }
+        };
+    }])
+
     // Helper for uploading a file.  Gets the file from an upload mechanism and sets
     // to an angular model
     .directive('fileModel', [
