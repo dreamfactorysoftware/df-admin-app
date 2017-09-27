@@ -1818,7 +1818,7 @@ angular.module('dfUtility', ['dfApplication'])
     // this directive is for script service content and event script content
     // it is essentially the same as dfAceEditor and should be kept in sync until they can be consolidated
 
-    .directive('dfAceEditorScripting', ['MODSCRIPTING_ASSET_PATH', function (MODSCRIPTING_ASSET_PATH) {
+    .directive('dfAceEditorScripting', ['MOD_UTILITY_ASSET_PATH', function (MOD_UTILITY_ASSET_PATH) {
 
         return {
             restrict: 'E',
@@ -1829,7 +1829,7 @@ angular.module('dfUtility', ['dfApplication'])
                 isScriptEditable: '=?',
                 currentScriptEditor: '=?'
             },
-            templateUrl: MODSCRIPTING_ASSET_PATH + 'views/df-ace-editor.html',
+            templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-ace-editor-scripting.html',
             link: function (scope, elem, attrs) {
 
                window.define = window.define || ace.define;
