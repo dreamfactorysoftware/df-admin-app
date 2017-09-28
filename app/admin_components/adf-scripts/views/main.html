@@ -1,5 +1,5 @@
 <df-scripting-loading></df-scripting-loading>
-<div class="" ng-show="!dataLoading">
+<div class="" ng-if="!dataLoading">
     <div class="">
         <div class="df-section df-section-all-round" df-fs-height>
             <div data-ng-show="isHostedSystem">
@@ -40,12 +40,13 @@
                                             <span data-ng-if="menuPathArr.length - 1 === $index">{{path}}</span>
                                         </li>
                                     </ol>
-                                    <df-ace-editor-scripting data-input-script-type="'string'"
-                                                             data-input-script-content="{content: $parent.$parent.currentScriptObj.content}"
-                                                             data-input-script-format="$parent.$parent.currentScriptObj.type"
-                                                             data-is-script-editable="true"
-                                                             data-current-script-editor="$parent.$parent.eventScriptEditor">
-                                    </df-ace-editor-scripting>
+                                    <df-ace-editor data-input-type="'string'"
+                                                   data-input-content="{content: currentScriptObj.content}"
+                                                   data-input-format="currentScriptObj.type"
+                                                   data-is-editable="true"
+                                                   data-editor-obj="eventScriptEditorObj"
+                                                   data-target-div="'eventScript'">
+                                    </df-ace-editor>
                                 </div>
                             </div>
                           </div>
@@ -80,4 +81,7 @@
     </div>
 </div>
 
-<df-github-modal editor="eventScriptEditor" accept="allowedScriptFormats" target="scriptGitHubTarget"></df-github-modal>
+<df-github-modal editor-obj="eventScriptEditorObj"
+                 accept="allowedScriptFormats"
+                 target="scriptGitHubTarget">
+</df-github-modal>

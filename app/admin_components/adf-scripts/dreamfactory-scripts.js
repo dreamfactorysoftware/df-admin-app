@@ -339,7 +339,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.menuPathArr = [];
 
             // Stuff for the editor
-            $scope.eventScriptEditor = null;
+            $scope.eventScriptEditorObj = {"editor": null};
 
             // PUBLIC API
 
@@ -554,7 +554,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     $scope.currentScriptObj.storage_path = null;
                 }
 
-                $scope.currentScriptObj.content = $scope.eventScriptEditor.getValue();
+                $scope.currentScriptObj.content = $scope.eventScriptEditorObj.editor.getValue();
 
                 var requestDataObj = {
 
@@ -787,7 +787,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
         };
     }])
 
-    .directive('dfAceSamplesSelect', ['MODSCRIPTING_ASSET_PATH', 'MODSCRIPTING_EXAMPLES_PATH', '$http', 'dfNotify', function (MODSCRIPTING_ASSET_PATH, MODSCRIPTING_EXAMPLES_PATH, $http, dfNotify) {
+    .directive('dfAceSamplesSelect', ['MODSCRIPTING_ASSET_PATH', 'MODSCRIPTING_EXAMPLES_PATH', '$http', function (MODSCRIPTING_ASSET_PATH, MODSCRIPTING_EXAMPLES_PATH, $http) {
 
         return {
             restrict: 'E',
@@ -795,42 +795,38 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             templateUrl: MODSCRIPTING_ASSET_PATH + 'views/df-ace-samples.html',
             link: function (scope, elem, attrs) {
 
-                scope.sampleEditor = ace.edit('ide_samples');
+                scope.eventScriptSamplesEditorObj = {"editor": null};
+                scope.eventScriptSamplesType = 'nodejs';
+                scope.eventScriptSamplesContent = "";
 
                 scope.scriptSamplesSelect = function (type) {
 
-                    scope.sampleScriptType = type;
-                    var fileExt = '';
-                    var mode = '';
+                    var fileExt;
 
                     switch (type) {
                         case 'nodejs':
                             fileExt = 'node.js';
-                            mode = 'javascript';
                             break;
                         case 'php':
                             fileExt = 'php';
-                            mode = 'php';
                             break;
                         case 'python':
                             fileExt = 'py';
-                            mode = 'python';
                             break;
                         case 'v8js':
                             fileExt = 'v8.js';
-                            mode = 'javascript';
                             break;
+                        default:
+                            return;
                     }
 
-                    scope.sampleEditor.session.setMode({path: 'ace/mode/' + mode, inline: true});
-                    scope.sampleEditor.setOptions({readOnly: true});
+                    scope.eventScriptSamplesType = type;
 
                     $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.' + fileExt).then(
                         function (result) {
-                            scope.sampleEditor.session.setValue(result.data);
+                            scope.eventScriptSamplesContent = result.data;
                         },
                         function (reject) {
-                            dfNotify.error(reject);
                         }
                     );
                 };

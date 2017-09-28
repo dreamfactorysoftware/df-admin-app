@@ -1221,8 +1221,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 $scope.table = null;
                 $scope.viewMode = 'table';
-                $scope.isEditable = true;
 
+                $scope.schemaJsonEditorObj = {"editor": null};
 
                 $scope.reset = function () {
 
@@ -1466,7 +1466,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     if (scope.viewMode === 'table') {
 
-                        scope.table.record = angular.fromJson(scope.schemaJsonEditor.getValue());
+                        scope.table.record = angular.fromJson(scope.schemaJsonEditorObj.editor.getValue());
                     }
                 };
 
@@ -1506,11 +1506,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope._validateJSON = function () {
 
                     try {
-                        var result = JSON.parse(scope.schemaJsonEditor.getValue());
+                        var result = JSON.parse(scope.schemaJsonEditorObj.editor.getValue());
 
                         if (result) {
 
-                            scope.schemaJsonEditor.setValue(angular.toJson(result, true), -1);
+                            scope.schemaJsonEditorObj.editor.setValue(angular.toJson(result, true), -1);
                             return true;
                         }
                     }
@@ -2732,15 +2732,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     recordCopy: null
                 };
 
-                scope.uploadSchemaEditor = null;
-                scope.uploadIsEditable = true;
+                scope.schemaUploadEditorObj = {"editor": null};
 
                 scope.uploadSchema = function () {
 
                     var messageOptions;
 
                     try {
-                        var editorData = angular.fromJson(scope.uploadSchemaEditor.getValue());
+                        var editorData = angular.fromJson(scope.schemaUploadEditorObj.editor.getValue());
                     } catch(e) {
                         messageOptions = {
                             module: 'Validation Error',
@@ -2788,7 +2787,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         params: {
                             include_schema: true
                         },
-                        data: angular.fromJson(scope.uploadSchemaEditor.getValue())
+                        data: angular.fromJson(scope.schemaUploadEditorObj.editor.getValue())
                     };
 
                     scope._saveSchemaToServer(requestDataObj).then(

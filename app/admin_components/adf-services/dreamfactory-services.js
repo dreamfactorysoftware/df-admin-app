@@ -630,7 +630,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                 scope.refreshServiceConfigEditor = function() {
 
-                    var editor = scope.serviceConfigEditor;
+                    var editor = scope.serviceConfigEditorObj.editor;
                     if (editor) {
                         editor.renderer.updateText();
                         editor.resize(true);
@@ -640,7 +640,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                 scope.refreshServiceDefEditor = function() {
 
-                    var editor = scope.serviceDefEditor;
+                    var editor = scope.serviceDefEditorObj.editor;
                     if (editor) {
                         editor.renderer.updateText();
                         editor.resize(true);
@@ -1044,6 +1044,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 scope.allowedConfigFormats = '.json,.js,.php,.py,.python,.yaml,.yml';
                 scope.allowedConfigGitFormats = ['json','js','php','py','python','yaml','yml'];
                 scope.serviceConfigGitHubTarget = 'configmodal';
+                scope.serviceConfigEditorObj={'editor': null};
                 scope.isArray = angular.isArray;
                 scope.disableServiceLinkRefresh = true;
                 scope.selections = {
@@ -1170,7 +1171,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                                 }
                             ).finally(function() {
 
-                                serviceConfig.content = result.data;
+                                scope.serviceConfig.content = result.data;
 
                                 var messageOptions = {
                                     module: 'Services',
@@ -1447,7 +1448,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         type === 'python' ||
                         type === 'v8js') {
 
-                        config.content = scope.serviceConfigEditor.getValue();
+                        config.content = scope.serviceConfigEditorObj.editor.getValue();
 
                         // sanitize service link config before saving
                         // send nulls not empty strings
@@ -1494,7 +1495,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-definition.html',
             link: function (scope, elem, attrs) {
 
-                scope.serviceDefEditor = null;
+                scope.serviceDefEditorObj = {"editor": null};
                 scope.allowedDefinitionFormats = ['json', 'yml', 'yaml'];
                 scope.serviceDefGitHubTarget = 'definition';
 
@@ -1503,7 +1504,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     "content": "",
                     "format": 0
                 };
-                scope.isEditable = false;
+                scope.isServiceDefEditable = false;
 
                 scope.resetServiceDef = function () {
 
@@ -1518,11 +1519,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'php':
                         case 'python':
                         case 'v8js':
-                            scope.isEditable = true;
+                            scope.isServiceDefEditable = true;
                             break;
 
                         default:
-                            scope.isEditable = false;
+                            scope.isServiceDefEditable = false;
                     }
                 };
 
@@ -1537,7 +1538,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'php':
                         case 'python':
                         case 'v8js':
-                            var content = scope.serviceDefEditor.getValue();
+                            var content = scope.serviceDefEditorObj.editor.getValue();
                             if (content !== "") {
                                 doc = scope.serviceDetails.record.service_doc_by_service_id || {};
                                 doc.content = content;
@@ -1616,7 +1617,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         "content": content,
                         "format": format
                     };
-                    scope.isEditable = editable;
+                    scope.isServiceDefEditable = editable;
                 });
 
                 scope.githubModalShowDef = function () {

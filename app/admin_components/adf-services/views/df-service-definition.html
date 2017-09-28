@@ -5,7 +5,7 @@
             <label>Select Format</label>
             <select class="form-control"
                     data-ng-model="serviceDefinition.format"
-                    ng-disabled="!isEditable">
+                    ng-disabled="!isServiceDefEditable">
                 <option value=0 selected="selected">JSON</option>
                 <option value=1>YAML</option>
             </select>
@@ -14,10 +14,10 @@
         <div class="form-group ng-scope">
             <label>Import a script file</label>
             <div>
-            <label class="btn btn-default btn-file btn-sm" ng-disabled="!isEditable">
-                Select Desktop File... <input type="file" style="display: none;" accept=".json,.yml,.yaml" onclick="this.value = null;" onchange="angular.element(this).scope().handleDefinitionFiles(this.files)" ng-model="filename" ng-disabled="!isEditable">
+            <label class="btn btn-default btn-file btn-sm" ng-disabled="!isServiceDefEditable">
+                Select Desktop File... <input type="file" style="display: none;" accept=".json,.yml,.yaml" onclick="this.value = null;" onchange="angular.element(this).scope().handleDefinitionFiles(this.files)" ng-model="filename" ng-disabled="!isServiceDefEditable">
             </label>
-            <button type="button" class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShowDef()" ng-disabled="!isEditable">Select GitHub File...</button>
+            <button type="button" class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShowDef()" ng-disabled="!isServiceDefEditable">Select GitHub File...</button>
             </div>
         </div>
 
@@ -30,8 +30,9 @@
                 <df-ace-editor data-input-type="'string'"
                                data-input-content="{content: serviceDefinition.content}"
                                data-input-format="serviceDefinition.format == 0 ? 'json' : 'yaml'"
-                               data-is-editable="isEditable"
-                               data-current-editor="serviceDefEditor">
+                               data-is-editable="isServiceDefEditable"
+                               data-editor-obj="serviceDefEditorObj"
+                               data-target-div="newService? 'serviceDefCreate' : 'serviceDefEdit'">
                 </df-ace-editor>
             </div>
         </div>
@@ -42,4 +43,7 @@
     </div>
 </div>
 
-<df-github-modal editor="serviceDefEditor" accept="allowedDefinitionFormats" target="serviceDefGitHubTarget"></df-github-modal>
+<df-github-modal editor-obj="serviceDefEditorObj"
+                 accept="allowedDefinitionFormats"
+                 target="serviceDefGitHubTarget">
+</df-github-modal>

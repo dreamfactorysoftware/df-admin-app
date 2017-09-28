@@ -12,7 +12,7 @@ angular.module('dfUtility', ['dfApplication'])
       return {
           restrict: 'E',
           scope: {
-              editor: '=?',
+              editorObj: '=?',
               accept: '=?',
               target: '=?'
           },
@@ -92,11 +92,10 @@ angular.module('dfUtility', ['dfApplication'])
                               mode = 'javascript';
                       }
 
-                      if (scope.editor) {
+                      if (scope.editorObj && scope.editorObj.editor) {
                           var decodedString = atob(response.data.content);
-                          scope.editor.session.setValue(decodedString);
-                          scope.editor.session.setMode({path: 'ace/mode/' + mode, inline: true});
-                          scope.editor.focus();
+                          scope.editorObj.editor.session.setValue(decodedString);
+                          scope.editorObj.editor.focus();
                       }
 
                       var element = angular.element('#' + scope['target']);
@@ -1676,29 +1675,24 @@ angular.module('dfUtility', ['dfApplication'])
         }
     ])
 
-    // this directive is for the schema editor and service def content
-    // it is essentially the same as dfAceEditorScripting and should be kept in sync until they can be consolidated
-
-  .directive('dfAceEditor', ['INSTANCE_URL', 'MOD_UTILITY_ASSET_PATH', '$http', '$compile', function (INSTANCE_URL, MOD_UTILITY_ASSET_PATH, $http, $compile) {
+    .directive('dfAceEditor', ['MOD_UTILITY_ASSET_PATH', '$compile', function (MOD_UTILITY_ASSET_PATH, $compile) {
 
         return {
             restrict: 'E',
             scope: {
-                inputType: '=?', // object for schema mgr, string for service def
+                inputType: '=?',
                 inputContent: '=?',
-                inputFormat: '=?', // json for schema mgr, json or yaml for service def
+                inputFormat: '=?',
                 isEditable: '=?',
-                currentEditor: '=?'
+                editorObj: '=?',
+                targetDiv: '=?'
             },
             templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-ace-editor.html',
             link: function (scope, elem, attrs) {
 
                 window.define = window.define || ace.define;
 
-                var _elem = $(elem),
-                    _rand = Math.floor((Math.random() * 100) + 1);
-
-                _elem.children('.ide-attach').append($compile('<div id="ide_' + _rand + '" class="df-fs-height" style="height:400px"></div>')(scope));
+                $(elem).children('.ide-attach').append($compile('<div id="ide_' + scope.targetDiv + '" class="df-fs-height" style="height:400px"></div>')(scope));
 
                 scope.editor = null;
                 scope.currentContent = {"content": ""};
@@ -1709,7 +1703,7 @@ angular.module('dfUtility', ['dfApplication'])
                 scope._setEditorInactive = function (stateBool) {
 
                     if (scope.verbose) {
-                        console.log("_setEditorInactive", stateBool);
+                        console.log(scope.targetDiv, "_setEditorInactive", stateBool);
                     }
 
                     stateBool = stateBool || false;
@@ -1734,11 +1728,14 @@ angular.module('dfUtility', ['dfApplication'])
                 scope._setEditorMode = function (mode) {
 
                     if (scope.verbose) {
-                        console.log("_setEditorMode", mode);
+                        console.log(scope.targetDiv, "_setEditorMode", mode);
                     }
 
+                    // inline=true is required for PHP
+                    // seems to have no effect on other editor modes
                     scope.editor.session.setMode({
                         path: "ace/mode/" + mode,
+                        inline: true,
                         v: Date.now()
                     });
                 };
@@ -1746,10 +1743,10 @@ angular.module('dfUtility', ['dfApplication'])
                 scope._loadEditor = function (contents) {
 
                     if (scope.verbose) {
-                        console.log("_loadEditor", contents);
+                        console.log(scope.targetDiv, "_loadEditor", contents);
                     }
 
-                    scope.editor = ace.edit('ide_' + _rand);
+                    scope.editor = ace.edit('ide_' + scope.targetDiv);
 
                     scope.editor.renderer.setShowGutter(true);
 
@@ -1759,20 +1756,21 @@ angular.module('dfUtility', ['dfApplication'])
                 // WATCHERS AND INIT
 
                 // we get json objects from schema editor, convert them to strings here
-                // service defs will already be strings
+                // scripts and service defs will already be strings
 
                 scope.$watch('inputContent', function (newValue) {
 
                     if (scope.verbose) {
-                        console.log('inputContent', newValue);
+                        console.log(scope.targetDiv, 'inputContent', newValue);
                     }
+                    var content = "";
                     if (newValue && newValue.content !== undefined) {
-                        var content = newValue.content;
+                        content = newValue.content;
                         if (scope.inputType === 'object') {
                             content = angular.toJson(content, true);
                         }
-                        scope.currentContent = {"content": content};
                     }
+                    scope.currentContent = {"content": content};
 
                 }, true);
 
@@ -1781,19 +1779,22 @@ angular.module('dfUtility', ['dfApplication'])
                 scope.$watch('currentContent', function (newValue) {
 
                     if (scope.verbose) {
-                        console.log('currentContent', newValue);
+                        console.log(scope.targetDiv, 'currentContent', newValue);
                     }
                     scope._loadEditor(newValue.content);
-                    scope.currentEditor = scope.editor;
+                    scope.editorObj.editor = scope.editor;
 
                 }, true);
 
                 scope.$watch('inputFormat', function (newValue) {
 
                     if (scope.verbose) {
-                        console.log('inputFormat', newValue);
+                        console.log(scope.targetDiv, 'inputFormat', newValue);
                     }
                     if (newValue) {
+                        if (newValue === 'nodejs' || newValue === 'v8js') {
+                            newValue = 'javascript';
+                        }
                         scope._setEditorMode(newValue);
                     }
                 });
@@ -1801,145 +1802,7 @@ angular.module('dfUtility', ['dfApplication'])
                 scope.$watch('isEditable', function (newValue) {
 
                     if (scope.verbose) {
-                        console.log('isEditable', newValue);
-                    }
-                    scope.editor.setOptions({
-                        readOnly: !newValue,
-                        highlightActiveLine: true,
-                        highlightGutterLine: true
-                    });
-
-                    scope.editor.renderer.$cursorLayer.element.style.opacity=100;
-                });
-            }
-        };
-    }])
-
-    // this directive is for script service content and event script content
-    // it is essentially the same as dfAceEditor and should be kept in sync until they can be consolidated
-
-    .directive('dfAceEditorScripting', ['MOD_UTILITY_ASSET_PATH', function (MOD_UTILITY_ASSET_PATH) {
-
-        return {
-            restrict: 'E',
-            scope: {
-                inputScriptType: '=?', // string
-                inputScriptContent: '=?',
-                inputScriptFormat: '=?', // script type
-                isScriptEditable: '=?',
-                currentScriptEditor: '=?'
-            },
-            templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-ace-editor-scripting.html',
-            link: function (scope, elem, attrs) {
-
-               window.define = window.define || ace.define;
-
-                scope.editor = null;
-                scope.currentScriptContent = {"content": ""};
-                scope.scriptVerbose = false;
-
-                // PRIVATE API
-
-                scope._setScriptEditorInactive = function (stateBool) {
-
-                    if (scope.scriptVerbose) {
-                        console.log("_setScriptEditorInactive", stateBool);
-                    }
-
-                    stateBool = stateBool || false;
-
-                    if (stateBool) {
-                        scope.editor.setOptions({
-                            readOnly: true,
-                            highlightActiveLine: false,
-                            highlightGutterLine: false
-                        });
-                        scope.editor.renderer.$cursorLayer.element.style.opacity=0;
-                    } else {
-                        scope.editor.setOptions({
-                            readOnly: false,
-                            highlightActiveLine: true,
-                            highlightGutterLine: true
-                        });
-                        scope.editor.renderer.$cursorLayer.element.style.opacity=100;
-                    }
-                };
-
-                scope._setScriptEditorMode = function (mode) {
-
-                    if (scope.scriptVerbose) {
-                        console.log("_setScriptEditorMode", mode);
-                    }
-
-                    scope.editor.session.setMode({
-                        path: "ace/mode/" + mode,
-                        v: Date.now()
-                    });
-                };
-
-                scope._loadScriptEditor = function (contents) {
-
-                    if (scope.scriptVerbose) {
-                        console.log("_loadScriptEditor", contents);
-                    }
-
-                    scope.editor = ace.edit('ide');
-
-                    scope.editor.renderer.setShowGutter(true);
-
-                    scope.editor.session.setValue(contents);
-                };
-
-                // WATCHERS AND INIT
-
-                // we get json objects from schema editor, convert them to strings here
-                // service defs will already be strings
-
-                scope.$watch('inputScriptContent', function (newValue) {
-
-                    if (scope.scriptVerbose) {
-                        console.log('inputScriptContent', newValue);
-                    }
-                    var content = "";
-                    if (newValue && newValue.content !== undefined) {
-                        content = newValue.content;
-                        if (scope.inputScriptType === 'object') {
-                            content = angular.toJson(content, true);
-                        }
-                    }
-                    scope.currentScriptContent = {"content": content};
-
-                }, true);
-
-                // load editor with new text content
-
-                scope.$watch('currentScriptContent', function (newValue) {
-
-                    if (scope.scriptVerbose) {
-                        console.log('currentScriptContent', newValue);
-                    }
-                    scope._loadScriptEditor(newValue.content);
-                    scope.currentScriptEditor = scope.editor;
-
-                }, true);
-
-                scope.$watch('inputScriptFormat', function (newValue) {
-
-                    if (scope.scriptVerbose) {
-                        console.log('inputScriptFormat', newValue);
-                    }
-                    if (newValue) {
-                        if (newValue === 'nodejs' || newValue === 'v8js') {
-                            newValue = 'javascript';
-                        }
-                        scope._setScriptEditorMode(newValue);
-                    }
-                });
-
-                scope.$watch('isScriptEditable', function (newValue) {
-
-                    if (scope.scriptVerbose) {
-                        console.log('isScriptEditable', newValue);
+                        console.log(scope.targetDiv, 'isEditable', newValue);
                     }
                     scope.editor.setOptions({
                         readOnly: !newValue,
@@ -1952,6 +1815,9 @@ angular.module('dfUtility', ['dfApplication'])
 
                 scope.$on('$destroy', function (e) {
 
+                    if (scope.verbose) {
+                        console.log(scope.targetDiv, '$destroy');
+                    }
                     scope.editor.destroy();
                 });
             }
