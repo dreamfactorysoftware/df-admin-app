@@ -75,6 +75,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.$parent.title = 'Scripts';
             $scope.scriptGitHubTarget = 'scripts';
             $scope.newScript = true;
+            $scope.isEventScriptEditable = true;
+            $scope.eventScriptUpdateCounter = 0;
             $scope.disableServiceLinkRefresh = true;
             $scope.selections = {
                 "service": null
@@ -105,20 +107,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     reader.onload = function (evt) {
                         $scope.$apply(function() {
                             $scope.currentScriptObj.content = evt.target.result;
+                            $scope.eventScriptUpdateCounter++;
                         });
                     };
                     reader.onerror = function (evt) {
                     };
                 }
-            };
-
-            $scope.handleGitFiles = function (data) {
-
-                if (!data) {
-                    return;
-                }
-                $scope.currentScriptObj.content = data;
-                $scope.$apply();
             };
 
             $scope.githubModalShow = function () {
@@ -223,52 +217,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.currentScriptObj.storage_path = null;
             };
 
-            $scope.checkScriptFileType = function() {
-
-                var error = '';
-                var scriptType = $scope.currentScriptObj.type;
-                if (scriptType === 'nodejs' || scriptType === 'v8js' || scriptType === 'php' || scriptType === 'python') {
-                    if ($scope.selections.service && $scope.selections.service.id) {
-                        // convert null to empty string before looking for file extension
-                        var servicePath = $scope.currentScriptObj.storage_path ? $scope.currentScriptObj.storage_path : "";
-                        var pathSeg = servicePath.split('.');
-                        var fileExt = pathSeg.pop().toLowerCase();
-                        if (!fileExt) {
-                            error = 'No file path provided for service linking.';
-                        } else if (fileExt !== 'txt') {
-                            if (fileExt !== 'js' && fileExt !== 'php' && fileExt !== 'py') {
-                                error = 'Invalid file path provided for service linking. Only supported file types are .js, .php, .py, and .txt.';
-                            } else if ((scriptType === 'nodejs' || scriptType === 'v8js') && fileExt !== 'js') {
-                                error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .js extension.';
-                            } else if (fileExt !== 'php' && scriptType === 'php') {
-                                error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .php extension.';
-                            } else if (fileExt !== 'py' && scriptType === 'python') {
-                                error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .py extension.';
-                            }
-                        }
-                    }
-                }
-                return error;
-            };
-
             $scope.pullLatestScript = function () {
 
                 var serviceName = $scope.selections.service.name;
                 var serviceRepo = $scope.currentScriptObj.scm_repository;
                 var serviceRef = $scope.currentScriptObj.scm_reference;
                 var servicePath = $scope.currentScriptObj.storage_path;
-                var fileTypeError = $scope.checkScriptFileType();
-                if (fileTypeError) {
-                    var messageOptions = {
-                        module: 'Scripts',
-                        provider: 'dreamfactory',
-                        type: 'error',
-                        message: fileTypeError
-                    };
-                    dfNotify.error(messageOptions);
-                    return;
-                }
-
                 var url = INSTANCE_URL + '/api/v2/' + serviceName;
 
                 if($scope.selections.service && ($scope.selections.service.type === 'github' || $scope.selections.service.type === 'gitlab')){
@@ -289,28 +243,16 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }).then(
                     function (result) {
 
-                        $http({
-                            method:'DELETE',
-                            url: INSTANCE_URL + '/api/v2/system/cache/_event/' + $scope.currentScriptObj.name
-                        }).then(
-                            function(rs){
+                        $scope.currentScriptObj.content = result.data;
+                        $scope.eventScriptUpdateCounter++;
 
-                            },
-                            function(err) {
-                                console.log('Failed to clear event script cache.');
-                            }
-                        ).finally(function() {
-
-                            $scope.currentScriptObj.content = result.data;
-
-                            var messageOptions = {
-                                module: 'Scripts',
-                                provider: 'dreamfactory',
-                                type: 'success',
-                                message: 'Successfully pulled the latest script from source.'
-                            };
-                            dfNotify.error(messageOptions);
-                        });
+                        var messageOptions = {
+                            module: 'Scripts',
+                            provider: 'dreamfactory',
+                            type: 'success',
+                            message: 'Successfully pulled the latest script from source.'
+                        };
+                        dfNotify.error(messageOptions);
                     },
 
                     function (error) {
@@ -319,11 +261,41 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             module: 'Scripts',
                             provider: 'dreamfactory',
                             type: 'error',
-                            message: 'There was an error pulling the latest script from your service. Please make sure your service, path and permissions are correct and try again.'
+                            message: 'There was an error pulling the latest script from source. Please make sure your service, path and permissions are correct and try again.'
                         };
                         dfNotify.error(messageOptions);
                     }
                 ).finally(function () {
+                });
+            };
+
+            $scope.deleteScriptFromCache = function () {
+
+                $http({
+                    method:'DELETE',
+                    url: INSTANCE_URL + '/api/v2/system/cache/_event/' + $scope.currentScriptObj.name
+                }).then(
+                    function(result){
+
+                        var messageOptions = {
+                            module: 'Scripts',
+                            provider: 'dreamfactory',
+                            type: 'success',
+                            message: 'Successfully cleared script from cache.'
+                        };
+                        dfNotify.error(messageOptions);
+                    },
+                    function(error) {
+
+                        var messageOptions = {
+                            module: 'Scripts',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'Failed to cleared script from cache.'
+                        };
+                        dfNotify.error(messageOptions);
+                    }
+                ).finally(function() {
                 });
             };
 
@@ -484,7 +456,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             // load the editor
 
-            $scope.setScript = function (scriptName) {
+            $scope.getScript = function (scriptName) {
 
                 $scope.menuPathArr.push(scriptName);
 
@@ -500,9 +472,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     params: requestDataObj.params
                 }).then(
                     function (result) {
-                        $scope.currentScriptObj = result.data;
+                        var obj = result.data;
+                        // if linked to a service set script content to empty
+                        $scope.selections.service = $scope.getServiceById(obj.storage_service_id);
+                        if ($scope.selections.service) {
+                            obj.content = "";
+                        }
+                        $scope.currentScriptObj = obj;
                         $scope.newScript = false;
-                        $scope.selections.service = $scope.getServiceById($scope.currentScriptObj.storage_service_id);
                     },
                     function (reject) {
                         $scope.currentScriptObj = new ScriptObj(scriptName);
@@ -511,7 +488,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     }
                 ).finally(
                     function () {
-                        $scope.enableDisableRefresh();
                     }
                 );
             };
@@ -554,7 +530,13 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     $scope.currentScriptObj.storage_path = null;
                 }
 
-                $scope.currentScriptObj.content = $scope.eventScriptEditorObj.editor.getValue();
+                // if linked to a service set script content to empty
+                if ($scope.selections.service) {
+                    $scope.currentScriptObj.content = "";
+                    $scope.eventScriptUpdateCounter++;
+                } else {
+                    $scope.currentScriptObj.content = $scope.eventScriptEditorObj.editor.getValue();
+                }
 
                 var requestDataObj = {
 
@@ -665,6 +647,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 if ($scope.menuPathArr.length > 0) {
                     $scope.menuPathArr.pop();
                     $scope.currentScriptObj = null;
+                    $scope.eventScriptEditorObj.editor.setValue("");
                 }
             };
 
@@ -764,6 +747,17 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             var watchSelections = $scope.$watchCollection('selections', function (newValue, oldValue) {
 
                 $scope.disableServiceLinkRefresh = !$scope.getRefreshEnable();
+                if (newValue) {
+                    // when unselecting a service do nothing
+                    $scope.isEventScriptEditable = (newValue.service === null);
+                    // if changing from no service to service then clear content
+                    // if changing from one service to another then clear content
+                    // if changing from service to no service then keep content
+                    if (newValue.service !== null) {
+                        $scope.currentScriptObj.content = "";
+                        $scope.eventScriptUpdateCounter++;
+                    }
+                }
             });
 
             $scope.$on('$destroy', function (e) {

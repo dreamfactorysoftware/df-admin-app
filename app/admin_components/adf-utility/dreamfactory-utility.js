@@ -1682,6 +1682,7 @@ angular.module('dfUtility', ['dfApplication'])
             scope: {
                 inputType: '=?',
                 inputContent: '=?',
+                inputUpdate: '=?',
                 inputFormat: '=?',
                 isEditable: '=?',
                 editorObj: '=?',
@@ -1695,25 +1696,24 @@ angular.module('dfUtility', ['dfApplication'])
                 $(elem).children('.ide-attach').append($compile('<div id="ide_' + scope.targetDiv + '" class="df-fs-height" style="height:400px"></div>')(scope));
 
                 scope.editor = null;
-                scope.currentContent = {"content": ""};
-                scope.verbose = false;
+                scope.currentContent = "";
+                scope.verbose = true;
 
                 // PRIVATE API
 
-                scope._setEditorInactive = function (stateBool) {
+                scope._setEditorInactive = function (inactive) {
 
                     if (scope.verbose) {
-                        console.log(scope.targetDiv, "_setEditorInactive", stateBool);
+                        console.log(scope.targetDiv, "_setEditorInactive", inactive);
                     }
 
-                    stateBool = stateBool || false;
-
-                    if (stateBool) {
+                    if (inactive) {
                         scope.editor.setOptions({
                             readOnly: true,
                             highlightActiveLine: false,
                             highlightGutterLine: false
                         });
+                        scope.editor.container.style.opacity=0.75;
                         scope.editor.renderer.$cursorLayer.element.style.opacity=0;
                     } else {
                         scope.editor.setOptions({
@@ -1721,6 +1721,7 @@ angular.module('dfUtility', ['dfApplication'])
                             highlightActiveLine: true,
                             highlightGutterLine: true
                         });
+                        scope.editor.container.style.opacity=1.0;
                         scope.editor.renderer.$cursorLayer.element.style.opacity=100;
                     }
                 };
@@ -1740,51 +1741,42 @@ angular.module('dfUtility', ['dfApplication'])
                     });
                 };
 
-                scope._loadEditor = function (contents) {
+                // we get json objects from schema editor, convert them to strings here
+                // scripts and service defs will already be strings
+
+                scope._loadEditor = function (newValue) {
 
                     if (scope.verbose) {
-                        console.log(scope.targetDiv, "_loadEditor", contents);
+                        console.log(scope.targetDiv, '_loadEditor', newValue);
                     }
-
-                    scope.editor = ace.edit('ide_' + scope.targetDiv);
-
-                    scope.editor.renderer.setShowGutter(true);
-
-                    scope.editor.session.setValue(contents);
+                    if (newValue !== null && newValue !== undefined) {
+                        var content = newValue;
+                        if (scope.inputType === 'object') {
+                            content = angular.toJson(content, true);
+                        }
+                        scope.currentContent = content;
+                        scope.editor = ace.edit('ide_' + scope.targetDiv);
+                        scope.editorObj.editor = scope.editor;
+                        scope.editor.renderer.setShowGutter(true);
+                        scope.editor.session.setValue(content);
+                    }
                 };
 
                 // WATCHERS AND INIT
 
-                // we get json objects from schema editor, convert them to strings here
-                // scripts and service defs will already be strings
+                scope.$watch('inputContent', scope._loadEditor);
 
-                scope.$watch('inputContent', function (newValue) {
+                // trigger an update of inputContent, even if it didn't change
+                // typing in the editor does not change inputContent
+                // inputUpdate effectively forces inputContent to update
 
-                    if (scope.verbose) {
-                        console.log(scope.targetDiv, 'inputContent', newValue);
-                    }
-                    var content = "";
-                    if (newValue && newValue.content !== undefined) {
-                        content = newValue.content;
-                        if (scope.inputType === 'object') {
-                            content = angular.toJson(content, true);
-                        }
-                    }
-                    scope.currentContent = {"content": content};
-
-                }, true);
-
-                // load editor with new text content
-
-                scope.$watch('currentContent', function (newValue) {
+                scope.$watch('inputUpdate', function (newValue) {
 
                     if (scope.verbose) {
-                        console.log(scope.targetDiv, 'currentContent', newValue);
+                        console.log(scope.targetDiv, 'inputUpdate', newValue);
                     }
-                    scope._loadEditor(newValue.content);
-                    scope.editorObj.editor = scope.editor;
-
-                }, true);
+                    scope._loadEditor(scope.currentContent);
+                });
 
                 scope.$watch('inputFormat', function (newValue) {
 
@@ -1804,13 +1796,7 @@ angular.module('dfUtility', ['dfApplication'])
                     if (scope.verbose) {
                         console.log(scope.targetDiv, 'isEditable', newValue);
                     }
-                    scope.editor.setOptions({
-                        readOnly: !newValue,
-                        highlightActiveLine: true,
-                        highlightGutterLine: true
-                    });
-
-                    scope.editor.renderer.$cursorLayer.element.style.opacity=100;
+                    scope._setEditorInactive(!newValue);
                 });
 
                 scope.$on('$destroy', function (e) {

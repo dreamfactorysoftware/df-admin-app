@@ -1039,7 +1039,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 // all user changes are applied to scope.serviceConfig
                 // prepareServiceConfig copies the settings back to serviceDetails.record
                 scope.serviceConfig = {};
-
+                scope.isServiceConfigEditable = true;
+                scope.serviceConfigUpdateCounter = 0;
                 scope.eventList = [];
                 scope.allowedConfigFormats = '.json,.js,.php,.py,.python,.yaml,.yml';
                 scope.allowedConfigGitFormats = ['json','js','php','py','python','yaml','yml'];
@@ -1060,6 +1061,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         reader.onload = function (evt) {
                             scope.$apply(function() {
                                 scope.serviceConfig["content"] = evt.target.result;
+                                scope.serviceConfigUpdateCounter++;
                             });
                         };
                         reader.onerror = function (evt) {
@@ -1094,52 +1096,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     scope.serviceConfig.storage_path = null;
                 };
 
-                scope.checkScriptFileType = function() {
-
-                    var error = '';
-                    var scriptType = scope.serviceInfo.type;
-                    if (scriptType === 'nodejs' || scriptType === 'v8js' || scriptType === 'php' || scriptType === 'python') {
-                        if (scope.selections.service && scope.selections.service.id) {
-                            // convert null to empty string before looking for file extension
-                            var servicePath = scope.serviceConfig.storage_path ? scope.serviceConfig.storage_path : "";
-                            var pathSeg = servicePath.split('.');
-                            var fileExt = pathSeg.pop().toLowerCase();
-                            if (!fileExt) {
-                                error = 'No file path provided for service linking.';
-                            } else if (fileExt !== 'txt') {
-                                if (fileExt !== 'js' && fileExt !== 'php' && fileExt !== 'py') {
-                                    error = 'Invalid file path provided for service linking. Only supported file types are .js, .php, .py, and .txt.';
-                                } else if ((scriptType === 'nodejs' || scriptType === 'v8js') && fileExt !== 'js') {
-                                    error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .js extension.';
-                                } else if (fileExt !== 'php' && scriptType === 'php') {
-                                    error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .php extension.';
-                                } else if (fileExt !== 'py' && scriptType === 'python') {
-                                    error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .py extension.';
-                                }
-                            }
-                        }
-                    }
-                    return error;
-                };
-
                 scope.pullLatestScript = function () {
 
                     var serviceName = scope.selections.service.name;
                     var serviceRepo = scope.serviceConfig.scm_repository;
                     var serviceRef = scope.serviceConfig.scm_reference;
                     var servicePath = scope.serviceConfig.storage_path;
-                    var fileTypeError = scope.checkScriptFileType();
-                    if (fileTypeError) {
-                        var messageOptions = {
-                            module: 'Services',
-                            provider: 'dreamfactory',
-                            type: 'error',
-                            message: fileTypeError
-                        };
-                        dfNotify.error(messageOptions);
-                        return;
-                    }
-
                     var url = INSTANCE_URL + '/api/v2/' + serviceName;
 
                     if(scope.selections.service && (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab')){
@@ -1159,29 +1121,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         params: params
                     }).then(
                         function (result) {
-                            $http({
-                                method:'DELETE',
-                                url: INSTANCE_URL + '/api/v2/system/cache/' + scope.serviceInfo.name
-                            }).then(
-                                function(rs){
 
-                                },
-                                function(err){
-                                    console.log('Failed to clear scripting service cache.');
-                                }
-                            ).finally(function() {
+                            scope.serviceConfig.content = result.data;
+                            scope.serviceConfigUpdateCounter++;
 
-                                scope.serviceConfig.content = result.data;
-
-                                var messageOptions = {
-                                    module: 'Services',
-                                    provider: 'dreamfactory',
-                                    type: 'success',
-                                    message: 'Successfully pulled the latest script from source.'
-                                };
-                                dfNotify.error(messageOptions);
-                            });
-
+                            var messageOptions = {
+                                module: 'Services',
+                                provider: 'dreamfactory',
+                                type: 'success',
+                                message: 'Successfully pulled the latest script from source.'
+                            };
+                            dfNotify.error(messageOptions);
                         },
 
                         function (error) {
@@ -1190,11 +1140,41 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                                 module: 'Services',
                                 provider: 'dreamfactory',
                                 type: 'error',
-                                message: 'There was an error pulling the latest script from your service. Please make sure your service, path and permissions are correct and try again.'
+                                message: 'There was an error pulling the latest script from source. Please make sure your service, path and permissions are correct and try again.'
                             };
                             dfNotify.error(messageOptions);
                         }
                     ).finally(function () {
+                    });
+                };
+
+                scope.deleteScriptFromCache = function () {
+
+                    $http({
+                        method:'DELETE',
+                        url: INSTANCE_URL + '/api/v2/system/cache/_event/' + scope.serviceInfo.name
+                    }).then(
+                        function(result){
+
+                            var messageOptions = {
+                                module: 'Services',
+                                provider: 'dreamfactory',
+                                type: 'success',
+                                message: 'Successfully cleared script from cache.'
+                            };
+                            dfNotify.error(messageOptions);
+                        },
+                        function(error) {
+
+                            var messageOptions = {
+                                module: 'Services',
+                                provider: 'dreamfactory',
+                                type: 'error',
+                                message: 'Failed to cleared script from cache.'
+                            };
+                            dfNotify.error(messageOptions);
+                        }
+                    ).finally(function() {
                     });
                 };
 
@@ -1427,7 +1407,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 var watchSelections = scope.$watchCollection('selections', function (newValue, oldValue) {
 
                     scope.disableServiceLinkRefresh = !scope.getRefreshEnable();
+                    if (newValue) {
+                        // when unselecting a service do nothing
+                        scope.isServiceConfigEditable = (newValue.service === null);
+                        // if changing from no service to service then clear content
+                        // if changing from one service to another then clear content
+                        // if changing from service to no service then keep content
+                        if (newValue.service !== null) {
+                            scope.serviceConfig.content = "";
+                            scope.serviceConfigUpdateCounter++;
+                        }
+                    }
                 });
+
 
                 scope.$on('$destroy', function (e) {
 
@@ -1448,7 +1440,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         type === 'python' ||
                         type === 'v8js') {
 
-                        config.content = scope.serviceConfigEditorObj.editor.getValue();
+                        // if linked to a service set script content to empty
+                        if (scope.selections.service) {
+                            config.content = "";
+                            scope.serviceConfigUpdateCounter++;
+                        } else {
+                            config.content = scope.serviceConfigEditorObj.editor.getValue();
+                        }
 
                         // sanitize service link config before saving
                         // send nulls not empty strings
@@ -1498,6 +1496,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 scope.serviceDefEditorObj = {"editor": null};
                 scope.allowedDefinitionFormats = ['json', 'yml', 'yaml'];
                 scope.serviceDefGitHubTarget = 'definition';
+                scope.serviceDefUpdateCounter = 0;
 
                 // init service def
                 scope.serviceDefinition = {
@@ -1561,7 +1560,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                             var format;
 
                             scope.serviceDefinition.content = evt.target.result;
-                            scope.$apply();
+                            scope.serviceDefUpdateCounter++;
 
                             if (files[0].name.indexOf('yml') !== -1 || files[0].name.indexOf('yaml') !== -1) {
                                 format = 1;

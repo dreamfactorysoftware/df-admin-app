@@ -39,11 +39,13 @@
                                             <a data-ng-click="jumpTo($index)" data-ng-if="menuPathArr.length - 1 !== $index">{{path}}</a>
                                             <span data-ng-if="menuPathArr.length - 1 === $index">{{path}}</span>
                                         </li>
+                                        <span ng-if="currentScriptObj && !isEventScriptEditable"><b> (Read Only)</b></span>
                                     </ol>
                                     <df-ace-editor data-input-type="'string'"
-                                                   data-input-content="{content: currentScriptObj.content}"
+                                                   data-input-content="currentScriptObj.content"
+                                                   data-input-update="eventScriptUpdateCounter"
                                                    data-input-format="currentScriptObj.type"
-                                                   data-is-editable="true"
+                                                   data-is-editable="isEventScriptEditable"
                                                    data-editor-obj="eventScriptEditorObj"
                                                    data-target-div="'eventScript'">
                                     </df-ace-editor>

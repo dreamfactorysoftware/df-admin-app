@@ -23,10 +23,10 @@
             <div data-ng-if="field.type == 'text' && field.name == 'content'">
                 <label>Import a script file</label>
                 <div>
-                  <label class="btn btn-default btn-file btn-sm">
-                      Select Desktop File... <input type="file" id="services_details_config_filepick_{{$index}}"  style="display: none;" accept="{{allowedConfigFormats}}" onclick="this.value = null;" onchange="angular.element(this).scope().handleFiles(this)" ng-model="filename">
+                  <label class="btn btn-default btn-file btn-sm" ng-disabled="selections.service">
+                      Select Desktop File... <input ng-disabled="selections.service" type="file" id="services_details_config_filepick_{{$index}}"  style="display: none;" accept="{{allowedConfigFormats}}" onclick="this.value = null;" onchange="angular.element(this).scope().handleFiles(this)" ng-model="filename">
                   </label>
-                  <button type="button" id="services_details_config_file_{{$index}}"  class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShowConfig()">Select GitHub File...</button>
+                  <button type="button" ng-disabled="selections.service" id="services_details_config_file_{{$index}}"  class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShowConfig()">Select GitHub File...</button>
                 </div>
                 <label>Link to a service</label>
                 <div>
@@ -53,7 +53,13 @@
                             data-ng-show="selections.service"
                             data-ng-click="pullLatestScript()"
                             data-ng-disabled="disableServiceLinkRefresh">
-                        <i class="fa fa-refresh"></i> Refresh
+                        <i class="fa fa-refresh"></i> View Latest
+                    </button>
+                    <button type="button" class="btn btn-sm btn-primary"
+                            data-ng-show="selections.service"
+                            data-ng-click="deleteScriptFromCache()"
+                            data-ng-disabled="disableServiceLinkRefresh">
+                        <i class="fa fa-refresh"></i> Delete Cache
                     </button>
                 </div>
             </div>
@@ -76,9 +82,10 @@
 
         <df-ace-editor data-ng-if="field.type == 'text' && field.name == 'content'"
                        data-input-type="'string'"
-                       data-input-content="{content: serviceConfig[field.name]}"
+                       data-input-content="serviceConfig[field.name]"
+                       data-input-update="serviceConfigUpdateCounter"
                        data-input-format="serviceInfo.type"
-                       data-is-editable="true"
+                       data-is-editable="isServiceConfigEditable"
                        data-editor-obj="serviceConfigEditorObj"
                        data-target-div="'serviceConfig'">
         </df-ace-editor>

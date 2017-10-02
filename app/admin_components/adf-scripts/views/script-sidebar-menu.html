@@ -40,7 +40,7 @@
                 <a class="list-group-item"
                    data-ng-repeat="endpoint in currentEndpointObj.endpoints"
                    ng-class="{ highlighted: highlightExplodedEndpoint(endpoint) }"
-                   data-ng-click="setScript(endpoint)">{{endpoint}}<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
+                   data-ng-click="getScript(endpoint)">{{endpoint}}<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
             </div>
 
             <div data-ng-show="currentScriptObj && currentScriptObj.name && menuPathArr.length === 4">
@@ -81,13 +81,13 @@
                     <legend style="all:inherit; font-weight:bold;">Import a script file</legend>
                     <div class="form-group">
                           <span>From Desktop:&nbsp;</span>
-                          <label class="btn btn-default btn-file btn-sm">
-                              Select File... <input type="file" style="display: none;"  onclick="this.value = null;" onchange="angular.element(this).scope().handleFiles(this)" ng-model="filename">
+                          <label class="btn btn-default btn-file btn-sm" ng-disabled="selections.service">
+                              Select File... <input ng-disabled="selections.service" type="file" style="display: none;"  onclick="this.value = null;" onchange="angular.element(this).scope().handleFiles(this)" ng-model="filename">
                           </label>
                     </div>
                     <div class="form-group">
                         <span>From GitHub:&nbsp;&nbsp;&nbsp;</span>
-                        <button type="button" class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShow()">Select File...</button>
+                        <button ng-disabled="selections.service" type="button" class="btn btn-default btn-sm" onclick="angular.element(this).scope().githubModalShow()">Select File...</button>
                     </div>
                 </fieldset>
                 <br>
@@ -118,7 +118,12 @@
                         <button type="button" class="btn btn-small btn-primary"
                                 data-ng-click="pullLatestScript()"
                                 data-ng-disabled="disableServiceLinkRefresh">
-                            <i class="fa fa-refresh"></i> Refresh
+                            <i class="fa fa-refresh"></i> View Latest
+                        </button>
+                        <button type="button" class="btn btn-small btn-primary"
+                                data-ng-click="deleteScriptFromCache()"
+                                data-ng-disabled="disableServiceLinkRefresh">
+                            <i class="fa fa-refresh"></i> Delete Cache
                         </button>
                     </div>
                 </fieldset>
