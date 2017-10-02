@@ -1,13 +1,10 @@
 'use strict';
 
 
-angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource', 'ngProgress'])
+angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
-    .run(['dfApplicationData', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', 'ngProgressFactory',
-        function (dfApplicationData, UserDataService, SystemConfigDataService, $location, $rootScope, ngProgressFactory) {
-
-            //TODO:Add progress bar later on once stabilized.
-            //$rootScope.progressbar = ngProgressFactory.createInstance();
+    .run(['dfApplicationData', 'SystemConfigDataService',
+        function (dfApplicationData, SystemConfigDataService) {
 
             // Get the System Config synchronously because we are dead in the water without it
             SystemConfigDataService.getSystemConfig();
