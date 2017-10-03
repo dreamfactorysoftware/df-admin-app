@@ -38,6 +38,47 @@ angular
         'dfLimit'
     ])
 
+    // each tab uses this in its resolve function to make sure user is allowed access
+    // if access is not allowed an exception is thrown which is caught and triggers a PNotify
+
+    .factory('checkUserService', function (UserDataService, $location, $q) {
+
+        return {
+
+            checkUser: function () {
+
+                var err = false;
+                var currentUser = UserDataService.getCurrentUser();
+
+                // If there is no currentUser and we don't allow guest users
+                if (!currentUser) {
+
+                    $location.url('/login');
+                    err = true;
+                }
+
+                // There is a currentUser but they are not an admin
+                else if (currentUser && !currentUser.is_sys_admin) {
+
+                    $location.url('/launchpad');
+                    err = true;
+                }
+
+                if (err) {
+                    // This will stop the route from loading anything
+                    // it's caught by the global error handler in
+                    // app.js
+                    throw {
+                        routing: true
+                    };
+                }
+
+                // all good, just resolve empty promise
+                return $q.when();
+            }
+        };
+    })
+
     // Set application version number
     .constant('APP_VERSION', '2.11.0')
 
@@ -122,7 +163,7 @@ angular
                 controller: 'RegisterCompleteCtrl',
                 resolve: {
 
-                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
+                    checkRegisterCompleteRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
 
                         var sysConfig = SystemConfigDataService.getSystemConfig(),
                             currentUser = UserDataService.getCurrentUser();
@@ -176,7 +217,7 @@ angular
                 controller: 'ResetPasswordEmailCtrl',
                 resolve: {
 
-                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
+                    checkResetPasswordRoute: ['UserDataService', '$location', function (UserDataService, $location) {
 
                         var currentUser = UserDataService.getCurrentUser();
 
@@ -199,7 +240,7 @@ angular
                 controller: 'UserInviteCtrl',
                 resolve: {
 
-                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
+                    checkUserInviteRoute: ['UserDataService', '$location', function (UserDataService, $location) {
 
                         var currentUser = UserDataService.getCurrentUser();
 

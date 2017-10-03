@@ -110,21 +110,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     templateUrl: MOD_APPS_ASSET_PATH + 'views/main.html',
                     controller: 'AppsCtrl',
                     resolve: {
-                        checkCurrentUser: ['UserDataService', '$location', function (UserDataService, $location) {
-
-                            var currentUser = UserDataService.getCurrentUser();
-
-
-                            // If there is no currentUser and we don't allow guest users
-                            if (!currentUser) {
-                                $location.url('/login')
-                            }
-
-                            // There is a currentUser but they are not an admin
-                            else if (currentUser && !currentUser.is_sys_admin) {
-
-                                $location.url('/launchpad')
-                            }
+                        checkUser:['checkUserService', function (checkUserService) {
+                            return checkUserService.checkUser();
                         }]
                     }
                 });

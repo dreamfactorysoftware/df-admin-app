@@ -169,7 +169,7 @@ angular.module('dreamfactoryApp')
             {
                 name: 'limit',
                 label: 'Limits',
-                path: '/limit'
+                path: '/limits'
             }
         ];
         $scope.componentNavOptions = {
@@ -321,7 +321,7 @@ angular.module('dreamfactoryApp')
                     $scope.showAdminComponentNav = false;
                     break;
                 default:
-                    $scope.showAdminComponentNav = ($scope.currentUser && $scope.currentUser.is_sys_admin === true);
+                    $scope.showAdminComponentNav = !!$scope.currentUser;
                     break;
             }
         })

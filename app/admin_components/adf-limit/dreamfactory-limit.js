@@ -2,7 +2,7 @@
 
 
 angular.module('dfLimit', ['ngRoute', 'dfUtility'])
-    .constant('MOD_LIMIT_ROUTER_PATH', '/limit')
+    .constant('MOD_LIMIT_ROUTER_PATH', '/limits')
     .constant('MOD_LIMIT_ASSET_PATH', 'admin_components/adf-limit/')
 
     .config(['$routeProvider', 'MOD_LIMIT_ROUTER_PATH', 'MOD_LIMIT_ASSET_PATH',
@@ -12,39 +12,8 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     templateUrl: MOD_LIMIT_ASSET_PATH + 'views/main.html',
                     controller: 'LimitCtl',
                     resolve: {
-                        checkCurrentLimit: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
-
-                            var currentUser = UserDataService.getCurrentUser(),
-                                defer = $q.defer();
-
-                            // If there is no currentUser and we don't allow guest users
-                            if (!currentUser) {
-
-                                $location.url('/login');
-
-                                // This will stop the route from loading anything
-                                // it's caught by the global error handler in
-                                // app.js
-                                throw {
-                                    routing: true
-                                };
-                            }
-
-                            // There is a currentUser but they are not an admin
-                            else if (currentUser && !currentUser.is_sys_admin) {
-
-                                $location.url('/launchpad');
-
-                                // This will stop the route from loading anything
-                                // it's caught by the global error handler in
-                                // app.js
-                                throw {
-                                    routing: true
-                                };
-                            }
-
-                            defer.resolve();
-                            return defer.promise;
+                        checkUser:['checkUserService', function (checkUserService) {
+                            return checkUserService.checkUser();
                         }]
                     }
                 });

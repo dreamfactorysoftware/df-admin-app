@@ -288,7 +288,7 @@ angular.module('dfUtility', ['dfApplication'])
                         case '/package-manager':
                         case '/apidocs':
                         case '/downloads':
-                        case '/limit':
+                        case '/limits':
                             scope.activeLink = 'admin';
                             break;
 
