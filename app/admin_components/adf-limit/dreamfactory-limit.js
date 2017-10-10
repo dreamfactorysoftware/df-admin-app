@@ -12,6 +12,9 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     templateUrl: MOD_LIMIT_ASSET_PATH + 'views/main.html',
                     controller: 'LimitCtl',
                     resolve: {
+                        checkAdmin:['checkAdminService', function (checkAdminService) {
+                            return checkAdminService.checkAdmin();
+                        }],
                         checkUser:['checkUserService', function (checkUserService) {
                             return checkUserService.checkUser();
                         }]

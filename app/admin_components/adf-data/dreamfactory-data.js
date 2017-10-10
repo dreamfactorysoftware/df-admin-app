@@ -39,7 +39,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
     .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {}])
 
-    .controller('DataCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', function($scope, INSTANCE_URL, dfApplicationData, dfNotify) {
+    .controller('DataCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', '$location', function($scope, INSTANCE_URL, dfApplicationData, dfNotify, $location) {
 
         $scope.$parent.title = 'Data';
 
@@ -108,11 +108,16 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
                     $scope.apiData = newApiData;
                 },
                 function (error) {
+                    var msg = 'There was an error loading the Data tab. Please try refreshing your browser and logging in again.';
+                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                        msg = 'To use the Data tab your role must allow GET access to system/service and /_table for each service. To create, update, or delete records you need POST, PUT, DELETE access to /_table for each service.';
+                        $location.url('/home');
+                    }
                     var messageOptions = {
                         module: 'Data',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading the Data tab. Please try refreshing your browser and logging in again.'
+                        message: msg
                     };
                     dfNotify.error(messageOptions);
                 }

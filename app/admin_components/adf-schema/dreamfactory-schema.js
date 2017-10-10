@@ -755,7 +755,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         };
     })
 
-    .controller('SchemaCtrl', ['$scope', 'dfApplicationData', 'ServiceModel', 'dfNotify', function ($scope, dfApplicationData, ServiceModel, dfNotify) {
+    .controller('SchemaCtrl', ['$scope', 'dfApplicationData', 'ServiceModel', 'dfNotify', '$location',  function ($scope, dfApplicationData, ServiceModel, dfNotify, $location) {
 
         // Set Title in parent
         $scope.$parent.title = 'Schema';
@@ -847,11 +847,16 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     $scope.apiData = newApiData;
                 },
                 function (error) {
+                    var msg = 'There was an error loading the Schema tab. Please try refreshing your browser and logging in again.';
+                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                        msg = 'To use the Schema tab your role must allow GET access to system/service and /_schema for each service. To create, update, or delete schema you need POST, PUT, DELETE access to /_schema for each service.';
+                        $location.url('/home');
+                    }
                     var messageOptions = {
                         module: 'Schema',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading data for the Schema tab. Please try refreshing your browser and logging in again.'
+                        message: msg
                     };
                     dfNotify.error(messageOptions);
                 }

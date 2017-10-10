@@ -21,8 +21,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
     }])
     
-    .controller('UsersCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify',
-        function($rootScope, $scope, dfApplicationData, dfNotify){
+    .controller('UsersCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location',
+        function($rootScope, $scope, dfApplicationData, dfNotify, $location){
 
             $scope.$parent.title = 'Users';
 
@@ -74,11 +74,16 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         $scope.apiData = newApiData;
                     },
                     function (error) {
+                        var msg = 'There was an error loading data for the Users tab. Please try refreshing your browser and logging in again.';
+                        if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                            msg = 'To use the Users tab your role must allow GET access to system/user, system/role, and system/app. To create, update, or delete users you need POST, PUT, DELETE access to /system/user.';
+                            $location.url('/home');
+                        }
                         var messageOptions = {
                             module: 'Users',
                             provider: 'dreamfactory',
                             type: 'error',
-                            message: 'There was an error loading data for the Users tab. Please try refreshing your browser and logging in again.'
+                            message: msg
                         };
                         dfNotify.error(messageOptions);
                     }

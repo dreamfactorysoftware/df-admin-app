@@ -31,6 +31,9 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/main.html',
                     controller: 'SystemConfigurationCtrl',
                     resolve: {
+                        checkAdmin:['checkAdminService', function (checkAdminService) {
+                            return checkAdminService.checkAdmin();
+                        }],
                         checkUser:['checkUserService', function (checkUserService) {
                             return checkUserService.checkUser();
                         }]
@@ -1413,46 +1416,16 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
     // sys config as seen by unauthenticated user
     // for full info we have to get /system/environment using getApiData interface
-    .service('SystemConfigDataService', ['INSTANCE_URL',  function (INSTANCE_URL) {
+    .service('SystemConfigDataService', ['dfApplicationData',  function (dfApplicationData) {
 
         var systemConfig = null;
-
-        function getSystemConfigFromServerSync() {
-
-            var xhr;
-
-            if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-                xhr = new XMLHttpRequest();
-            } else {// code for IE6, IE5
-                xhr = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-
-            xhr.open("GET", INSTANCE_URL + '/api/v2/system/environment', false);
-            xhr.setRequestHeader("X-DreamFactory-API-Key", "6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d");
-            xhr.setRequestHeader("Content-Type", "application/json");
-
-            //if (xhr.overrideMimeType) xhr.overrideMimeType("application/json");
-
-            xhr.send();
-
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                return angular.fromJson(xhr.responseText);
-            } else {
-                throw {
-                    module: 'DreamFactory System Config Module',
-                    type: 'error',
-                    provider: 'dreamfactory',
-                    exception: 'XMLHTTPRequest Failure:  getSystemConfigFromServer() Failed retrieve config.  Please contact your system administrator.'
-                };
-            }
-        }
 
         return {
 
             getSystemConfig: function () {
 
                 if (systemConfig === null) {
-                    systemConfig = getSystemConfigFromServerSync();
+                    systemConfig = dfApplicationData.getApiDataSync('environment');
                 }
                 return systemConfig;
             }

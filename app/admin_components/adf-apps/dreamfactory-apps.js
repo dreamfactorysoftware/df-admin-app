@@ -24,7 +24,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
     }])
 
-    .controller('AppsCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', function ($rootScope, $scope, dfApplicationData, dfNotify) {
+    .controller('AppsCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, $scope, dfApplicationData, dfNotify, $location) {
 
 
         // Set Title in parent
@@ -91,11 +91,16 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     }
                 },
                 function (error) {
+                    var msg = 'There was an error loading data for the Apps tab. Please try refreshing your browser and logging in again.';
+                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                        msg = 'To use the Apps tab your role must allow GET access to system/app, system/role, and system/service. To create, update, or delete apps you need POST, PUT, DELETE access to /system/app.';
+                        $location.url('/home');
+                    }
                     var messageOptions = {
                         module: 'Apps',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading data for the Apps tab. Please try refreshing your browser and logging in again.'
+                        message: msg
                     };
                     dfNotify.error(messageOptions);
                 }
@@ -595,7 +600,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                                 message: reject
                             };
 
-                            dfNotify.success(messageOptions);
+                            dfNotify.error(messageOptions);
                         }
                     ).finally(
                         function () {

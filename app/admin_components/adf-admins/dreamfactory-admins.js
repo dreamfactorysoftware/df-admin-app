@@ -29,6 +29,9 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     templateUrl: MOD_ADMIN_ASSET_PATH + 'views/main.html',
                     controller: 'AdminsCtrl',
                     resolve: {
+                        checkAdmin:['checkAdminService', function (checkAdminService) {
+                            return checkAdminService.checkAdmin();
+                        }],
                         checkUser:['checkUserService', function (checkUserService) {
                             return checkUserService.checkUser();
                         }]

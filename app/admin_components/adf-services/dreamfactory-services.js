@@ -21,7 +21,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
     }])
 
-    .controller('ServicesCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', function ($rootScope, $scope, dfApplicationData, dfNotify) {
+    .controller('ServicesCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, $scope, dfApplicationData, dfNotify, $location) {
 
         $scope.$parent.title = 'Services';
 
@@ -68,11 +68,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 function (response) {
                     var newApiData = {};
                     apis.forEach(function(value, index) {
-                        if (value === 'service_link') {
-                            newApiData[value] = response[index].services;
-                        } else {
-                            newApiData[value] = response[index].resource ? response[index].resource : response[index];
-                        }
+                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
                     });
                     $scope.apiData = newApiData;
                     if (init) {
@@ -80,11 +76,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     }
                 },
                 function (error) {
+                    var msg = 'There was an error loading data for the Services tab. Please try refreshing your browser and logging in again.';
+                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                        msg = 'To use the Services tab your role must allow GET access to system/service and system/service_type. To create, update, or delete services you need POST, PUT, DELETE access to /system/service.';
+                        $location.url('/home');
+                    }
                     var messageOptions = {
                         module: 'Services',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading data for the Services tab. Please try refreshing your browser and logging in again.'
+                        message: msg
                     };
                     dfNotify.error(messageOptions);
                 }
@@ -1326,9 +1327,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         }
                         if (loadEvents) {
                             // Trigger loading of event list. It will be cached after first time.
-                            dfApplicationData.getApiData(['eventlist']).then(
+                            dfApplicationData.getApiData(['event_list']).then(
                                 function (response) {
-                                    scope.apiData.eventlist = response[0].resource;
+                                    scope.apiData.event_list = response[0].resource;
                                 },
                                 function (error) {
                                     var messageOptions = {
@@ -1344,7 +1345,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     }
                 });
 
-                var watchEventList = scope.$watchCollection('apiData.eventlist', function (newValue, oldValue) {
+                var watchEventList = scope.$watchCollection('apiData.event_list', function (newValue, oldValue) {
 
                     var temp = {};
                     var serviceEvents = [];

@@ -38,8 +38,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
     .run(['INSTANCE_URL', '$http', function (INSTANCE_URL, $http) {
 
     }])
-    .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$rootScope', '$http', 'dfApplicationData', 'dfNotify',
-        function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify) {
+    .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$rootScope', '$http', 'dfApplicationData', 'dfNotify', '$location',
+        function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify, $location) {
 
             $scope.$parent.title = 'Scripts';
             $scope.scriptGitHubTarget = 'scripts';
@@ -120,11 +120,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         dfApplicationData.getApiData(secondaryApis, ($scope.apiData === null)).then(
                             function (response) {
                                 secondaryApis.forEach(function(value, index) {
-                                    if (value === 'service_link') {
-                                        newApiData[value] = response[index].services;
-                                    } else {
-                                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
-                                    }
+                                    newApiData[value] = response[index].resource ? response[index].resource : response[index];
                                     if (value === 'event') {
                                         // used for highlighting in ui
                                         newApiData['event_lookup'] = $scope.buildEventLookup(newApiData[value]);
@@ -134,11 +130,16 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                 $scope.apiData = newApiData;
                             },
                             function (error) {
+                                var msg = 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.';
+                                if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                                    msg = 'To use the Scripts tab your role must allow GET access to system/event_script, system/event, and system/script_type. To create, update, or delete scripts you need POST and DELETE access to /system/event_script.';
+                                    $location.url('/home');
+                                }
                                 var messageOptions = {
                                     module: 'Scripts',
                                     provider: 'dreamfactory',
                                     type: 'error',
-                                    message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.'
+                                    message: msg
                                 };
                                 dfNotify.error(messageOptions);
                             }
@@ -147,11 +148,16 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         });
                     },
                     function (error) {
+                        var msg = 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.';
+                        if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                            msg = 'To use the Scripts tab your role must allow GET access to system/event_script, system/event, and system/script_type. To create, update, or delete scripts you need POST and DELETE access to /system/event_script.';
+                            $location.url('/home');
+                        }
                         var messageOptions = {
                             module: 'Scripts',
                             provider: 'dreamfactory',
                             type: 'error',
-                            message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.'
+                            message: msg
                         };
                         dfNotify.error(messageOptions);
                         $scope.dataLoading = false;
@@ -451,9 +457,20 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         $scope.newScript = false;
                     },
                     function (reject) {
-                        $scope.currentScriptObj = new ScriptObj(scriptName);
-                        $scope.newScript = true;
-                        $scope.selections.service = null;
+                        if (reject.data && reject.data.error && reject.data.error.code === 404) {
+                            $scope.currentScriptObj = new ScriptObj(scriptName);
+                            $scope.newScript = true;
+                            $scope.selections.service = null;
+                        } else {
+                            var messageOptions = {
+                                module: 'Scripts',
+                                provider: 'dreamfactory',
+                                type: 'error',
+                                message: reject
+                            };
+                            dfNotify.error(messageOptions);
+                            $scope.menuBack();
+                        }
                     }
                 ).finally(
                     function () {

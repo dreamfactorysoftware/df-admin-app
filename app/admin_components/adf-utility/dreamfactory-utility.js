@@ -343,7 +343,6 @@ angular.module('dfUtility', ['dfApplication'])
 
                 scope.activeLink = null;
 
-                scope.links = scope.options.links;
                 scope.toggleMenu = false;
 
 
@@ -437,7 +436,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                 });
             }
-        }
+        };
     }])
 
     // declare our directive and pass in our constant
@@ -1697,7 +1696,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                 scope.editor = null;
                 scope.currentContent = "";
-                scope.verbose = true;
+                scope.verbose = false;
 
                 // PRIVATE API
 
@@ -2247,9 +2246,9 @@ angular.module('dfUtility', ['dfApplication'])
                 // records are deleted. It loads records for page 1 and resets pagination.
                 scope.$on('toolbar:paginate:' + scope.api + ':reset', function (e) {
 
-                    // If we're logging out don't bother
-                    // dfApplicationObj is being reset
-                    if ($location.path() === '/logout') {
+                    // If we're logging out don't bother dfApplicationObj is being reset.
+                    // If the tab you are leaving was not able to load data then dfApplicationObj won't have it so bail out.
+                    if ($location.path() === '/logout' || dfApplicationData.getApiDataFromCache(scope.api) === undefined) {
                         return;
                     }
 
@@ -2977,24 +2976,26 @@ angular.module('dfUtility', ['dfApplication'])
                 result = "The server returned an unknown error.";
                 if (errorDataObj.data) {
                     error = errorDataObj.data.error;
-                    if (error) {
-                        // default to top level error
-                        message = error.message
-                        if (message) {
-                            result = message;
-                        }
-                        if (error.code === 1000 && error.context) {
-                            resource = error.context.resource;
-                            error = error.context.error;
-                            if (resource && error) {
-                                result = '';
-                                angular.forEach(error, function (index) {
-                                    if (result) {
-                                        result += '\n';
-                                    }
-                                    result += resource[index].message;
-                                });
-                            }
+                } else {
+                    error = errorDataObj.error;
+                }
+                if (error) {
+                    // default to top level error
+                    message = error.message;
+                    if (message) {
+                        result = message;
+                    }
+                    if (error.code === 1000 && error.context) {
+                        resource = error.context.resource;
+                        error = error.context.error;
+                        if (resource && error) {
+                            result = '';
+                            angular.forEach(error, function (index) {
+                                if (result) {
+                                    result += '\n';
+                                }
+                                result += resource[index].message;
+                            });
                         }
                     }
                 }

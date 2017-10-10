@@ -3,18 +3,11 @@
 
 angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
-    .run(['dfApplicationData', 'SystemConfigDataService',
-        function (dfApplicationData, SystemConfigDataService) {
+    .run(['dfApplicationData', function (dfApplicationData) {
 
-            // Get the System Config synchronously because we are dead in the water without it
-            SystemConfigDataService.getSystemConfig();
-
-            // reset dfApplicationObj
-            dfApplicationData.resetApplicationObj();
-        }])
+    }])
 
     .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', '$rootScope', '$location', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, $rootScope, $location) {
-
 
         var dfApplicationObj = {
             apis: {}
@@ -73,13 +66,13 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 options = null;
                 // add required api param used by resource to build url
                 // this allows for aliasing so the same api can be called with different query params
-                // for example event = system/event but eventlist = system/event?as_list=true
+                // for example event = system/event but event_list = system/event?as_list=true
                 // this capability should be used as little as possible
                 switch (api) {
                     case 'system':
                         params['api'] = '';
                         break;
-                    case 'eventlist':
+                    case 'event_list':
                         params['api'] = 'event';
                         break;
                     case 'service_link':
@@ -92,7 +85,12 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }
                 dfSystemData.resource(options).get(params).$promise.then(
                     function (response) {
-                        dfApplicationObj.apis[api] = response;
+                        if (api === 'service_link') {
+                            // add resource wrapper for consistency at higher levels
+                            dfApplicationObj.apis[api] = {"resource": response.services};
+                        } else {
+                            dfApplicationObj.apis[api] = response;
+                        }
                         if (debugLevel >= 1) console.log('_loadOne(' + api + '): ok from server', dfApplicationObj.apis[api]);
                         if (debugLevel >= 2) console.log('_loadOne(' + api + '): dfApplicationObj', dfApplicationObj);
                         deferred.resolve(dfApplicationObj.apis[api]);
@@ -104,6 +102,49 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             }
 
             return deferred.promise;
+        }
+
+        // Load a single api synchronously. It would be good to get rid of this
+        // but system config relies on it for now. It does not support params, options, or aliasing.
+
+        function _getApiDataSync(api, forceRefresh) {
+
+            var debugLevel = 0;
+
+            if (forceRefresh !== true && dfApplicationObj.apis.hasOwnProperty(api)) {
+                if (debugLevel >= 1) console.log('_getApiDataSync(' + api + '): from cache', dfApplicationObj.apis[api]);
+                if (debugLevel >= 2) console.log('_getApiDataSync(' + api + '): dfApplicationObj', dfApplicationObj);
+            } else {
+                var xhr;
+
+                if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+                    xhr = new XMLHttpRequest();
+                } else {// code for IE6, IE5
+                    xhr = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+
+                xhr.open("GET", INSTANCE_URL + '/api/v2/system/environment', false);
+                xhr.setRequestHeader("X-DreamFactory-API-Key", "6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d");
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send();
+
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    dfApplicationObj.apis[api] = angular.fromJson(xhr.responseText);
+                    if (debugLevel >= 1) console.log('_getApiDataSync(' + api + '): ok from server', dfApplicationObj.apis[api]);
+                    if (debugLevel >= 2) console.log('_getApiDataSync(' + api + '): dfApplicationObj', dfApplicationObj);
+                } else {
+                    if (debugLevel >= 1) console.log('_getApiDataSync(' + api + '): error from server', xhr.responseText);
+                    if (debugLevel >= 2) console.log('_getApiDataSync(' + api + '): dfApplicationObj', dfApplicationObj);
+                    throw {
+                        module: 'DreamFactory',
+                        type: 'error',
+                        provider: 'dreamfactory',
+                        exception: 'XMLHTTPRequest Failure:  _getApiDataSync() Failed. Please contact your system administrator.'
+                    };
+                }
+            }
+
+            return dfApplicationObj.apis[api];
         }
 
         // Resets the dfApplicationObj to initial state
@@ -179,7 +220,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                 // update the application object and session storage.
                 __deleteApiData(api, result);
-            })
+            });
         }
 
         // retrieves new data set from server
@@ -256,7 +297,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     event: {
                         scriptable: true
                     },
-                    eventlist: {
+                    event_list: {
                         as_list: true
                     },
                     event_script: {
@@ -385,7 +426,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                         // update count
                         updateCount();
-                    })
+                    });
                 }
                 else {
 
@@ -503,7 +544,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             getApiPrefs: function () {
 
                 return _getApiPrefs();
-
             },
 
             // Get table names. If not in cache then request from server and update cache.
@@ -551,8 +591,12 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             getApiData: function(apis, forceRefresh) {
                 return _getApiData(apis, forceRefresh);
+            },
+
+            getApiDataSync: function(api, forceRefresh) {
+                return _getApiDataSync(api, forceRefresh);
             }
-        }
+        };
     }])
 
     .service('dfSystemData', ['$http', 'XHRHelper', 'INSTANCE_URL', '$resource', 'dfObjectService', function ($http, XHRHelper, INSTANCE_URL, $resource, dfObjectService) {
@@ -597,7 +641,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     }
                 });
             }
-        }
+        };
     }])
 
     // This intercepts outgoing http calls.  Checks for restricted verbs from config
@@ -622,12 +666,12 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         break;
                     }
 
-                    i++
+                    i++;
                 }
 
                 return config;
             }
-        }
+        };
     }])
 
 
@@ -669,7 +713,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     return response;
                 }
-            }
+            };
         }
     ])
 
@@ -778,19 +822,19 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     default:
                         if (reject.config.ignore401) break;
-
-                        if ((reject.status === 401 || (reject.data && reject.data.error && reject.data.error.code === 401)) && reject.config.url.indexOf('/session') === -1) {
-                            if (reject.data.error.message === 'Token has expired' || reject.config.url.indexOf('/profile') !== -1) {
-                                //  put session
-                                return putSession(reject);
+                        var UserDataService = $injector.get('UserDataService');
+                        var currentUser = UserDataService.getCurrentUser();
+                        if (currentUser) {
+                            if ((reject.status === 401 || (reject.data && reject.data.error && reject.data.error.code === 401)) && reject.config.url.indexOf('/session') === -1) {
+                                if (reject.data.error.message === 'Token has expired' || reject.config.url.indexOf('/profile') !== -1) {
+                                    //  put session
+                                    return putSession(reject);
+                                }
+                                else {
+                                    // refresh session
+                                    return refreshSession(reject);
+                                }
                             }
-                            else {
-                                // refresh session
-                                return refreshSession(reject);
-                            }
-                        } else if (reject.status === 403 || (reject.data && reject.data.error && reject.data.error.code === 403)) {
-                            // refresh session
-                            return refreshSession(reject);
                         }
                         break;
                 }
