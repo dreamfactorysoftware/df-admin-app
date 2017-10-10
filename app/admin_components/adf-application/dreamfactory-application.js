@@ -76,6 +76,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         params['api'] = 'event';
                         break;
                     case 'service_link':
+                    case 'service_list':
                         // for this call use /api/v2 not /api/v2/system
                         options = {'url': INSTANCE_URL + '/api/v2'};
                         break;
@@ -85,7 +86,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }
                 dfSystemData.resource(options).get(params).$promise.then(
                     function (response) {
-                        if (api === 'service_link') {
+                        if (api === 'service_link' || api === 'service_list') {
                             // add resource wrapper for consistency at higher levels
                             dfApplicationObj.apis[api] = {"resource": response.services};
                         } else {
@@ -284,6 +285,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     },
                     service_link: {
                         group:"source control,file"
+                    },
+                    service_list: {
                     },
                     email_template: {
                         include_count: true
@@ -553,7 +556,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                 var deferred = $q.defer();
                 // assumes services are loaded already and there's a matching service name
-                var serviceList = this.getApiDataFromCache('service');
+                var serviceList = this.getApiDataFromCache('service_list');
                 var service = serviceList.filter(function(obj) {
                     return obj.name === serviceName;
                 })[0];
@@ -565,7 +568,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                             function (result) {
                                 service.components = result.data.resource || result.data;
                                 deferred.resolve(service.components);
-                                __updateApiData('service', service);
+                                __updateApiData('service_list', service);
                             },
                             function (error) {
                                 deferred.reject(error.data);
@@ -580,7 +583,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             updateServiceComponentsLocal: function (svc) {
 
                 // assumes services are loaded already and there's a matching service name
-                var serviceList = this.getApiDataFromCache('service');
+                var serviceList = this.getApiDataFromCache('service_list');
                 if (serviceList !== undefined) {
                     var service = serviceList.filter(function(obj) {
                         return obj.name === svc.name;

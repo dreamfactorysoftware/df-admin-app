@@ -81,7 +81,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
             $scope.options = options;
         });
 
-        $scope.$watchCollection('apiData.service', function (newValue, oldValue) {
+        $scope.$watchCollection('apiData.service_list', function (newValue, oldValue) {
 
             if (newValue) {
 
@@ -97,7 +97,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
         $scope.loadTabData = function() {
 
-            var apis = ['service'];
+            var apis = ['service_list'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -108,16 +108,11 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
                     $scope.apiData = newApiData;
                 },
                 function (error) {
-                    var msg = 'There was an error loading the Data tab. Please try refreshing your browser and logging in again.';
-                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                        msg = 'To use the Data tab your role must allow GET access to system/service and /_table for each service. To create, update, or delete records you need POST, PUT, DELETE access to /_table for each service.';
-                        $location.url('/home');
-                    }
                     var messageOptions = {
                         module: 'Data',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: msg
+                        message: 'There was an error loading the Data tab. Please try refreshing your browser and logging in again.'
                     };
                     dfNotify.error(messageOptions);
                 }

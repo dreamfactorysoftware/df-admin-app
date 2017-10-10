@@ -29,7 +29,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             var deferred = $q.defer();
             var currentService = StateService.get('dfservice');
 
-            if (!currentService) return;
+            if (!currentService) {
+                return;
+            }
 
             dfApplicationData.getServiceComponents(currentService.name, INSTANCE_URL + '/api/v2/' + currentService.name + '/_schema', {
                 params: {
@@ -56,7 +58,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         dfNotify.success(messageOptions);
                     }
 
-                    deferred.resolve(currentService)
+                    deferred.resolve(currentService);
                 },
                 function (reject) {
 
@@ -77,22 +79,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
           return {
               getTableList: getTableList
-          }
+          };
     }])
-
-
-    .factory('TableUtilities', ['dfApplicationData', function(dfApplicationData) {
-
-        function updateServiceComponents (newTable, service) {
-
-            dfApplicationData.updateServiceComponentsLocal(service);
-        }
-
-        return {
-            updateServiceComponents: updateServiceComponents
-        }
-    }])
-
 
     .factory('Table', ['$q', '$http', 'INSTANCE_URL', 'dfNotify', function($q, $http, INSTANCE_URL, dfNotify) {
         function Table(tableData) {
@@ -145,7 +133,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         var tableManager = {
             _pool: {},
             _retrieveInstance: function(tableName, tableData) {
-                if (!tableName) return false;
+                if (!tableName) {
+                    return false;
+                }
                 var instance = this._pool[tableName];
 
                 if (instance) {
@@ -360,7 +350,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                       method: 'PATCH',
                       url: INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_related',
                       data: data
-                    })
+                    });
                 }
             },
             saveRelation: function (params, relationData) {
@@ -426,7 +416,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         return {
             get: get,
             set: set
-        }
+        };
 
     })
 
@@ -466,8 +456,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     this.components = getSchemaComponents(array);
                 }
-            }
-        }
+            };
+        };
     })
 
     .service('TableObj', function () {
@@ -497,8 +487,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 },
                 record: tableObj,
                 recordCopy: angular.copy(tableObj)
-          }
-        }
+          };
+        };
     })
 
     .service('FieldObj', function () {
@@ -543,8 +533,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 },
                 record: fieldData1,
                 recordCopy: angular.copy(fieldData1),
-          }
-        }
+          };
+        };
     })
 
 
@@ -581,8 +571,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 },
                 record: RelationObj,
                 recordCopy: angular.copy(RelationObj)
-            }
-        }
+            };
+        };
     })
 
 
@@ -605,7 +595,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         this.deleteTableModel = function() {
 
             this.model = null;
-        }
+        };
     })
 
     .service('NavigationService', function () {
@@ -644,7 +634,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             setStep: setStep,
             nextStep: nextStep,
             previousStep: previousStep
-        }
+        };
 
     })
 
@@ -775,7 +765,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         $scope.lastTable = '';
 
         // WATCHERS
-        var watchServices = $scope.$watchCollection('apiData.service', function (newValue, oldValue) {
+        var watchServices = $scope.$watchCollection('apiData.service_list', function (newValue, oldValue) {
             
             if (newValue) {
                 var tempObj = {};
@@ -831,14 +821,14 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
         $scope.loadTabData = function() {
 
-            var apis = ['service'];
+            var apis = ['service_list'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
                     var newApiData = {};
                     apis.forEach(function(value, index) {
                         newApiData[value] = response[index].resource ? response[index].resource : response[index];
-                        if (value === 'service') {
+                        if (value === 'service_list') {
                             newApiData[value] = newApiData[value].filter(function(obj) {
                                 return ['mysql','pgsql','sqlite','sqlsrv','sqlanywhere','oracle','ibmdb2','informix','firebird','aws_redshift_db','mongodb'].indexOf(obj.type) >= 0;
                             });
@@ -847,16 +837,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     $scope.apiData = newApiData;
                 },
                 function (error) {
-                    var msg = 'There was an error loading the Schema tab. Please try refreshing your browser and logging in again.';
-                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                        msg = 'To use the Schema tab your role must allow GET access to system/service and /_schema for each service. To create, update, or delete schema you need POST, PUT, DELETE access to /_schema for each service.';
-                        $location.url('/home');
-                    }
                     var messageOptions = {
                         module: 'Schema',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: msg
+                        message: 'There was an error loading the Schema tab. Please try refreshing your browser and logging in again.'
                     };
                     dfNotify.error(messageOptions);
                 }
@@ -1005,10 +990,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope.selView = 'empty';
                 });
             }
-        }
+        };
       }])
 
-      .directive('dfTableCreateView', ['INSTANCE_URL', 'MOD_SCHEMA_ASSET_PATH', 'NavigationService', 'Table', 'TableDataModel', '$http', 'dfNotify', 'dfObjectService', 'StateService', 'dfApplicationData', 'TableUtilities', 'TableObj', 'tableManager', function (INSTANCE_URL, MOD_SCHEMA_ASSET_PATH, NavigationService, Table, TableDataModel, $http, dfNotify, dfObjectService, StateService, dfApplicationData, TableUtilities, TableObj, tableManager) {
+      .directive('dfTableCreateView', ['INSTANCE_URL', 'MOD_SCHEMA_ASSET_PATH', 'NavigationService', 'Table', 'TableDataModel', '$http', 'dfNotify', 'dfObjectService', 'StateService', 'dfApplicationData', 'TableObj', 'tableManager', function (INSTANCE_URL, MOD_SCHEMA_ASSET_PATH, NavigationService, Table, TableDataModel, $http, dfNotify, dfObjectService, StateService, dfApplicationData, TableObj, tableManager) {
 
         return {
             restrict: 'E',
@@ -1049,8 +1034,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             recordCopy: angular.copy(tables),
                             currentService: service.service
                         };
-                    })
-                }
+                    });
+                };
             },
 
             link: function (scope, elem, attrs, ctrls) {
@@ -1128,7 +1113,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                         scope.currentService.components.push(component);
 
-                        TableUtilities.updateServiceComponents(newTable, scope.currentService);
+                        dfApplicationData.updateServiceComponentsLocal(scope.currentService);
 
                         scope.table.__dfUI.newTable = false;
 
@@ -1158,7 +1143,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         };
 
                         dfNotify.error(messageOptions);
-                    })
+                    });
                 };
 
                 scope._cancelTable = function () {
@@ -1175,7 +1160,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope.$emit('table', {notify: 'close'});
                 };
             }
-        }
+        };
       }])
 
 
@@ -1230,7 +1215,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             recordCopy: angular.copy(tables),
                             currentService: service.service
                         };
-                    })
+                    });
                 };
 
 
@@ -1238,7 +1223,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     tableManager.updateRelations(obj).then(function(tables) {
 
-                    })
+                    });
                 };
 
 
@@ -1282,7 +1267,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                                     break;
                                 }
-                                i++
+                                i++;
                             }
 
                             $scope.table.currentService = currentService;
@@ -1302,10 +1287,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                             var messageOptions = {
 
-                                module: 'Api Error',
+                                module: 'Schema',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject.error.message
+                                message: reject
                             };
 
                             dfNotify.error(messageOptions);
@@ -1358,10 +1343,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 break;
                             }
 
-                            i++
+                            i++;
                         }
 
-                        dfApplicationData.updateServiceComponentsLocal(scope.currentService)
+                        dfApplicationData.updateServiceComponentsLocal(scope.currentService);
                         StateService.set('dfservice', scope.currentService);
 
                         var messageOptions = {
@@ -1387,7 +1372,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         };
 
                         dfNotify.error(messageOptions);
-                    })
+                    });
                 };
 
                 scope.closeTable = function () {
@@ -1526,7 +1511,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 });
             }
-        }
+        };
       }])
 
 
@@ -1547,7 +1532,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.jsonSelected = templateCtrl.selectedView;
             }
-        }
+        };
       }])
 
     .directive('dfTableFields', ['MOD_SCHEMA_ASSET_PATH', 'NavigationService', 'tableManager', 'TableObj', 'StateService', 'dfNotify', function (MOD_SCHEMA_ASSET_PATH, NavigationService, tableManager, TableObj, StateService, dfNotify) {
@@ -1714,9 +1699,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     scope.$parent.table.record.field = tableFields;
                     scope.$parent.table.record.primary_key = primaryKeyName;
-                }
+                };
             }
-        }
+        };
     }])
 
     .directive('dfTableRelationships', ['MOD_SCHEMA_ASSET_PATH', 'NavigationService', 'dfNotify', 'tableManager', 'StateService', function (MOD_SCHEMA_ASSET_PATH, NavigationService, dfNotify, tableManager, StateService) {
@@ -1807,7 +1792,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                           };
 
                           dfNotify.error(messageOptions);
-                      })
+                      });
 
                   };
 
@@ -1839,7 +1824,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     relationshipDataSubscribe();
                 });
             }
-        }
+        };
     }])
 
 
@@ -1988,7 +1973,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                                 dfNotify.error(messageOptions);
                             }
-                        })
+                        });
                     }
                 };
 
@@ -2111,7 +2096,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             dfNotify.error(messageOptions);
 
                         }
-                    )
+                    );
                 };
 
                 var watchFieldData = scope.$watch('fieldData', function (newValue, oldValue) {
@@ -2132,7 +2117,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     watchFieldData();
                 });
             }
-        }
+        };
     }])
 
 
@@ -2147,7 +2132,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-function-use.html',
             link: function (scope, elem, attrs) {
             }
-        }
+        };
     }])
 
 
@@ -2202,7 +2187,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                             this.components = getSchemaComponents(array);
                         }
-                    }
+                    };
                 };
 
                 scope.typeOptions = [
@@ -2284,7 +2269,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                             dfNotify.error(messageOptions);
                         }
-                    )
+                    );
 
                 };
 
@@ -2307,7 +2292,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope._loadReferenceServices = function () {
 
-                    scope.refServices = scope.apiData.service;
+                    scope.refServices = scope.apiData.service_list;
                 };
 
 
@@ -2363,7 +2348,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             dfNotify.error(messageOptions);
 
                         }
-                    )
+                    );
 
                 };
 
@@ -2429,7 +2414,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                             dfNotify.error(messageOptions);
                         }
-                    )
+                    );
 
                 };
 
@@ -2452,7 +2437,9 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     newTable = newTable || false;
 
-                    if (newTable === true) return;
+                    if (newTable === true) {
+                        return;
+                    }
 
                     var params = {
                         service: StateService.get('dfservice').name,
@@ -2537,7 +2524,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
                 };
             }
-        }
+        };
     }])
 
       .directive('dfSchemaNavigator', ['MOD_SCHEMA_ASSET_PATH', 'dfApplicationData', 'StateService', 'TableListService', 'NavigationService', 'tableManager', 'dfNotify', function (MOD_SCHEMA_ASSET_PATH, dfApplicationData, StateService, TableListService, NavigationService, tableManager, dfNotify) {
@@ -2644,7 +2631,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope.currentTable = '';
                 });
             }
-        }
+        };
     }])
 
     .directive('dfSchemaEditor', ['MOD_SCHEMA_ASSET_PATH', function (MOD_SCHEMA_ASSET_PATH) {
@@ -2655,7 +2642,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-schema-editor.html',
             link: function (scope, elem, attrs) {
             }
-        }
+        };
     }])
 
     .directive('dfSchemaResizable', [function () {
@@ -2674,10 +2661,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     $("#schema-navigator-resizable-also").resizable();
                 });
             }
-        }
+        };
     }])
 
-    .directive('dfUploadSchema', ['INSTANCE_URL', 'MOD_SCHEMA_ASSET_PATH', '$http', 'dfNotify', '$timeout', 'SchemaJSONData', 'StateService', 'TableUtilities', function (INSTANCE_URL, MOD_SCHEMA_ASSET_PATH, $http, dfNotify, $timeout, SchemaJSONData, StateService, TableUtilities) {
+    .directive('dfUploadSchema', ['INSTANCE_URL', 'MOD_SCHEMA_ASSET_PATH', '$http', 'dfNotify', '$timeout', 'SchemaJSONData', 'StateService', 'dfApplicationData', function (INSTANCE_URL, MOD_SCHEMA_ASSET_PATH, $http, dfNotify, $timeout, SchemaJSONData, StateService, dfApplicationData) {
 
 
         return {
@@ -2692,7 +2679,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 ctrl.setDefault = function () {
 
                     $scope.uploadSchemaData = SchemaJSONData.schemaJSON;
-                }
+                };
             },
             link: function (scope, elem, attrs, ctrls) {
 
@@ -2798,7 +2785,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                             curService.components.push(component);
 
-                            TableUtilities.updateServiceComponents(requestDataObj.data.resource[0], curService);
+                            dfApplicationData.updateServiceComponentsLocal(curService);
 
                             scope.uploadSchemaData = null;
 
@@ -2826,7 +2813,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             dfNotify.error(messageOptions);
 
                         }
-                    )
+                    );
                 };
 
                 scope._saveSchemaToServer = function (requestDataObj) {
@@ -2835,15 +2822,15 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         method: 'POST',
                         url: INSTANCE_URL + '/api/v2/' + StateService.get('dfservice').name + '/_schema',
                         data: requestDataObj.data
-                    })
+                    });
                 };
 
                 scope._closeUploadSchema = function () {
 
                     scope.$emit('table', {notify: 'close'});
-                }
+                };
             }
-        }
+        };
     }])
 
     .directive('jsonEdit', function () {
