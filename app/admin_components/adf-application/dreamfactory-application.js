@@ -288,6 +288,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     },
                     service_list: {
                     },
+                    cache: {
+                        fields: '*'
+                    },
                     email_template: {
                         include_count: true
                     },

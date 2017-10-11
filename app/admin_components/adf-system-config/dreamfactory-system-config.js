@@ -56,31 +56,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 };
             };
 
-            $scope.getCacheEnabledServices = function () {
-
-                $scope.cacheEnabledServices = [];
-
-                $http.get(INSTANCE_URL + '/api/v2/system/cache?fields=*').then(
-
-                    function (result) {
-
-                        $scope.cacheEnabledServices = result.data.resource;
-                    },
-                    function (reject) {
-
-                        var messageOptions = {
-
-                            module: 'Api Error',
-                            type: 'error',
-                            provider: 'dreamfactory',
-                            message: reject
-                        };
-
-                        dfNotify.error(messageOptions);
-                    }
-                );
-            };
-
             $scope.$parent.title = 'Config';
 
 
@@ -88,8 +63,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.es = SystemConfigEventsService.systemConfigController;
             
             // PUBLIC API
-
-            $scope.getCacheEnabledServices();
 
             $scope.links = [
 
@@ -186,9 +159,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
             $scope.loadTabData = function() {
 
-                // sys config in SystemConfigDataService is as seen by unauthenticated user
-                // for full info we have to get /system/environment using getApiData interface
-                var apis = ['environment', 'cors', 'lookup', 'email_template', 'custom'];
+                var apis = ['cache', 'environment', 'cors', 'lookup', 'email_template', 'custom'];
 
                 dfApplicationData.getApiData(apis).then(
                     function (response) {
@@ -239,7 +210,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     watchEnvironment();
                 });
             }
-        }
+        };
     }])
 
     .directive('dreamfactoryCacheConfig', ['MODSYSCONFIG_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, INSTANCE_URL, $http, dfNotify) {
@@ -280,14 +251,14 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.flushServiceCache = function (index) {
 
-                    $http.delete(INSTANCE_URL + '/api/v2/system/cache/' + scope.cacheEnabledServices[index].name)
+                    $http.delete(INSTANCE_URL + '/api/v2/system/cache/' + scope.apiData.cache[index].name)
                         .success(function () {
 
                             var messageOptions = {
                                 module: 'Cache',
                                 type: 'success',
                                 provider: 'dreamfactory',
-                                message: scope.cacheEnabledServices[index].label + ' service cache flushed.'
+                                message: scope.apiData.cache[index].label + ' service cache flushed.'
                             };
 
                             dfNotify.success(messageOptions);
@@ -305,7 +276,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         });
                 };
             }
-        }
+        };
     }])
 
     .directive('dreamfactoryCorsConfig', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfNotify',
@@ -1414,8 +1385,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
         };
     }])
 
-    // sys config as seen by unauthenticated user
-    // for full info we have to get /system/environment using getApiData interface
     .service('SystemConfigDataService', ['dfApplicationData',  function (dfApplicationData) {
 
         var systemConfig = null;
