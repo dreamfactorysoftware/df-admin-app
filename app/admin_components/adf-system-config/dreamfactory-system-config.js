@@ -31,9 +31,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/main.html',
                     controller: 'SystemConfigurationCtrl',
                     resolve: {
-                        checkAdmin:['checkAdminService', function (checkAdminService) {
-                            return checkAdminService.checkAdmin();
-                        }],
                         checkUser:['checkUserService', function (checkUserService) {
                             return checkUserService.checkUser();
                         }]
@@ -64,52 +61,84 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             
             // PUBLIC API
 
-            $scope.links = [
+            $scope.buildLinks = function(checkData) {
 
-                {
-                    name: 'system-info',
-                    label: 'System Info',
-                    path: 'system-info',
-                    active: true
-                },
-                {
-                    name: 'cache',
-                    label: 'Cache',
-                    path: 'cache',
-                    active: false
-                },
-                {
-                    name: 'cors',
-                    label: 'CORS',
-                    path: 'cors',
-                    active: false
-                },
-                {
-                    name: 'email-templates',
-                    label: 'Email Templates',
-                    path: 'email-templates',
-                    active: false
-                },
-                {
-                    name: 'global-lookup-keys',
-                    label: 'Global Lookup Keys',
-                    path: 'global-lookup-keys',
-                    active: false
-                },
-                {
-                    name: 'live-chat',
-                    label: 'Live Chat',
-                    path: 'live-chat',
-                    active: false
+                var links = [];
+
+                if (!checkData || $scope.apiData.environment) {
+                    links.push (
+                        {
+                            name: 'system-info',
+                            label: 'System Info',
+                            path: 'system-info',
+                            active: links.length === 0
+                        }
+                    );
                 }
-            ];
+                if (!checkData || $scope.apiData.cache) {
+                    links.push (
+                        {
+                            name: 'cache',
+                            label: 'Cache',
+                            path: 'cache',
+                            active: links.length === 0
+                        }
+                    );
+                }
+                if (!checkData || $scope.apiData.cors) {
+                    links.push (
+                        {
+                            name: 'cors',
+                            label: 'CORS',
+                            path: 'cors',
+                            active: links.length === 0
+                        }
+                    );
+                }
+                if (!checkData || $scope.apiData.email_template) {
+                    links.push (
+                        {
+                            name: 'email-templates',
+                            label: 'Email Templates',
+                            path: 'email-templates',
+                            active: links.length === 0
+                        }
+                    );
+                }
+                if (!checkData || $scope.apiData.lookup) {
+                    links.push (
+                        {
+                            name: 'global-lookup-keys',
+                            label: 'Global Lookup Keys',
+                            path: 'global-lookup-keys',
+                            active: links.length === 0
+                        }
+                    );
+                }
+                if (!checkData || $scope.apiData.custom) {
+                    links.push (
+                        {
+                            name: 'live-chat',
+                            label: 'Live Chat',
+                            path: 'live-chat',
+                            active: links.length === 0
+                        }
+                    );
+                }
+                return links;
+            };
+
+            $scope.links = $scope.buildLinks(false);
+            $scope.$emit('sidebar-nav:view:reset');
 
             // MESSAGES
             // This works but we need to make sure our nav doesn't update
             // probably some kind of message needs to be fired to the navigation directive
             $scope.$on('$locationChangeStart', function (e) {
 
-                if (!$scope.hasOwnProperty('systemConfig')) return;
+                if (!$scope.hasOwnProperty('systemConfig')) {
+                    return;
+                }
 
                 if (!dfObjectService.compareObjectsAsJson($scope.systemConfig.record, $scope.systemConfig.recordCopy)) {
 
@@ -155,30 +184,26 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
             // load data
 
-            $scope.apiData = null;
+            $scope.apiData = {};
 
             $scope.loadTabData = function() {
 
                 var apis = ['cache', 'environment', 'cors', 'lookup', 'email_template', 'custom'];
 
-                dfApplicationData.getApiData(apis).then(
-                    function (response) {
-                        var newApiData = {};
-                        apis.forEach(function(value, index) {
-                            newApiData[value] = response[index].resource ? response[index].resource : response[index];
-                        });
-                        $scope.apiData = newApiData;
-                    },
-                    function (error) {
-                        var messageOptions = {
-                            module: 'Config',
-                            provider: 'dreamfactory',
-                            type: 'error',
-                            message: 'There was an error loading data for the Config tab. Please try refreshing your browser and logging in again.'
-                        };
-                        dfNotify.error(messageOptions);
-                    }
-                );
+                // this tab is different. it loads as much as it can rather than failing on first error
+                angular.forEach(apis, function(api) {
+                    dfApplicationData.getApiData([api]).then(
+                        function (response) {
+                            $scope.apiData[api] = response[0].resource ? response[0].resource : response[0];
+                        },
+                        function (error) {
+
+                        }
+                    ).finally(function() {
+                        $scope.links = $scope.buildLinks(true);
+                        $scope.$emit('sidebar-nav:view:reset');
+                    });
+                });
             };
 
             $scope.loadTabData();
@@ -241,7 +266,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: {'data': {'error': [error.error]}}
+                                message: error
                             };
 
                             dfNotify.error(messageOptions);
@@ -269,7 +294,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: {'data': {'error': [error.error]}}
+                                message: error
                             };
 
                             dfNotify.error(messageOptions);
@@ -796,7 +821,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
 
-                        dfApplicationData.deleteApiData('email_template', requestDataObj).$promis.then(
+                        dfApplicationData.deleteApiData('email_template', requestDataObj).$promise.then(
 
                             function (result) {
 

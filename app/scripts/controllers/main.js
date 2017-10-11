@@ -183,12 +183,11 @@ angular.module('dreamfactoryApp')
                 var links = angular.copy(navLinks);
 
                 if (!isAdmin) {
-                    // remove admins, roles, config, packages, limits for non-admins
+                    // remove admins, roles, packages, limits for non-admins
                     links.splice(2, 1);
                     links.splice(3, 1);
-                    links.splice(9, 1);
-                    links.splice(9, 1);
-                    links.splice(9, 1);
+                    links.splice(10, 1);
+                    links.splice(10, 1);
                 }
 
                 $scope.componentNavOptions = {
