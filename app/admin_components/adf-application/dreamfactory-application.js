@@ -727,7 +727,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
     .factory('httpValidSession', ['$q', '$rootScope', '$location', 'INSTANCE_URL', '$injector', '$cookies', function ($q, $rootScope, $location, INSTANCE_URL, $injector, $cookies) {
 
 
-        var putSession = function (reject) {
+        var refreshSession = function (reject) {
             var $http = $injector.get('$http');
             var UserDataService = $injector.get('UserDataService');
             var user = UserDataService.getCurrentUser();
@@ -744,7 +744,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 UserDataService.setCurrentUser(result.data);
                 retry(reject.config, deferred);
             }, function () {
-                refreshSession(reject, deferred)
+                newSession(reject, deferred);
             });
 
             return deferred.promise;
@@ -770,7 +770,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             return deferred.promise;
         };
 
-        var refreshSession = function (reject, deferred) {
+        var newSession = function (reject, deferred) {
             //Clear cookies.
             $cookies.PHPSESSID = '';
 
@@ -790,7 +790,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 retry(reject.config, deferred);
             });
 
-            return deferred.promise
+            return deferred.promise;
         };
 
         return {
@@ -827,18 +827,21 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         break;
 
                     default:
-                        if (reject.config.ignore401) break;
-                        var UserDataService = $injector.get('UserDataService');
-                        var currentUser = UserDataService.getCurrentUser();
-                        if (currentUser) {
-                            if ((reject.status === 401 || (reject.data && reject.data.error && reject.data.error.code === 401)) && reject.config.url.indexOf('/session') === -1) {
-                                if (reject.data.error.message === 'Token has expired' || reject.config.url.indexOf('/profile') !== -1) {
-                                    //  put session
-                                    return putSession(reject);
-                                }
-                                else {
-                                    // refresh session
-                                    return refreshSession(reject);
+                        if (!reject.config.ignore401 && reject.config.url.indexOf('/session') === -1) {
+                            var UserDataService = $injector.get('UserDataService');
+                            var currentUser = UserDataService.getCurrentUser();
+                            if (currentUser) {
+                                if (reject.status === 401 || (reject.data && reject.data.error && reject.data.error.code === 401)  ||
+                                    ((reject.status === 403 || (reject.data && reject.data.error && reject.data.error.code === 403)) && reject.data.error.message.indexOf('The token has been blacklisted') >= 0)) {
+
+                                    if (reject.data.error.message === 'Token has expired' || reject.config.url.indexOf('/profile') !== -1) {
+                                        //  refresh session
+                                        return refreshSession(reject);
+                                    }
+                                    else {
+                                        // new session
+                                        return newSession(reject);
+                                    }
                                 }
                             }
                         }
