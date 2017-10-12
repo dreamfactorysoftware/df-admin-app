@@ -93,7 +93,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 function (error) {
                     var msg = 'There was an error loading data for the Apps tab. Please try refreshing your browser and logging in again.';
                     if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                        msg = 'To use the Apps tab your role must allow GET access to system/app, system/role, and system/service. To create, update, or delete apps you need POST, PUT, DELETE access to /system/app.';
+                        msg = 'To use the Apps tab your role must allow GET access to system/app, system/role, and system/service. To create, update, or delete apps you need POST, PUT, DELETE access to /system/app and/or /system/app/*.';
                         $location.url('/home');
                     }
                     var messageOptions = {

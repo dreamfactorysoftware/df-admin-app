@@ -78,7 +78,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 function (error) {
                     var msg = 'There was an error loading data for the Services tab. Please try refreshing your browser and logging in again.';
                     if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                        msg = 'To use the Services tab your role must allow GET access to system/service and system/service_type. To create, update, or delete services you need POST, PUT, DELETE access to /system/service.';
+                        msg = 'To use the Services tab your role must allow GET access to system/service and system/service_type. To create, update, or delete services you need POST, PUT, DELETE access to /system/service and/or /system/service/*.';
                         $location.url('/home');
                     }
                     var messageOptions = {

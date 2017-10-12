@@ -76,7 +76,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     function (error) {
                         var msg = 'There was an error loading data for the Users tab. Please try refreshing your browser and logging in again.';
                         if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                            msg = 'To use the Users tab your role must allow GET access to system/user, system/role, and system/app. To create, update, or delete users you need POST, PUT, DELETE access to /system/user.';
+                            msg = 'To use the Users tab your role must allow GET access to system/user, system/role, and system/app. To create, update, or delete users you need POST, PUT, DELETE access to /system/user and/or /system/user/*.';
                             $location.url('/home');
                         }
                         var messageOptions = {
