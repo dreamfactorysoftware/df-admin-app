@@ -161,7 +161,6 @@ angular
 
                         var deferred = $q.defer();
                         var currentUser = UserDataService.getCurrentUser();
-                        var sysConfig = SystemConfigDataService.getSystemConfig();
 
                         if (currentUser) {
                             if (currentUser.is_sys_admin) {
@@ -171,6 +170,7 @@ angular
                             }
                             deferred.reject();
                         } else {
+                            var sysConfig = SystemConfigDataService.getSystemConfig();
                             if (!sysConfig.authentication.allow_open_registration) {
                                 $location.url('/login');
                                 deferred.reject();
@@ -191,7 +191,6 @@ angular
 
                         var deferred = $q.defer();
                         var currentUser = UserDataService.getCurrentUser();
-                        var sysConfig = SystemConfigDataService.getSystemConfig();
 
                         if (currentUser) {
                             if (currentUser.is_sys_admin) {
@@ -201,6 +200,7 @@ angular
                             }
                             deferred.reject();
                         } else {
+                            var sysConfig = SystemConfigDataService.getSystemConfig();
                             if (!sysConfig.authentication.allow_open_registration) {
                                 $location.url('/login');
                                 deferred.reject();
@@ -221,7 +221,6 @@ angular
 
                         var deferred = $q.defer();
                         var currentUser = UserDataService.getCurrentUser();
-                        var sysConfig = SystemConfigDataService.getSystemConfig();
 
                         if (currentUser) {
                             if (currentUser.is_sys_admin) {
@@ -231,6 +230,7 @@ angular
                             }
                             deferred.reject();
                         } else {
+                            var sysConfig = SystemConfigDataService.getSystemConfig();
                             if (!sysConfig.authentication.allow_open_registration) {
                                 $location.url('/login');
                                 deferred.reject();
@@ -298,13 +298,13 @@ angular
                     checkLoginRoute: ['$q', 'UserDataService', '$location', 'SystemConfigDataService', function ($q, UserDataService, $location, SystemConfigDataService) {
 
                         var deferred = $q.defer();
-                        var systemConfig = SystemConfigDataService.getSystemConfig();
                         var currentUser = UserDataService.getCurrentUser();
 
                         // we're trying to go to login
                         // if we have a valid session then no need to go to login
                         if (currentUser && currentUser.session_id) {
                             if (currentUser.is_sys_admin) {
+                                var systemConfig = SystemConfigDataService.getSystemConfig();
                                 if (currentUser.email === 'user@example.com' && !systemConfig.platform.bitnami_demo) {
                                     $location.url('/profile');
                                 } else {

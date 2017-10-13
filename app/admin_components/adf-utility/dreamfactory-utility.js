@@ -2668,27 +2668,6 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
-    // Check for session validity
-    .service('dfRouteChecker', ['UserDataService', 'SystemConfigDataService', '$location', function(UserDataService, SystemConfigDataService, $location) {
-
-        return function() {
-
-            var currentUser = UserDataService.getCurrentUser(),
-                systemConfig = SystemConfigDataService.getSystemConfig();
-
-            // If there is no currentUser and we don't allow guest users
-            if (!currentUser) {
-                $location.url('/login')
-            }
-
-            // There is a currentUser but they are not an admin
-            else if (currentUser && !currentUser.is_sys_admin) {
-
-                $location.url('/launchpad')
-            }
-        }
-    }])
-
     // Helps merge objects.  Supports deep merge.  Many modules
     // need this
     .service('dfObjectService', [

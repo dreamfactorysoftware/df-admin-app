@@ -1412,16 +1412,11 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
     .service('SystemConfigDataService', ['dfApplicationData',  function (dfApplicationData) {
 
-        var systemConfig = null;
-
         return {
 
             getSystemConfig: function () {
 
-                if (systemConfig === null) {
-                    systemConfig = dfApplicationData.getApiDataSync('environment');
-                }
-                return systemConfig;
+                return dfApplicationData.getApiDataSync('environment');
             }
         };
     }

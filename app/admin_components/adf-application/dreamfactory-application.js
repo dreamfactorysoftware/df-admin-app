@@ -124,7 +124,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     xhr = new ActiveXObject("Microsoft.XMLHTTP");
                 }
 
-                xhr.open("GET", INSTANCE_URL + '/api/v2/system/environment', false);
+                xhr.open("GET", INSTANCE_URL + '/api/v2/system/' + api, false);
                 xhr.setRequestHeader("X-DreamFactory-API-Key", "6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d");
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.send();
@@ -652,15 +652,19 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
     // This intercepts outgoing http calls.  Checks for restricted verbs from config
     // and tunnels them through a POST if necessary
-    .factory('httpVerbInterceptor', ['$q', 'SystemConfigDataService', function ($q, SystemConfigDataService) {
+    .factory('httpVerbInterceptor', ['SystemConfigDataService', function (SystemConfigDataService) {
 
         return {
 
             request: function (config) {
 
-                if (SystemConfigDataService.getSystemConfig().restricted_verbs.length <= 0) return config;
+                var systemConfig = SystemConfigDataService.getSystemConfig();
 
-                var restricted_verbs = SystemConfigDataService.getSystemConfig().restricted_verbs,
+                if (systemConfig.restricted_verbs.length <= 0) {
+                    return config;
+                }
+
+                var restricted_verbs = config.restricted_verbs,
                     i = 0,
                     currMethod = config.method;
 
