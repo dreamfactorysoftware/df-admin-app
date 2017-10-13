@@ -306,11 +306,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         data: scope.user.record
                     };
 
-                    if (UserDataService.getCurrentUser().id === requestDataObj.data.id) {
-                        requestDataObj.url = INSTANCE_URL + '/api/v2/system/:api/profile';
-                        requestDataObj.queryParams = { api: '@api' };
-                    }
-
                     dfApplicationData.updateApiData('user', requestDataObj).$promise.then(
 
                         function (result) {
