@@ -1124,7 +1124,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         };
     }])
 
-    .directive('dfExportUsers', ['MOD_USER_ASSET_PATH', 'INSTANCE_URL', '$cookies', '$http', '$window', function (MOD_USER_ASSET_PATH, INSTANCE_URL, $cookies, $http, $window) {
+    .directive('dfExportUsers', ['MOD_USER_ASSET_PATH', 'INSTANCE_URL', '$cookies', '$http', '$window', 'ADMIN_API_KEY', function (MOD_USER_ASSET_PATH, INSTANCE_URL, $cookies, $http, $window, ADMIN_API_KEY) {
 
         return {
 
@@ -1153,7 +1153,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         scope.fileFormatStr = fileFormatStr;
 
-                        var params = 'file=user.' + scope.fileFormatStr +'&session_token='+$cookies.PHPSESSID;
+                        var params = 'file=user.' + scope.fileFormatStr +'&session_token='+$cookies.PHPSESSID+'&api_key='+ADMIN_API_KEY;
 
 
                         // Jason's method to make it work.  He doesn't check for bad response.
