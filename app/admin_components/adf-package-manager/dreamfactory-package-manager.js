@@ -8,9 +8,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                     templateUrl: MOD_PACKAGE_MANAGER_ASSET_PATH + 'views/main.html',
                     controller: 'PackageCtrl',
                     resolve: {
-                        checkAdmin:['checkAdminService', function (checkAdminService) {
-                            return checkAdminService.checkAdmin();
-                        }],
                         checkUser:['checkUserService', function (checkUserService) {
                             return checkUserService.checkUser();
                         }]
@@ -41,7 +38,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                         $scope.select(pane);
                     }
                     panes.push(pane);
-                }
+                };
             }],
             template:
                 '<div class="tabbable">' +
@@ -70,7 +67,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
             replace: true
         };
     })
-    .controller('PackageCtrl', ['$scope', '$rootScope', 'dfApplicationData', 'dfNotify', function($scope, $rootScope, dfApplicationData, dfNotify) {
+    .controller('PackageCtrl', ['$scope', '$rootScope', 'dfApplicationData', 'dfNotify', '$location', function($scope, $rootScope, dfApplicationData, dfNotify, $location) {
 
         $scope.$parent.title = 'Packages';
 
@@ -82,28 +79,52 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
             $scope.dataLoading = true;
 
-            var apis = ['service', 'service_type', 'environment', 'package', 'app'];
+            // these are required
+            var primaryApis = ['service_list', 'service_type_list', 'environment', 'package'];
 
-            dfApplicationData.getApiData(apis, true).then(
+            // this one is optional, needed if we want to automatically add an app's storage service when the app is added
+            // the storage service must be in service_list, meaning user has access to it, for this to work
+            var secondaryApis = ['app'];
+
+            // force refresh to always load from server
+            dfApplicationData.getApiData(primaryApis, true).then(
                 function (response) {
                     var newApiData = {};
-                    apis.forEach(function(value, index) {
+                    primaryApis.forEach(function(value, index) {
                         newApiData[value] = response[index].resource ? response[index].resource : response[index];
                     });
-                    $scope.apiData = newApiData;
+                    // force refresh to always load from server
+                    dfApplicationData.getApiData(secondaryApis, true).then(
+                        function (response) {
+                            secondaryApis.forEach(function(value, index) {
+                                newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                            });
+                        },
+                        function (error) {
+                            newApiData.app = [];
+                        }
+                    ).finally(function () {
+                        // all done
+                        $scope.apiData = newApiData;
+                        $scope.dataLoading = false;
+                    });
                 },
                 function (error) {
+                    var msg = 'There was an error loading data for the Packages tab. Please try refreshing your browser and logging in again.';
+                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                        msg = 'To use the Packages tab your role must allow GET/POST/PATCH access to system/package.';
+                        $location.url('/home');
+                    }
                     var messageOptions = {
                         module: 'Packages',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading data for the Packages tab. Please try refreshing your browser and logging in again.'
+                        message: msg
                     };
                     dfNotify.error(messageOptions);
+                    $scope.dataLoading = false;
                 }
-            ).finally(function () {
-                $scope.dataLoading = false;
-            });
+            );
         };
 
         $scope.loadTabData();
@@ -258,7 +279,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                     angular.element("input[type='file']").val(null);
                     scope.packageImportPassword = '';
                     scope.fileImportPath = null;
-                }
+                };
 
                 // WATCHERS
 
@@ -277,7 +298,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                     watchUploadFile();
                 });
             }
-        }
+        };
     }])
     .directive('dfViewContent', ['MOD_PACKAGE_MANAGER_ASSET_PATH', function (MOD_PACKAGE_MANAGER_ASSET_PATH) {
 
@@ -288,7 +309,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
             link: function (scope, elem, attrs) {
 
             }
-        }
+        };
     }])
     .directive('dfSelectContent', ['$http', '$timeout', 'MOD_PACKAGE_MANAGER_ASSET_PATH', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', function ($http, $timeout, MOD_PACKAGE_MANAGER_ASSET_PATH, INSTANCE_URL, dfApplicationData, dfNotify) {
 
@@ -328,7 +349,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                             selected: false
                         },
                         record: tableData
-                    }
+                    };
                 };
 
                 scope.init = function () {
@@ -338,8 +359,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                     var env = scope.apiData.environment;
                     scope.enablePassword = env['platform']['secured_package_export'];
 
-                    var _serviceTypes = scope.apiData.service_type;
-                    var _services = scope.apiData.service;
+                    var _serviceTypes = scope.apiData.service_type_list;
+                    var _services = scope.apiData.service_list;
 
                     // Build a unique list of service_types that covers all services in the manifest.
                     // This is what gets displayed in the Type menu. When you select a type it'll get
@@ -539,7 +560,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                             serviceId = matches[0].storage_service_id;
                             container = matches[0].storage_container + '/';
                             // get storage service record
-                            services = scope.apiData.service;
+                            services = scope.apiData.service_list;
                             matches = services.filter(function (obj) {
                                 return obj.id === serviceId;
                             });
@@ -658,7 +679,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                         // find all services in manifest with matching service type
 
-                        _services = scope.apiData.service;
+                        _services = scope.apiData.service_list;
 
                         angular.forEach(scope.apiData.package['service'], function (manifestValue, manifestKey) {
 
@@ -695,7 +716,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                     }
                 });
             }
-        }
+        };
     }])
     .directive('dfSelectFolder', ['MOD_PACKAGE_MANAGER_ASSET_PATH', function (MOD_PACKAGE_MANAGER_ASSET_PATH) {
 
@@ -706,9 +727,9 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
             link: function (scope, elem, attrs) {
 
             }
-        }
+        };
     }])
-    .directive('dfExportPackage', ['INSTANCE_URL', 'ADMIN_API_KEY', 'dfNotify', '$http', '$window', '$timeout', '$cookieStore', function (INSTANCE_URL, ADMIN_API_KEY, dfNotify, $http, $window, $timeout, $cookieStore) {
+    .directive('dfExportPackage', ['INSTANCE_URL', 'ADMIN_API_KEY', 'dfNotify', '$http', '$window', '$timeout', 'UserDataService', function (INSTANCE_URL, ADMIN_API_KEY, dfNotify, $http, $window, $timeout, UserDataService) {
 
         return {
 
@@ -731,8 +752,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                 scope.folderInit = function() {
 
-                    var _services = scope.apiData.service;
-                    var _serviceTypes = scope.apiData.service_type;
+                    var _services = scope.apiData.service_list;
+                    var _serviceTypes = scope.apiData.service_type_list;
 
                     var _fileTypes = _serviceTypes.filter(function( obj ) {
                         return obj.group === 'File';
@@ -860,10 +881,13 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                 scope.exportDownload = function()
                 {
-                    var cookie = $cookieStore.get('CurrentUserObj');
-                    var session_token = cookie.session_id;
-                    if(exportPath !== ''){
-                        window.location.href = exportPath + '?session_token='+session_token;
+                    if (exportPath !== '') {
+                        var params = "?api_key=" + ADMIN_API_KEY;
+                        var currentUser = UserDataService.getCurrentUser();
+                        if (currentUser && currentUser.session_token) {
+                            params += "&session_token=" + currentUser.session_token;
+                        }
+                        window.location.href = exportPath + params;
                     }
                 };
 

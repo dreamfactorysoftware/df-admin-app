@@ -77,6 +77,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         break;
                     case 'service_link':
                     case 'service_list':
+                    case 'service_type_list':
                         // for this call use /api/v2 not /api/v2/system
                         options = {'url': INSTANCE_URL + '/api/v2'};
                         break;
@@ -89,6 +90,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         if (api === 'service_link' || api === 'service_list') {
                             // add resource wrapper for consistency at higher levels
                             dfApplicationObj.apis[api] = {"resource": response.services};
+                        } else if (api === 'service_type_list') {
+                            // add resource wrapper for consistency at higher levels
+                            dfApplicationObj.apis[api] = {"resource": response.service_types};
                         } else {
                             dfApplicationObj.apis[api] = response;
                         }
@@ -290,6 +294,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         group:"source control,file"
                     },
                     service_list: {
+                    },
+                    service_type_list: {
                     },
                     cache: {
                         fields: '*'
