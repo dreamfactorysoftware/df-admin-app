@@ -12,8 +12,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                     controller: 'LaunchpadCtrl',
                     resolve: {
 
-                        loadApps: ['SystemConfigDataService', 'UserDataService', '$location', '$q', '$http', 'INSTANCE_URL', function (SystemConfigDataService, UserDataService, $location, $q, $http, INSTANCE_URL) {
-
+                        loadApps: ['SystemConfigDataService', 'UserDataService', '$location', '$q', function (SystemConfigDataService, UserDataService, $location, $q) {
 
                             var defer = $q.defer(),
                                 systemConfig = SystemConfigDataService.getSystemConfig(),
@@ -22,41 +21,15 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
 
                             var queryString = location.search.substring(1);
 
-                            if(queryString){
+                            if (queryString) {
                                 //OAuth attempt, go to login page.
                                 $location.url('/login');
-                                return;
-                            } else if(((!groupedApp || groupedApp.length == 0) && (!noGroupApp || noGroupApp.length == 0)) && !UserDataService.getCurrentUser()){
+                                defer.reject();
+                            } else if (((!groupedApp || groupedApp.length === 0) && (!noGroupApp || noGroupApp.length === 0)) && !UserDataService.getCurrentUser()){
                                 $location.url('/login');
-                                return;
-                            } else if(!UserDataService.getCurrentUser()){
+                                defer.reject();
+                            } else {
                                 defer.resolve(systemConfig);
-                            } else if (UserDataService.getCurrentUser()) {
-
-                                // We make a call to user session to get user apps
-                                $http.get(INSTANCE_URL + '/api/v2/system/environment').then(
-                                    function (result) {
-
-                                        // we set the current user
-                                        defer.resolve(result.data);
-
-                                    },
-                                    function (reject) {
-
-                                        var messageOptions = {
-                                            module: 'DreamFactory Application',
-                                            type: 'error',
-                                            provider: 'dreamfactory',
-                                            message: reject
-
-                                        };
-
-                                        // dfNotify.error(messageOptions);
-                                        defer.reject(reject);
-                                    }
-                                );
-
-                                //return defer.promise;
                             }
 
                             return defer.promise;
