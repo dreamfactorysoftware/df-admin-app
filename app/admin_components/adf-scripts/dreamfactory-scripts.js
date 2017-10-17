@@ -89,7 +89,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $rootScope.$broadcast('githubShowModal', $scope.scriptGitHubTarget);
             };
 
-            $scope.isHostedSystem = SystemConfigDataService.getSystemConfig().is_hosted;
+            $scope.isHostedSystem = false;
 
             // load data
             // Allows for building of events dynamically on the client
@@ -105,7 +105,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 // only load these one time as they should not change as scripts are created/deleted
                 // this is particularly important for 'event' as it can be slow when there are many services
-                var secondaryApis = ['event', 'script_type', 'service_link'];
+                var secondaryApis = ['event', 'script_type', 'service_link', 'environment'];
 
                 // for primaryApis force refresh to always load from server
                 dfApplicationData.getApiData(primaryApis, true).then(
@@ -746,6 +746,16 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             });
 
+            var watchApiData = $scope.$watchCollection('apiData', function (newValue, oldValue) {
+
+                if (newValue) {
+                    if (newValue.environment && newValue.environment.platform && newValue.environment.platform.is_hosted) {
+                        $scope.isHostedSystem = true;
+                    }
+                }
+            });
+
+
             $scope.$on('$destroy', function (e) {
 
                 watchGithubURL();
@@ -753,6 +763,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 watchGithubCredPass();
                 watchCurrentScriptObj();
                 watchSelections();
+                watchApiData();
             });
         }])
 
