@@ -116,7 +116,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 if (debugLevel >= 1) console.log('_getApiDataSync(' + api + '): from cache', dfApplicationObj.apis[api]);
                 if (debugLevel >= 2) console.log('_getApiDataSync(' + api + '): dfApplicationObj', dfApplicationObj);
             } else {
-                var xhr;
+                var xhr, currentUser = UserDataService.getCurrentUser();
 
                 if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
                     xhr = new XMLHttpRequest();
@@ -126,6 +126,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                 xhr.open("GET", INSTANCE_URL + '/api/v2/system/' + api, false);
                 xhr.setRequestHeader("X-DreamFactory-API-Key", "6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d");
+                if (currentUser && currentUser.session_token) {
+                    xhr.setRequestHeader("X-DreamFactory-Session-Token", currentUser.session_token);
+                }
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.send();
 
