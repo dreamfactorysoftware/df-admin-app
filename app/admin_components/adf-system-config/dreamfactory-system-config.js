@@ -42,19 +42,13 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
     }])
 
-    .controller('SystemConfigurationCtrl', ['$scope', 'dfApplicationData', 'SystemConfigEventsService', 'SystemConfigDataService', 'dfObjectService', 'dfNotify', 'INSTANCE_URL', '$http',
-        function ($scope, dfApplicationData, SystemConfigEventsService, SystemConfigDataService, dfObjectService, dfNotify, INSTANCE_URL, $http) {
+    .controller('SystemConfigurationCtrl', ['$scope', 'dfApplicationData', 'SystemConfigEventsService', 'SystemConfigDataService', 'dfObjectService', 'dfNotify', 'UserDataService',
+        function ($scope, dfApplicationData, SystemConfigEventsService, SystemConfigDataService, dfObjectService, dfNotify, UserDataService) {
 
-            var SystemConfig = function (systemConfigData) {
-
-                return {
-                    record: angular.copy(systemConfigData),
-                    recordCopy: angular.copy(systemConfigData)
-                };
-            };
+            var currentUser = UserDataService.getCurrentUser();
+            $scope.isSysAdmin = (currentUser && currentUser.is_sys_admin);
 
             $scope.$parent.title = 'Config';
-
 
             // CREATE SHORT NAMES
             $scope.es = SystemConfigEventsService.systemConfigController;

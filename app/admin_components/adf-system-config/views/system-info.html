@@ -4,42 +4,42 @@
         <legend><h4>DreamFactory Instance</h4></legend>
         <table width="100%">
             <tr>
-                <td valign="top" style="width: 60%; border-right: dashed 1px">
+                <td valign="top" style="width: 60%;">
                     <p>
                         License Level: {{systemEnv.platform.license}}
                     </p>
                     <p>
-                        DreamFactory Version: {{systemEnv.platform.version_current}}
+                        DreamFactory Version: {{systemEnv.platform.version}}
                     </p>
-                    <p>
+                    <p ng-if="isSysAdmin">
                         System Database: {{systemEnv.config.db.driver}}
                     </p>
-                    <p data-ng-if="systemEnv.config.db.driver == 'sqlite'">
+                    <p data-ng-if="isSysAdmin && systemEnv.config.db.driver === 'sqlite'">
                         Sqlite Storage: {{systemEnv.config.db.sqlite_storage}}
                     </p>
-                    <p>
+                    <p ng-if="isSysAdmin">
                         Install Path: {{systemEnv.platform.install_path}}
                     </p>
-                    <p>
+                    <p ng-if="isSysAdmin">
                         Log Path: {{systemEnv.platform.log_path}}
                     </p>
-                    <p>
+                    <p ng-if="isSysAdmin">
                         Log Mode: {{systemEnv.platform.log_mode}}
                     </p>
-                    <p>
+                    <p ng-if="isSysAdmin">
                         Log Level: {{systemEnv.platform.log_level}}
                     </p>
-                    <p>
+                    <p ng-if="isSysAdmin">
                         Cache Driver: {{systemEnv.platform.cache_driver}}
                     </p>
-                    <p data-ng-if="systemEnv.platform.cache_driver == 'file'">
+                    <p data-ng-if="isSysAdmin && systemEnv.platform.cache_driver === 'file'">
                         Cache Path: {{systemEnv.platform.cache_path}}
                     </p>
-                    <p>
+                    <p ng-if="isSysAdmin">
                         Demo: {{systemEnv.platform.bitnami_demo}}
                     </p>
                 </td>
-                <td style="width: 40%; padding-left: 10px" valign="top">
+                <td ng-if="isSysAdmin" style="width: 40%; padding-left: 10px; border-left: dashed 1px;" valign="top" >
                     <h5>Installed Packages</h5>
                     <div style="color:red" data-ng-if="systemEnv.platform.packages.error">
                         Error: {{systemEnv.platform.packages.error}}
@@ -66,7 +66,7 @@
             &nbsp;
         </p>
     </fieldset>
-    <fieldset>
+    <fieldset ng-if="isSysAdmin">
         <legend><h4>Server</h4></legend>
         <p>
             Operating System: {{systemEnv.server.server_os}}
@@ -111,10 +111,4 @@
             &nbsp;
         </p>
     </fieldset>
-
-    <div data-ng-if="systemEnv.platform.upgrade_available == true">
-         Newer version {{systemEnv.platform.version_latest}} is available!&nbsp;&nbsp;
-         <button type="button" data-ng-click="upgrade()" class="btn btn-default btn-success btn-sm">View Upgrade Info</button>
-     </div>
-
 </div>
