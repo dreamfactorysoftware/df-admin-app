@@ -265,11 +265,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         limit: limit,
                         related: 'role_by_role_id'
                     },
-                    app_group: {
-                        include_count: true,
-                        limit: limit,
-                        related: 'app_to_app_group_by_group_id'
-                    },
                     role: {
                         include_count: true,
                         related: 'role_service_access_by_role_id,lookup_by_role_id',

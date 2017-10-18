@@ -256,8 +256,7 @@ angular.module('dreamfactoryApp')
                 // If no config available then hide launchpad option.
                 if (config) {
                     // Check for apps.
-                    var groupedApp = config.app_group, noGroupApp = config.no_group_app;
-                    if ((groupedApp && groupedApp.length > 0) || (noGroupApp && noGroupApp.length > 0)) {
+                    if (config.apps && config.apps.length > 0) {
                         // There are apps so show launchpad option.
                         links.push("launchpad");
                     }

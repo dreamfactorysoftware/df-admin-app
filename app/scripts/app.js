@@ -64,9 +64,7 @@ angular
                 ).finally(function() {
                     var result = false;
                     if (config) {
-                        var groupedApp = config.app_group, noGroupApp = config.no_group_app;
-                        // TODO: may need to also look at grouped apps
-                        result = (noGroupApp && noGroupApp.filter(function (item) {
+                        result = (config.apps && config.apps.filter(function (item) {
                             return (item.name === 'admin');
                         }).length > 0);
                     }
@@ -118,9 +116,7 @@ angular
                 var result = false;
                 var config = dfApplicationData.getApiDataFromCache('environment');
                 if (config) {
-                    var groupedApp = config.app_group, noGroupApp = config.no_group_app;
-                    // TODO: may need to also look at grouped apps
-                    result = (noGroupApp && noGroupApp.filter(function (item) {
+                    result = (config.apps && config.apps.filter(function (item) {
                         return (item.name === 'admin');
                     }).length > 0);
                 }

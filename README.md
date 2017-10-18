@@ -192,7 +192,6 @@ Each module has a `main.html`.  In `main.html` there wil be directives that pert
         <df-manage-apps data-ng-if="activeView.path === 'manage-apps'"></df-manage-apps>
         <df-app-details data-ng-if="activeView.path === 'create-app'" data-new-app="true"></df-app-details>
         <df-import-app data-ng-if="activeView.path === 'import-app'"></df-import-app>
-        <df-app-groups data-ng-if="activeView.path === 'app-groups'"></df-app-groups>
     </div>
 </div>
 
