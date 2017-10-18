@@ -738,8 +738,8 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
             replace: true,
             link: function (scope, elem, attrs) {
 
-                scope.availableFileServices = '';
-                scope.selectedFileService = '';
+                scope.availableFileServices = null;
+                scope.selectedFileService = null;
                 scope.folderName = '';
                 scope.fileName = '';
                 scope.packagePassword = '';
@@ -750,28 +750,30 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                 var exportPath = '';
                 var payload = {};
 
-                scope.folderInit = function() {
+                scope.folderInit = function () {
 
                     var _services = scope.apiData.service_list;
                     var _serviceTypes = scope.apiData.service_type_list;
 
-                    var _fileTypes = _serviceTypes.filter(function( obj ) {
+                    var _fileTypes = _serviceTypes.filter(function (obj) {
                         return obj.group === 'File';
                     });
 
-                    var _searchTypes = _fileTypes.map(function(type) { return type['name']; });
-                    var _serviceNames = [];
+                    var _searchTypes = _fileTypes.map(function (type) {
+                        return type['name'];
+                    });
+                    var _fileServices = [];
                     angular.forEach(_services, function (value) {
                         if (_searchTypes.indexOf(value.type) > -1) {
-                            _serviceNames.push(value.name);
+                            _fileServices.push(value);
                         }
                     });
 
-                    scope.selectedFileService = 'files';
-                    scope.availableFileServices = _serviceNames;
+                    scope.selectedFileService = null;
+                    scope.availableFileServices = _fileServices;
                 };
 
-                scope.exportPackage = function() {
+                scope.exportPackage = function () {
 
                     var name, type, group, selected;
 
@@ -785,14 +787,23 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                         };
 
                         dfNotify.error(messageOptions);
-                    }
-                    else {
+                    } else if (!scope.selectedFileService) {
+
+                        var messageOptions = {
+                            module: 'Packages',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'No file service is selected.'
+                        };
+
+                        dfNotify.error(messageOptions);
+                    } else {
 
                         payload = {
                             secured: (scope.packagePassword.length > 0),
                             password: scope.packagePassword,
                             storage: {
-                                name: scope.selectedFileService,
+                                name: scope.selectedFileService.name,
                                 folder: scope.folderName,
                                 filename: scope.fileName
                             },
@@ -852,12 +863,11 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                                 'The path to the exported package is: \n' +
                                 path + '\n';
 
-                            if(response.data.is_public === false){
-                                var subFolder = (scope.folderName === '')? '__EXPORTS' : scope.folderName;
-                                var pathNote = '\nYour exported file is not publicly accessible. '+
-                                    'Please edit your "'+scope.selectedFileService+'" service configuration to '+
-                                    'put "'+subFolder+'" under "Public Path" in order to make this '+
-                                    'exported file publicly accessible/downloadable.';
+                            if (response.data.is_public === false) {
+                                var subFolder = (scope.folderName === '') ? '__EXPORTS' : scope.folderName;
+                                var pathNote = '\nTo make your exported file publicly accessible/downloadable, ' +
+                                    'edit your "' + scope.selectedFileService.label + '" service configuration to ' +
+                                    'add "' + subFolder + '" under "Public Path".';
                                 msg += pathNote;
                                 scope.publicPathNote = pathNote;
                             }
