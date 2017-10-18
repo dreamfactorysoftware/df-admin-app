@@ -8,7 +8,8 @@
 			<select class="form-control"
 					data-ng-model="selectedFileService"
 					data-ng-options="service as service.label for service in availableFileServices"
-					data-ng-required="true">
+					data-ng-required="true"
+					title="File service to export to">
 				<option value="">-- Select File Service --</option>
 			</select>
 		    <label for=""> / </label>
@@ -16,13 +17,15 @@
 				   data-ng-model="folderName"
 				   placeholder="__EXPORTS"
 				   id="nofillfolder"
-				   autocomplete="nope" />
+				   autocomplete="nope"
+				   title="Folder name to export to"/>
 			<label for=""> / </label>
 			<input class="form-control"
 				   data-ng-model="fileName"
 				   placeholder="File Name (Optional)"
 				   id="nofilename"
-				   autocomplete="nope" />
+				   autocomplete="nope"
+				   title="File name to export to"/>
 		    </div>
 		</div>
 	</div>

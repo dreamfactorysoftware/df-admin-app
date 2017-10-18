@@ -112,7 +112,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                 function (error) {
                     var msg = 'There was an error loading data for the Packages tab. Please try refreshing your browser and logging in again.';
                     if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                        msg = 'To use the Packages tab your role must allow GET/POST/PATCH access to system/package.';
+                        msg = 'To use the Packages tab your role must allow GET and POST access to system/package.';
                         $location.url('/home');
                     }
                     var messageOptions = {
