@@ -604,7 +604,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         };
     }])
 
-    .service('dfSystemData', ['$http', 'XHRHelper', 'INSTANCE_URL', '$resource', 'dfObjectService', function ($http, XHRHelper, INSTANCE_URL, $resource, dfObjectService) {
+    .service('dfSystemData', ['INSTANCE_URL', '$resource', 'dfObjectService', function (INSTANCE_URL, $resource, dfObjectService) {
 
         return {
 
