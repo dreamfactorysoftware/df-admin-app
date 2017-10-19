@@ -12,7 +12,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                     controller: 'LaunchpadCtrl',
                     resolve: {
 
-                        loadApps: ['SystemConfigDataService', 'UserDataService', '$location', '$q', function (SystemConfigDataService, UserDataService, $location, $q) {
+                        loadApps: ['SystemConfigDataService', '$location', '$q', function (SystemConfigDataService, $location, $q) {
 
                             var defer = $q.defer(),
                                 systemConfig = SystemConfigDataService.getSystemConfig();
@@ -23,7 +23,9 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                                 //OAuth attempt, go to login page.
                                 $location.url('/login');
                                 defer.reject();
-                            } else if ((!systemConfig.apps || systemConfig.apps.length === 0) && !UserDataService.getCurrentUser()){
+                            } else if (!systemConfig || !systemConfig.apps || systemConfig.apps.length === 0) {
+                                // don't allow someone to edit URL to go to launchpad
+                                // if there are no apps then it should not be available
                                 $location.url('/login');
                                 defer.reject();
                             } else {
@@ -35,10 +37,11 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                     }
                 });
         }])
-    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
+    .run([function () {
 
     }])
+
     .controller('LaunchpadCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', 'loadApps', function ($scope, UserDataService, SystemConfigDataService, loadApps) {
 
         $scope.apps = [];
@@ -56,20 +59,20 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
 
             if (newValue.hasOwnProperty('apps') && newValue.apps.length > 0) {
 
-                var temp = [];
+                var _apps = [];
 
                 angular.forEach(newValue.apps, function (app, index) {
                     if (app.url) {
-                        temp.push(app);
+                        _apps.push(app);
                     }
                 });
 
-                $scope.apps = temp;
+                $scope.apps = _apps;
             }
         }, true);
     }])
 
-    .directive('dfApp', ['MOD_LAUNCHPAD_ASSET_PATH', '$window', 'dfReplaceParams', function (MOD_LAUNCHPAD_ASSET_PATH, $window, dfReplaceParams) {
+    .directive('dfApp', ['MOD_LAUNCHPAD_ASSET_PATH', '$window', function (MOD_LAUNCHPAD_ASSET_PATH, $window) {
 
         return {
             restrict: 'E',
@@ -87,7 +90,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 scope._launchApp = function (app) {
 
-                    $window.open(dfReplaceParams(app.url, app.name));
+                    $window.open(app.url);
                 };
             }
         };

@@ -38,7 +38,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 });
         }])
 
-    .run(['SystemConfigDataService', function (SystemConfigDataService) {
+    .run([function () {
 
     }])
 

@@ -17,7 +17,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     }
                 });
         }])
-    .run(['INSTANCE_URL', function (INSTANCE_URL) {
+
+    .run([function () {
 
     }])
 

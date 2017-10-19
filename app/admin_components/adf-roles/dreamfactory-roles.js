@@ -21,7 +21,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 });
         }])
 
-    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
+    .run([function () {
 
     }])
 

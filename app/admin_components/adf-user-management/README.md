@@ -79,12 +79,6 @@ Inject this service to access a stored user.  The service contains the current u
             currentUser = false;
         }
 
-        function _hasUser() {
-
-            return !!currentUser;
-        }
-
-
         return {
 
             getCurrentUser: function () {
@@ -100,11 +94,6 @@ Inject this service to access a stored user.  The service contains the current u
             unsetCurrentUser: function () {
 
                 _unsetCurrentUser();
-            },
-
-            hasUser: function () {
-
-                return _hasUser();
             }
         }
     }]);

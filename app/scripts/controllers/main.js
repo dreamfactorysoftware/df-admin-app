@@ -235,80 +235,73 @@ angular.module('dreamfactoryApp')
         // WATCHERS
 
 
-        $scope.$watch('currentUser', function(newValue, oldValue) {
+        $scope.$watch('currentUser', function (newValue, oldValue) {
 
             var links, config;
 
-            // user changed, reset application object to force reload of all data
-            dfApplicationData.resetApplicationObj();
+            if (!angular.equals(newValue, oldValue)) {
+                // user changed, reset application object to force reload of all data
+                dfApplicationData.resetApplicationObj();
+            }
 
             links = ['support'];
 
             // get updated system config. it changes on login/logout
-            dfApplicationData.getApiData(['environment']).then(
-                function (response) {
-                    config = response[0];
-                },
-                function (error) {
-                    config = null;
+            config = SystemConfigDataService.getSystemConfig();
+            if (config) {
+                // Check for apps.
+                if (config.apps && config.apps.length > 0) {
+                    // There are apps so show launchpad option.
+                    links.push("launchpad");
                 }
-            ).finally(function() {
-                // If no config available then hide launchpad option.
-                if (config) {
-                    // Check for apps.
-                    if (config.apps && config.apps.length > 0) {
-                        // There are apps so show launchpad option.
-                        links.push("launchpad");
-                    }
+            }
+
+            // Check for currentUser.
+            if (!newValue) {
+                // There is no currentUser.
+
+                links.push('login');
+
+                // If no config available then hide register option.
+                // Else if open reg is enabled then show register option.
+                if (config && config.authentication.allow_open_registration) {
+                    links.push('register');
                 }
 
-                // Check for currentUser.
-                if (!newValue) {
-                    // There is no currentUser.
-
-                    links.push('login');
-
-                    // If no config available then hide register option.
-                    // Else if open reg is enabled then show register option.
-                    if (config && config.authentication.allow_open_registration) {
-                        links.push('register');
-                    }
-
-                    // Not logged in. Hide chat.
-                    Comm100API.showChat(false);
-                }
-                else {
-                    // We have a current user. Set name in menu button. Have to set this explicitly.
-                    $scope.setTopLevelLinkValue('user', 'label', newValue.name);
-                    if (newValue.is_sys_admin) {
-                        // Enable/disable chat for admins. Default to enabled in case nothing is set in db or there's an error.
-                        var chatEnabled = true;
-                        dfApplicationData.getApiData(['custom']).then(
-                            function (response) {
-                                var custom = response[0].resource.filter(function(obj) {
-                                    return (obj.name === 'chat');
-                                });
-                                if (custom.length > 0) {
-                                    chatEnabled = Boolean(custom[0].value);
-                                }
+                // Not logged in. Hide chat.
+                Comm100API.showChat(false);
+            }
+            else {
+                // We have a current user. Set name in menu button. Have to set this explicitly.
+                $scope.setTopLevelLinkValue('user', 'label', newValue.name);
+                if (newValue.is_sys_admin) {
+                    // Enable/disable chat for admins. Default to enabled in case nothing is set in db or there's an error.
+                    var chatEnabled = true;
+                    dfApplicationData.getApiData(['custom']).then(
+                        function (response) {
+                            var custom = response[0].resource.filter(function (obj) {
+                                return (obj.name === 'chat');
+                            });
+                            if (custom.length > 0) {
+                                chatEnabled = Boolean(custom[0].value);
                             }
-                        ).finally(
-                            function() {
-                                Comm100API.showChat(chatEnabled);
-                            }
-                        );
-                    }
-                    links.push('user');
+                        }
+                    ).finally(
+                        function () {
+                            Comm100API.showChat(chatEnabled);
+                        }
+                    );
                 }
+                links.push('user');
+            }
 
-                // add admin option if system config says we have access to it
-                if (allowAdminAccess.get()) {
-                    links.push('admin');
-                }
+            // add admin option if system config says we have access to it
+            if (allowAdminAccess.get()) {
+                links.push('admin');
+            }
 
-                $scope._setActiveLinks($scope.topLevelLinks, links);
-                $scope._setComponentLinks(newValue && newValue.is_sys_admin);
-            });
+            $scope._setActiveLinks($scope.topLevelLinks, links);
+            $scope._setComponentLinks(newValue && newValue.is_sys_admin);
         });
 
         $scope.$watch(function () {return UserDataService.getCurrentUser().name}, function (n, o) {
@@ -327,14 +320,24 @@ angular.module('dreamfactoryApp')
 
             path = $location.path();
             switch (path) {
-                case '/launchpad':
-                case '/profile':
-                case '/login':
-                case '/logout':
-                    $scope.showAdminComponentNav = false;
+                case '/home':
+                case '/apps':
+                case '/admins':
+                case '/users':
+                case '/roles':
+                case '/services':
+                case '/apidocs':
+                case '/schema':
+                case '/data':
+                case '/file-manager':
+                case '/scripts':
+                case '/config':
+                case '/package-manager':
+                case '/limits':
+                    $scope.showAdminComponentNav = true;
                     break;
                 default:
-                    $scope.showAdminComponentNav = !!$scope.currentUser;
+                    $scope.showAdminComponentNav = false;
                     break;
             }
         });

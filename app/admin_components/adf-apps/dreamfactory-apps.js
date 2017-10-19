@@ -20,7 +20,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 });
         }])
 
-    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
+    .run([function () {
 
     }])
 
@@ -437,7 +437,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         };
     }])
 
-    .directive('dfManageApps', ['$rootScope', 'MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfReplaceParams', 'dfNotify', '$window', function ($rootScope, MOD_APPS_ASSET_PATH, dfApplicationData, dfReplaceParams, dfNotify, $window) {
+    .directive('dfManageApps', ['$rootScope', 'MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$window', function ($rootScope, MOD_APPS_ASSET_PATH, dfApplicationData, dfNotify, $window) {
 
         return {
 
@@ -551,7 +551,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                 scope._launchApp = function (app) {
 
-                    $window.open(dfReplaceParams(app.record.launch_url, app.record.name));
+                    $window.open(app.record.launch_url);
                 };
 
                 scope._editApp = function (app) {

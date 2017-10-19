@@ -22,15 +22,15 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                 });
         }])
 
-.run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
+    .run([function () {
 
-}])
+    }])
 
-.factory('editLimitService', [ function(){
-    return { record: {}, recordCopy: {} };
-}])
+    .factory('editLimitService', [ function(){
+        return { record: {}, recordCopy: {} };
+    }])
 
-.controller('LimitCtl', ['INSTANCE_URL', '$rootScope', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function (INSTANCE_URL, $rootScope, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {
+    .controller('LimitCtl', ['INSTANCE_URL', '$rootScope', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function (INSTANCE_URL, $rootScope, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {
 
         $scope.$parent.title = 'Limits';
 

@@ -37,7 +37,9 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
                 });
         }])
 
-    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {}])
+    .run([function () {
+
+    }])
 
     .controller('DataCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', '$location', function($scope, INSTANCE_URL, dfApplicationData, dfNotify, $location) {
 

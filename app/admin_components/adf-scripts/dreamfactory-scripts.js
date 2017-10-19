@@ -35,9 +35,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     }
                 });
         }])
-    .run(['INSTANCE_URL', '$http', function (INSTANCE_URL, $http) {
+
+    .run([function () {
 
     }])
+
     .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$rootScope', '$http', 'dfApplicationData', 'dfNotify', '$location',
         function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify, $location) {
 

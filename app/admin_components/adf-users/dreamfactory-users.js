@@ -17,7 +17,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 });
         }])
-    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
+
+    .run([function () {
 
     }])
     
@@ -312,13 +313,9 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             // update token if email was changed
                             if (result.session_token) {
-                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.session_token;
-                                $cookies.PHPSESSID = result.session_token;
-
                                 var existingUser = UserDataService.getCurrentUser();
                                 existingUser.session_token = result.session_token;
-                                existingUser.session_id = result.session_token;
-                                $cookieStore.put('CurrentUserObj', existingUser);
+                                UserDataService.setCurrentUser(existingUser);
                             }
 
                             var messageOptions = {
@@ -1124,7 +1121,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         };
     }])
 
-    .directive('dfExportUsers', ['MOD_USER_ASSET_PATH', 'INSTANCE_URL', '$cookies', '$http', '$window', 'ADMIN_API_KEY', function (MOD_USER_ASSET_PATH, INSTANCE_URL, $cookies, $http, $window, ADMIN_API_KEY) {
+    .directive('dfExportUsers', ['MOD_USER_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', '$http', '$window', 'ADMIN_API_KEY', function (MOD_USER_ASSET_PATH, INSTANCE_URL, UserDataService, $http, $window, ADMIN_API_KEY) {
 
         return {
 
@@ -1153,8 +1150,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         scope.fileFormatStr = fileFormatStr;
 
-                        var params = 'file=user.' + scope.fileFormatStr +'&session_token='+$cookies.PHPSESSID+'&api_key='+ADMIN_API_KEY;
-
+                        var params = 'file=user.' + scope.fileFormatStr + '&api_key=' + ADMIN_API_KEY;
+                        var currentUser = UserDataService.getCurrentUser();
+                        if (currentUser && currentUser.session_token) {
+                            params += '&session_token=' + currentUser.session_token;
+                        }
 
                         // Jason's method to make it work.  He doesn't check for bad response.
                         // I'll look into angularJS's $location to fix this.

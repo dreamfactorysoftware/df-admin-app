@@ -20,7 +20,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                     }
                 });
         }])
-    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
+    .run([function () {
 
     }])
     .controller('ProfileCtrl', ['$scope', 'UserDataService', 'dfApplicationData', 'dfNotify', '$http', 'INSTANCE_URL', function ($scope, UserDataService, dfApplicationData, dfNotify, $http, INSTANCE_URL) {
@@ -133,13 +133,9 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                             // update token if password was changed
                             session_token = result.data.session_token;
                             if (session_token) {
-                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = session_token;
-                                $cookies.PHPSESSID = session_token;
-
                                 existingUser = UserDataService.getCurrentUser();
                                 existingUser.session_token = session_token;
-                                existingUser.session_id = session_token;
-                                $cookieStore.put('CurrentUserObj', existingUser);
+                                UserDataService.setCurrentUser(existingUser);
                             }
 
                             // success, now update profile
@@ -177,13 +173,9 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                             // update token if email was changed
                             session_token = result.data.session_token;
                             if (session_token) {
-                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = session_token;
-                                $cookies.PHPSESSID = session_token;
-
                                 existingUser = UserDataService.getCurrentUser();
                                 existingUser.session_token = session_token;
-                                existingUser.session_id = session_token;
-                                $cookieStore.put('CurrentUserObj', existingUser);
+                                UserDataService.setCurrentUser(existingUser);
                             }
 
                             // Remove these properties if they have been set

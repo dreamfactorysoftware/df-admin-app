@@ -38,7 +38,6 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
         }])
     .run([function () {
 
-
     }])
     .controller('ApiDocsCtrl', ['$scope', function($scope) {
 
@@ -66,7 +65,7 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
                 scope.$broadcast('apidocs:loaded');
             }
         };
-    }])
+    }]);
 
 
 

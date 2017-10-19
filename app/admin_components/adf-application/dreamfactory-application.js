@@ -3,7 +3,7 @@
 
 angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
-    .run(['dfApplicationData', function (dfApplicationData) {
+    .run([function () {
 
     }])
 
@@ -96,12 +96,12 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         } else {
                             dfApplicationObj.apis[api] = response;
                         }
-                        if (debugLevel >= 1) console.log('_loadOne(' + api + '): ok from server', dfApplicationObj.apis[api]);
-                        if (debugLevel >= 2) console.log('_loadOne(' + api + '): dfApplicationObj', dfApplicationObj);
+                        if (debugLevel >= 1) console.log('_loadOne(' + api + ',' +  !!forceRefresh + '): ok from server', dfApplicationObj.apis[api]);
+                        if (debugLevel >= 2) console.log('_loadOne(' + api + ',' +  !!forceRefresh + '): dfApplicationObj', dfApplicationObj);
                         deferred.resolve(dfApplicationObj.apis[api]);
                     }, function (error) {
-                        if (debugLevel >= 1) console.log('_loadOne(' + api + '): error from server', error);
-                        if (debugLevel >= 2) console.log('_loadOne(' + api + '): dfApplicationObj', dfApplicationObj);
+                        if (debugLevel >= 1) console.log('_loadOne(' + api + ',' +  !!forceRefresh + '): error from server', error);
+                        if (debugLevel >= 2) console.log('_loadOne(' + api + ',' +  !!forceRefresh + '): dfApplicationObj', dfApplicationObj);
                         deferred.reject(error.data);
                     });
             }
@@ -138,17 +138,12 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     dfApplicationObj.apis[api] = angular.fromJson(xhr.responseText);
-                    if (debugLevel >= 1) console.log('_getApiDataSync(' + api + '): ok from server', dfApplicationObj.apis[api]);
-                    if (debugLevel >= 2) console.log('_getApiDataSync(' + api + '): dfApplicationObj', dfApplicationObj);
+                    if (debugLevel >= 1) console.log('_getApiDataSync(' + api + ',' +  !!forceRefresh + '): ok from server', dfApplicationObj.apis[api]);
+                    if (debugLevel >= 2) console.log('_getApiDataSync(' + api + ',' +  !!forceRefresh + '): dfApplicationObj', dfApplicationObj);
                 } else {
-                    if (debugLevel >= 1) console.log('_getApiDataSync(' + api + '): error from server', xhr.responseText);
-                    if (debugLevel >= 2) console.log('_getApiDataSync(' + api + '): dfApplicationObj', dfApplicationObj);
-                    throw {
-                        module: 'DreamFactory',
-                        type: 'error',
-                        provider: 'dreamfactory',
-                        exception: 'XMLHTTPRequest Failure:  _getApiDataSync() Failed. Please contact your system administrator.'
-                    };
+                    // return value will be undefined
+                    if (debugLevel >= 1) console.log('_getApiDataSync(' + api + ',' +  !!forceRefresh + '): error from server', xhr.responseText);
+                    if (debugLevel >= 2) console.log('_getApiDataSync(' + api + ',' +  !!forceRefresh + '): dfApplicationObj', dfApplicationObj);
                 }
             }
 
@@ -732,10 +727,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
     ])
 
     // Intercepts outgoing http calls.  Checks for valid session.  If 401 will trigger a pop up login screen.
-    .factory('httpValidSession', ['$q', '$rootScope', '$location', 'INSTANCE_URL', '$injector', '$cookies', function ($q, $rootScope, $location, INSTANCE_URL, $injector, $cookies) {
-
+    .factory('httpValidSession', ['$q', '$rootScope', '$location', 'INSTANCE_URL', '$injector', function ($q, $rootScope, $location, INSTANCE_URL, $injector) {
 
         var refreshSession = function (reject) {
+
             var $http = $injector.get('$http');
             var UserDataService = $injector.get('UserDataService');
             var user = UserDataService.getCurrentUser();
@@ -747,8 +742,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 method: 'PUT',
                 url: INSTANCE_URL + url
             }).then(function (result) {
-                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.data.session_token;
-                $cookies.PHPSESSID = $cookies.PHPSESSID === result.data.session_token ? $cookies.PHPSESSID : result.data.session_token
                 UserDataService.setCurrentUser(result.data);
                 retry(reject.config, deferred);
             }, function () {
@@ -779,14 +772,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         };
 
         var newSession = function (reject, deferred) {
-            //Clear cookies.
-            $cookies.PHPSESSID = '';
 
-            //Clear current header.
-            var $http = $injector.get('$http');
-            $http.defaults.headers.common['X-DreamFactory-Session-Token'] = '';
-
-            //Clear current user.
             var UserDataService = $injector.get('UserDataService');
             UserDataService.unsetCurrentUser();
 

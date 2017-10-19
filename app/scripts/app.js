@@ -40,8 +40,7 @@ angular
 
     // each tab uses this in its resolve function to make sure user is allowed access
     // if access is not allowed the user is sent to launchpad
-
-    .factory('checkUserService', function ($location, $q, dfApplicationData) {
+    .factory('checkUserService', function ($location, $q, SystemConfigDataService) {
 
         return {
 
@@ -53,31 +52,21 @@ angular
                 // it will be allowed for admin users, and non-admin users whose role allows it
                 // if no role is assigend for the user for the admin app the default role can also allow access
 
-                var config;
-                dfApplicationData.getApiData(['environment']).then(
-                    function (response) {
-                        config = response[0];
-                    },
-                    function (error) {
-                        config = null;
-                    }
-                ).finally(function() {
-                    var result = false;
-                    if (config) {
-                        result = (config.apps && config.apps.filter(function (item) {
-                            return (item.name === 'admin');
-                        }).length > 0);
-                    }
-                    if (result) {
-                        // user has access to admin, proceed to load the requested admin route
-                        deferred.resolve();
-                    } else {
-                        // user does not have access to admin, redirect to launchpad
-                        $location.url('/launchpad');
-                        deferred.reject();
-                    }
-                });
-
+                var config = SystemConfigDataService.getSystemConfig();
+                var result = false;
+                if (config) {
+                    result = (config.apps && config.apps.filter(function (item) {
+                        return (item.name === 'admin');
+                    }).length > 0);
+                }
+                if (result) {
+                    // user has access to admin, proceed to load the requested admin route
+                    deferred.resolve();
+                } else {
+                    // user does not have access to admin, redirect to launchpad
+                    $location.url('/launchpad');
+                    deferred.reject();
+                }
                 return deferred.promise;
             }
         };
@@ -108,13 +97,13 @@ angular
         };
     })
 
-    .factory('allowAdminAccess', function (dfApplicationData) {
+    .factory('allowAdminAccess', function (SystemConfigDataService) {
 
         return {
 
             get: function () {
                 var result = false;
-                var config = dfApplicationData.getApiDataFromCache('environment');
+                var config = SystemConfigDataService.getSystemConfig();
                 if (config) {
                     result = (config.apps && config.apps.filter(function (item) {
                         return (item.name === 'admin');
@@ -144,6 +133,37 @@ angular
     // Configure main app routing rules
     .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
         $routeProvider
+            .when('/login', {
+                controller: 'LoginCtrl',
+                templateUrl: 'views/login.html',
+                resolve: {
+
+                    checkOtherRoute: ['$q', 'UserDataService', '$location', 'SystemConfigDataService', function ($q, UserDataService, $location, SystemConfigDataService) {
+
+                        var deferred = $q.defer();
+                        var currentUser = UserDataService.getCurrentUser();
+
+                        // we're trying to go to login
+                        // if we have a valid session then no need to go to login
+                        if (currentUser && currentUser.session_token) {
+                            if (currentUser.is_sys_admin) {
+                                var systemConfig = SystemConfigDataService.getSystemConfig();
+                                if (currentUser.email === 'user@example.com' && systemConfig && !systemConfig.platform.bitnami_demo) {
+                                    $location.url('/profile');
+                                } else {
+                                    $location.url('/home');
+                                }
+                            } else {
+                                $location.url('/launchpad');
+                            }
+                            deferred.reject();
+                        } else {
+                            deferred.resolve();
+                        }
+                        return deferred.promise;
+                    }]
+                }
+            })
             .when('/logout', {
                 templateUrl: 'views/logout.html',
                 controller: 'LogoutCtrl'
@@ -291,17 +311,18 @@ angular
                 templateUrl: 'views/login.html',
                 resolve: {
 
-                    checkLoginRoute: ['$q', 'UserDataService', '$location', 'SystemConfigDataService', function ($q, UserDataService, $location, SystemConfigDataService) {
+                    checkOtherRoute: ['$q', 'UserDataService', '$location', 'SystemConfigDataService', function ($q, UserDataService, $location, SystemConfigDataService) {
 
                         var deferred = $q.defer();
                         var currentUser = UserDataService.getCurrentUser();
 
-                        // we're trying to go to login
-                        // if we have a valid session then no need to go to login
-                        if (currentUser && currentUser.session_id) {
+                        // if we are loading the base URL of index.html then the path will be ""
+                        // if we have a valid session then go to admin app or launchpad
+                        // if there is no session then go to login
+                        if (currentUser && currentUser.session_token) {
                             if (currentUser.is_sys_admin) {
                                 var systemConfig = SystemConfigDataService.getSystemConfig();
-                                if (currentUser.email === 'user@example.com' && !systemConfig.platform.bitnami_demo) {
+                                if (currentUser.email === 'user@example.com' && systemConfig && !systemConfig.platform.bitnami_demo) {
                                     $location.url('/profile');
                                 } else {
                                     $location.url('/home');
@@ -309,10 +330,10 @@ angular
                             } else {
                                 $location.url('/launchpad');
                             }
-                            deferred.reject();
                         } else {
-                            deferred.resolve();
+                            $location.url('/login');
                         }
+                        deferred.reject();
                         return deferred.promise;
                     }]
                 }
