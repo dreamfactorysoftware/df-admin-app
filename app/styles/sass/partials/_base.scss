@@ -1,4 +1,11 @@
 
+$break-xsmall: 768px;
+$break-small: 992px;
+$break-medium: 1200px;
+
+$brand-grey: #888;
+$brand-grey-light: lighten($brand-grey, 30%);
+
 html {
   height: 100%;
 }
@@ -9,16 +16,6 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-
-//.background-blue-steel {
-//
-//  // needs latest Compass, add '@import "compass"' to your scss
-//  background-color: #161f25; // Old browsers
-//  @include filter-gradient(#161f25, #747c7f, #64819e, #434945, horizontal); // IE6-9 fallback on horizontal gradient
-//  @include background-image(linear-gradient(left top,  #161f25 0%, #747c7f 35%, #64819e 76%, #434945 100%));
-//
-//}
-
 
 .full-color-bg {
   // needs latest Compass, add '@import "compass"' to your scss
