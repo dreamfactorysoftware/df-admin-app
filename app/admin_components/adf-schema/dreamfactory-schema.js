@@ -66,7 +66,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         module: 'Schema',
                         type: 'error',
                         provider: 'dreamfactory',
-                        message: reject.error.message
+                        message: reject
                     };
 
                     dfNotify.error(messageOptions);
@@ -1663,7 +1663,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Schema',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject.error.message
+                                message: reject
                             };
 
                             dfNotify.error(messageOptions);
@@ -1783,7 +1783,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                               module: 'Schema',
                               type: 'error',
                               provider: 'dreamfactory',
-                              message: reject.error.message
+                              message: reject
                           };
 
                           dfNotify.error(messageOptions);
@@ -2258,7 +2258,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject.error.message
+                                message: reject
                             };
 
                             dfNotify.error(messageOptions);
@@ -2306,7 +2306,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject.error.message
+                                message: reject
                             };
 
                             dfNotify.error(messageOptions);
@@ -2336,7 +2336,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject.error.message
+                                message: reject
                             };
 
                             dfNotify.error(messageOptions);
@@ -2371,7 +2371,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject.error.message
+                                message: reject
                             };
 
                             dfNotify.error(messageOptions);
@@ -2403,7 +2403,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject.error.message
+                                message: reject
                             };
 
                             dfNotify.error(messageOptions);
@@ -2460,7 +2460,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                           module: 'Api Error',
                           type: 'error',
                           provider: 'dreamfactory',
-                          message: reject.error.message
+                          message: reject
                       };
 
                       dfNotify.error(messageOptions);
@@ -2797,7 +2797,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject.error.message
+                                message: reject
                             };
 
 
