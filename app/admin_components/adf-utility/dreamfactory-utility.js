@@ -2927,10 +2927,11 @@ angular.module('dfUtility', ['dfApplication'])
                     text:  messageOptions.message,
                     addclass: "stack_topleft",
                     animation: 'fade',
-                    animate_speed: 150,
-                    position_animate_speed: 150,
+                    animate_speed: 'normal',
+                    hide: true,
+                    delay: 3000,
                     stack: stack_topleft,
-                    mouse_reset: false
+                    mouse_reset: true
                 })
             })();
         }
