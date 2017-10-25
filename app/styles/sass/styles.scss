@@ -1,19 +1,19 @@
-// to change the theme you need to edit 3 lines in this file
+// to change the theme you need to replace all occurrences of the theme name in this file
 
-// theme overrides, these allow overrides on a specifc theme
-// change the theme name here to use a different theme
-@import "partials/themes/cerulean/_overrides.scss";
+// theme variable overrides, these allow variable overrides on a specific theme
+@import "partials/themes/cerulean/_variable_overrides.scss";
 
 // theme variables, do not change this file
-// change the theme name here to use a different theme
 @import "partials/themes/cerulean/_variables.scss";
 
 // standard bootstrap, do not change this file
 @import "../../../bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 
-// theme bootstrap, do not change this file
-// change the theme name here to use a different theme
+// theme bootswatch, do not change this file
 @import "partials/themes/cerulean/_bootswatch.scss";
+
+// theme bootswatch overrides, these allow bootswatch overrides on a specific theme
+@import "partials/themes/cerulean/_bootswatch_overrides.scss";
 
 // needed for filter gradient
 @import "compass";

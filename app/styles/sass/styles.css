@@ -8952,6 +8952,11 @@ button.close {
   background-color: #fff;
 }
 
+/* line 3, partials/themes/cerulean/_bootswatch_overrides.scss */
+.btn-primary:hover {
+  color: #FFF;
+}
+
 /* line 9, partials/_base.scss */
 html {
   height: 100%;
