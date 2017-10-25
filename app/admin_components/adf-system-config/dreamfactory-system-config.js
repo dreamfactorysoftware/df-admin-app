@@ -52,7 +52,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
             // CREATE SHORT NAMES
             $scope.es = SystemConfigEventsService.systemConfigController;
-            
+
             // PUBLIC API
 
             $scope.buildLinks = function(checkData) {
@@ -887,7 +887,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                         scope.emailTemplates[i] = _newTemplate;
                                         scope.selectedEmailTemplate = _newTemplate;
                                     }
-                                    
+
                                     i++;
                                 }
                             },
@@ -966,6 +966,10 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         reply_to_email: {
                             title: 'Reply to Email',
                             text: 'Enter reply to email.'
+                        },
+                        attachment: {
+                            title: 'Attachment',
+                            text: 'You can enter URL for attachment. Enter multiple URLs separated by comma. You can use lookup keys here too. Example: {key1},{key2}.'
                         }
                     };
 
