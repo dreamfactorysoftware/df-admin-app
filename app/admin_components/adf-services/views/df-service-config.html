@@ -1,5 +1,5 @@
 <div>
-    <div class="alert alert-info" ng-show="selectedSchema && apiData.environment.server.ip">
+    <div class="alert alert-info" ng-show="selectedSchema && selectedSchema.available && apiData.environment.server.ip">
         <li class="fa fa-info-circle"></li>
         The IP address for your DreamFactory instance is <strong>{{ apiData.environment.server.ip }}</strong>. If you have trouble accessing your service through DreamFactory make sure the service allows connections from this IP address.
     </div>
@@ -288,8 +288,8 @@
         </div>
     </div>
 
-    <div data-ng-if="selectedSchema.subscription_required">
-        <br/><h4>This feature requires a DreamFactory {{selectedSchema.subscription_type}} product subscription.</h4> Email <a href="mailto:dspsales@dreamfactory.com" >dspsales@dreamfactory.com</a> or call +1-650-641-1800 for pricing information.
+    <div data-ng-if="selectedSchema && !selectedSchema.available">
+        <br/><h4>This feature requires a DreamFactory {{selectedSchema.subscription_required}} product subscription.</h4> Email <a href="mailto:dspsales@dreamfactory.com" >dspsales@dreamfactory.com</a> or call +1-650-641-1800 for pricing information.
     </div>
 
 </div>

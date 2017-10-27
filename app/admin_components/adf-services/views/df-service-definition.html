@@ -1,6 +1,6 @@
 
 <div class="col-xs-12" style="padding-bottom: 20px;">
-    <div data-ng-hide="selectedSchema.subscription_required">
+    <div data-ng-show="selectedSchema && selectedSchema.available">
         <div class="form-group ng-scope">
             <label>Select Format</label>
             <select class="form-control"
@@ -39,8 +39,8 @@
         </div>
     </div>
 
-    <div data-ng-if="selectedSchema.subscription_required">
-        <br/><h4>This feature requires a DreamFactory {{selectedSchema.subscription_type}} product subscription.</h4> Email <a href="mailto:dspsales@dreamfactory.com" >dspsales@dreamfactory.com</a> or call +1-650-641-1800 for pricing information.
+    <div data-ng-if="selectedSchema && !selectedSchema.available">
+        <br/><h4>This feature requires a DreamFactory {{selectedSchema.subscription_required}} product subscription.</h4> Email <a href="mailto:dspsales@dreamfactory.com" >dspsales@dreamfactory.com</a> or call +1-650-641-1800 for pricing information.
     </div>
 </div>
 

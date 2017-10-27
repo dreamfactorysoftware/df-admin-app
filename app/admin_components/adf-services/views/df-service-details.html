@@ -32,19 +32,20 @@
 
         <div class="form-group">
             <div>
-                <input data-ng-if="selectedSchema.config_schema"
+                <input data-ng-if="selectedSchema && selectedSchema.config_schema"
                        id="services_details_save"
                        class="btn btn-default btn-primary save-service-btn"
                        type="submit"
                        value="Save"
                        data-ng-click="selections.saveAndClose=false"/>
-                <input data-ng-if="!newService && selectedSchema.config_schema"
+                <input data-ng-if="!newService && selectedSchema && selectedSchema.config_schema"
                        id="services_details_save_close"
                        class="btn btn-default btn-primary save-service-btn"
                        type="submit"
                        value="Save and Close"
                        data-ng-click="selections.saveAndClose=true"/>
-                <button id="services_details_cancel"
+                <button data-ng-if="selectedSchema && selectedSchema.config_schema"
+                        id="services_details_cancel"
                         type="button"
                         class="btn btn-default"
                         data-ng-click="cancelEditor()">Close</button>

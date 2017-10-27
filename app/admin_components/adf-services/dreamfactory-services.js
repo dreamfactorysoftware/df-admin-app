@@ -699,7 +699,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
             }
         };
     }])
-    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', function (MOD_SERVICES_ASSET_PATH) {
+    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'SystemConfigDataService', function (MOD_SERVICES_ASSET_PATH, SystemConfigDataService) {
 
         return {
             restrict: 'E',
@@ -756,7 +756,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                 scope.addMissingPaidServices = function (types) {
 
-                    // if these paid services are not in service_type array then add them with subscription_required = true
+                    // if these paid services are not in service_type array then add them
                     // this is basically done for advertisement purposes
 
                     var silverServices = [{
@@ -853,8 +853,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         if (matches.length === 0) {
                             svc.singleton = false;
                             svc.config_schema = null;
-                            svc.subscription_required = true;
-                            svc.subscription_type = 'Silver';
+                            svc.subscription_required = 'SILVER';
                             add.push(svc);
                         }
                     });
@@ -867,13 +866,28 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         if (matches.length === 0) {
                             svc.singleton = false;
                             svc.config_schema = null;
-                            svc.subscription_required = true;
-                            svc.subscription_type = 'Gold';
+                            svc.subscription_required = 'GOLD';
                             add.push(svc);
                         }
                     });
 
-                    return types.concat(add);
+                    types = types.concat(add);
+
+                    // check for which service types are not available
+                    var systemConfig = SystemConfigDataService.getSystemConfig();
+                    var product = systemConfig.platform.license;
+                    angular.forEach(types, function (svc) {
+                        svc.available = true;
+                        if (svc.subscription_required) {
+                            if ((svc.subscription_required === 'GOLD' && product !== 'GOLD') ||
+                                (svc.subscription_required === 'SILVER' && product !== 'GOLD' && product !== 'SILVER')) {
+                                svc.available = false;
+                                svc.config_schema = null;
+                            }
+                        }
+                    });
+
+                    return types;
                 };
 
                 scope.getServiceTypes = function () {
