@@ -9460,61 +9460,38 @@ body {
   margin-bottom: 0;
 }
 
-/* line 1, partials/_df-dropdown-submenu.scss */
+/* line 3, partials/_df-dropdown-submenu.scss */
 .dropdown-submenu {
   position: relative;
 }
 
-/* line 5, partials/_df-dropdown-submenu.scss */
+/* line 10, partials/_df-dropdown-submenu.scss */
 .dropdown-submenu .dropdown-menu {
   top: 0;
   left: 100%;
   margin-top: -1px;
 }
 
-/* line 11, partials/_df-dropdown-submenu.scss */
-.dropdown-submenu > .dropdown-menu {
-  top: 0;
-  left: 100%;
-  margin-top: -6px;
-  margin-left: -1px;
-  -webkit-border-radius: 0 6px 6px 6px;
-  -moz-border-radius: 0 6px 6px 6px;
-  border-radius: 0 6px 6px 6px;
+/* line 19, partials/_df-dropdown-submenu.scss */
+.dropdown-submenu .dropdown-menu-2 {
+  width: 422px;
 }
 
-/* line 21, partials/_df-dropdown-submenu.scss */
-.dropdown-submenu > a:after {
-  display: block;
-  content: " ";
-  float: right;
-  width: 0;
-  height: 0;
-  border-color: transparent;
-  border-style: solid;
-  border-width: 5px 0 5px 5px;
-  border-left-color: #cccccc;
-  margin-top: 5px;
-  margin-right: -10px;
+/* line 24, partials/_df-dropdown-submenu.scss */
+.dropdown-submenu .dropdown-menu-2 li {
+  width: 210px;
+  float: left;
 }
 
-/* line 35, partials/_df-dropdown-submenu.scss */
-.dropdown-submenu:hover > a:after {
-  border-left-color: #ffffff;
+/* line 32, partials/_df-dropdown-submenu.scss */
+.dropdown-submenu:hover > .dropdown-menu {
+  display: inline-block;
 }
 
-/* line 39, partials/_df-dropdown-submenu.scss */
-.dropdown-submenu.pull-left {
-  float: none;
-}
-
-/* line 43, partials/_df-dropdown-submenu.scss */
-.dropdown-submenu.pull-left > .dropdown-menu {
-  left: -100%;
-  margin-left: 10px;
-  -webkit-border-radius: 6px 0 6px 6px;
-  -moz-border-radius: 6px 0 6px 6px;
-  border-radius: 6px 0 6px 6px;
+/* line 1, partials/_df-event-picker.scss */
+.event-picker {
+  max-height: 200px;
+  overflow-y: scroll;
 }
 
 /* line 2, ../../admin_components/adf-help/styles/style.scss */

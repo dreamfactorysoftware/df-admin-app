@@ -941,15 +941,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                     var groups = scope.getServiceTypes().map(function(obj) {
                         if (!typeObj.hasOwnProperty(obj.group)) {
-                            typeObj[String(obj.group)] = [];
+                            typeObj[obj.group] = [];
                         }
 
-                        typeObj[String(obj.group)].push({name: obj.name, label: obj.label});
+                        typeObj[obj.group].push({name: obj.name, label: obj.label});
 
                         return obj.group;
                     });
 
-                    groups = groups.filter(function(v,i) { return groups.indexOf(v) == i; });
+                    groups = groups.filter(function(v,i) { return groups.indexOf(v) === i; });
 
                     var sortingArray = [
                         'Database',
@@ -962,12 +962,47 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         'LDAP'
                     ];
 
+                    // sort groups per above list
+                    // service types within each group are ordered as returned by server
                     groups = scope.sortArray(groups, sortingArray);
+
+                    // sort each array of service types into a staggered list to
+                    // accomodate 2 columns when there are more than X items.
+                    // doing this work here allows the CSS to remain really simple
+                    // with a float left to create the 2 columns. we want them ordered
+                    // top to bottom not left to right. first column 1 then column 2.
+                    //
+                    // we want this:
+                    //
+                    // 1   3
+                    // 2   4
+                    //
+                    // not this:
+                    //
+                    // 1   2
+                    // 3   4
+
+                    scope.serviceTypesSingleColLimit = 9;
+                    var newTypeObj = {};
+                    angular.forEach(typeObj, function (types, group) {
+                        var newTypes = angular.copy(types);
+                        var limit = scope.serviceTypesSingleColLimit, i, j;
+                        if (types.length > limit) {
+                            for (i = 0, j = 0; i < types.length; i += 2) {
+                                newTypes[i] = types[j++];
+                            }
+                            for (i = 1; i < types.length; i += 2) {
+                                newTypes[i] = types[j++];
+                            }
+                        }
+                        newTypeObj[group] = newTypes;
+                    });
 
                     var _serviceTypes = [];
 
                     for (var i = 0; i < groups.length; i++) {
-                        _serviceTypes.push({"group_name": groups[i], "group_types": typeObj[String(groups[i])]});
+
+                        _serviceTypes.push({"group_name": groups[i], "group_types": newTypeObj[groups[i]]});
                     }
                     scope.serviceTypes = _serviceTypes;
                 });

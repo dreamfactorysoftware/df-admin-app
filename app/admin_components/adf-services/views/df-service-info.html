@@ -4,14 +4,14 @@
     <df-simple-help data-options="dfSimpleHelp.serviceType"></df-simple-help><br/>
 
     <div class="dropdown" data-ng-if="newService">
-        <button id="services_info_type" class="btn btn-default dropdown-toggle" onclick="clearMenu()" type="button" data-toggle="dropdown">
+        <button id="services_info_type" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
             {{selectedSchema.label || 'Select Service Type'}}
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
             <li class="dropdown-submenu" ng-repeat="service in serviceTypes">
                 <a id="services_info_type_{{$index}}" class="sub" tabindex="-1">{{service.group_name}}</a>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu {{service.group_types.length > serviceTypesSingleColLimit ? 'dropdown-menu-2' : ''}}">
                     <li data-ng-repeat="type in service.group_types">
                         <a href="" id="services_info_type_select_{{type.name}}" data-ng-click="changeServiceType(type.name)">{{type.label}}</a>
                     </li>
@@ -55,33 +55,3 @@
         <br/><h4>This feature requires a DreamFactory {{selectedSchema.subscription_required}} product subscription.</h4> Email <a href="mailto:dspsales@dreamfactory.com" >dspsales@dreamfactory.com</a> or call +1-650-641-1800 for pricing information.
     </div>
 </div>
-
-<script>
-    function clearMenu(){
-        $('.dropdown-menu').find('ul').hide();
-    }
-
-    $(document).ready(function(){
-        var lastPageY = 0;
-
-        $('.dropdown-menu').find('ul').toggle(false);
-
-        $('.dropdown-submenu a.sub').hover(function(e){
-            if(e.pageY != lastPageY){
-                $('.dropdown-menu').find('ul').hide();
-                $(this).next('ul').toggle();
-            } else {
-                $('#services_info_type').click();
-                $(".df-section").scrollTop(0);
-                $('#services_info_type').click();
-            }
-
-            lastPageY = e.pageY;
-            e.stopPropagation();
-            e.preventDefault();
-        }, function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        });
-    });
-</script>

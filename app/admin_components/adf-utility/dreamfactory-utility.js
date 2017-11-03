@@ -882,27 +882,33 @@ angular.module('dfUtility', ['dfApplication'])
                 },
                 templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-event-picker.html',
                 link: function (scope, elem, attrs) {
-                    scope.selectedLabel = false;
+
                     scope.selectItem = function (item) {
                         scope.selected = item.name;
                     };
 
-                    scope.$watch('selected', function (newValue, oldValue) {
+                    var events = [];
 
-                        if (newValue) {
-                            angular.forEach(scope.options, function (option) {
-                                if(option.items) {
-                                    angular.forEach(option.items, function(item){
-                                        if(newValue === item.name){
-                                            scope.selectedLabel = item.label;
-                                        }
-                                    })
+                    if (scope.options) {
+                        angular.forEach(scope.options, function (option) {
+                            if (option.items) {
+                                if (events.length > 0) {
+                                    // add divider before starting a new service type
+                                    // class = 'divider' makes it a divider
+                                    events.push({class: 'divider'});
                                 }
-                            });
-                        }
-                    });
+                                angular.forEach(option.items, function (item) {
+                                    // add menu item, class = '' means not a divider
+                                    item.class = '';
+                                    events.push(item);
+                                });
+                            }
+                        });
+                    }
+
+                    scope.events = events;
                 }
-            }
+            };
         }
     ])
 
