@@ -12,10 +12,10 @@
                         DreamFactory Version: {{systemEnv.platform.version}}
                     </p>
                     <p ng-if="isSysAdmin">
-                        System Database: {{systemEnv.config.db.driver}}
+                        System Database: {{systemEnv.platform.db_driver}}
                     </p>
-                    <p data-ng-if="isSysAdmin && systemEnv.config.db.driver === 'sqlite'">
-                        Sqlite Storage: {{systemEnv.config.db.sqlite_storage}}
+                    <p data-ng-if="isSysAdmin && systemEnv.platform.db_driver === 'sqlite'">
+                        Sqlite Storage: {{systemEnv.platform.sqlite_storage}}
                     </p>
                     <p ng-if="isSysAdmin">
                         Install Path: {{systemEnv.platform.install_path}}
