@@ -29,55 +29,25 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     templateUrl: MODSCRIPTING_ASSET_PATH + 'views/main.html',
                     controller: 'ScriptsCtrl',
                     resolve: {
-                        checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
-
-                            var currentUser = UserDataService.getCurrentUser(),
-                                defer = $q.defer();
-
-                            // If there is no currentUser and we don't allow guest users
-                            if (!currentUser) {
-
-                                $location.url('/login');
-
-                                // This will stop the route from loading anything
-                                // it's caught by the global error handler in
-                                // app.js
-                                throw {
-                                    routing: true
-                                };
-                            }
-
-                            // There is a currentUser but they are not an admin
-                            else if (currentUser && !currentUser.is_sys_admin) {
-
-                                $location.url('/launchpad');
-
-                                // This will stop the route from loading anything
-                                // it's caught by the global error handler in
-                                // app.js
-                                throw {
-                                    routing: true
-                                };
-                            }
-
-                            defer.resolve();
-                            return defer.promise;
+                        checkUser:['checkUserService', function (checkUserService) {
+                            return checkUserService.checkUser();
                         }]
                     }
                 });
         }])
-    .run(['INSTANCE_URL', '$http', function (INSTANCE_URL, $http) {
+
+    .run([function () {
 
     }])
-    .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$rootScope', '$http', 'dfApplicationData', 'dfNotify', 'MODSCRIPTING_EXAMPLES_PATH',
-        function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify, MODSCRIPTING_EXAMPLES_PATH) {
+
+    .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$rootScope', '$http', 'dfApplicationData', 'dfNotify', '$location',
+        function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify, $location) {
 
             $scope.$parent.title = 'Scripts';
-            $scope.sampleSelect = null;
-
-            $scope.serviceTypeConfig = 'scripts';
-
+            $scope.scriptGitHubTarget = 'scripts';
             $scope.newScript = true;
+            $scope.isEventScriptEditable = true;
+            $scope.eventScriptUpdateCounter = 0;
             $scope.disableServiceLinkRefresh = true;
             $scope.selections = {
                 "service": null
@@ -99,12 +69,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 };
             };
 
-            $scope.scriptSamplesSelect = function (type) {
-
-                $scope.sampleSelect = type;
-                $scope._loadSampleScript(type);
-            };
-
             $scope.handleFiles = function (element) {
 
                 var file = element.files && element.files[0];
@@ -114,6 +78,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     reader.onload = function (evt) {
                         $scope.$apply(function() {
                             $scope.currentScriptObj.content = evt.target.result;
+                            $scope.eventScriptUpdateCounter++;
                         });
                     };
                     reader.onerror = function (evt) {
@@ -121,24 +86,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }
             };
 
-            $scope.handleGitFiles = function (data) {
-
-                if (!data) {
-                    return;
-                }
-                $scope.currentScriptObj.content = data;
-                $scope.$apply();
-            };
-
             $scope.githubModalShow = function () {
 
-                $rootScope.$broadcast('githubShowModal', $scope.serviceTypeConfig);
+                $rootScope.$broadcast('githubShowModal', $scope.scriptGitHubTarget);
             };
 
-            $scope.isHostedSystem = SystemConfigDataService.getSystemConfig().is_hosted;
-
-            // Sample Scripts
-            $scope.samplesScripts = null;
+            $scope.isHostedSystem = false;
 
             // load data
             // Allows for building of events dynamically on the client
@@ -154,7 +107,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 // only load these one time as they should not change as scripts are created/deleted
                 // this is particularly important for 'event' as it can be slow when there are many services
-                var secondaryApis = ['event', 'script_type', 'service_link'];
+                var secondaryApis = ['event', 'script_type', 'service_link', 'environment'];
 
                 // for primaryApis force refresh to always load from server
                 dfApplicationData.getApiData(primaryApis, true).then(
@@ -169,11 +122,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         dfApplicationData.getApiData(secondaryApis, ($scope.apiData === null)).then(
                             function (response) {
                                 secondaryApis.forEach(function(value, index) {
-                                    if (value === 'service_link') {
-                                        newApiData[value] = response[index].services;
-                                    } else {
-                                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
-                                    }
+                                    newApiData[value] = response[index].resource ? response[index].resource : response[index];
                                     if (value === 'event') {
                                         // used for highlighting in ui
                                         newApiData['event_lookup'] = $scope.buildEventLookup(newApiData[value]);
@@ -183,11 +132,16 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                 $scope.apiData = newApiData;
                             },
                             function (error) {
+                                var msg = 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.';
+                                if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                                    msg = 'To use the Scripts tab your role must allow GET access to system/event_script, system/event, and system/script_type. To create, update, or delete scripts you need POST and DELETE access to /system/event_script.';
+                                    $location.url('/home');
+                                }
                                 var messageOptions = {
                                     module: 'Scripts',
                                     provider: 'dreamfactory',
                                     type: 'error',
-                                    message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.'
+                                    message: msg
                                 };
                                 dfNotify.error(messageOptions);
                             }
@@ -196,11 +150,16 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         });
                     },
                     function (error) {
+                        var msg = 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.';
+                        if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                            msg = 'To use the Scripts tab your role must allow GET access to system/event_script, system/event, and system/script_type. To create, update, or delete scripts you need POST and DELETE access to /system/event_script.';
+                            $location.url('/home');
+                        }
                         var messageOptions = {
                             module: 'Scripts',
                             provider: 'dreamfactory',
                             type: 'error',
-                            message: 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.'
+                            message: msg
                         };
                         dfNotify.error(messageOptions);
                         $scope.dataLoading = false;
@@ -235,52 +194,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $scope.currentScriptObj.storage_path = null;
             };
 
-            $scope.checkScriptFileType = function() {
-
-                var error = '';
-                var scriptType = $scope.currentScriptObj.type;
-                if (scriptType === 'nodejs' || scriptType === 'v8js' || scriptType === 'php' || scriptType === 'python') {
-                    if ($scope.selections.service && $scope.selections.service.id) {
-                        // convert null to empty string before looking for file extension
-                        var servicePath = $scope.currentScriptObj.storage_path ? $scope.currentScriptObj.storage_path : "";
-                        var pathSeg = servicePath.split('.');
-                        var fileExt = pathSeg.pop().toLowerCase();
-                        if (!fileExt) {
-                            error = 'No file path provided for service linking.';
-                        } else if (fileExt !== 'txt') {
-                            if (fileExt !== 'js' && fileExt !== 'php' && fileExt !== 'py') {
-                                error = 'Invalid file path provided for service linking. Only supported file types are .js, .php, .py, and .txt.';
-                            } else if ((scriptType === 'nodejs' || scriptType === 'v8js') && fileExt !== 'js') {
-                                error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .js extension.';
-                            } else if (fileExt !== 'php' && scriptType === 'php') {
-                                error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .php extension.';
-                            } else if (fileExt !== 'py' && scriptType === 'python') {
-                                error = 'Invalid file path selected for ' + scriptType + ' script type. Please select a file with .py extension.';
-                            }
-                        }
-                    }
-                }
-                return error;
-            };
-
             $scope.pullLatestScript = function () {
 
                 var serviceName = $scope.selections.service.name;
                 var serviceRepo = $scope.currentScriptObj.scm_repository;
                 var serviceRef = $scope.currentScriptObj.scm_reference;
                 var servicePath = $scope.currentScriptObj.storage_path;
-                var fileTypeError = $scope.checkScriptFileType();
-                if (fileTypeError) {
-                    var messageOptions = {
-                        module: 'Scripts',
-                        provider: 'dreamfactory',
-                        type: 'error',
-                        message: fileTypeError
-                    };
-                    dfNotify.error(messageOptions);
-                    return;
-                }
-
                 var url = INSTANCE_URL + '/api/v2/' + serviceName;
 
                 if($scope.selections.service && ($scope.selections.service.type === 'github' || $scope.selections.service.type === 'gitlab')){
@@ -301,28 +220,16 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }).then(
                     function (result) {
 
-                        $http({
-                            method:'DELETE',
-                            url: INSTANCE_URL + '/api/v2/system/cache/_event/' + $scope.currentScriptObj.name
-                        }).then(
-                            function(rs){
+                        $scope.currentScriptObj.content = result.data;
+                        $scope.eventScriptUpdateCounter++;
 
-                            },
-                            function(err) {
-                                console.log('Failed to clear even scipt cache.')
-                            }
-                        ).finally(function() {
-
-                            $scope.currentScriptObj.content = result.data;
-
-                            var messageOptions = {
-                                module: 'Scripts',
-                                provider: 'dreamfactory',
-                                type: 'success',
-                                message: 'Successfully pulled the latest script from source.'
-                            };
-                            dfNotify.error(messageOptions);
-                        });
+                        var messageOptions = {
+                            module: 'Scripts',
+                            provider: 'dreamfactory',
+                            type: 'success',
+                            message: 'Successfully pulled the latest script from source.'
+                        };
+                        dfNotify.error(messageOptions);
                     },
 
                     function (error) {
@@ -331,11 +238,41 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             module: 'Scripts',
                             provider: 'dreamfactory',
                             type: 'error',
-                            message: 'There was an error pulling the latest script from your service. Please make sure your service, path and permissions are correct and try again.'
+                            message: 'There was an error pulling the latest script from source. Please make sure your service, path and permissions are correct and try again.'
                         };
                         dfNotify.error(messageOptions);
                     }
                 ).finally(function () {
+                });
+            };
+
+            $scope.deleteScriptFromCache = function () {
+
+                $http({
+                    method:'DELETE',
+                    url: INSTANCE_URL + '/api/v2/system/cache/_event/' + $scope.currentScriptObj.name
+                }).then(
+                    function(result){
+
+                        var messageOptions = {
+                            module: 'Scripts',
+                            provider: 'dreamfactory',
+                            type: 'success',
+                            message: 'Successfully cleared script from cache.'
+                        };
+                        dfNotify.error(messageOptions);
+                    },
+                    function(error) {
+
+                        var messageOptions = {
+                            module: 'Scripts',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'Failed to cleared script from cache.'
+                        };
+                        dfNotify.error(messageOptions);
+                    }
+                ).finally(function() {
                 });
             };
 
@@ -351,8 +288,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.menuPathArr = [];
 
             // Stuff for the editor
-            $scope.editor = null;
-            $scope.isEditorClean = true;
+            $scope.eventScriptEditorObj = {"editor": null};
 
             // PUBLIC API
 
@@ -497,7 +433,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             // load the editor
 
-            $scope.setScript = function (scriptName) {
+            $scope.getScript = function (scriptName) {
 
                 $scope.menuPathArr.push(scriptName);
 
@@ -513,19 +449,33 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     params: requestDataObj.params
                 }).then(
                     function (result) {
-                        $scope.currentScriptObj = result.data;
+                        var obj = result.data;
+                        // if linked to a service set script content to empty
+                        $scope.selections.service = $scope.getServiceById(obj.storage_service_id);
+                        if ($scope.selections.service) {
+                            obj.content = "";
+                        }
+                        $scope.currentScriptObj = obj;
                         $scope.newScript = false;
-                        $scope.selections.service = $scope.getServiceById($scope.currentScriptObj.storage_service_id);
-                        $scope.editor.session.setValue($scope.currentScriptObj.content);
                     },
                     function (reject) {
-                        $scope.currentScriptObj = new ScriptObj(scriptName);
-                        $scope.newScript = true;
-                        $scope.selections.service = null;
+                        if (reject.data && reject.data.error && reject.data.error.code === 404) {
+                            $scope.currentScriptObj = new ScriptObj(scriptName);
+                            $scope.newScript = true;
+                            $scope.selections.service = null;
+                        } else {
+                            var messageOptions = {
+                                module: 'Scripts',
+                                provider: 'dreamfactory',
+                                type: 'error',
+                                message: reject
+                            };
+                            dfNotify.error(messageOptions);
+                            $scope.menuBack();
+                        }
                     }
                 ).finally(
                     function () {
-                        $scope.enableDisableRefresh();
                     }
                 );
             };
@@ -568,7 +518,13 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     $scope.currentScriptObj.storage_path = null;
                 }
 
-                $scope.currentScriptObj.content = $scope.editor.getValue();
+                // if linked to a service set script content to empty
+                if ($scope.selections.service) {
+                    $scope.currentScriptObj.content = "";
+                    $scope.eventScriptUpdateCounter++;
+                } else {
+                    $scope.currentScriptObj.content = $scope.eventScriptEditorObj.editor.getValue();
+                }
 
                 var requestDataObj = {
 
@@ -585,9 +541,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 }).then(
                     function (result) {
 
-                        $scope.editor.session.getUndoManager().reset();
-                        $scope.editor.session.getUndoManager().markClean();
-                        $scope.isEditorClean = true;
                         $scope.newScript = false;
 
                         // Needs to be replaced with angular messaging
@@ -646,8 +599,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                             $scope.menuPathArr.pop();
                             $scope.currentScriptObj = null;
-                            $scope.editor.session.getUndoManager().reset();
-                            $scope.editor.session.getUndoManager().markClean();
                         },
 
                         function (reject) {
@@ -670,45 +621,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             // COMPLEX IMPLEMENTATION
 
-            $scope._loadSampleScript = function (type) {
-
-                var fileExt = '';
-                var mode = '';
-
-                switch (type) {
-                    case 'node':
-                        fileExt = 'node.js';
-                        mode = 'javascript';
-                        break;
-                    case 'php':
-                        fileExt = 'php';
-                        mode = 'php';
-                        break;
-                    case 'python':
-                        fileExt = 'py';
-                        mode = 'python';
-                        break;
-                    case 'v8js':
-                        fileExt = 'v8.js';
-                        mode = 'javascript';
-                        break;
-                }
-
-                var editor = ace.edit('ide_samples');
-
-                editor.session.setMode({path: 'ace/mode/' + mode, inline: true});
-                editor.setOptions({readOnly: true});
-
-                $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.' + fileExt).then(
-                    function (result) {
-                        editor.session.setValue(result.data);
-                    },
-                    function (reject) {
-                        dfNotify.error(reject)
-                    }
-                );
-            };
-
             $scope.menuOpen = true;
 
             // PUBLIC API
@@ -720,36 +632,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope.menuBack = function () {
 
-                // Check if we have changed the script
-                if (!$scope.isEditorClean) {
-
-                    // Script has been changed.  Confirm close.
-                    if (!$scope._confirmCloseScript()) {
-
-                        return false;
-                    } else {
-                        $scope.editor.session.getUndoManager().reset();
-                        $scope.editor.session.getUndoManager().markClean();
-                        $scope.isEditorClean = true;
-                    }
-                }
-
                 if ($scope.menuPathArr.length > 0) {
                     $scope.menuPathArr.pop();
                     $scope.currentScriptObj = null;
+                    $scope.eventScriptEditorObj.editor.setValue("");
                 }
-
-                return true;
-            };
-
-            $scope.updateEditor = function (scriptType) {
-                var mode = 'text';
-                if (scriptType === 'nodejs' || scriptType === 'v8js') {
-                    mode = 'javascript';
-                } else if (scriptType) {
-                    mode = scriptType;
-                }
-                ace.edit('ide').session.setMode('ace/mode/' + mode);
             };
 
             $scope.jumpTo = function (index) {
@@ -761,18 +648,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
 
             // PRIVATE API
-
-            $scope._clearScriptEditor = function () {
-                $scope.currentScriptObj = null;
-                ace.edit('ide').session.setValue('');
-            };
-
-            // Confirm close with unsaved changes.
-            $scope._confirmCloseScript = function () {
-
-                return confirm('You have unsaved changes.  Close anyway?');
-            };
-
 
             // COMPLEX IMPLEMENTATION
 
@@ -860,7 +735,28 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             var watchSelections = $scope.$watchCollection('selections', function (newValue, oldValue) {
 
                 $scope.disableServiceLinkRefresh = !$scope.getRefreshEnable();
+                if (newValue) {
+                    // when unselecting a service do nothing
+                    $scope.isEventScriptEditable = (newValue.service === null);
+                    // if changing from no service to service then clear content
+                    // if changing from one service to another then clear content
+                    // if changing from service to no service then keep content
+                    if (newValue.service !== null) {
+                        $scope.currentScriptObj.content = "";
+                        $scope.eventScriptUpdateCounter++;
+                    }
+                }
             });
+
+            var watchApiData = $scope.$watchCollection('apiData', function (newValue, oldValue) {
+
+                if (newValue) {
+                    if (newValue.environment && newValue.environment.platform && newValue.environment.platform.is_hosted) {
+                        $scope.isHostedSystem = true;
+                    }
+                }
+            });
+
 
             $scope.$on('$destroy', function (e) {
 
@@ -869,6 +765,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 watchGithubCredPass();
                 watchCurrentScriptObj();
                 watchSelections();
+                watchApiData();
             });
         }])
 
@@ -883,123 +780,51 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
         };
     }])
 
-    .directive('dfAceSamplesSelect', ['INSTANCE_URL', 'MODSCRIPTING_ASSET_PATH', '$http', '$timeout', function (INSTANCE_URL, MODSCRIPTING_ASSET_PATH, $http, $timeout) {
+    .directive('dfAceSamplesSelect', ['MODSCRIPTING_ASSET_PATH', 'MODSCRIPTING_EXAMPLES_PATH', '$http', function (MODSCRIPTING_ASSET_PATH, MODSCRIPTING_EXAMPLES_PATH, $http) {
 
         return {
             restrict: 'E',
-            scope: {
-                currentScript: '=?',
-                isClean: '=?',
-                viewer: '=?',
-                scriptType: '=?'
-            },
+            scope: false,
             templateUrl: MODSCRIPTING_ASSET_PATH + 'views/df-ace-samples.html',
             link: function (scope, elem, attrs) {
-                scope.viewer = ace.edit('ide_samples');
-            }
-        };
 
-    }])
-    .directive('dfAceEditorScripting', ['INSTANCE_URL', 'MODSCRIPTING_ASSET_PATH', '$http', '$timeout', function (INSTANCE_URL, MODSCRIPTING_ASSET_PATH, $http, $timeout) {
+                scope.eventScriptSamplesEditorObj = {"editor": null};
+                scope.eventScriptSamplesType = 'nodejs';
+                scope.eventScriptSamplesContent = "";
 
-        return {
-            restrict: 'E',
-            scope: {
-                currentEditObj: '=?',
-                isClean: '=?',
-                editor: '=?',
-                scriptType: '=?'
-            },
-            templateUrl: MODSCRIPTING_ASSET_PATH + 'views/df-ace-editor.html',
-            link: function (scope, elem, attrs) {
+                scope.scriptSamplesSelect = function (type) {
 
-                // PRIVATE API
-                scope._setEditorInactive = function (stateBool) {
+                    var fileExt;
 
-                    if (stateBool) {
-                        scope.editor.setOptions({
-                            readOnly: true,
-                            highlightActiveLine: false,
-                            highlightGutterLine: false
-                        });
-                        scope.editor.renderer.$cursorLayer.element.style.opacity = 0;
-                    } else {
-                        scope.editor.setOptions({
-                            readOnly: false,
-                            highlightActiveLine: true,
-                            highlightGutterLine: true
-                        });
-                        scope.editor.renderer.$cursorLayer.element.style.opacity = 100;
+                    switch (type) {
+                        case 'nodejs':
+                            fileExt = 'node.js';
+                            break;
+                        case 'php':
+                            fileExt = 'php';
+                            break;
+                        case 'python':
+                            fileExt = 'py';
+                            break;
+                        case 'v8js':
+                            fileExt = 'v8.js';
+                            break;
+                        default:
+                            return;
                     }
+
+                    scope.eventScriptSamplesType = type;
+
+                    $http.get(MODSCRIPTING_EXAMPLES_PATH + 'example.scripts.' + fileExt).then(
+                        function (result) {
+                            scope.eventScriptSamplesContent = result.data;
+                        },
+                        function (reject) {
+                        }
+                    );
                 };
 
-                scope._loadEditor = function (contents, mode, inactive) {
-
-                    inactive = inactive || false;
-                    //scope.editor && scope.editor.destroy();
-
-                    scope.editor = ace.edit('ide');
-
-                    if (mode === true) {
-                        mode = 'json';
-                    } else if (scope.scriptType && ['nodejs', 'v8js'].indexOf(scope.scriptType) !== -1) {
-                        mode = 'javascript';
-                    } else if (scope.scriptType) {
-                        mode = scope.scriptType;
-                    } else {
-                        mode = 'text';
-                    }
-
-                    scope.editor.session.setMode("ace/mode/" + mode);
-
-                    scope._setEditorInactive(inactive);
-
-                    if(typeof contents === 'object'){
-                        contents = JSON.stringify(contents);
-                    }
-
-                    scope.editor.session.setValue(contents);
-
-                    scope.editor.focus();
-
-                    scope.editor.on('input', function () {
-
-                        scope.$apply(function () {
-                            scope.isClean = scope.editor.session.getUndoManager().isClean();
-                        });
-                    });
-
-                    scope.editor.on('blur', function () {
-                        scope.$apply(function () {
-                            try {
-                                scope.currentEditObj = scope.editor.getValue();
-                            } catch (e) {
-                            }
-                        });
-                    });
-                };
-
-                // WATCHERS AND INIT
-                var watchCurrentEditObj = scope.$watch('currentEditObj', function (newValue, oldValue) {
-
-                    if (newValue === 'samples') return false;
-
-                    if (!newValue === null || newValue === undefined) {
-                        //Empty editor
-                        scope._loadEditor('', false, false);
-                        return false;
-                    }
-
-                    //There is content to load
-                    scope._loadEditor(newValue, false, false);
-                });
-
-                scope.$on('$destroy', function (e) {
-
-                    watchCurrentEditObj();
-                    scope.editor.destroy();
-                });
-
+                scope.scriptSamplesSelect('nodejs');
             }
         };
     }])

@@ -8,50 +8,18 @@ angular.module('dfFileManager', ['ngRoute', 'dfUtility'])
                     templateUrl: MOD_FILE_MANAGER_ASSET_PATH + 'views/main.html',
                     controller: 'FileCtrl',
                     resolve: {
-                        checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
-
-                            var currentUser = UserDataService.getCurrentUser(),
-                                defer = $q.defer();
-
-                            // If there is no currentUser and we don't allow guest users
-                            if (!currentUser) {
-
-                                $location.url('/login');
-
-                                // This will stop the route from loading anything
-                                // it's caught by the global error handler in
-                                // app.js
-                                throw {
-                                    routing: true
-                                }
-                            }
-
-                            // There is a currentUser but they are not an admin
-                            else if (currentUser && !currentUser.is_sys_admin) {
-
-                                $location.url('/launchpad');
-
-                                // This will stop the route from loading anything
-                                // it's caught by the global error handler in
-                                // app.js
-                                throw {
-                                    routing: true
-                                }
-                            }
-
-                            defer.resolve();
-                            return defer.promise;
+                        checkUser:['checkUserService', function (checkUserService) {
+                            return checkUserService.checkUser();
                         }]
                     }
                 });
         }])
-    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
+    .run([function () {
 
     }])
-    .controller('FileCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', function($scope, INSTANCE_URL, dfApplicationData) {
 
-
+    .controller('FileCtrl', ['$scope', function($scope) {
 
         $scope.$parent.title = 'Files';
 
@@ -68,7 +36,6 @@ angular.module('dfFileManager', ['ngRoute', 'dfUtility'])
 
     .directive('dfFileManager', ['MOD_FILE_MANAGER_ASSET_PATH', 'INSTANCE_URL', function(MOD_FILE_MANAGER_ASSET_PATH, INSTANCE_URL) {
 
-
         return {
 
             restrict: 'E',
@@ -79,8 +46,6 @@ angular.module('dfFileManager', ['ngRoute', 'dfUtility'])
                 $( "#root-file-manager iframe" ).attr( "src", INSTANCE_URL + '/filemanager/index.html?path=/&allowroot=true').show();
 
                 scope.$broadcast('filemanager:loaded');
-
-
             }
-        }
+        };
     }]);

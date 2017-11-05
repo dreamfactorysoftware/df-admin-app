@@ -18,21 +18,21 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
     */
 
-    .run(['$cookieStore', '$http', 'UserDataService', function ($cookieStore, $http, UserDataService) {
+    .run(['$cookieStore', 'UserDataService', 'SystemConfigDataService', function ($cookieStore, UserDataService, SystemConfigDataService) {
 
-        // Let us know what the module is up to
-        //console.log('RUN BLOCK: Check for and set current user');
-
+        // try to get current user from cookie
         var cookie = $cookieStore.get('CurrentUserObj');
-
-        // Check if there is a CurrentUserObj in the cookie
         if (cookie) {
-
-            // There is so store it for a sec
+            // set user and query the system config to verify session token is still good
+            // the cache in dfApplicationData is empty at this point
+            // if the session token is good then the config is cached in dfApplicationData for future use
+            // calling setCurrentUser inside this run block does not trigger the watcher on currentUser
             UserDataService.setCurrentUser(cookie);
-
-            $http.defaults.headers.common['X-DreamFactory-Session-Token'] = cookie.session_id;
-
+            var config = SystemConfigDataService.getSystemConfig();
+            if (!config) {
+                // session token is bad, clear out user and let routing code in app.js trigger login
+                UserDataService.unsetCurrentUser();
+            }
         }
     }])
 
@@ -59,8 +59,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
     // Directive for Login.  This is does our login work and provides the attachment point for
     // the login portion of our module.
-    .directive('dreamfactoryUserLogin', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$location', '$cookies', '$cookieStore', 'UserEventsService', 'UserDataService', '_dfObjectService', 'SystemConfigDataService',
-        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $location, $cookies, $cookieStore, UserEventsService, UserDataService, _dfObjectService, SystemConfigDataService) {
+    .directive('dreamfactoryUserLogin', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$location', 'UserEventsService', 'UserDataService', '_dfObjectService', 'SystemConfigDataService',
+        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $location, UserEventsService, UserDataService, _dfObjectService, SystemConfigDataService) {
 
             return {
 
@@ -214,12 +214,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             // success method
                             function (result) {
 
-                                // Set the cookies
-                                scope._setCookies(result.data);
-
-                                // Set the DreamFactory session header
-                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = $cookies.PHPSESSID;
-
                                 // Set the current user in the UserDataService service
                                 UserDataService.setCurrentUser(result.data);
 
@@ -241,12 +235,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         $http.post(INSTANCE_URL + '/api/v2/user/session?oauth_callback=true&' + location.search.substring(1)).then(
                             // success method
                             function (result) {
-
-                                // Set the cookies
-                                scope._setCookies(result.data);
-
-                                // Set the DreamFactory session header
-                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = $cookies.PHPSESSID;
 
                                 // Set the current user in the UserDataService service
                                 UserDataService.setCurrentUser(result.data);
@@ -291,6 +279,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         scope._forgotPassword();
                     };
 
+                    scope.skipLogin = function () {
+                        scope._skipLogin();
+                    };
+
                     scope.showLoginForm = function () {
                         scope._toggleForms();
                     };
@@ -323,33 +315,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         }
                     };
 
-
-                    // Set the session token
-                    scope._setSessionToken = function (sessionDataObj) {
-
-                        // Set the session id from a passed in session data object
-                        // as a cookie
-                        $cookies.PHPSESSID = sessionDataObj.session_id;
-                    };
-
-                    // Store the logged in user
-                    scope._setCurrentUser = function (sessionDataObj) {
-
-                        // Stores the logged in user in a cookie
-                        $cookieStore.put('CurrentUserObj', sessionDataObj)
-                    };
-
-                    // Call our cookie setting functions
-                    scope._setCookies = function (sessionDataObj) {
-
-                        // Check if the session id has been updated.  If so use that to set the cookie
-                        // If it hasn't just use the old session id
-                        $cookies.PHPSESSID = $cookies.PHPSESSID === sessionDataObj.session_id ? $cookies.PHPSESSID : sessionDataObj.session_id;
-
-                        // call set current user with the session data obj
-                        scope._setCurrentUser(sessionDataObj);
-                    };
-
                     // toggle login/forgot password forms
                     scope._toggleFormsState = function () {
 
@@ -375,20 +340,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             // success method
                             function (result) {
 
-                                // remove unnecessary apps data
-                                // this is temporary and cleans up our
-                                // session obj that is returned by the login function
-                                // If a user has a large number of apps it can overflow our cookie
-                                // So we're not going to store this info
-                                delete result.data.no_group_apps;
-                                delete result.data.app_groups;
-
-                                // Set the cookies
-                                scope._setCookies(result.data);
-
-                                // Set the DreamFactory session header
-                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = $cookies.PHPSESSID;
-
                                 // Set the current user in the UserDataService service
                                 UserDataService.setCurrentUser(result.data);
 
@@ -406,26 +357,12 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                         // success method
                                         function (result) {
 
-                                            // remove unnecessary apps data
-                                            // this is temporary and cleans up our
-                                            // session obj that is returned by the login function
-                                            // If a user has a large number of apps it can overflow our cookie
-                                            // So we're not going to store this info
-                                            delete result.data.no_group_apps;
-                                            delete result.data.app_groups;
-
-                                            // Set the cookies
-                                            scope._setCookies(result.data);
-
-                                            // Set the DreamFactory session header
-                                            $http.defaults.headers.common['X-DreamFactory-Session-Token'] = $cookies.PHPSESSID;
-
                                             // Set the current user in the UserDataService service
                                             UserDataService.setCurrentUser(result.data);
 
                                             // Emit a success message so we can hook in
                                             scope.$emit(scope.es.loginSuccess, result.data);
-                                            scope.$root.$emit(scope.es.loginSuccess, result.data)
+                                            scope.$root.$emit(scope.es.loginSuccess, result.data);
                                         },
 
                                         // Error method
@@ -439,7 +376,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                             // shutdown waiting directive
                                             scope.loginWaiting = false;
                                         }
-                                    )
+                                    );
                                 } else {
                                     // Handle Login error with template error message
                                     scope.errorMsg = reject.data.error.message;
@@ -465,7 +402,12 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                         scope.$broadcast(UserEventsService.password.passwordResetRequest, {email: scope.creds.email});
 
-                    }
+                    };
+
+                    scope._skipLogin = function () {
+
+                        $location.url('/services');
+                    };
 
                     // WATCHERS AND INIT
                     // We define any watchers or init code that needs to be run here.
@@ -497,7 +439,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
 
     // Forgot Password Email Confirmation
-    .directive('dreamfactoryForgotPwordEmail', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', 'UserEventsService', function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, UserEventsService) {
+    .directive('dreamfactoryForgotPwordEmail', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', 'UserEventsService', 'SystemConfigDataService', function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, UserEventsService, SystemConfigDataService) {
 
 
         return {
@@ -516,6 +458,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 scope.emailError = false;
                 scope.securityQuestionForm = false;
                 scope.hidePasswordField = false;
+                scope.systemConfig = SystemConfigDataService.getSystemConfig();
                 scope.allowForeverSessions = scope.systemConfig.authentication.allow_forever_sessions;
                 var loginAttribute = scope.systemConfig.authentication.login_attribute;
 
@@ -1007,8 +950,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
 
     // Logout Directive
-    .directive('dreamfactoryUserLogout', ['INSTANCE_URL', '$http', '$cookieStore', 'UserEventsService', 'UserDataService',
-        function (INSTANCE_URL, $http, $cookieStore, UserEventsService, UserDataService) {
+    .directive('dreamfactoryUserLogout', ['INSTANCE_URL', '$http', 'UserEventsService', 'UserDataService',
+        function (INSTANCE_URL, $http, UserEventsService, UserDataService) {
             return {
 
                 restrict: 'E',
@@ -1041,17 +984,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             // success method
                             function () {
 
-                                // remove session cookie
-                                $cookieStore.remove('PHPSESSID');
-
-                                // remove current user cookie
-                                $cookieStore.remove('CurrentUserObj');
-
                                 // remove user from UserDataService
                                 UserDataService.unsetCurrentUser();
-
-                                // Unset DreamFactory header
-                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = '';
 
                                 // Emit success message so we can hook in
                                 scope.$emit(scope.es.logoutSuccess, false);
@@ -1060,17 +994,9 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             // Error method
                             function (reject) {
                                 if(reject.status == '401' || reject.data.error.code == '401'){
-                                    // remove session cookie
-                                    $cookieStore.remove('PHPSESSID');
-
-                                    // remove current user cookie
-                                    $cookieStore.remove('CurrentUserObj');
 
                                     // remove user from UserDataService
                                     UserDataService.unsetCurrentUser();
-
-                                    // Unset DreamFactory header
-                                    $http.defaults.headers.common['X-DreamFactory-Session-Token'] = '';
 
                                     // Emit success message so we can hook in
                                     scope.$emit(scope.es.logoutSuccess, false);
@@ -1108,8 +1034,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
 
     // Register Directive.  Takes care of registering a user for our application
-    .directive('dreamfactoryRegisterUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$rootScope', '$cookieStore', '$location', 'UserEventsService', '_dfObjectService', 'dfXHRHelper', 'SystemConfigDataService',
-        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $rootScope, $cookieStore, $location, UserEventsService, _dfObjectService, dfXHRHelper, SystemConfigDataService) {
+    .directive('dreamfactoryRegisterUser', ['MODUSRMNGR_ASSET_PATH', 'INSTANCE_URL', '$http', '$rootScope', '$location', 'UserEventsService', '_dfObjectService', 'dfXHRHelper', 'SystemConfigDataService',
+        function (MODUSRMNGR_ASSET_PATH, INSTANCE_URL, $http, $rootScope, $location, UserEventsService, _dfObjectService, dfXHRHelper, SystemConfigDataService) {
 
 
             return {
@@ -1772,7 +1698,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
     // This service gives us access to the current user.  While it's pretty sparse
     // at the moment it does give us access to critical user/session data.  Inject this
     // service where ever you need to access the current user.
-    .service('UserDataService', ['$http', 'INSTANCE_URL', 'XHRHelper', function ($http, INSTANCE_URL, XHRHelper) {
+    .service('UserDataService', ['$cookieStore', '$http', function ($cookieStore, $http) {
 
         // Stored user.
         var currentUser = false;
@@ -1788,19 +1714,28 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         // set the current user
         function _setCurrentUser(userDataObj) {
 
+            // remove unnecessary data
+            delete userDataObj.session_id;
+
+            // Set the cookie
+            $cookieStore.put('CurrentUserObj', userDataObj);
+
+            // Set the DreamFactory session header
+            $http.defaults.headers.common['X-DreamFactory-Session-Token'] = userDataObj.session_token;
+
             currentUser = userDataObj;
         }
 
         // remove/unset current user
         function _unsetCurrentUser() {
 
+            // remove the cookie
+            $cookieStore.remove('CurrentUserObj');
+
+            // Unset DreamFactory header
+            delete $http.defaults.headers.common['X-DreamFactory-Session-Token'];
+
             currentUser = false;
-        }
-
-        // check if we have a user
-        function _hasUser() {
-
-            return !!currentUser;
         }
 
         return {
@@ -1821,11 +1756,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             unsetCurrentUser: function () {
 
                 _unsetCurrentUser();
-            },
-
-            hasUser: function () {
-
-                return _hasUser();
             }
         }
     }])
@@ -1866,7 +1796,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }
 
     }])
-    .service('dfXHRHelper', ['INSTANCE_URL', 'ADMIN_API_KEY', '$cookies', function (INSTANCE_URL, ADMIN_API_KEY, $cookies) {
+    .service('dfXHRHelper', ['INSTANCE_URL', 'ADMIN_API_KEY', 'UserDataService', function (INSTANCE_URL, ADMIN_API_KEY, UserDataService) {
 
         function _isEmpty(obj) {
 
@@ -1893,7 +1823,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
             // Setting Dreamfactory Headers
             _xhrObj.setRequestHeader("X-DreamFactory-API-Key", ADMIN_API_KEY);
-            _xhrObj.setRequestHeader("X-DreamFactory-Session-Token", $cookies.PHPSESSID);
+            var currentUser = UserDataService.getCurrentUser();
+            if (currentUser && currentUser.session_tpken) {
+                xhrObj.setRequestHeader("X-DreamFactory-Session-Token", currentUser.session_token);
+            }
 
             // Set additional headers
             for (var _key in _headersDataObj) {

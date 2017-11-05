@@ -1,5 +1,5 @@
 <df-scripting-loading></df-scripting-loading>
-<div class="" ng-show="!dataLoading">
+<div class="" ng-if="!dataLoading">
     <div class="">
         <div class="df-section df-section-all-round" df-fs-height>
             <div data-ng-show="isHostedSystem">
@@ -39,8 +39,16 @@
                                             <a data-ng-click="jumpTo($index)" data-ng-if="menuPathArr.length - 1 !== $index">{{path}}</a>
                                             <span data-ng-if="menuPathArr.length - 1 === $index">{{path}}</span>
                                         </li>
+                                        <span ng-if="currentScriptObj && !isEventScriptEditable"><b> (Read Only)</b></span>
                                     </ol>
-                                    <df-ace-editor-scripting data-script-type="$parent.$parent.currentScriptObj.type" data-current-edit-obj="$parent.$parent.currentScriptObj.content" data-is-clean="$parent.$parent.isEditorClean" data-editor="$parent.$parent.editor"></df-ace-editor-scripting>
+                                    <df-ace-editor data-input-type="'string'"
+                                                   data-input-content="currentScriptObj.content"
+                                                   data-input-update="eventScriptUpdateCounter"
+                                                   data-input-format="currentScriptObj.type"
+                                                   data-is-editable="isEventScriptEditable"
+                                                   data-editor-obj="eventScriptEditorObj"
+                                                   data-target-div="'eventScript'">
+                                    </df-ace-editor>
                                 </div>
                             </div>
                           </div>
@@ -53,17 +61,17 @@
                               <div class="well well-sm">
                                   <div class="btn-toolbar">
                                       <div class="btn-group btn-group-sm" role="group">
-                                        <button type="button" data-ng-class="(sampleSelect=='node') ? 'btn btn-default active' : 'btn btn-default'" data-ng-model="sampleSelect" data-ng-click="scriptSamplesSelect('node')">Node.js</button>
-                                        <button type="button" data-ng-class="(sampleSelect=='php') ? 'btn btn-default active' : 'btn btn-default'" data-ng-model="sampleSelect" data-ng-click="scriptSamplesSelect('php')">PHP</button>
-                                        <button type="button" data-ng-class="(sampleSelect=='python') ? 'btn btn-default active' : 'btn btn-default'" data-ng-model="sampleSelect" data-ng-click="$parent.scriptSamplesSelect('python')">Python</button>
-                                        <button type="button" data-ng-class="(sampleSelect=='v8js') ? 'btn btn-default active' : 'btn btn-default'" data-ng-model="sampleSelect" data-ng-click="scriptSamplesSelect('v8js')">V8js</button>
+                                        <button type="button" data-ng-class="(sampleScriptType==='nodejs') ? 'btn btn-default active' : 'btn btn-default'" data-ng-click="scriptSamplesSelect('nodejs')">Node.js</button>
+                                        <button type="button" data-ng-class="(sampleScriptType==='php') ? 'btn btn-default active' : 'btn btn-default'" data-ng-click="scriptSamplesSelect('php')">PHP</button>
+                                        <button type="button" data-ng-class="(sampleScriptType==='python') ? 'btn btn-default active' : 'btn btn-default'" data-ng-click="scriptSamplesSelect('python')">Python</button>
+                                        <button type="button" data-ng-class="(sampleScriptType==='v8js') ? 'btn btn-default active' : 'btn btn-default'" data-ng-click="scriptSamplesSelect('v8js')">V8js</button>
                                       </div>
                                   </div>
                               </div>
                           </div>
                           <div>
                               <div class="col-xs-12">
-                                  <df-ace-samples-select data-script-type="javascript"></df-ace-samples-select>
+                                  <df-ace-samples-select></df-ace-samples-select>
                               </div>
                           </div>
                           </div>
@@ -75,4 +83,7 @@
     </div>
 </div>
 
-<df-github-modal editor="editor" accept="allowedScriptFormats" target="serviceTypeConfig"></df-github-modal>
+<df-github-modal editor-obj="eventScriptEditorObj"
+                 accept="allowedScriptFormats"
+                 target="scriptGitHubTarget">
+</df-github-modal>

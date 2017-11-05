@@ -38,8 +38,84 @@ angular
         'dfLimit'
     ])
 
+    // each tab uses this in its resolve function to make sure user is allowed access
+    // if access is not allowed the user is sent to launchpad
+    .factory('checkUserService', function ($location, $q, SystemConfigDataService) {
+
+        return {
+
+            checkUser: function () {
+
+                var deferred = $q.defer();
+
+                // check if admin app access is allowed
+                // it will be allowed for admin users, and non-admin users whose role allows it
+                // if no role is assigend for the user for the admin app the default role can also allow access
+
+                var config = SystemConfigDataService.getSystemConfig();
+                var result = false;
+                if (config) {
+                    result = (config.apps && config.apps.filter(function (item) {
+                        return (item.name === 'admin');
+                    }).length > 0);
+                }
+                if (result) {
+                    // user has access to admin, proceed to load the requested admin route
+                    deferred.resolve();
+                } else {
+                    // user does not have access to admin, redirect to launchpad
+                    $location.url('/launchpad');
+                    deferred.reject();
+                }
+                return deferred.promise;
+            }
+        };
+    })
+
+    // some tabs need to check if user is an admin
+
+    .factory('checkAdminService', function ($q, UserDataService, $location) {
+
+        return {
+
+            checkAdmin: function () {
+
+                var deferred = $q.defer();
+                var currentUser = UserDataService.getCurrentUser();
+
+                if (currentUser && currentUser.is_sys_admin) {
+                    // admin
+                    deferred.resolve();
+                } else {
+                    // not admin
+                    $location.url('/launchpad');
+                    deferred.reject();
+                }
+
+                return deferred.promise;
+            }
+        };
+    })
+
+    .factory('allowAdminAccess', function (SystemConfigDataService) {
+
+        return {
+
+            get: function () {
+                var result = false;
+                var config = SystemConfigDataService.getSystemConfig();
+                if (config) {
+                    result = (config.apps && config.apps.filter(function (item) {
+                        return (item.name === 'admin');
+                    }).length > 0);
+                }
+                return result;
+            }
+        };
+    })
+
     // Set application version number
-    .constant('APP_VERSION', '2.11.0')
+    .constant('APP_VERSION', '2.12.0')
 
     // Set global url for this application
     .constant('INSTANCE_URL', '')
@@ -62,14 +138,17 @@ angular
                 templateUrl: 'views/login.html',
                 resolve: {
 
-                    checkLoginRoute: ['UserDataService', '$location', 'SystemConfigDataService', function (UserDataService, $location, SystemConfigDataService) {
+                    checkOtherRoute: ['$q', 'UserDataService', '$location', 'SystemConfigDataService', function ($q, UserDataService, $location, SystemConfigDataService) {
 
-                        var systemConfig = SystemConfigDataService.getSystemConfig();
+                        var deferred = $q.defer();
                         var currentUser = UserDataService.getCurrentUser();
 
-                        if (currentUser && currentUser.session_id) {
+                        // we're trying to go to login
+                        // if we have a valid session then no need to go to login
+                        if (currentUser && currentUser.session_token) {
                             if (currentUser.is_sys_admin) {
-                                if (currentUser.email === 'user@example.com' && !systemConfig.platform.bitnami_demo) {
+                                var systemConfig = SystemConfigDataService.getSystemConfig();
+                                if (currentUser.email === 'user@example.com' && systemConfig && !systemConfig.platform.bitnami_demo) {
                                     $location.url('/profile');
                                 } else {
                                     $location.url('/home');
@@ -77,7 +156,11 @@ angular
                             } else {
                                 $location.url('/launchpad');
                             }
+                            deferred.reject();
+                        } else {
+                            deferred.resolve();
                         }
+                        return deferred.promise;
                     }]
                 }
             })
@@ -90,30 +173,28 @@ angular
                 controller: 'RegisterCtrl',
                 resolve: {
 
-                    checkRegisterRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
+                    checkRegisterRoute: ['$q', 'UserDataService', '$location', 'SystemConfigDataService', function ($q, UserDataService, $location, SystemConfigDataService) {
 
-                        var sysConfig = SystemConfigDataService.getSystemConfig(),
-                            currentUser = UserDataService.getCurrentUser();
+                        var deferred = $q.defer();
+                        var currentUser = UserDataService.getCurrentUser();
 
-                        // No guest users and no open registration
-                        if (!currentUser && !sysConfig.authentication.allow_open_registration) {
-                            $location.url('/login');
-                            return;
+                        if (currentUser) {
+                            if (currentUser.is_sys_admin) {
+                                $location.url('/home');
+                            } else {
+                                $location.url('/launchpad');
+                            }
+                            deferred.reject();
+                        } else {
+                            var sysConfig = SystemConfigDataService.getSystemConfig();
+                            if (!sysConfig.authentication.allow_open_registration) {
+                                $location.url('/login');
+                                deferred.reject();
+                            } else {
+                                deferred.resolve();
+                            }
                         }
-
-                        // User is guest or not an admin and we don't allow open registration
-                        if (currentUser && !currentUser.is_sys_admin && !sysConfig.authentication.allow_open_registration) {
-                            $location.url('/launchpad');
-                            return;
-                        }
-
-                        // we have a user and that user is an admin
-                        if (currentUser && currentUser.is_sys_admin) {
-                            $location.url('/home');
-                            return;
-                        }
-
-
+                        return deferred.promise;
                     }]
                 }
             })
@@ -122,25 +203,28 @@ angular
                 controller: 'RegisterCompleteCtrl',
                 resolve: {
 
-                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
+                    checkRegisterCompleteRoute: ['$q', 'UserDataService', '$location', 'SystemConfigDataService', function ($q, UserDataService, $location, SystemConfigDataService) {
 
-                        var sysConfig = SystemConfigDataService.getSystemConfig(),
-                            currentUser = UserDataService.getCurrentUser();
+                        var deferred = $q.defer();
+                        var currentUser = UserDataService.getCurrentUser();
 
-                        if (!currentUser && !sysConfig.authentication.allow_open_registration) {
-                            $location.url('/login');
-                            return;
+                        if (currentUser) {
+                            if (currentUser.is_sys_admin) {
+                                $location.url('/home');
+                            } else {
+                                $location.url('/launchpad');
+                            }
+                            deferred.reject();
+                        } else {
+                            var sysConfig = SystemConfigDataService.getSystemConfig();
+                            if (!sysConfig.authentication.allow_open_registration) {
+                                $location.url('/login');
+                                deferred.reject();
+                            } else {
+                                deferred.resolve();
+                            }
                         }
-
-                        if (currentUser && currentUser.is_sys_admin) {
-                            $location.url('/home');
-                            return;
-                        }
-
-                        if (currentUser && !currentUser.is_sys_admin) {
-                            $location.url('/launchpad');
-                            return;
-                        }
+                        return deferred.promise;
                     }]
                 }
             })
@@ -149,25 +233,28 @@ angular
                 controller: "RegisterConfirmCtrl",
                 resolve: {
 
-                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
+                    checkRegisterConfirmRoute: ['$q', 'UserDataService', '$location', 'SystemConfigDataService', function ($q, UserDataService, $location, SystemConfigDataService) {
 
-                        var sysConfig = SystemConfigDataService.getSystemConfig(),
-                            currentUser = UserDataService.getCurrentUser();
+                        var deferred = $q.defer();
+                        var currentUser = UserDataService.getCurrentUser();
 
-                        if (!currentUser && !sysConfig.authentication.allow_open_registration) {
-                            $location.url('/login');
-                            return;
+                        if (currentUser) {
+                            if (currentUser.is_sys_admin) {
+                                $location.url('/home');
+                            } else {
+                                $location.url('/launchpad');
+                            }
+                            deferred.reject();
+                        } else {
+                            var sysConfig = SystemConfigDataService.getSystemConfig();
+                            if (!sysConfig.authentication.allow_open_registration) {
+                                $location.url('/login');
+                                deferred.reject();
+                            } else {
+                                deferred.resolve();
+                            }
                         }
-
-                        if (currentUser && currentUser.is_sys_admin) {
-                            $location.url('/home');
-                            return;
-                        }
-
-                        if (currentUser && !currentUser.is_sys_admin) {
-                            $location.url('/launchpad');
-                            return;
-                        }
+                        return deferred.promise;
                     }]
                 }
             })
@@ -176,43 +263,46 @@ angular
                 controller: 'ResetPasswordEmailCtrl',
                 resolve: {
 
-                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
+                    checkResetPasswordRoute: ['$q', 'UserDataService', '$location', function ($q, UserDataService, $location) {
 
+                        var deferred = $q.defer();
                         var currentUser = UserDataService.getCurrentUser();
 
-                        if (currentUser && currentUser.is_sys_admin) {
-                            $location.url('/home');
-                            return;
+                        if (currentUser) {
+                            if (currentUser.is_sys_admin) {
+                                $location.url('/home');
+                            } else {
+                                $location.url('/launchpad');
+                            }
+                            deferred.reject();
+                        } else {
+                            deferred.resolve();
                         }
-
-                        if (currentUser && !currentUser.is_sys_admin) {
-                            $location.url('/launchpad');
-                            return;
-                        }
+                        return deferred.promise;
                     }]
-
                 }
-
             })
             .when('/user-invite', {
                 templateUrl: 'views/user-invite.html',
                 controller: 'UserInviteCtrl',
                 resolve: {
 
-                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'UserDataService', '$location', function (SystemConfigDataService, UserDataService, $location) {
+                    checkUserInviteRoute: ['$q', 'UserDataService', '$location', function ($q, UserDataService, $location) {
 
+                        var deferred = $q.defer();
                         var currentUser = UserDataService.getCurrentUser();
 
-                        if (currentUser && currentUser.is_sys_admin) {
-                            $location.url('/home');
-                            return;
+                        if (currentUser) {
+                            if (currentUser.is_sys_admin) {
+                                $location.url('/home');
+                            } else {
+                                $location.url('/launchpad');
+                            }
+                            deferred.reject();
+                        } else {
+                            deferred.resolve();
                         }
-
-                        if (currentUser && !currentUser.is_sys_admin) {
-                            $location.url('/launchpad');
-                            return;
-                        }
-
+                        return deferred.promise;
                     }]
                 }
             })
@@ -221,17 +311,30 @@ angular
                 templateUrl: 'views/login.html',
                 resolve: {
 
-                    checkLoginRoute: ['UserDataService', '$location', 'SystemConfigDataService', function (UserDataService, $location, SystemConfigDataService) {
+                    checkOtherRoute: ['$q', 'UserDataService', '$location', 'SystemConfigDataService', function ($q, UserDataService, $location, SystemConfigDataService) {
 
+                        var deferred = $q.defer();
                         var currentUser = UserDataService.getCurrentUser();
 
-                        if (currentUser && currentUser.session_id) {
+                        // if we are loading the base URL of index.html then the path will be ""
+                        // if we have a valid session then go to admin app or launchpad
+                        // if there is no session then go to login
+                        if (currentUser && currentUser.session_token) {
                             if (currentUser.is_sys_admin) {
-                                $location.url('/home');
+                                var systemConfig = SystemConfigDataService.getSystemConfig();
+                                if (currentUser.email === 'user@example.com' && systemConfig && !systemConfig.platform.bitnami_demo) {
+                                    $location.url('/profile');
+                                } else {
+                                    $location.url('/home');
+                                }
                             } else {
                                 $location.url('/launchpad');
                             }
+                        } else {
+                            $location.url('/login');
                         }
+                        deferred.reject();
+                        return deferred.promise;
                     }]
                 }
             });
@@ -263,26 +366,11 @@ angular
                         dfNotify.error(messageOptions);
                     }]);
                 }
-                else if (exception.routing) {
-
-                    $injector.invoke(['dfNotify', function(dfNotify) {
-
-                        var messageOptions = {
-                            module: 'Admin Application',
-                            type: 'error',
-                            provider: 'dreamfactory',
-                            message: 'Access to this route requires Admin role.'
-                        };
-
-                        dfNotify.error(messageOptions);
-                    }]);
-                }
-
                 else {
 
                     // Continue on to normal error handling
                     return $delegate(exception);
                 }
-            }
+            };
         }]);
     }]);

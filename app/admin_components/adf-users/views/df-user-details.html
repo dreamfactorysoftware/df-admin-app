@@ -94,12 +94,9 @@
             <div class="col-xs-12">
                 <hr />
                 <div class="form-group">
-                    <div data-ng-if="newUser">
+                    <div>
                         <input id="users_details_save" class="btn btn-default btn-primary" type="submit" value="Save" />
-                    </div>
-                    <div data-ng-if="!newUser">
-                        <input id="users_details_save" class="btn btn-default btn-primary" type="submit" value="Save" />
-                        <button id="users_details_cancel" type="button" class="btn btn-default" data-ng-click="closeUser(true)">Cancel</button>
+                        <button id="users_details_cancel" type="button" class="btn btn-default" data-ng-click="cancelEditor()">Cancel</button>
                     </div>
                 </div>
             </div>

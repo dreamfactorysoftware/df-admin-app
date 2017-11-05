@@ -134,12 +134,9 @@
 			<div class="col-xs-12">
 				<hr />
 				<div class="form-group">
-					<div data-ng-if="newLimit">
+					<div>
 						<input class="btn btn-default btn-primary" type="submit" value="Save" />
-					</div>
-					<div data-ng-if="!newLimit">
-						<input class="btn btn-default btn-primary" type="submit" value="Save" />
-						<button type="button" class="btn btn-default" data-ng-click="closeLimit()">Cancel</button>
+						<button type="button" class="btn btn-default" data-ng-click="cancelEditor()">Cancel</button>
 					</div>
 				</div>
 			</div>

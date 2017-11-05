@@ -1,3 +1,16 @@
+//** Component navbar padding
+$component-navbar-padding: 0;
+
+//** Padding for sm pills
+$component-pills-sm-padding: 9px;
+
+//** Font size for sm pills
+$component-pills-sm-font-size: 14px;
+
+//** Component Navbar Title
+$component-navbar-title-margin: 0;
+$component-navbar-title-md-font-size: 30px;
+$component-navbar-title-sm-margin: auto auto auto 45px;
 
 .df-component-navbar {
   padding: $component-navbar-padding;
@@ -43,7 +56,7 @@
 .df-component-nav-title {
   padding: $component-navbar-padding;
   display: inline-block;
-  margin: 0;
+  margin: $component-navbar-title-margin;
 
 
   @media screen and (max-width: $break-medium) {

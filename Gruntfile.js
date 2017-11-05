@@ -163,23 +163,18 @@ module.exports = function (grunt) {
     // Automatically inject Bower components into the app
     wiredep: {
       options: {
-        // cwd: '<%= yeoman.app %>'
       },
       app: {
         src: ['<%= yeoman.app %>/index.html'],
         ignorePath:  /\.\.\//
       }
-//      sass: {
-//        src: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
-//        ignorePath: /(\.\.\/){1,2}bower_components\//
-//      }
     },
 
     // Compiles Sass to CSS and generates necessary files if requested
     compass: {
       options: {
         sassDir: '<%= yeoman.app %>/styles',
-        cssDir: '.tmp/styles',
+        cssDir: '<%= yeoman.app %>/styles',
         generatedImagesDir: '.tmp/images/generated',
         imagesDir: '<%= yeoman.app %>/images',
         javascriptsDir: '<%= yeoman.app %>/scripts',
@@ -380,7 +375,7 @@ module.exports = function (grunt) {
           src: ['generated/*']
         }, {
           expand: true,
-          cwd: 'bower_components/bootstrap/dist',
+          cwd: 'bower_components/bootstrap-sass/assets',
           src: 'fonts/*',
           dest: '<%= yeoman.dist %>'
         }]
@@ -448,6 +443,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
+    'compass',
     'wiredep',
     'useminPrepare',
     // 'concurrent:dist',

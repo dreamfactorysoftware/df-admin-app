@@ -30,47 +30,18 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
                     templateUrl: MOD_DATA_ASSET_PATH + 'views/main.html',
                     controller: 'DataCtrl',
                     resolve: {
-                        checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
-
-                            var currentUser = UserDataService.getCurrentUser(),
-                                defer = $q.defer();
-
-                            // If there is no currentUser and we don't allow guest users
-                            if (!currentUser) {
-
-                                $location.url('/login');
-
-                                // This will stop the route from loading anything
-                                // it's caught by the global error handler in
-                                // app.js
-                                throw {
-                                    routing: true
-                                }
-                            }
-
-                            // There is a currentUser but they are not an admin
-                            else if (currentUser && !currentUser.is_sys_admin) {
-
-                                $location.url('/launchpad');
-
-                                // This will stop the route from loading anything
-                                // it's caught by the global error handler in
-                                // app.js
-                                throw {
-                                    routing: true
-                                }
-                            }
-
-                            defer.resolve();
-                            return defer.promise;
+                        checkUser:['checkUserService', function (checkUserService) {
+                            return checkUserService.checkUser();
                         }]
                     }
                 });
         }])
 
-    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {}])
+    .run([function () {
 
-    .controller('DataCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', function($scope, INSTANCE_URL, dfApplicationData, dfNotify) {
+    }])
+
+    .controller('DataCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', '$location', function($scope, INSTANCE_URL, dfApplicationData, dfNotify, $location) {
 
         $scope.$parent.title = 'Data';
 
@@ -112,7 +83,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
             $scope.options = options;
         });
 
-        $scope.$watchCollection('apiData.service', function (newValue, oldValue) {
+        $scope.$watchCollection('apiData.service_list', function (newValue, oldValue) {
 
             if (newValue) {
 
@@ -128,7 +99,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
 
         $scope.loadTabData = function() {
 
-            var apis = ['service'];
+            var apis = ['service_list'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {

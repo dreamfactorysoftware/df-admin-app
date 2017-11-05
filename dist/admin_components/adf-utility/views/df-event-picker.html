@@ -1,13 +1,1 @@
-<div class="btn-group dropdown"> <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" onclick="clearMenu()" data-ng-model="selected"> <span class="caret"></span> </button> <div style="display: inline-block; position: relative; margin-left:-3px"> <input size="50" class="form-control" type="text" data-ng-model="selected"> </div> <ul class="dropdown-menu"> <li class="dropdown-submenu" ng-repeat="group in options"> <a class="sub" tabindex="-1">{{group.label}}</a> <ul class="dropdown-menu"> <li data-ng-repeat="groupmember in group.items"> <a href="" data-ng-click="selectItem(groupmember)">{{groupmember.label}}</a> </li> </ul> </li> </ul> </div> <script>function clearMenu(){
-        $('.dropdown-menu').find('ul').hide();
-    }
-    $(document).ready(function(){
-        $('.dropdown-menu').find('ul').toggle(false);
-
-        $('.dropdown-submenu a.sub').hover(function(e){
-            $('.dropdown-menu').find('ul').toggle(false);
-            $(this).next('ul').toggle();
-            e.stopPropagation();
-            e.preventDefault();
-        });
-    });</script>
+<div class="btn-group dropdown"> <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" data-ng-model="selected"> <span class="caret"></span> </button> <div style="display: inline-block; position: relative; margin-left:-3px"> <input size="50" class="form-control" type="text" data-ng-model="selected"> </div> <ul class="dropdown-menu event-picker"> <li ng-repeat="event in events" class="{{event.class}}"> <a href="" data-ng-click="selectItem(event)">{{event.label}}</a> </li> </ul> </div>

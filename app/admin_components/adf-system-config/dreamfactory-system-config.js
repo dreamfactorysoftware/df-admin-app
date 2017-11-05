@@ -31,140 +31,108 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/main.html',
                     controller: 'SystemConfigurationCtrl',
                     resolve: {
-                        checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
-
-                            var currentUser = UserDataService.getCurrentUser(),
-                                defer = $q.defer();
-
-                            // If there is no currentUser and we don't allow guest users
-                            if (!currentUser) {
-
-                                $location.url('/login');
-
-                                // This will stop the route from loading anything
-                                // it's caught by the global error handler in
-                                // app.js
-                                throw {
-                                    routing: true
-                                };
-                            }
-
-                            // There is a currentUser but they are not an admin
-                            else if (currentUser && !currentUser.is_sys_admin) {
-
-                                $location.url('/launchpad');
-
-                                // This will stop the route from loading anything
-                                // it's caught by the global error handler in
-                                // app.js
-                                throw {
-                                    routing: true
-                                };
-                            }
-
-                            defer.resolve();
-                            return defer.promise;
+                        checkUser:['checkUserService', function (checkUserService) {
+                            return checkUserService.checkUser();
                         }]
                     }
                 });
         }])
 
-    .run(['SystemConfigDataService', function (SystemConfigDataService) {
+    .run([function () {
 
     }])
 
-    .controller('SystemConfigurationCtrl', ['$scope', 'dfApplicationData', 'SystemConfigEventsService', 'SystemConfigDataService', 'dfObjectService', 'dfNotify', 'INSTANCE_URL', '$http',
-        function ($scope, dfApplicationData, SystemConfigEventsService, SystemConfigDataService, dfObjectService, dfNotify, INSTANCE_URL, $http) {
+    .controller('SystemConfigurationCtrl', ['$scope', 'dfApplicationData', 'SystemConfigEventsService', 'SystemConfigDataService', 'dfObjectService', 'dfNotify', 'UserDataService',
+        function ($scope, dfApplicationData, SystemConfigEventsService, SystemConfigDataService, dfObjectService, dfNotify, UserDataService) {
 
-            var SystemConfig = function (systemConfigData) {
-
-                return {
-                    record: angular.copy(systemConfigData),
-                    recordCopy: angular.copy(systemConfigData)
-                };
-            };
-
-            $scope.getCacheEnabledServices = function () {
-
-                $scope.cacheEnabledServices = [];
-
-                $http.get(INSTANCE_URL + '/api/v2/system/cache?fields=*').then(
-
-                    function (result) {
-
-                        $scope.cacheEnabledServices = result.data.resource;
-                    },
-                    function (reject) {
-
-                        var messageOptions = {
-
-                            module: 'Api Error',
-                            type: 'error',
-                            provider: 'dreamfactory',
-                            message: reject
-                        };
-
-                        dfNotify.error(messageOptions);
-                    }
-                );
-            };
+            var currentUser = UserDataService.getCurrentUser();
+            $scope.isSysAdmin = (currentUser && currentUser.is_sys_admin);
 
             $scope.$parent.title = 'Config';
 
-
             // CREATE SHORT NAMES
             $scope.es = SystemConfigEventsService.systemConfigController;
-            
+
             // PUBLIC API
 
-            $scope.getCacheEnabledServices();
+            $scope.buildLinks = function(checkData) {
 
-            $scope.links = [
+                var links = [];
 
-                {
-                    name: 'system-info',
-                    label: 'System Info',
-                    path: 'system-info',
-                    active: true
-                },
-                {
-                    name: 'cache',
-                    label: 'Cache',
-                    path: 'cache',
-                    active: false
-                },
-                {
-                    name: 'cors',
-                    label: 'CORS',
-                    path: 'cors',
-                    active: false
-                },
-                {
-                    name: 'email-templates',
-                    label: 'Email Templates',
-                    path: 'email-templates',
-                    active: false
-                },
-                {
-                    name: 'global-lookup-keys',
-                    label: 'Global Lookup Keys',
-                    path: 'global-lookup-keys',
-                    active: false
-                },
-                {
-                    name: 'live-chat',
-                    label: 'Live Chat',
-                    path: 'live-chat',
-                    active: false
+                if (!checkData || $scope.apiData.environment) {
+                    links.push (
+                        {
+                            name: 'system-info',
+                            label: 'System Info',
+                            path: 'system-info',
+                            active: links.length === 0
+                        }
+                    );
                 }
-            ];
+                if (!checkData || $scope.apiData.cache) {
+                    links.push (
+                        {
+                            name: 'cache',
+                            label: 'Cache',
+                            path: 'cache',
+                            active: links.length === 0
+                        }
+                    );
+                }
+                if (!checkData || $scope.apiData.cors) {
+                    links.push (
+                        {
+                            name: 'cors',
+                            label: 'CORS',
+                            path: 'cors',
+                            active: links.length === 0
+                        }
+                    );
+                }
+                if (!checkData || $scope.apiData.email_template) {
+                    links.push (
+                        {
+                            name: 'email-templates',
+                            label: 'Email Templates',
+                            path: 'email-templates',
+                            active: links.length === 0
+                        }
+                    );
+                }
+                if (!checkData || $scope.apiData.lookup) {
+                    links.push (
+                        {
+                            name: 'global-lookup-keys',
+                            label: 'Global Lookup Keys',
+                            path: 'global-lookup-keys',
+                            active: links.length === 0
+                        }
+                    );
+                }
+                if (!checkData || $scope.apiData.custom) {
+                    links.push (
+                        {
+                            name: 'live-chat',
+                            label: 'Live Chat',
+                            path: 'live-chat',
+                            active: links.length === 0
+                        }
+                    );
+                }
+                return links;
+            };
+
+            $scope.links = $scope.buildLinks(false);
+            $scope.$emit('sidebar-nav:view:reset');
 
             // MESSAGES
             // This works but we need to make sure our nav doesn't update
             // probably some kind of message needs to be fired to the navigation directive
             $scope.$on('$locationChangeStart', function (e) {
 
-                if (!$scope.hasOwnProperty('systemConfig')) return;
+                if (!$scope.hasOwnProperty('systemConfig')) {
+                    return;
+                }
 
                 if (!dfObjectService.compareObjectsAsJson($scope.systemConfig.record, $scope.systemConfig.recordCopy)) {
 
@@ -210,32 +178,26 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
             // load data
 
-            $scope.apiData = null;
+            $scope.apiData = {};
 
             $scope.loadTabData = function() {
 
-                // sys config in SystemConfigDataService is as seen by unauthenticated user
-                // for full info we have to get /system/environment using getApiData interface
-                var apis = ['environment', 'cors', 'lookup', 'email_template', 'custom'];
+                var apis = ['cache', 'environment', 'cors', 'lookup', 'email_template', 'custom'];
 
-                dfApplicationData.getApiData(apis).then(
-                    function (response) {
-                        var newApiData = {};
-                        apis.forEach(function(value, index) {
-                            newApiData[value] = response[index].resource ? response[index].resource : response[index];
-                        });
-                        $scope.apiData = newApiData;
-                    },
-                    function (error) {
-                        var messageOptions = {
-                            module: 'Config',
-                            provider: 'dreamfactory',
-                            type: 'error',
-                            message: 'There was an error loading data for the Config tab. Please try refreshing your browser and logging in again.'
-                        };
-                        dfNotify.error(messageOptions);
-                    }
-                );
+                // this tab is different. it loads as much as it can rather than failing on first error
+                angular.forEach(apis, function(api) {
+                    dfApplicationData.getApiData([api]).then(
+                        function (response) {
+                            $scope.apiData[api] = response[0].resource ? response[0].resource : response[0];
+                        },
+                        function (error) {
+
+                        }
+                    ).finally(function() {
+                        $scope.links = $scope.buildLinks(true);
+                        $scope.$emit('sidebar-nav:view:reset');
+                    });
+                });
             };
 
             $scope.loadTabData();
@@ -267,7 +229,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     watchEnvironment();
                 });
             }
-        }
+        };
     }])
 
     .directive('dreamfactoryCacheConfig', ['MODSYSCONFIG_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, INSTANCE_URL, $http, dfNotify) {
@@ -298,7 +260,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: {'data': {'error': [error.error]}}
+                                message: error
                             };
 
                             dfNotify.error(messageOptions);
@@ -308,14 +270,14 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.flushServiceCache = function (index) {
 
-                    $http.delete(INSTANCE_URL + '/api/v2/system/cache/' + scope.cacheEnabledServices[index].name)
+                    $http.delete(INSTANCE_URL + '/api/v2/system/cache/' + scope.apiData.cache[index].name)
                         .success(function () {
 
                             var messageOptions = {
                                 module: 'Cache',
                                 type: 'success',
                                 provider: 'dreamfactory',
-                                message: scope.cacheEnabledServices[index].label + ' service cache flushed.'
+                                message: scope.apiData.cache[index].label + ' service cache flushed.'
                             };
 
                             dfNotify.success(messageOptions);
@@ -326,14 +288,14 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: {'data': {'error': [error.error]}}
+                                message: error
                             };
 
                             dfNotify.error(messageOptions);
                         });
                 };
             }
-        }
+        };
     }])
 
     .directive('dreamfactoryCorsConfig', ['MODSYSCONFIG_ASSET_PATH', 'dfApplicationData', 'dfNotify',
@@ -453,24 +415,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         }
                     };
 
-
-                    // PRIVATE API
-                    scope._saveCorsEntryToServer = function (requestDataObj) {
-
-                        return dfApplicationData.saveApiData('cors', requestDataObj).$promise;
-                    };
-
-                    scope._updateCorsEntryToServer = function (requestDataObj) {
-
-                        return dfApplicationData.updateApiData('cors', requestDataObj).$promise;
-                    };
-
-                    scope._deleteCorsEntryFromServer = function (requestDataObj) {
-
-                        return dfApplicationData.deleteApiData('cors', requestDataObj).$promise;
-                    };
-
-
                     // PRIVATE API
                     scope._addCorsEntry = function () {
                         scope.corsEntries.push(new CorsEntry());
@@ -516,7 +460,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
 
-                        scope._deleteCorsEntryFromServer(requestDataObj).then(
+                        dfApplicationData.deleteApiData('cors', requestDataObj).$promise.then(
+
                             function (result) {
 
                                 var messageOptions = {
@@ -556,7 +501,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             data: template.record
                         };
 
-                        scope._saveCorsEntryToServer(requestDataObj).then(
+                        dfApplicationData.saveApiData('cors', requestDataObj).$promise.then(
+
                             function (result) {
 
 
@@ -617,7 +563,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
 
-                        scope._updateCorsEntryToServer(requestDataObj).then(
+                        dfApplicationData.updateApiData('cors', requestDataObj).$promise.then(
+
                             function (result) {
 
                                 var messageOptions = {
@@ -821,23 +768,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
 
                     // PRIVATE API
-                    scope._saveEmailTemplateToServer = function (requestDataObj) {
-
-                        return dfApplicationData.saveApiData('email_template', requestDataObj).$promise;
-                    };
-
-                    scope._updateEmailTemplateToServer = function (requestDataObj) {
-
-                        return dfApplicationData.updateApiData('email_template', requestDataObj).$promise;
-                    };
-
-                    scope._deleteEmailTemplateFromServer = function (requestDataObj) {
-
-                        return dfApplicationData.deleteApiData('email_template', requestDataObj).$promise;
-                    };
-
-
-                    // PRIVATE API
                     scope._addEmailTemplate = function () {
 
                         scope.emailTemplates.push(new EmailTemplate());
@@ -885,7 +815,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
 
-                        scope._deleteEmailTemplateFromServer(requestDataObj).then(
+                        dfApplicationData.deleteApiData('email_template', requestDataObj).$promise.then(
+
                             function (result) {
 
                                 var messageOptions = {
@@ -924,7 +855,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             data: template.record
                         };
 
-                        scope._saveEmailTemplateToServer(requestDataObj).then(
+                        dfApplicationData.saveApiData('email_template', requestDataObj).$promise.then(
+
                             function (result) {
 
 
@@ -955,7 +887,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                         scope.emailTemplates[i] = _newTemplate;
                                         scope.selectedEmailTemplate = _newTemplate;
                                     }
-                                    
+
                                     i++;
                                 }
                             },
@@ -984,7 +916,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
 
-                        scope._updateEmailTemplateToServer(requestDataObj).then(
+                        dfApplicationData.updateApiData('email_template', requestDataObj).$promise.then(
+
                             function (result) {
 
                                 var messageOptions = {
@@ -1033,6 +966,10 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         reply_to_email: {
                             title: 'Reply to Email',
                             text: 'Enter reply to email.'
+                        },
+                        attachment: {
+                            title: 'Attachment',
+                            text: 'You can enter URL for attachment. Enter multiple URLs separated by comma. You can use lookup keys here too. Example: {key1},{key2}.'
                         }
                     };
 
@@ -1165,24 +1102,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         }
                     };
 
-
-                    // PRIVATE API
-                    scope._saveLookupToServer = function (requestDataObj) {
-
-                        return dfApplicationData.saveApiData('lookup', requestDataObj).$promise;
-                    };
-
-                    scope._updateLookupToServer = function (requestDataObj) {
-
-                        return dfApplicationData.updateApiData('lookup', requestDataObj).$promise;
-                    };
-
-                    scope._deleteLookupFromServer = function (requestDataObj) {
-
-                        return dfApplicationData.deleteApiData('lookup', requestDataObj).$promise;
-                    };
-
-
                     // PRIVATE API
                     scope._addLookup = function () {
 
@@ -1231,7 +1150,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
 
-                        scope._deleteLookupFromServer(requestDataObj).then(
+                        dfApplicationData.deleteApiData('lookup', requestDataObj).$promise.then(
+
                             function (result) {
 
                                 var messageOptions = {
@@ -1271,7 +1191,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             data: lookup.record
                         };
 
-                        scope._saveLookupToServer(requestDataObj).then(
+                        dfApplicationData.saveApiData('lookup', requestDataObj).$promise.then(
+
                             function (result) {
 
 
@@ -1332,7 +1253,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
 
-                        scope._updateLookupToServer(requestDataObj).then(
+                        dfApplicationData.updateApiData('lookup', requestDataObj).$promise.then(
+
                             function (result) {
 
                                 var messageOptions = {
@@ -1486,50 +1408,13 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
         };
     }])
 
-    // sys config as seen by unauthenticated user
-    // for full info we have to get /system/environment using getApiData interface
-    .service('SystemConfigDataService', ['INSTANCE_URL',  function (INSTANCE_URL) {
-
-        var systemConfig = null;
-
-        function getSystemConfigFromServerSync() {
-
-            var xhr;
-
-            if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-                xhr = new XMLHttpRequest();
-            } else {// code for IE6, IE5
-                xhr = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-
-            xhr.open("GET", INSTANCE_URL + '/api/v2/system/environment', false);
-            xhr.setRequestHeader("X-DreamFactory-API-Key", "6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d");
-            xhr.setRequestHeader("Content-Type", "application/json");
-
-            //if (xhr.overrideMimeType) xhr.overrideMimeType("application/json");
-
-            xhr.send();
-
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                return angular.fromJson(xhr.responseText);
-            } else {
-                throw {
-                    module: 'DreamFactory System Config Module',
-                    type: 'error',
-                    provider: 'dreamfactory',
-                    exception: 'XMLHTTPRequest Failure:  getSystemConfigFromServer() Failed retrieve config.  Please contact your system administrator.'
-                };
-            }
-        }
+    .service('SystemConfigDataService', ['dfApplicationData',  function (dfApplicationData) {
 
         return {
 
             getSystemConfig: function () {
 
-                if (systemConfig === null) {
-                    systemConfig = getSystemConfigFromServerSync();
-                }
-                return systemConfig;
+                return dfApplicationData.getApiDataSync('environment');
             }
         };
     }

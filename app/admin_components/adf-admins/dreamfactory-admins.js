@@ -29,56 +29,25 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     templateUrl: MOD_ADMIN_ASSET_PATH + 'views/main.html',
                     controller: 'AdminsCtrl',
                     resolve: {
-                        checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
-
-                            var currentUser = UserDataService.getCurrentUser(),
-                                defer = $q.defer();
-
-                            // If there is no currentUser and we don't allow guest users
-                            if (!currentUser) {
-
-                                $location.url('/login');
-
-                                // This will stop the route from loading anything
-                                // it's caught by the global error handler in
-                                // app.js
-                                throw {
-                                    routing: true
-                                }
-                            }
-
-                            // There is a currentUser but they are not an admin
-                            else if (currentUser && !currentUser.is_sys_admin) {
-
-                                $location.url('/launchpad');
-
-                                // This will stop the route from loading anything
-                                // it's caught by the global error handler in
-                                // app.js
-                                throw {
-                                    routing: true
-                                }
-                            }
-
-                            defer.resolve();
-                            return defer.promise;
+                        checkAdmin:['checkAdminService', function (checkAdminService) {
+                            return checkAdminService.checkAdmin();
+                        }],
+                        checkUser:['checkUserService', function (checkUserService) {
+                            return checkUserService.checkUser();
                         }]
                     }
                 });
         }])
-    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
 
-
+    .run([function () {
 
     }])
 
     .controller('AdminsCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify',
-        function($rootScope, $scope, dfApplicationData, dfNotify){
+        function($rootScope, $scope, dfApplicationData, dfNotify) {
 
             $scope.$parent.title = 'Admins';
 
-            $rootScope.isRouteLoading = true;
-            
             // Set module links
             $scope.links = [
                 {
@@ -92,7 +61,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     path: 'create-admin'
                 }
             ];
-            
+
             // Set empty search result message
             $scope.emptySearchResult = {
                 title: 'You have no Admins that match your search criteria!',
@@ -100,17 +69,19 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             };
 
             // load data
-            
+
             $scope.apiData = null;
-            
-            $scope.loadTabData = function() {
+
+            $scope.loadTabData = function () {
+
+                $scope.dataLoading = true;
 
                 var apis = ['admin'];
 
                 dfApplicationData.getApiData(apis).then(
                     function (response) {
                         var newApiData = {};
-                        apis.forEach(function(value, index) {
+                        apis.forEach(function (value, index) {
                             newApiData[value] = response[index].resource ? response[index].resource : response[index];
                         });
                         $scope.apiData = newApiData;
@@ -123,6 +94,10 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             message: 'There was an error loading data for the Admins tab. Please try refreshing your browser and logging in again.'
                         };
                         dfNotify.error(messageOptions);
+                    }
+                ).finally(
+                    function () {
+                        $scope.dataLoading = false;
                     }
                 );
             };
@@ -141,7 +116,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             },
             templateUrl: MOD_ADMIN_ASSET_PATH + 'views/df-admin-details.html',
             link: function (scope, elem, attrs) {
-
 
                 var Admin = function  (adminData) {
 
@@ -212,6 +186,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
                 // PUBLIC API
+
                 scope.saveAdmin = function () {
 
                     if (!scope._validateData()) {
@@ -219,7 +194,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
 
                     if (scope.newAdmin) {
-
                         scope._saveAdmin();
                     }
                     else {
@@ -227,33 +201,40 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 };
 
-                scope.closeAdmin = function () {
+                scope.cancelEditor = function () {
 
-                    scope._closeAdmin();
+                    // merge data from UI into current edit record
+                    scope._prepareAdminData();
+
+                    // then compare to original edit record
+                    if (!dfObjectService.compareObjectsAsJson(scope.admin.record, scope.admin.recordCopy)) {
+
+                        if (!dfNotify.confirmNoSave()) {
+
+                            return;
+                        }
+                    }
+
+                    scope.closeEditor();
                 };
 
 
                 // PRIVATE API
 
+                scope.closeEditor = function() {
 
-                scope._saveAdminToServer = function (requestDataObj) {
+                    // same object as currentEditAdmin used in ng-show
+                    scope.adminData = null;
 
-                    return dfApplicationData.saveApiData('admin', requestDataObj).$promise;
-                };
+                    scope.admin = new Admin();
+                    scope.lookupKeys = [];
 
-                scope._updateAdminToServer = function (requestDataObj) {
+                    // This func comes from the dfSetUserPassword directive
+                    // which is stored in dfutility.
+                    scope._resetUserPasswordForm();
 
-                    return dfApplicationData.updateApiData('admin', requestDataObj).$promise;
-                };
-
-                scope._resetAdminDetails = function() {
-
-                    if (scope.newAdmin) {
-                        scope.admin = new Admin();
-                    }
-                    else {
-                        scope.adminData = null;
-                    }
+                    // force to manage view
+                    scope.$emit('sidebar-nav:view:reset');
                 };
 
                 scope._prepareAdminData = function () {
@@ -263,9 +244,10 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
                 // COMPLEX IMPLEMENTATION
+
                 scope._saveAdmin = function () {
 
-                    // perform some checks on app data
+                    // merge data from UI into current edit record
                     scope._prepareAdminData();
 
                     var requestDataObj = {
@@ -277,7 +259,8 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         data: scope.admin.record
                     };
 
-                    scope._saveAdminToServer(requestDataObj).then(
+                    dfApplicationData.saveApiData('admin', requestDataObj).$promise.then(
+
                         function(result) {
 
                             var messageOptions = {
@@ -285,91 +268,11 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 provider: 'dreamfactory',
                                 type: 'success',
                                 message: 'Admin saved successfully.'
-                            }
-
-                            dfNotify.success(messageOptions);
-
-                            // This func comes from the dfSetUserPassword directive
-                            // which is stored in dfutility.
-                            scope._resetUserPasswordForm();
-
-                            scope.admin = new Admin();
-
-                            scope.$emit('sidebar-nav:view:reset');
-                        },
-                        function (reject) {
-
-                            var messageOptions = {
-                                module: 'Api Error',
-                                provider: 'dreamfactory',
-                                type: 'error',
-                                message: reject
-                            };
-
-                            dfNotify.error(messageOptions);
-
-                        }
-                    ).finally(
-                            function() {
-
-                                // console.log('Admin save finally');
-                            }
-                        )
-                };
-
-                scope._updateAdmin = function () {
-
-                    // perform some checks on app data
-                    scope._prepareAdminData();
-
-                    // instead of specifing params here maybe we should
-                    // set dfApplicationData to pull from the prefs to set.
-                    // For now we'll leave it here.
-                    var requestDataObj = {
-
-                        params: {
-                            fields: '*',
-                            related: 'lookup_by_user_id'
-                        },
-                        data: scope.admin.record
-                    };
-
-
-                    scope._updateAdminToServer(requestDataObj).then(
-                        function (result) {
-
-                            // update token if email was changed
-                            if (result.session_token) {
-                                $http.defaults.headers.common['X-DreamFactory-Session-Token'] = result.session_token;
-                                $cookies.PHPSESSID = result.session_token;
-
-                                var existingUser = UserDataService.getCurrentUser();
-                                existingUser.session_token = result.session_token;
-                                existingUser.session_id = result.session_token;
-                                $cookieStore.put('CurrentUserObj', existingUser);
-                            }
-                            
-                            var messageOptions = {
-                                module: 'Admins',
-                                provider: 'dreamfactory',
-                                type: 'success',
-                                message: 'Admin updated successfully.'
                             };
 
                             dfNotify.success(messageOptions);
 
-                            // This func comes from the dfSetUserPassword directive
-                            // which is stored in dfutility.
-                            scope._resetUserPasswordForm();
-
-                            scope.admin = new Admin(result);
-
-                            scope.closeAdmin();
-
-                            scope.lookupKeys = scope.lookupKeys.filter(function (key) {
-                                return key.record.user_id !== null;
-                            });
-
+                            scope.closeEditor();
                         },
                         function (reject) {
 
@@ -385,26 +288,65 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     ).finally(
                         function() {
 
-                            // console.log('Admin save finally');
                         }
-                    )
+                    );
                 };
 
-                scope._closeAdmin = function () {
+                scope._updateAdmin = function () {
 
-                    // perform some checks on app data
+                    // merge data from UI into current edit record
                     scope._prepareAdminData();
 
-                    if (!dfObjectService.compareObjectsAsJson(scope.admin.record, scope.admin.recordCopy)) {
+                    // instead of specifing params here maybe we should
+                    // set dfApplicationData to pull from the prefs to set.
+                    // For now we'll leave it here.
+                    var requestDataObj = {
 
-                        if (!dfNotify.confirmNoSave()) {
+                        params: {
+                            fields: '*',
+                            related: 'lookup_by_user_id'
+                        },
+                        data: scope.admin.record
+                    };
 
-                            return false;
+                    dfApplicationData.updateApiData('admin', requestDataObj).$promise.then(
+
+                        function (result) {
+
+                            // update token if email was changed
+                            if (result.session_token) {
+                                var existingUser = UserDataService.getCurrentUser();
+                                existingUser.session_token = result.session_token;
+                                UserDataService.setCurrentUser(existingUser);
+                            }
+                            
+                            var messageOptions = {
+                                module: 'Admins',
+                                provider: 'dreamfactory',
+                                type: 'success',
+                                message: 'Admin updated successfully.'
+                            };
+
+                            dfNotify.success(messageOptions);
+
+                            scope.closeEditor();
+                        },
+                        function (reject) {
+
+                            var messageOptions = {
+                                module: 'Api Error',
+                                provider: 'dreamfactory',
+                                type: 'error',
+                                message: reject
+                            };
+
+                            dfNotify.error(messageOptions);
                         }
+                    ).finally(
+                        function() {
 
-                    }
-
-                    scope._resetAdminDetails();
+                        }
+                    );
                 };
 
                 // WATCHERS
@@ -458,9 +400,9 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             'encrypted on the server and is no longer accessible through the platform interface. ' +
                             'Lookup keys for service configuration and credentials must be made private.'
                     }
-                }
+                };
             }
-        }
+        };
     }])
 
     .directive('dfConfirmAdmin', ['INSTANCE_URL', 'MOD_ADMIN_ASSET_PATH', '$http', 'SystemConfigDataService', 'dfNotify', function(INSTANCE_URL, MOD_ADMIN_ASSET_PATH, $http, SystemConfigDataService, dfNotify) {
@@ -511,7 +453,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     );
                 };
             }
-        }
+        };
     }])
 
     .directive('dfAdminLookupKeys', ['MOD_ADMIN_ASSET_PATH', function(MOD_ADMIN_ASSET_PATH) {
@@ -522,7 +464,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             templateUrl: MOD_ADMIN_ASSET_PATH + 'views/df-input-lookup-keys.html',
             link: function(scope, elem, attrs) {
 
-
                 var LookupKey = function (lookupKeyData) {
 
                     var _new = {
@@ -531,7 +472,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         private: false,
                         allow_admin_update: false
                     };
-
 
                     return {
                         __dfUI: {
@@ -548,6 +488,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
 
                 // PUBLIC API
+
                 scope.newKey = function () {
 
                     scope._newKey();
@@ -557,7 +498,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     scope._removeKey(index);
                 };
-
 
 
                 // PRIVATE API
@@ -574,9 +514,8 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             if (value.record.name === _value.record.name) {
                                 scope.sameKeys.push(value);
                             }
-                        })
+                        });
                     });
-
                 };
 
                 scope._preparePasswordData = function () {
@@ -605,27 +544,29 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
 
-
                 // COMPLEX IMPLEMENTATION
+
                 scope._newKey = function () {
 
                     scope.lookupKeys.push(new LookupKey());
-
                 };
 
                 scope._removeKey = function (index) {
-                    if (scope.lookupKeys[index].record.user_id !== undefined)
+                    if (scope.lookupKeys[index].record.user_id !== undefined) {
                         scope.lookupKeys[index].record.user_id = null;
-                    else
+                    }
+                    else {
                         scope.lookupKeys.splice(index, 1);
+                    }
                 };
 
-
-
                 // WATCHERS AND INIT
+
                 var watchAdmin = scope.$watch('admin', function (newValue, oldValue) {
 
-                    if (!newValue) return;
+                    if (!newValue) {
+                        return;
+                    }
 
                     if (newValue.record.hasOwnProperty('lookup_by_user_id') && newValue.record.lookup_by_user_id.length > 0) {
 
@@ -634,7 +575,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         angular.forEach(newValue.record.lookup_by_user_id, function (lookupKeyData) {
 
                             scope.lookupKeys.push(new LookupKey(lookupKeyData))
-
                         });
                     }
                     else {
@@ -644,18 +584,15 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 var watchSameKeys = scope.$watch('sameKeys', function (newValue, oldValue) {
 
-
                     if (newValue.length === 0) {
 
                         angular.forEach(scope.lookupKeys, function (lk) {
 
                             lk.__dfUI.unique = true;
-
                         });
 
                         return;
                     }
-
 
                     angular.forEach(scope.lookupKeys, function (lk) {
 
@@ -663,24 +600,22 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             if (lk.record.name === _lk.record.name) {
                                 lk.__dfUI.unique = false;
-
-
-                            }else {
+                            } else {
                                 lk.__dfUI.unique = true;
                             }
-                        })
-                    })
+                        });
+                    });
                 });
 
                 var watchLookupKeys = scope.$watchCollection('lookupKeys', function (newValue, oldValue) {
 
-                    if (!newValue) return;
+                    if (!newValue) {
+                        return;
+                    }
 
                     // we added or removed a key
                     // check if unique
                     scope._isUniqueKey();
-
-
                 });
 
 
@@ -689,9 +624,8 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     watchAdmin();
                     watchSameKeys();
                 });
-
             }
-        }
+        };
     }])
 
     .directive('dfManageAdmins', ['$rootScope', 'MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, MOD_ADMIN_ASSET_PATH, dfApplicationData, dfNotify, $location) {
@@ -721,7 +655,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             selected: false
                         },
                         record: adminData
-                    }
+                    };
                 };
 
                 // For file upload on import admins;
@@ -810,14 +744,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     scope._setSelected(admin);
                 };
 
-
-                // PRIVATE API
-
-                scope._deleteFromServer = function (requestDataObj) {
-
-                    return dfApplicationData.deleteApiData('admin', requestDataObj).$promise;
-                };
-
                 // COMPLEX IMPLEMENTATION
 
                 scope._editAdmin = function (admin) {
@@ -827,15 +753,14 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope._deleteAdmin = function(admin) {
 
-
                     var requestDataObj = {
                         params: {
                             id: admin.record.id
                         }
                     };
 
+                    dfApplicationData.deleteApiData('admin', requestDataObj).$promise.then(
 
-                    scope._deleteFromServer(requestDataObj).then(
                         function(result) {
 
                             // notify success
@@ -855,7 +780,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 // This will remove the admin from the selected
                                 // admin array
                                 scope.setSelected(admin);
-
                             }
 
                             scope.$broadcast('toolbar:paginate:admin:delete');
@@ -876,7 +800,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         function() {
 
                         }
-                    )
+                    );
                 };
 
                 scope._orderOnSelect = function (fieldObj) {
@@ -893,7 +817,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope._setSelected = function (admin) {
 
-
                     var i = 0;
 
                     while (i < scope.selectedAdmins.length) {
@@ -905,12 +828,11 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             return;
                         }
 
-                        i++
+                        i++;
                     }
 
                     admin.__dfUI.selected = true;
                     scope.selectedAdmins.push(admin.record.id);
-
                 };
 
                 scope._deleteSelectedAdmins = function () {
@@ -922,8 +844,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         }
                     };
 
-
-                    scope._deleteFromServer(requestDataObj).then(
+                    dfApplicationData.deleteApiData('admin', requestDataObj).$promise.then(
 
                         function(result) {
 
@@ -937,7 +858,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             dfNotify.success(messageOptions);
 
                             scope.selectedAdmins = [];
-
 
                             scope.$broadcast('toolbar:paginate:admin:reset');
                         },
@@ -954,11 +874,10 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             dfNotify.error(messageOptions);
                         }
                     ).finally(
-                            function() {
+                        function () {
 
-                                // console.log('Delete Admins Finally');
-                            }
-                        )
+                        }
+                    );
                 };
 
 
@@ -991,21 +910,15 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     // when filter is changed the controller is reloaded and we get destroy event
                     // the reset event tells pagination engine to update based on filter
                     scope.$broadcast('toolbar:paginate:admin:reset');
-                })
-
-                scope.$watch('$viewContentLoaded',
-                    function(event){
-                        $rootScope.isRouteLoading = false;
-                    }
-                );
+                });
             }
-        }
+        };
     }])
 
-    .directive('dfAdminLoading', ['$rootScope', function($rootScope) {
+    .directive('dfAdminLoading', [function() {
       return {
         restrict: 'E',
-        template: "<div class='col-lg-12' ng-if='isRouteLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
+        template: "<div class='col-lg-12' ng-if='dataLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
       };
     }])
 
@@ -1016,7 +929,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             scope: false,
             replace: true,
             link: function (scope, elem, attrs) {
-
 
                 scope.importType = null;
                 scope.field = angular.element('#upload');
@@ -1040,7 +952,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         },
                         params: {},
                         data: fileObj
-                    })
+                    });
                 };
 
                 scope._checkFileType = function (fileObj) {
@@ -1050,7 +962,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     extension = extension[extension.length -1];
 
                     var value = false;
-
 
                     switch(extension) {
 
@@ -1070,14 +981,15 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.$watch('uploadFile', function (newValue, oldValue) {
 
-                    if (!newValue) return false;
+                    if (!newValue) {
+                        return false;
+                    }
 
                     newValue = scope.uploadFile;
 
                     if (!scope._checkFileType(newValue)) {
 
                         scope.uploadFile = null;
-
 
                         var messageOptions = {
                             module: 'Api Error',
@@ -1087,8 +999,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         };
 
                         dfNotify.error(messageOptions);
-
-
 
                         return false;
                     }
@@ -1110,9 +1020,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             };
                             dfNotify.success(messageOptions);
 
-
                             scope.$broadcast('toolbar:paginate:admin:reset');
-
                         },
                         function (reject) {
 
@@ -1132,26 +1040,13 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             scope.$broadcast('toolbar:paginate:admin:reset');
                         }
-
-                    ).finally(
-
-                        function() {
-
-
-
-                        },
-                        function () {
-
-
-
-                        }
-                    )
+                    );
                 });
             }
-        }
+        };
     }])
 
-    .directive('dfExportAdmins', ['MOD_ADMIN_ASSET_PATH', 'INSTANCE_URL', '$cookies', '$http', '$window', function (MOD_ADMIN_ASSET_PATH, INSTANCE_URL, $cookies, $http, $window) {
+    .directive('dfExportAdmins', ['MOD_ADMIN_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', '$http', '$window', 'ADMIN_API_KEY', function (MOD_ADMIN_ASSET_PATH, INSTANCE_URL, UserDataService, $http, $window, ADMIN_API_KEY) {
 
         return {
 
@@ -1160,20 +1055,18 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             replace: true,
             link: function (scope, elem, attrs) {
 
-
                 scope.fileFormatStr = null;
 
                 scope.exportAdmins = function(fileFormatStr) {
                     scope._exportAdmins(fileFormatStr);
                 };
 
-
                 scope._getFile = function (urlStr) {
 
                     return $http({
                         method: 'GET',
                         url: urlStr
-                    })
+                    });
                 };
 
                 scope._exportAdmins = function (fileFormatStr) {
@@ -1182,14 +1075,17 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         scope.fileFormatStr = fileFormatStr;
 
-                        var params = 'file=admin.' + scope.fileFormatStr +'&session_token='+$cookies.PHPSESSID;
-
+                        var params = 'file=admin.' + scope.fileFormatStr + '&api_key=' + ADMIN_API_KEY;
+                        var currentUser = UserDataService.getCurrentUser();
+                        if (currentUser && currentUser.session_token) {
+                            params += '&session_token=' + currentUser.session_token;
+                        }
 
                         // Jason's method to make it work.  He doesn't check for bad response.
                         // I'll look into angularJS's $location to fix this.
                         $window.location.href= INSTANCE_URL + '/api/v2/system/admin?' + params;
                     }
-                }
+                };
             }
-        }
+        };
     }]);

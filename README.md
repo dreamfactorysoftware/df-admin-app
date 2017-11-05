@@ -110,30 +110,15 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     templateUrl: MOD_APPS_ASSET_PATH + 'views/main.html',
                     controller: 'AppsCtrl',
                     resolve: {
-                        checkCurrentUser: ['UserDataService', '$location', function (UserDataService, $location) {
-
-                            var currentUser = UserDataService.getCurrentUser();
-
-
-                            // If there is no currentUser and we don't allow guest users
-                            if (!currentUser) {
-                                $location.url('/login')
-                            }
-
-                            // There is a currentUser but they are not an admin
-                            else if (currentUser && !currentUser.is_sys_admin) {
-
-                                $location.url('/launchpad')
-                            }
+                        checkUser:['checkUserService', function (checkUserService) {
+                            return checkUserService.checkUser();
                         }]
                     }
                 });
         }])
 
-    .run(['INSTANCE_URL', '$templateCache', function (INSTANCE_URL, $templateCache) {
-
-
-
+    .run([function () {
+            
     }])
     
     // More module code
@@ -205,7 +190,6 @@ Each module has a `main.html`.  In `main.html` there wil be directives that pert
         <df-manage-apps data-ng-if="activeView.path === 'manage-apps'"></df-manage-apps>
         <df-app-details data-ng-if="activeView.path === 'create-app'" data-new-app="true"></df-app-details>
         <df-import-app data-ng-if="activeView.path === 'import-app'"></df-import-app>
-        <df-app-groups data-ng-if="activeView.path === 'app-groups'"></df-app-groups>
     </div>
 </div>
 

@@ -10,178 +10,191 @@
 angular.module('dreamfactoryApp')
 
     // MainCtrl is the parent controller of everything.  Checks routing and deals with navs
-    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', '$http', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', 'dfIconService',
-        function ($scope, UserDataService, SystemConfigDataService, $location, $http, INSTANCE_URL, dfApplicationData, dfNotify, dfIconService) {
+    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', '$http', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', 'dfIconService', 'allowAdminAccess', '$timeout',
+        function ($scope, UserDataService, SystemConfigDataService, $location, $http, INSTANCE_URL, dfApplicationData, dfNotify, dfIconService, allowAdminAccess, $timeout) {
 
-        // So child controllers can set the app section title
-        $scope.title = '';
+            // So child controllers can set the app section title
+            $scope.title = '';
 
-        // CurrentUser
-        $scope.currentUser = UserDataService.getCurrentUser();
+            // CurrentUser
+            $scope.currentUser = UserDataService.getCurrentUser();
 
-        // Top Level Links
-        $scope.topLevelLinks = [
+            // Top Level Links
+            $scope.topLevelLinks = [
 
-            {
-                path: 'http://www.dreamfactory.com/support',
-                target: '_blank',
-                label: 'Support',
-                name: 'support',
-                icon: dfIconService().support,
-                show: false
-            },
-            {
-                path: '#/launchpad',
-                target: null,
-                label: 'LaunchPad',
-                name: 'launchpad',
-                icon: dfIconService().launchpad,
-                show: false
-            },
-            {
-                path: '#/home',
-                target: null,
-                label: 'Admin',
-                name: 'admin',
-                icon: dfIconService().admin,
-                show: false
-            },
-            {
-                path: '#/login',
-                target: null,
-                label: 'Login',
-                name: 'login',
-                icon: dfIconService().login,
-                show: false
-            },
-            {
-                path: '#/register',
-                target: null,
-                label: 'Register',
-                name: 'register',
-                icon: dfIconService().register,
-                show: false
-            },
-            {
-                path: null,
-                target: null,
-                label: UserDataService.getCurrentUser().name,
-                name: 'user',
-                icon: dfIconService().user,
-                show: false,
-                subLinks: [
-                    {
-                        path: '#/profile',
-                        target: null,
-                        label: 'Profile',
-                        name: 'profile',
-                        icon: null,
-                        show: false
-                    },
-                    {
-                        path: '#/logout',
-                        target: null,
-                        label: 'Logout',
-                        name: 'logout',
-                        icon: null,
-                        show: false
-                    }
-                ]
-            }
-        ];
+                {
+                    path: 'http://www.dreamfactory.com/support',
+                    target: '_blank',
+                    label: 'Support',
+                    name: 'support',
+                    icon: dfIconService().support,
+                    show: false
+                },
+                {
+                    path: '#/launchpad',
+                    target: null,
+                    label: 'LaunchPad',
+                    name: 'launchpad',
+                    icon: dfIconService().launchpad,
+                    show: false
+                },
+                {
+                    path: '#/home',
+                    target: null,
+                    label: 'Admin',
+                    name: 'admin',
+                    icon: dfIconService().admin,
+                    show: false
+                },
+                {
+                    path: '#/login',
+                    target: null,
+                    label: 'Login',
+                    name: 'login',
+                    icon: dfIconService().login,
+                    show: false
+                },
+                {
+                    path: '#/register',
+                    target: null,
+                    label: 'Register',
+                    name: 'register',
+                    icon: dfIconService().register,
+                    show: false
+                },
+                {
+                    path: null,
+                    target: null,
+                    label: UserDataService.getCurrentUser().name,
+                    name: 'user',
+                    icon: dfIconService().user,
+                    show: false,
+                    subLinks: [
+                        {
+                            path: '#/profile',
+                            target: null,
+                            label: 'Profile',
+                            name: 'profile',
+                            icon: null,
+                            show: false
+                        },
+                        {
+                            path: '#/logout',
+                            target: null,
+                            label: 'Logout',
+                            name: 'logout',
+                            icon: null,
+                            show: false
+                        }
+                    ]
+                }
+            ];
 
+            $scope.topLevelNavOptions = {
+                links: $scope.topLevelLinks
+            };
 
-        $scope.topLevelNavOptions = {
-            links: $scope.topLevelLinks
-        };
+            // View options
+            $scope.showAdminComponentNav = false;
 
-        // Component links.  Displayed under the top bar.
-        // plan is to have these loaded by role access eventually
-        // Right now they are all hard coded
-        $scope.componentLinks = [
+            var navLinks = [
 
-            {
-                name: 'home',
-                label: 'Home',
-                path: '/home'
-            },
-            {
-                name: 'apps',
-                label: 'Apps',
-                path: '/apps'
-            },
-            {
-                name: 'admins',
-                label: 'Admins',
-                path: '/admins'
-            },
-            {
-                name: 'users',
-                label: 'Users',
-                path: '/users'
-            },
-            {
-                name: 'roles',
-                label: 'Roles',
-                path: '/roles'
-            },
-            {
-                name: 'services',
-                label: 'Services',
-                path: '/services'
-            },
-            {
-                name: 'apidocs',
-                label: 'API Docs',
-                path: '/apidocs'
-            },
-            {
-                name: 'schema',
-                label: 'Schema',
-                path: '/schema'
-            },
-            {
-                name: 'data',
-                label: 'Data',
-                path: '/data'
-            },
-            {
-                name: 'file-manager',
-                label: 'Files',
-                path: '/file-manager'
+                {
+                    name: 'home',
+                    label: 'Home',
+                    path: '/home'
+                },
+                {
+                    name: 'apps',
+                    label: 'Apps',
+                    path: '/apps'
+                },
+                {
+                    name: 'admins',
+                    label: 'Admins',
+                    path: '/admins'
+                },
+                {
+                    name: 'users',
+                    label: 'Users',
+                    path: '/users'
+                },
+                {
+                    name: 'roles',
+                    label: 'Roles',
+                    path: '/roles'
+                },
+                {
+                    name: 'services',
+                    label: 'Services',
+                    path: '/services'
+                },
+                {
+                    name: 'apidocs',
+                    label: 'API Docs',
+                    path: '/apidocs'
+                },
+                {
+                    name: 'schema',
+                    label: 'Schema',
+                    path: '/schema'
+                },
+                {
+                    name: 'data',
+                    label: 'Data',
+                    path: '/data'
+                },
+                {
+                    name: 'file-manager',
+                    label: 'Files',
+                    path: '/file-manager'
+                },
+                {
+                    name: 'scripts',
+                    label: 'Scripts',
+                    path: '/scripts'
+                },
+                {
+                    name: 'config',
+                    label: 'Config',
+                    path: '/config'
+                },
+                {
+                    name: 'package-manager',
+                    label: 'Packages',
+                    path: '/package-manager'
+                },
+                {
+                    name: 'limit',
+                    label: 'Limits',
+                    path: '/limits'
+                }
+            ];
 
-            },
-            {
-                name: 'scripts',
-                label: 'Scripts',
-                path: '/scripts'
-            },
-            {
-                name: 'config',
-                label: 'Config',
-                path: '/config'
-            },
-            {
-                name: 'package-manager',
-                label: 'Packages',
-                path: '/package-manager'
-            },
-            {
-                name: 'limit',
-                label: 'Limits',
-                path: '/limit'
-            }
-        ];
-        $scope.componentNavOptions = {
-            links: $scope.componentLinks
-        };
+            $scope.componentNavOptions = {
 
+                links: navLinks
+            };
 
-        // View options
-        $scope.showAdminComponentNav = false;
+            // PRIVATE API
 
+            $scope._setComponentLinks = function (isAdmin) {
 
-        // PRIVATE API
+                var links = angular.copy(navLinks);
+
+                if (!isAdmin) {
+                    // remove admins, roles, limits for non-admins
+                    links.splice(2, 1);
+                    links.splice(3, 1);
+                    links.splice(11, 1);
+                }
+
+                $scope.componentNavOptions = {
+
+                    links: links
+                };
+            };
+
         // Sets links for navigation
         $scope._setActiveLinks = function(linksArr, activeLinksArr) {
 
@@ -201,7 +214,7 @@ angular.module('dreamfactoryApp')
                 }
 
                 link.show = found;
-            })
+            });
         };
 
         // Sets a property on a link in the top level links
@@ -222,50 +235,39 @@ angular.module('dreamfactoryApp')
         // WATCHERS
 
 
-        $scope.$watch('currentUser', function(newValue, oldValue) {
+        $scope.$watch('currentUser', function (newValue, oldValue) {
 
-            var links;
-            var config = SystemConfigDataService.getSystemConfig();
-            var groupedApp = config.app_group, noGroupApp = config.no_group_app;
+            var links, config;
+
+            if (!angular.equals(newValue, oldValue)) {
+                // user changed, reset application object to force reload of all data
+                dfApplicationData.resetApplicationObj();
+            }
+
+            links = ['support'];
+
+            // get updated system config. it changes on login/logout
+            config = SystemConfigDataService.getSystemConfig();
+            if (config) {
+                // Check for apps.
+                if (config.apps && config.apps.length > 0) {
+                    // There are apps so show launchpad option.
+                    links.push("launchpad");
+                }
+            }
 
             // Check for currentUser.
             if (!newValue) {
-                // There is no currentUser. Check for apps.
-                if ((groupedApp && groupedApp.length > 0) || (noGroupApp && noGroupApp.length > 0)) {
-                    // There are apps so show launchpad option.
-                    links = ['support', 'launchpad', 'login'];
-                } else {
-                    // Hide launchpad option.
-                    links = ['support', 'login'];
-                }
-                // If open reg is enabled then show register option.
-                if (config.authentication.allow_open_registration) {
+                // There is no currentUser.
+
+                links.push('login');
+
+                // If no config available then hide register option.
+                // Else if open reg is enabled then show register option.
+                if (config && config.authentication.allow_open_registration) {
                     links.push('register');
                 }
 
-                var params = [];
-                var UrlParams = $location.search();
-
-                Object.keys(UrlParams).forEach(function(key,index) {
-                    params.push(key + '=' + UrlParams[key]);
-                });
-
-                if ($location.path() === '/reset-password') {
-
-                    $location.url('/reset-password?' + params.join('&'));
-                }
-                else if ($location.path() === '/user-invite'){
-
-                    $location.url('/user-invite?' + params.join('&'));
-                }
-                else if ($location.path() === '/register-confirm'){
-
-                    $location.url('/register-confirm?' + params.join('&'));
-                }
-                else {
-
-                    $location.url('/login');
-                }
                 // Not logged in. Hide chat.
                 Comm100API.showChat(false);
             }
@@ -273,12 +275,11 @@ angular.module('dreamfactoryApp')
                 // We have a current user. Set name in menu button. Have to set this explicitly.
                 $scope.setTopLevelLinkValue('user', 'label', newValue.name);
                 if (newValue.is_sys_admin) {
-                    links = ['support', 'launchpad', 'admin', 'user'];
                     // Enable/disable chat for admins. Default to enabled in case nothing is set in db or there's an error.
                     var chatEnabled = true;
                     dfApplicationData.getApiData(['custom']).then(
                         function (response) {
-                            var custom = response[0].resource.filter(function(obj) {
+                            var custom = response[0].resource.filter(function (obj) {
                                 return (obj.name === 'chat');
                             });
                             if (custom.length > 0) {
@@ -286,17 +287,21 @@ angular.module('dreamfactoryApp')
                             }
                         }
                     ).finally(
-                        function() {
+                        function () {
                             Comm100API.showChat(chatEnabled);
                         }
-                    )
+                    );
                 }
-                else {
-                    links = ['support', 'launchpad', 'user'];
-                }
+                links.push('user');
+            }
+
+            // add admin option if system config says we have access to it
+            if (allowAdminAccess.get()) {
+                links.push('admin');
             }
 
             $scope._setActiveLinks($scope.topLevelLinks, links);
+            $scope._setComponentLinks(newValue && newValue.is_sys_admin);
         });
 
         $scope.$watch(function () {return UserDataService.getCurrentUser().name}, function (n, o) {
@@ -315,16 +320,27 @@ angular.module('dreamfactoryApp')
 
             path = $location.path();
             switch (path) {
-                case '/launchpad':
-                case '/profile':
-                case '/logout':
-                    $scope.showAdminComponentNav = false;
+                case '/home':
+                case '/apps':
+                case '/admins':
+                case '/users':
+                case '/roles':
+                case '/services':
+                case '/apidocs':
+                case '/schema':
+                case '/data':
+                case '/file-manager':
+                case '/scripts':
+                case '/config':
+                case '/package-manager':
+                case '/limits':
+                    $scope.showAdminComponentNav = true;
                     break;
                 default:
-                    $scope.showAdminComponentNav = ($scope.currentUser && $scope.currentUser.is_sys_admin === true);
+                    $scope.showAdminComponentNav = false;
                     break;
             }
-        })
+        });
     }])
 
     // Our LoginCtrl controller inherits from our TopLevelAppCtrl controller
@@ -379,39 +395,24 @@ angular.module('dreamfactoryApp')
             //Login using OAuth...
             var queryString = location.search.substring(1);
 
-            // Set services on application object
-            // are we an admin
+            // Hide our login template while services build
+            $scope.loginOptions.showTemplate = false;
+
             if (userDataObj.is_sys_admin) {
-
-                // Hide our login template while services build
-                $scope.loginOptions.showTemplate = false;
-
-                // 250ms delay to allow the login screen to process
-                // and disappear
-                $timeout(function () {
-
-                    // Change our app location back to the home page
-                    if (queryString) {
-                        // if logging in using oauth then do a full reload
-                        // is needed to remove oauth related info from url.
-                        var uri = $location.absUrl().split('?');
-                        $window.location.href = uri[0] + '#/home';
+                // Change our app location back to the home page
+                if (queryString) {
+                    // if logging in using oauth then do a full reload
+                    // is needed to remove oauth related info from url.
+                    var uri = $location.absUrl().split('?');
+                    $window.location.href = uri[0] + '#/home';
+                } else {
+                    if (userDataObj.is_sys_admin && 'user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
+                        $location.url('/profile');
                     } else {
-                        if ('user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
-                            $location.url('/profile');
-                        } else {
-                            $location.url('/home');
-                        }
+                        $location.url('/home');
                     }
-                }, 250);
-            }
-
-            // not an admin.
-            else {
-
-                // Set our parent's current user var
-                $scope.$parent.currentUser = userDataObj;
-
+                }
+            } else {
                 // Send em to launchpad
                 if(queryString){
                     // if logging in using oauth then do a full reload
@@ -440,11 +441,8 @@ angular.module('dreamfactoryApp')
             // and should be 'false'
             $scope.$parent.currentUser = userDataObj;
 
-            // Reset Application Object on successful logout
-            dfApplicationData.resetApplicationObj();
-
-            // redirect
-            $location.url('/login')
+            // go to login
+            $location.url('/login');
         });
     }])
 
@@ -617,35 +615,14 @@ angular.module('dreamfactoryApp')
             // Set our parent's current user var
             $scope.$parent.currentUser = userDataObj;
 
-            // Set services on application object
-            // are we an admin
-            if (userDataObj.is_sys_admin) {
+            // Hide our login template while services build
+            $scope.loginOptions.showTemplate = false;
 
-                // Hide our login template while services build
-                $scope.loginOptions.showTemplate = false;
-
-                // 250ms delay to allow the login screen to process
-                // and disappear
-                $timeout(function () {
-
-                    // Change our app location back to the home page
-                    if ('user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
-                        $location.url('/profile');
-                    } else {
-                        $location.url('/home');
-                    }
-
-                }, 250);
-            }
-
-            // not an admin.
-            else {
-
-                // Set our parent's current user var
-                $scope.$parent.currentUser = userDataObj;
-
-                // Send em to launchpad
-                $location.url('/launchpad');
+            // Change our app location back to the home page
+            if (userDataObj.is_sys_admin && 'user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
+                $location.url('/profile');
+            } else {
+                $location.url('/home');
             }
         });
 

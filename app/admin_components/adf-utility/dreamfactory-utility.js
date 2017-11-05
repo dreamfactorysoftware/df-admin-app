@@ -12,7 +12,7 @@ angular.module('dfUtility', ['dfApplication'])
       return {
           restrict: 'E',
           scope: {
-              editor: '=?',
+              editorObj: '=?',
               accept: '=?',
               target: '=?'
           },
@@ -92,11 +92,10 @@ angular.module('dfUtility', ['dfApplication'])
                               mode = 'javascript';
                       }
 
-                      if (scope.editor) {
+                      if (scope.editorObj && scope.editorObj.editor) {
                           var decodedString = atob(response.data.content);
-                          scope.editor.session.setValue(decodedString);
-                          scope.editor.session.setMode({path: 'ace/mode/' + mode, inline: true});
-                          scope.editor.focus();
+                          scope.editorObj.editor.session.setValue(decodedString);
+                          scope.editorObj.editor.focus();
                       }
 
                       var element = angular.element('#' + scope['target']);
@@ -289,7 +288,7 @@ angular.module('dfUtility', ['dfApplication'])
                         case '/package-manager':
                         case '/apidocs':
                         case '/downloads':
-                        case '/limit':
+                        case '/limits':
                             scope.activeLink = 'admin';
                             break;
 
@@ -344,7 +343,6 @@ angular.module('dfUtility', ['dfApplication'])
 
                 scope.activeLink = null;
 
-                scope.links = scope.options.links;
                 scope.toggleMenu = false;
 
 
@@ -438,7 +436,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                 });
             }
-        }
+        };
     }])
 
     // declare our directive and pass in our constant
@@ -884,27 +882,33 @@ angular.module('dfUtility', ['dfApplication'])
                 },
                 templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-event-picker.html',
                 link: function (scope, elem, attrs) {
-                    scope.selectedLabel = false;
+
                     scope.selectItem = function (item) {
                         scope.selected = item.name;
                     };
 
-                    scope.$watch('selected', function (newValue, oldValue) {
+                    var events = [];
 
-                        if (newValue) {
-                            angular.forEach(scope.options, function (option) {
-                                if(option.items) {
-                                    angular.forEach(option.items, function(item){
-                                        if(newValue === item.name){
-                                            scope.selectedLabel = item.label;
-                                        }
-                                    })
+                    if (scope.options) {
+                        angular.forEach(scope.options, function (option) {
+                            if (option.items) {
+                                if (events.length > 0) {
+                                    // add divider before starting a new service type
+                                    // class = 'divider' makes it a divider
+                                    events.push({class: 'divider'});
                                 }
-                            });
-                        }
-                    });
+                                angular.forEach(option.items, function (item) {
+                                    // add menu item, class = '' means not a divider
+                                    item.class = '';
+                                    events.push(item);
+                                });
+                            }
+                        });
+                    }
+
+                    scope.events = events;
                 }
-            }
+            };
         }
     ])
 
@@ -1676,48 +1680,45 @@ angular.module('dfUtility', ['dfApplication'])
         }
     ])
 
-    // Creates an Ace Editor.  Currently specific to scripting and service definition stuff.
-    .directive('dfAceEditor', ['INSTANCE_URL', 'MOD_UTILITY_ASSET_PATH', '$http', '$compile', function (INSTANCE_URL, MOD_UTILITY_ASSET_PATH, $http, $compile) {
+    .directive('dfAceEditor', ['MOD_UTILITY_ASSET_PATH', '$compile', function (MOD_UTILITY_ASSET_PATH, $compile) {
 
         return {
             restrict: 'E',
             scope: {
-                inputType: '=?', // object for schema mgr, string for service def
+                inputType: '=?',
                 inputContent: '=?',
-                inputFormat: '=?', // json for schema mgr, json or yaml for service def
+                inputUpdate: '=?',
+                inputFormat: '=?',
                 isEditable: '=?',
-                currentEditor: '=?'
+                editorObj: '=?',
+                targetDiv: '=?'
             },
             templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-ace-editor.html',
             link: function (scope, elem, attrs) {
 
                 window.define = window.define || ace.define;
 
-                var _elem = $(elem),
-                    _rand = Math.floor((Math.random() * 100) + 1);
-
-                _elem.children('.ide-attach').append($compile('<div id="ide_' + _rand + '" class="df-fs-height" style="height:400px"></div>')(scope));
+                $(elem).children('.ide-attach').append($compile('<div id="ide_' + scope.targetDiv + '" class="df-fs-height" style="height:400px"></div>')(scope));
 
                 scope.editor = null;
-                scope.currentContent = {"content": ""};
+                scope.currentContent = "";
                 scope.verbose = false;
 
                 // PRIVATE API
 
-                scope._setEditorInactive = function (stateBool) {
+                scope._setEditorInactive = function (inactive) {
 
                     if (scope.verbose) {
-                        console.log("_setEditorInactive", stateBool);
+                        console.log(scope.targetDiv, "_setEditorInactive", inactive);
                     }
 
-                    stateBool = stateBool || false;
-
-                    if (stateBool) {
+                    if (inactive) {
                         scope.editor.setOptions({
                             readOnly: true,
                             highlightActiveLine: false,
                             highlightGutterLine: false
                         });
+                        scope.editor.container.style.opacity=0.75;
                         scope.editor.renderer.$cursorLayer.element.style.opacity=0;
                     } else {
                         scope.editor.setOptions({
@@ -1725,6 +1726,7 @@ angular.module('dfUtility', ['dfApplication'])
                             highlightActiveLine: true,
                             highlightGutterLine: true
                         });
+                        scope.editor.container.style.opacity=1.0;
                         scope.editor.renderer.$cursorLayer.element.style.opacity=100;
                     }
                 };
@@ -1732,72 +1734,64 @@ angular.module('dfUtility', ['dfApplication'])
                 scope._setEditorMode = function (mode) {
 
                     if (scope.verbose) {
-                        console.log("_setEditorMode", mode);
+                        console.log(scope.targetDiv, "_setEditorMode", mode);
                     }
 
+                    // inline=true is required for PHP
+                    // seems to have no effect on other editor modes
                     scope.editor.session.setMode({
                         path: "ace/mode/" + mode,
+                        inline: true,
                         v: Date.now()
                     });
                 };
 
-                scope._loadEditor = function (contents) {
+                // we get json objects from schema editor, convert them to strings here
+                // scripts and service defs will already be strings
+
+                scope._loadEditor = function (newValue) {
 
                     if (scope.verbose) {
-                        console.log("_loadEditor", contents);
+                        console.log(scope.targetDiv, '_loadEditor', newValue);
                     }
-
-                    scope.editor = ace.edit('ide_' + _rand);
-
-                    scope.editor.renderer.setShowGutter(true);
-
-                    scope.editor.session.setValue(contents);
-
-                    scope.editor.on('blur', function () {
-                        scope.$apply(function () {
-                            scope.currentContent = {"content": scope.editor.getValue()};
-                        });
-                    });
+                    if (newValue !== null && newValue !== undefined) {
+                        var content = newValue;
+                        if (scope.inputType === 'object') {
+                            content = angular.toJson(content, true);
+                        }
+                        scope.currentContent = content;
+                        scope.editor = ace.edit('ide_' + scope.targetDiv);
+                        scope.editorObj.editor = scope.editor;
+                        scope.editor.renderer.setShowGutter(true);
+                        scope.editor.session.setValue(content);
+                    }
                 };
 
                 // WATCHERS AND INIT
 
-                // we get json objects from schema editor, convert them to strings here
-                // service defs will already be strings
+                scope.$watch('inputContent', scope._loadEditor);
 
-                scope.$watch('inputContent', function (newValue) {
+                // trigger an update of inputContent, even if it didn't change
+                // typing in the editor does not change inputContent
+                // inputUpdate effectively forces inputContent to update
 
-                    if (scope.verbose) {
-                        console.log('inputContent', newValue);
-                    }
-                    if (newValue && newValue.content !== undefined) {
-                        var content = newValue.content;
-                        if (scope.inputType === 'object') {
-                            content = angular.toJson(content, true);
-                        }
-                        scope.currentContent = {"content": content};
-                    }
-
-                }, true);
-
-                // load editor with new text content
-
-                scope.$watch('currentContent', function (newValue) {
+                scope.$watch('inputUpdate', function (newValue) {
 
                     if (scope.verbose) {
-                        console.log('currentContent', newValue);
+                        console.log(scope.targetDiv, 'inputUpdate', newValue);
                     }
-                    scope._loadEditor(newValue.content);
-                    scope.currentEditor = scope.editor;
-
-                }, true);
+                    scope._loadEditor(scope.currentContent);
+                });
 
                 scope.$watch('inputFormat', function (newValue) {
 
                     if (scope.verbose) {
-                        console.log('inputFormat', newValue);
+                        console.log(scope.targetDiv, 'inputFormat', newValue);
                     }
                     if (newValue) {
+                        if (newValue === 'nodejs' || newValue === 'v8js') {
+                            newValue = 'javascript';
+                        }
                         scope._setEditorMode(newValue);
                     }
                 });
@@ -1805,18 +1799,20 @@ angular.module('dfUtility', ['dfApplication'])
                 scope.$watch('isEditable', function (newValue) {
 
                     if (scope.verbose) {
-                        console.log('isEditable', newValue);
+                        console.log(scope.targetDiv, 'isEditable', newValue);
                     }
-                    scope.editor.setOptions({
-                        readOnly: !newValue,
-                        highlightActiveLine: true,
-                        highlightGutterLine: true
-                    });
+                    scope._setEditorInactive(!newValue);
+                });
 
-                    scope.editor.renderer.$cursorLayer.element.style.opacity=100;
+                scope.$on('$destroy', function (e) {
+
+                    if (scope.verbose) {
+                        console.log(scope.targetDiv, '$destroy');
+                    }
+                    scope.editor.destroy();
                 });
             }
-        }
+        };
     }])
 
     // Helper for uploading a file.  Gets the file from an upload mechanism and sets
@@ -2256,9 +2252,9 @@ angular.module('dfUtility', ['dfApplication'])
                 // records are deleted. It loads records for page 1 and resets pagination.
                 scope.$on('toolbar:paginate:' + scope.api + ':reset', function (e) {
 
-                    // If we're logging out don't bother
-                    // dfApplicationObj is being reset
-                    if ($location.path() === '/logout') {
+                    // If we're logging out don't bother dfApplicationObj is being reset.
+                    // If the tab you are leaving was not able to load data then dfApplicationObj won't have it so bail out.
+                    if ($location.path() === '/logout' || dfApplicationData.getApiDataFromCache(scope.api) === undefined) {
                         return;
                     }
 
@@ -2678,27 +2674,6 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
-    // Check for session validity
-    .service('dfRouteChecker', ['UserDataService', 'SystemConfigDataService', '$location', function(UserDataService, SystemConfigDataService, $location) {
-
-        return function() {
-
-            var currentUser = UserDataService.getCurrentUser(),
-                systemConfig = SystemConfigDataService.getSystemConfig();
-
-            // If there is no currentUser and we don't allow guest users
-            if (!currentUser) {
-                $location.url('/login')
-            }
-
-            // There is a currentUser but they are not an admin
-            else if (currentUser && !currentUser.is_sys_admin) {
-
-                $location.url('/launchpad')
-            }
-        }
-    }])
-
     // Helps merge objects.  Supports deep merge.  Many modules
     // need this
     .service('dfObjectService', [
@@ -2798,7 +2773,10 @@ angular.module('dfUtility', ['dfApplication'])
 
             // Setting Dreamfactory Headers
             _xhrObj.setRequestHeader("X-DreamFactory-API-Key", ADMIN_API_KEY);
-            _xhrObj.setRequestHeader("X-DreamFactory-Session-Token", $cookies.PHPSESSID);
+            var currentUser = UserDataService.getCurrentUser();
+            if (currentUser && currentUser.session_tpken) {
+                xhrObj.setRequestHeader("X-DreamFactory-Session-Token", currentUser.session_token);
+            }
 
             // Set additional headers
             for (var _key in _headersDataObj) {
@@ -2955,10 +2933,11 @@ angular.module('dfUtility', ['dfApplication'])
                     text:  messageOptions.message,
                     addclass: "stack_topleft",
                     animation: 'fade',
-                    animate_speed: 150,
-                    position_animate_speed: 150,
+                    animate_speed: 'normal',
+                    hide: true,
+                    delay: 3000,
                     stack: stack_topleft,
-                    mouse_reset: false
+                    mouse_reset: true
                 })
             })();
         }
@@ -2986,24 +2965,26 @@ angular.module('dfUtility', ['dfApplication'])
                 result = "The server returned an unknown error.";
                 if (errorDataObj.data) {
                     error = errorDataObj.data.error;
-                    if (error) {
-                        // default to top level error
-                        message = error.message
-                        if (message) {
-                            result = message;
-                        }
-                        if (error.code === 1000 && error.context) {
-                            resource = error.context.resource;
-                            error = error.context.error;
-                            if (resource && error) {
-                                result = '';
-                                angular.forEach(error, function (index) {
-                                    if (result) {
-                                        result += '\n';
-                                    }
-                                    result += resource[index].message;
-                                });
-                            }
+                } else {
+                    error = errorDataObj.error;
+                }
+                if (error) {
+                    // default to top level error
+                    message = error.message;
+                    if (message) {
+                        result = message;
+                    }
+                    if (error.code === 1000 && error.context) {
+                        resource = error.context.resource;
+                        error = error.context.error;
+                        if (resource && error) {
+                            result = '';
+                            angular.forEach(error, function (index) {
+                                if (result) {
+                                    result += '\n';
+                                }
+                                result += resource[index].message;
+                            });
                         }
                     }
                 }
@@ -3069,66 +3050,6 @@ angular.module('dfUtility', ['dfApplication'])
             }
         }
 
-    }])
-
-    // replace params in launch url service
-    .service('dfReplaceParams', ['UserDataService', '$window', function (UserDataService, $window) {
-
-        return function (appUrl, appName) {
-
-            var newParams = "";
-            var url = appUrl;
-            if (appUrl.indexOf("?") !== -1) {
-                var temp = appUrl.split("?");
-                url = temp[0];
-                var params = temp[1];
-                params = params.split("&");
-                $.each(
-                    params, function(index, oneParam) {
-                        if (oneParam) {
-                            if ("" === newParams) {
-                                newParams += "?";
-                            } else {
-                                newParams += "&";
-                            }
-                            var pieces = oneParam.split("=");
-                            if (1 < pieces.length) {
-                                var name = pieces.shift();
-                                var value = pieces.join("=");
-
-                                switch (value) {
-                                    case "{session_id}":
-                                    case "{ticket}":
-                                    case "{first_name}":
-                                    case "{last_name}":
-                                    case "{display_name}":
-                                    case "{email}":
-                                        value = value.substring(1, value.length - 1);
-                                        value =  UserDataService.getCurrentUser()[value];
-                                        break;
-                                    case "{user_id}":
-                                        // value = top.CurrentSession.id;
-                                        value = UserDataService.getCurrentUser().id;
-                                        break;
-                                    case "{app_name}":
-                                        value = appName;
-                                        break;
-                                    case "{server_url}":
-                                        value = $window.location.origin;
-                                        break;
-                                }
-
-                                newParams += name + "=" + value;
-                            } else {
-                                newParams += oneParam;
-                            }
-                        }
-                    }
-                );
-            }
-
-            return url + newParams;
-        }
     }])
 
     // convert service type to service group
