@@ -3,230 +3,230 @@
 
 angular.module('dfUtility', ['dfApplication'])
 
-    // Set a constant so we can access the 'local' path of our assets
+// Set a constant so we can access the 'local' path of our assets
     .constant('MOD_UTILITY_ASSET_PATH', 'admin_components/adf-utility/')
 
     // declare our directive and pass in our constant
     .directive('dfGithubModal', ['MOD_UTILITY_ASSET_PATH', '$http', 'dfApplicationData', '$rootScope', function (MOD_UTILITY_ASSET_PATH, $http, dfApplicationData, $rootScope) {
 
-      return {
-          restrict: 'E',
-          scope: {
-              editorObj: '=?',
-              accept: '=?',
-              target: '=?'
-          },
-          templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-github-modal.html', link: function (scope, elem, attrs) {
+        return {
+            restrict: 'E',
+            scope: {
+                editorObj: '=?',
+                accept: '=?',
+                target: '=?'
+            },
+            templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-github-modal.html', link: function (scope, elem, attrs) {
 
-              scope.modalError = {};
-              scope.githubModal = {};
+                scope.modalError = {};
+                scope.githubModal = {};
 
-              scope.githubUpload = function () {
+                scope.githubUpload = function () {
 
-                  var url = angular.copy(scope.githubModal.url);
+                    var url = angular.copy(scope.githubModal.url);
 
-                  if (!url ) {
-                      return;
-                  }
+                    if (!url ) {
+                        return;
+                    }
 
-                  var url_params = url.substr(url.indexOf('.com/') + 5);
-                  var url_array = url_params.split('/');
+                    var url_params = url.substr(url.indexOf('.com/') + 5);
+                    var url_array = url_params.split('/');
 
-                  var owner = '';
-                  var repo = '';
-                  var branch = '';
-                  var path = '';
+                    var owner = '';
+                    var repo = '';
+                    var branch = '';
+                    var path = '';
 
-                  if (url.indexOf('raw.github') > -1) {
-                      owner = url_array[0];
-                      repo = url_array[1];
-                      branch = url_array[2];
-                      path = url_array.splice(3, url_array.length - 3).join('/');
-                  }
-                  else {
-                      owner = url_array[0];
-                      repo = url_array[1];
-                      branch = url_array[3];
-                      path = url_array.splice(4, url_array.length - 4).join('/');
-                  }
+                    if (url.indexOf('raw.github') > -1) {
+                        owner = url_array[0];
+                        repo = url_array[1];
+                        branch = url_array[2];
+                        path = url_array.splice(3, url_array.length - 3).join('/');
+                    }
+                    else {
+                        owner = url_array[0];
+                        repo = url_array[1];
+                        branch = url_array[3];
+                        path = url_array.splice(4, url_array.length - 4).join('/');
+                    }
 
-                  var github_api_url = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path + '?ref=' + branch;
+                    var github_api_url = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path + '?ref=' + branch;
 
-                  var username = angular.copy(scope.githubModal.username);
-                  var password = angular.copy(scope.githubModal.password);
+                    var username = angular.copy(scope.githubModal.username);
+                    var password = angular.copy(scope.githubModal.password);
 
-                  var authdata = btoa(username + ':' + password);
+                    var authdata = btoa(username + ':' + password);
 
-                  if (username) {
-                      $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
-                  }
+                    if (username) {
+                        $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
+                    }
 
-                  $http.get(github_api_url, {
+                    $http.get(github_api_url, {
 
-                      headers: {
-                          'X-DreamFactory-API-Key': undefined,
-                          'X-DreamFactory-Session-Token': undefined
-                      },
-                      ignore401: true
-                  })
-                  .then(function successCallback(response) {
+                        headers: {
+                            'X-DreamFactory-API-Key': undefined,
+                            'X-DreamFactory-Session-Token': undefined
+                        },
+                        ignore401: true
+                    })
+                        .then(function successCallback(response) {
 
-                      var extension = path.substr(path.lastIndexOf('.') + 1, path.length - path.lastIndexOf('.'));
+                            var extension = path.substr(path.lastIndexOf('.') + 1, path.length - path.lastIndexOf('.'));
 
-                      var mode = '';
+                            var mode = '';
 
-                      switch (extension) {
-                          case 'js':
-                              mode = 'javascript';
-                              break;
-                          case 'php':
-                              mode = 'php';
-                              break;
-                          case 'py':
-                              mode = 'python';
-                              break;
-                          case 'json':
-                              mode = 'json';
-                              break;
-                          default:
-                              mode = 'javascript';
-                      }
+                            switch (extension) {
+                                case 'js':
+                                    mode = 'javascript';
+                                    break;
+                                case 'php':
+                                    mode = 'php';
+                                    break;
+                                case 'py':
+                                    mode = 'python';
+                                    break;
+                                case 'json':
+                                    mode = 'json';
+                                    break;
+                                default:
+                                    mode = 'javascript';
+                            }
 
-                      if (scope.editorObj && scope.editorObj.editor) {
-                          var decodedString = atob(response.data.content);
-                          scope.editorObj.editor.session.setValue(decodedString);
-                          scope.editorObj.editor.focus();
-                      }
+                            if (scope.editorObj && scope.editorObj.editor) {
+                                var decodedString = atob(response.data.content);
+                                scope.editorObj.editor.session.setValue(decodedString);
+                                scope.editorObj.editor.focus();
+                            }
 
-                      var element = angular.element('#' + scope['target']);
+                            var element = angular.element('#' + scope['target']);
 
-                      element.on('hidden.bs.modal', function(){
-                          if ($(this).find('form')[0] !== undefined) {
-                              $(this).find('form')[0].reset();
-                          }
-                      });
+                            element.on('hidden.bs.modal', function(){
+                                if ($(this).find('form')[0] !== undefined) {
+                                    $(this).find('form')[0].reset();
+                                }
+                            });
 
-                      scope.githubModal = { private: false };
-                      scope.modalError = {};
+                            scope.githubModal = { private: false };
+                            scope.modalError = {};
 
-                      element.appendTo("body").modal('hide');
+                            element.appendTo("body").modal('hide');
 
-                  }, function errorCallback(response) {
+                        }, function errorCallback(response) {
 
-                      if (response.status === 401) {
-                          scope.modalError = {
-                              visible: true,
-                              message: 'Error: Authentication failed.'
-                          };
-                      }
+                            if (response.status === 401) {
+                                scope.modalError = {
+                                    visible: true,
+                                    message: 'Error: Authentication failed.'
+                                };
+                            }
 
-                      if (response.status === 404) {
-                          scope.modalError = {
-                              visible: true,
-                              message: 'Error: The file could not be found.'
-                          };
-                      }
-                  });
-              };
+                            if (response.status === 404) {
+                                scope.modalError = {
+                                    visible: true,
+                                    message: 'Error: The file could not be found.'
+                                };
+                            }
+                        });
+                };
 
-              scope.githubModalCancel = function () {
+                scope.githubModalCancel = function () {
 
-                  scope.githubModal = { private: false };
-                  scope.modalError = {};
+                    scope.githubModal = { private: false };
+                    scope.modalError = {};
 
-                  var element = angular.element('#' + scope['target']);
+                    var element = angular.element('#' + scope['target']);
 
-                  element.on('hidden.bs.modal', function(){
-                      if ($(this).find('form')[0] !== undefined) {
-                          $(this).find('form')[0].reset();
-                      }
-                  });
+                    element.on('hidden.bs.modal', function(){
+                        if ($(this).find('form')[0] !== undefined) {
+                            $(this).find('form')[0].reset();
+                        }
+                    });
 
-                  element.appendTo("body").modal('hide');
-              };
+                    element.appendTo("body").modal('hide');
+                };
 
-              var watchGithubCredUser = scope.$watch('githubModal.username', function (newValue, oldValue) {
+                var watchGithubCredUser = scope.$watch('githubModal.username', function (newValue, oldValue) {
 
-                  if (!newValue) return false;
+                    if (!newValue) return false;
 
-                  scope.modalError = {
-                      visible: false,
-                      message: ''
-                  };
-              });
-
-              var watchGithubCredPass = scope.$watch('githubModal.password', function (newValue, oldValue) {
-
-                  if (!newValue) return false;
-
-                  scope.modalError = {
-                      visible: false,
-                      message: ''
-                  };
-              });
-
-              var watchGithubURL = scope.$watch('githubModal.url', function (newValue, oldValue) {
-
-                  if (!newValue) return false;
-
-                  scope.modalError = {
-                      visible: false,
-                      message: ''
-                  };
-
-                  var file_ext = newValue.substring(newValue.lastIndexOf('.') + 1, newValue.length)
-
-                  if (scope['accept'].indexOf(file_ext) > -1) {
-
-                      var url = angular.copy(scope.githubModal.url);
-                      var url_params = url.substr(url.indexOf('.com/') + 5);
-                      var url_array = url_params.split('/');
-
-                      var owner = url_array[0];
-                      var repo = url_array[1];
-
-                      var github_api_url = 'https://api.github.com/repos/' + owner + '/' + repo;
-
-                      $http.get(github_api_url, {
-                          headers: {
-                              'X-DreamFactory-API-Key': undefined,
-                              'X-DreamFactory-Session-Token': undefined
-                          }
-                      })
-                      .then(function successCallback(response) {
-
-                          scope.githubModal.private = response.data.private;
-                      }, function errorCallback(response) {
-
-                          scope.githubModal.private = true;
-                      });
-                  }
-                  else {
-
-                    var formats = scope['accept'].join(', ');
                     scope.modalError = {
-                        visible: true,
-                        message: 'Error: Invalid file format. Only ' + formats + ' file format(s) allowed'
+                        visible: false,
+                        message: ''
                     };
-                  }
-              });
+                });
 
-              scope.$on('githubShowModal',function(event, data){
+                var watchGithubCredPass = scope.$watch('githubModal.password', function (newValue, oldValue) {
 
-                if (data === undefined) return;
+                    if (!newValue) return false;
 
-                  var element = angular.element('#' + data);
+                    scope.modalError = {
+                        visible: false,
+                        message: ''
+                    };
+                });
 
-                  element.on('hidden.bs.modal', function(){
-                      if ($(this).find('form')[0] !== undefined) {
-                          $(this).find('form')[0].reset();
-                      }
-                  });
+                var watchGithubURL = scope.$watch('githubModal.url', function (newValue, oldValue) {
 
-                  element.appendTo("body").modal('show');
-              });
-          }
-      }
+                    if (!newValue) return false;
+
+                    scope.modalError = {
+                        visible: false,
+                        message: ''
+                    };
+
+                    var file_ext = newValue.substring(newValue.lastIndexOf('.') + 1, newValue.length)
+
+                    if (scope['accept'].indexOf(file_ext) > -1) {
+
+                        var url = angular.copy(scope.githubModal.url);
+                        var url_params = url.substr(url.indexOf('.com/') + 5);
+                        var url_array = url_params.split('/');
+
+                        var owner = url_array[0];
+                        var repo = url_array[1];
+
+                        var github_api_url = 'https://api.github.com/repos/' + owner + '/' + repo;
+
+                        $http.get(github_api_url, {
+                            headers: {
+                                'X-DreamFactory-API-Key': undefined,
+                                'X-DreamFactory-Session-Token': undefined
+                            }
+                        })
+                            .then(function successCallback(response) {
+
+                                scope.githubModal.private = response.data.private;
+                            }, function errorCallback(response) {
+
+                                scope.githubModal.private = true;
+                            });
+                    }
+                    else {
+
+                        var formats = scope['accept'].join(', ');
+                        scope.modalError = {
+                            visible: true,
+                            message: 'Error: Invalid file format. Only ' + formats + ' file format(s) allowed'
+                        };
+                    }
+                });
+
+                scope.$on('githubShowModal',function(event, data){
+
+                    if (data === undefined) return;
+
+                    var element = angular.element('#' + data);
+
+                    element.on('hidden.bs.modal', function(){
+                        if ($(this).find('form')[0] !== undefined) {
+                            $(this).find('form')[0].reset();
+                        }
+                    });
+
+                    element.appendTo("body").modal('show');
+                });
+            }
+        };
     }])
 
     // declare our directive and pass in our constant
@@ -309,14 +309,11 @@ angular.module('dfUtility', ['dfApplication'])
                         case '/register-confirm':
                             scope.activeLink = 'register';
                             break;
-
-
-
                     }
-                })
+                });
 
             }
-        }
+        };
     }])
 
     // declare our directive and pass in our constant
@@ -399,7 +396,7 @@ angular.module('dfUtility', ['dfApplication'])
                         $('#dreamfactoryApp').animate({
                             right: '-=300',
                             left: '+=300'
-                        }, 250, function() {})
+                        }, 250, function() {});
 
                         $('#component-nav-flyout-menu').animate({
                             right: '-=300'
@@ -418,10 +415,10 @@ angular.module('dfUtility', ['dfApplication'])
 
                 scope.$watch(function() { return $location.path()}, function(newValue, oldValue) {
 
-                   if (!newValue) {
-                       scope.activeLink = null;
-                       return;
-                   }
+                    if (!newValue) {
+                        scope.activeLink = null;
+                        return;
+                    }
 
                     scope.activeLink = newValue.substr(1, newValue.length);
                 });
@@ -433,7 +430,6 @@ angular.module('dfUtility', ['dfApplication'])
                     // scope.activePath = $location.$$path;
                     scope.$broadcast('component-nav:view:change');
                     scope._closeMenu();
-
                 });
             }
         };
@@ -623,10 +619,8 @@ angular.module('dfUtility', ['dfApplication'])
 
                     setMargin(newValue);
                 });
-
-
             }
-        }
+        };
     }])
 
     // Need to fix this directive.  Kind of does what we want currently though
@@ -701,7 +695,7 @@ angular.module('dfUtility', ['dfApplication'])
                         {
                             width: (
                                 newValue.w - angular.element('sidebar').css('width')
-                                ) + 'px'
+                            ) + 'px'
                         }
                     );
 
@@ -718,7 +712,7 @@ angular.module('dfUtility', ['dfApplication'])
             /* w.bind('resize', function () {
              scope.$apply();
              });*/
-        }
+        };
     }])
 
     // Used for setting the section heights
@@ -754,14 +748,14 @@ angular.module('dfUtility', ['dfApplication'])
 
                     _elem.css({
                         height: winHeight - 280 + 'px'
-                    })
+                    });
                 }
 
                 else if (_elem.hasClass('package-export-table')) {
 
                     _elem.css({
                         height: winHeight - 600
-                    })
+                    });
                 }
 
                 // else
@@ -769,12 +763,12 @@ angular.module('dfUtility', ['dfApplication'])
                     if (winWidth >= 992) {
                         $(elem).css({
                             height:  winHeight - 120
-                        })
+                        });
                     }
                     else {
                         $(elem).css({
                             height: 'auto'
-                        })
+                        });
                     }
                 }
             };
@@ -802,7 +796,7 @@ angular.module('dfUtility', ['dfApplication'])
             // Respond to sidebar change
             scope.$on('sidebar-nav:view:change', function (e) {
 
-               setSize();
+                setSize();
             });
 
             // Respond to component nav change
@@ -823,10 +817,10 @@ angular.module('dfUtility', ['dfApplication'])
             });
 
             // Bind to resize
-           $(window).on('resize', function () {
+            $(window).on('resize', function () {
 
-               setSize();
-           })
+                setSize();
+            })
 
 
         }
@@ -857,7 +851,7 @@ angular.module('dfUtility', ['dfApplication'])
                                     if(n === item.name){
                                         scope.selectedLabel = item.label;
                                     }
-                                })
+                                });
                             }
                         });
                     });
@@ -867,7 +861,7 @@ angular.module('dfUtility', ['dfApplication'])
                     });
 
                 }
-            }
+            };
         }
     ])
 
@@ -887,26 +881,32 @@ angular.module('dfUtility', ['dfApplication'])
                         scope.selected = item.name;
                     };
 
-                    var events = [];
+                    scope.events = [];
 
-                    if (scope.options) {
-                        angular.forEach(scope.options, function (option) {
-                            if (option.items) {
-                                if (events.length > 0) {
-                                    // add divider before starting a new service type
-                                    // class = 'divider' makes it a divider
-                                    events.push({class: 'divider'});
+                    // event list will load later, handle change here
+
+                    scope.$watch('options', function (newValue, oldValue) {
+
+                        var events = [];
+
+                        if (newValue) {
+                            angular.forEach(newValue, function (e) {
+                                if (e.items) {
+                                    if (events.length > 0) {
+                                        // add divider before starting a new service type
+                                        // class = 'divider' makes it a divider
+                                        events.push({class: 'divider'});
+                                    }
+                                    angular.forEach(e.items, function (item) {
+                                        // add menu item, class = '' means not a divider
+                                        item.class = '';
+                                        events.push(item);
+                                    });
                                 }
-                                angular.forEach(option.items, function (item) {
-                                    // add menu item, class = '' means not a divider
-                                    item.class = '';
-                                    events.push(item);
-                                });
-                            }
-                        });
-                    }
-
-                    scope.events = events;
+                            });
+                            scope.events = events;
+                        }
+                    });
                 }
             };
         }
@@ -938,7 +938,7 @@ angular.module('dfUtility', ['dfApplication'])
                         'display': 'inline-block', 'position': 'relative'
                     });
                 }
-            }
+            };
         }
     ])
 
@@ -983,21 +983,21 @@ angular.module('dfUtility', ['dfApplication'])
                         event.stopPropagation();
                         var selected = [];
                         angular.forEach(scope.options, function (option) {
-                             if (option.name === nameStr) {
-                                 option.active = !option.active;
-                                 if(option.active) {
-                                     selected.push(option.name);
-                                 }
+                            if (option.name === nameStr) {
+                                option.active = !option.active;
+                                if(option.active) {
+                                    selected.push(option.name);
+                                }
 
-                                 angular.forEach(scope.selectedOptions, function(so){
-                                     if(so !== nameStr){
-                                         selected.push(so);
-                                     }
-                                 });
+                                angular.forEach(scope.selectedOptions, function(so){
+                                    if(so !== nameStr){
+                                        selected.push(so);
+                                    }
+                                });
 
-                                 scope.selectedOptions = selected;
-                                 return;
-                             }
+                                scope.selectedOptions = selected;
+                                return;
+                            }
                         });
                     };
 
@@ -1019,7 +1019,7 @@ angular.module('dfUtility', ['dfApplication'])
                     });
 
                 }
-            }
+            };
         }
     ])
 
@@ -1139,7 +1139,7 @@ angular.module('dfUtility', ['dfApplication'])
                                             scope.btnText +=
                                                 (
                                                     _value + ', '
-                                                    );
+                                                );
                                         } else {
                                             scope.btnText += _value
                                         }
@@ -1273,7 +1273,7 @@ angular.module('dfUtility', ['dfApplication'])
                                             scope.btnText +=
                                                 (
                                                     _value + ', '
-                                                    );
+                                                );
                                         } else {
                                             scope.btnText += _value
                                         }
@@ -2461,7 +2461,7 @@ angular.module('dfUtility', ['dfApplication'])
                         angular.element('#set-password').append(el);
                     }
                 });
-                
+
                 // MESSAGES
                 // Listen for userForm clear message
                 scope.$on('reset:user:form', function (e) {
@@ -2474,13 +2474,13 @@ angular.module('dfUtility', ['dfApplication'])
 
     // allows user to set security question and answer
     .directive('dfSetSecurityQuestion', ['MOD_UTILITY_ASSET_PATH', '$compile', function (MOD_UTILITY_ASSET_PATH, $compile) {
-        
+
         return {
             restrict: 'E',
             scope: false,
             templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-set-security-question.html',
             link: function(scope, elem, attrs) {
-                
+
                 scope.setQuestion = false;
 
                 scope.$watch('setQuestion', function (newValue) {
@@ -2496,7 +2496,7 @@ angular.module('dfUtility', ['dfApplication'])
                             '<label for="user-security-answer">Security Answer</label>' +
                             '<input type="text" id="user-security-answer" data-ng-model="user.security_answer" class="form-control" placeholder="Enter security answer" />' +
                             '</div>' ;
-                        
+
                         angular.element('#set-question').append($compile(html)(scope));
                     }
                 });
@@ -2514,8 +2514,6 @@ angular.module('dfUtility', ['dfApplication'])
             },
             templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-download-sdk.html',
             link: function (scope, elem, attrs) {
-
-
 
                 scope.sampleAppLinks = [
                     {
@@ -2996,12 +2994,12 @@ angular.module('dfUtility', ['dfApplication'])
         return {
 
             success: function(options) {
-                
+
                 pnotify(options);
             },
 
             error: function(options) {
-                
+
                 // sometimes options.message is a string, sometimes it's an object
                 options.message = parseDreamfactoryError(options.message);
                 pnotify(options);
@@ -3018,7 +3016,7 @@ angular.module('dfUtility', ['dfApplication'])
             },
 
             confirm: function (msg) {
-                
+
                 return confirm(msg);
             }
         }
@@ -3054,7 +3052,7 @@ angular.module('dfUtility', ['dfApplication'])
 
     // convert service type to service group
     // caller must provide the serviceTypes array
-   .service('serviceTypeToGroup', [function () {
+    .service('serviceTypeToGroup', [function () {
 
         return function (type, serviceTypes) {
             var i, length, result = null;
@@ -3211,9 +3209,9 @@ angular.module('dfUtility', ['dfApplication'])
                             var upB = b.toUpperCase();
                             return (
                                 upA < upB
-                                ) ? -1 : (
+                            ) ? -1 : (
                                 upA > upB
-                                ) ? 1 : 0;
+                            ) ? 1 : 0;
                         }
                     );
                     break;
@@ -3239,9 +3237,9 @@ angular.module('dfUtility', ['dfApplication'])
                             var upB = b
                             return (
                                 upA < upB
-                                ) ? -1 : (
+                            ) ? -1 : (
                                 upA > upB
-                                ) ? 1 : 0;
+                            ) ? 1 : 0;
                         }
                     );
             }
