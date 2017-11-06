@@ -12,7 +12,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                     controller: 'LaunchpadCtrl',
                     resolve: {
 
-                        loadApps: ['SystemConfigDataService', '$location', '$q', function (SystemConfigDataService, $location, $q) {
+                        loadApps: ['SystemConfigDataService', 'UserDataService', '$location', '$q', function (SystemConfigDataService, UserDataService, $location, $q) {
 
                             var defer = $q.defer(),
                                 systemConfig = SystemConfigDataService.getSystemConfig();
@@ -23,9 +23,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                                 //OAuth attempt, go to login page.
                                 $location.url('/login');
                                 defer.reject();
-                            } else if (!systemConfig || !systemConfig.apps || systemConfig.apps.length === 0) {
-                                // don't allow someone to edit URL to go to launchpad
-                                // if there are no apps then it should not be available
+                            } else if ((!systemConfig || !systemConfig.apps || systemConfig.apps.length === 0) && !UserDataService.getCurrentUser()){
                                 $location.url('/login');
                                 defer.reject();
                             } else {
