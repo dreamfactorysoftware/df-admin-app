@@ -982,7 +982,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     // 1   2
                     // 3   4
 
-                    scope.serviceTypesSingleColLimit = 9;
+                    // make sure database and oauth submenus do not extend below main menu
+                    scope.serviceTypesSingleColLimit = 5;
                     var newTypeObj = {};
                     angular.forEach(typeObj, function (types, group) {
                         var newTypes = angular.copy(types);
