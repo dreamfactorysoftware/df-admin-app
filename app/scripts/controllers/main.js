@@ -389,6 +389,14 @@ angular.module('dreamfactoryApp')
         // When we have a successful login...
         $scope.$on(UserEventsService.login.loginSuccess, function(e, userDataObj) {
 
+            // For normal logins, we need to make sure data is reset before getting system config again
+            // in order for the user@example.com/bitnami_demo logic to work. The watcher on currentUser
+            // will reset the data, but that happens too late so it also needs to be done here.
+            if (!angular.equals($scope.$parent.currentUser, userDataObj)) {
+                // user changed, reset application object to force reload of all data
+                dfApplicationData.resetApplicationObj();
+            }
+
             // Set our parent's current user var
             $scope.$parent.currentUser = userDataObj;
 
