@@ -162,11 +162,16 @@ module.exports = function (grunt) {
 
     // Automatically inject Bower components into the app
     wiredep: {
-      options: {
-      },
       app: {
         src: ['<%= yeoman.app %>/index.html'],
-        ignorePath:  /\.\.\//
+        ignorePath: /\.\.\//,
+        fileTypes: {
+          html: {
+            replace: {
+              js: '<script src="../{{filePath}}"></script>'
+            }
+          }
+        }
       }
     },
 
@@ -211,21 +216,21 @@ module.exports = function (grunt) {
       }
     },
 
-      // Replace references to the images in the compiled js and css files, and the html views
+    // Replace references to the images in the compiled js and css files, and the html views
     filerev_replace: {
-          options: {
-              assets_root: '.tmp/assets/'
-          },
-          compiled_assets: {
-              src: '.tmp/assets/compiled/*.{css,js}'
-          },
-          views: {
-              options: {
-                  views_root: '<%= yeoman.dist%>/views/'
-              },
-              src: '<%= yeoman.dist%>/views/**/*.html'
-          }
+      options: {
+        assets_root: '.tmp/assets/'
       },
+      compiled_assets: {
+        src: '.tmp/assets/compiled/*.{css,js}'
+      },
+      views: {
+        options: {
+          views_root: '<%= yeoman.dist%>/views/'
+        },
+        src: '<%= yeoman.dist%>/views/**/*.html'
+      }
+    },
 
     // Reads HTML for usemin blocks to enable smart builds that automatically
     // concat, minify and revision files. Creates configurations in memory so
@@ -240,7 +245,27 @@ module.exports = function (grunt) {
               js: ['concat', 'uglifyjs'],
               css: ['cssmin']
             },
-            post: {}
+            post: {
+              /** context here is what usemin uses to pull the locations of the source to concat.
+               *  needed here to remove the relative paths to app/ so dist builds correctly.
+               */
+              js: [{
+                name: 'concat',
+                createConfig: function (context, block) {
+                  context.inFiles.forEach( function(s, idx) {
+                    context.inFiles[idx] = s.replace('../', '')
+                  });
+                }
+              }],
+              css: [{
+                name: 'cssmin',
+                createConfig: function (context, block) {
+                  context.inFiles.forEach( function(s, idx) {
+                    context.inFiles[idx] = s.replace('../', '')
+                  });
+                }
+              }]
+            }
           }
         }
       }
@@ -251,7 +276,7 @@ module.exports = function (grunt) {
       html: ['<%= yeoman.dist %>/{,*/}*.html'],
       css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
       options: {
-        assetsDirs: ['<%= yeoman.dist %>','<%= yeoman.dist %>/images']
+        assetsDirs: ['<%= yeoman.dist %>', '<%= yeoman.dist %>/images']
       }
     },
 
