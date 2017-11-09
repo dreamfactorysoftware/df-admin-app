@@ -68,7 +68,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
             $scope.dataLoading = true;
 
-            var apis = ['role', 'service', 'service_type'];
+            var apis = ['role', 'service_list', 'service_type_list'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -421,7 +421,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     }
                 });
 
-                var watchServiceData = scope.$watchCollection('apiData.service', function (newValue, oldValue) {
+                var watchServiceData = scope.$watchCollection('apiData.service_list', function (newValue, oldValue) {
 
                     if (!newValue) {
                         return;
@@ -726,7 +726,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 scope.allowFilters = function () {
 
                     var type = scope.serviceAccess.record.service.type;
-                    var group = serviceTypeToGroup(type, scope.apiData['service_type']);
+                    var group = serviceTypeToGroup(type, scope.apiData['service_type_list']);
                     scope.serviceAccess.__dfUI.allowFilters = (group === 'Database' && type !== 'couchdb');
                 };
 
@@ -815,7 +815,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.serviceAccess.record.service_id = newValue.id;
                     scope.serviceAccess.record.service.components = ['', '*'];
                     if ('All' !== scope.serviceAccess.record.service.name) {
-                            var group = serviceTypeToGroup(scope.serviceAccess.record.service.type, scope.apiData['service_type']);
+                            var group = serviceTypeToGroup(scope.serviceAccess.record.service.type, scope.apiData['service_type_list']);
                             if (group !== null) {
                                 switch (group) {
                                     case 'Script':
