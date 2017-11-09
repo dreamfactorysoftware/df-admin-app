@@ -1,0 +1,6 @@
+{
+  "directory": "bower_components",
+  "scripts": {
+    "postinstall": "ln -s ../bower_components app/bower_components"
+  }
+}
