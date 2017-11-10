@@ -754,7 +754,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
         $scope.currentService = null;
         $scope.currentTable = null;
-        $scope.currentEditTable = null;
         $scope.lastTable = '';
 
         // WATCHERS
@@ -868,6 +867,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             controllerAs: 'ctrl',
             controller: ['$scope', function TemplateCtrl ($scope) {
 
+                $scope.selView = 'empty';
                 this.selectedView = 'empty';
 
                 var ctrl = this;
@@ -1189,8 +1189,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                   $scope.table = null;
                   $scope.viewMode = 'table';
                   $scope.table = null;
-                  $scope.currentTable = '';
-                  $scope.currentEditTable = null;
+                  $scope.currentTable = null;
                 };
 
                 $scope.thisService = null;
@@ -1276,8 +1275,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             dfApplicationData.updateServiceComponentsLocal($scope.table.currentService);
 
                             $scope.table = null;
-                            $scope.currentTable = '';
-                            $scope.currentEditTable = null;
+                            $scope.currentTable = null;
                             $scope.reset();
 
                             dfNotify.success(messageOptions);
@@ -1509,27 +1507,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope.$on('table:navigation:field', function(event, args) {
 
                 });
-            }
-        };
-      }])
-
-
-      .directive('dfTableViewJson', ['MOD_SCHEMA_ASSET_PATH', '$timeout', function (MOD_SCHEMA_ASSET_PATH, $timeout) {
-
-        return {
-            restrict: 'E',
-            scope: {
-                tableData: '='
-            },
-            require: '^^dfTableTemplate',
-            templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-table-json-view.html',
-            controller: function($scope) {
-
-            },
-
-            link: function (scope, elem, attrs, templateCtrl) {
-
-                scope.jsonSelected = templateCtrl.selectedView;
             }
         };
       }])
@@ -2143,46 +2120,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-relation-details.html',
             link: function (scope, elem, attrs) {
 
-              scope.relation = null;
-
-                var Service = function (schemaData) {
-
-                    function getSchemaComponents(array) {
-
-                        var service = [];
-
-                        angular.forEach(array, function (component) {
-
-                            // setup object to be pushed onto services
-                            var componentObj = {
-                                __dfUI: {
-                                    newTable: false
-                                },
-                                id: component.id,
-                                name: component.name,
-                                label: component.label
-                            };
-
-                            service.push(componentObj);
-                        });
-
-                        return service;
-                    }
-
-                    return {
-                        __dfUI: {
-                            unfolded: false
-                        },
-                        id: schemaData.id,
-                        name: schemaData.name,
-                        label: schemaData.label,
-                        components: getSchemaComponents(schemaData.components),
-                        updateComponents: function (array) {
-
-                            this.components = getSchemaComponents(array);
-                        }
-                    };
-                };
+                scope.relation = null;
 
                 scope.typeOptions = [
                     {name: "Belongs To", value: "belongs_to"},
@@ -2548,7 +2486,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         }
                     };
 
-                    scope.currentTable = '';
+                    scope.currentTable = null;
 
                     scope.$broadcast('table', naviObj);
                 };
@@ -2619,7 +2557,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope.$on('table:navigation:close', function(event, args) {
 
                     scope.currentService = args.service;
-                    scope.currentTable = '';
+                    scope.currentTable = null;
                 });
             }
         };

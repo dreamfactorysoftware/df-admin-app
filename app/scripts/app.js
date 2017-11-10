@@ -131,7 +131,10 @@ angular
     }])
 
     // Configure main app routing rules
-    .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
+    .config(['$routeProvider', '$locationProvider', '$httpProvider', '$qProvider', function ($routeProvider, $locationProvider, $httpProvider, $qProvider) {
+
+        $locationProvider.hashPrefix("");
+
         $routeProvider
             .when('/login', {
                 controller: 'LoginCtrl',
@@ -349,9 +352,23 @@ angular
 
         $provide.decorator('$exceptionHandler', ['$delegate', '$injector', function($delegate, $injector) {
 
-            return function(exception) {
+            return function(exception, foo) {
+
+                // Angular 1.6 requires exceptions thrown in promises to be caught.
+                // The admin app itself should use dfNotify and not throw exceptions
+                // for rejected promises. In order to allow modules like user mgt,
+                // tables, and utility to continue to throw exceptions we add this
+                // check here.
+
+                if (typeof exception === 'string') {
+                    var prefix = "Possibly unhandled rejection: ";
+                    if (exception.indexOf(prefix) === 0) {
+                        exception = angular.fromJson(exception.slice(prefix.length));
+                    }
+                }
 
                 // Was this error thrown explicitly by a module
+
                 if (exception.provider && (exception.provider === 'dreamfactory')) {
 
                     $injector.invoke(['dfNotify', function(dfNotify) {

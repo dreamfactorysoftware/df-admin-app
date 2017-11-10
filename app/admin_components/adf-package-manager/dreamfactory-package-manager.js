@@ -322,17 +322,17 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                 scope.initVars = function () {
                     scope.types = [];
-                    scope.selectedType = {};
+                    scope.selectedType = null;
                     scope.names = [];
-                    scope.selectedName = '';
+                    scope.selectedName = null;
                     scope.selectedNameData = [];
                     scope.tableData = [];
                     scope.search = {};
                 };
 
                 scope.resetVars = function () {
-                    scope.selectedType = {};
-                    scope.selectedName = '';
+                    scope.selectedType = null;
+                    scope.selectedName = null;
                     scope.selectedNameData = [];
                     scope.tableData = [];
                     scope.search = {};
@@ -640,7 +640,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                 scope.$watch('search.text', function (newValue, oldValue) {
 
-                    if (newValue === null) {
+                    if (newValue === null || newValue === undefined) {
                         return;
                     }
 
@@ -658,7 +658,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                     var _type, _name, _names = [], _services, _service;
 
                     scope.names = [];
-                    scope.selectedName = '';
+                    scope.selectedName = null;
                     scope.selectedNameData = [];
 
                     if (!newValue || !newValue.name) {

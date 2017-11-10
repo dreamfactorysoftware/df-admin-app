@@ -415,6 +415,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 // serviceDetails.record
                 scope.serviceDetails = null;
 
+                // all service types
+                scope.editableServiceTypes = [];
+
+                // all service types except non-creatable ones like system or user
+                scope.creatableServiceTypes = [];
+
                 scope.saveOrUpdateService = function () {
 
                     if (scope.newService) {
@@ -625,6 +631,18 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     }
                 };
 
+                scope.serviceTypeToSchema = function (type) {
+
+                    var types = scope.newService ? scope.creatableServiceTypes : scope.editableServiceTypes;
+                    var schema = types.filter(function (item) {
+                        return item.name === type;
+                    });
+                    if (schema.length > 0) {
+                        return schema[0];
+                    }
+                    return null;
+                };
+
                 // WATCHERS
 
                 var watchServiceData = scope.$watch('serviceData', function (newValue, oldValue) {
@@ -709,12 +727,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                 // grouped list of service types for building service type menu
                 scope.serviceTypes = [];
-
-                // all service types except non-creatable ones like system or user
-                scope.serviceTypesCreate = [];
-
-                // all service types
-                scope.serviceTypesEdit = [];
 
                 // this will be updated by the watcher for serviceDetails when a service is loaded into the editor
                 // all user changes are applied to scope.serviceInfo
@@ -890,22 +902,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     return types;
                 };
 
-                scope.getServiceTypes = function () {
-
-                    return scope.newService ? scope.serviceTypesCreate : scope.serviceTypesEdit;
-                };
-
-                scope.serviceTypeToSchema = function (type) {
-
-                    var schema = scope.getServiceTypes().filter(function (item) {
-                        return item.name === type;
-                    });
-                    if (schema.length > 0) {
-                        return schema[0];
-                    }
-                    return null;
-                };
-
                 // this is only called for new services
                 // for existing services you can't change the type
 
@@ -933,92 +929,92 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     }
 
                     scope.serviceInfo = angular.copy(newValue.record);
-
-                    // update service type menu, it changes based on new or existing service
-                    // getServiceTypes() takes care of new vs existing
-
-                    var typeObj = {};
-
-                    var groups = scope.getServiceTypes().map(function(obj) {
-                        if (!typeObj.hasOwnProperty(obj.group)) {
-                            typeObj[obj.group] = [];
-                        }
-
-                        typeObj[obj.group].push({name: obj.name, label: obj.label});
-
-                        return obj.group;
-                    });
-
-                    groups = groups.filter(function(v,i) { return groups.indexOf(v) === i; });
-
-                    var sortingArray = [
-                        'Database',
-                        'File',
-                        'Email',
-                        'Notification',
-                        'Remote Service',
-                        'Script',
-                        'OAuth',
-                        'LDAP'
-                    ];
-
-                    // sort groups per above list
-                    // service types within each group are ordered as returned by server
-                    groups = scope.sortArray(groups, sortingArray);
-
-                    // sort each array of service types into a staggered list to
-                    // accomodate 2 columns when there are more than X items.
-                    // doing this work here allows the CSS to remain really simple
-                    // with a float left to create the 2 columns. we want them ordered
-                    // top to bottom not left to right. first column 1 then column 2.
-                    //
-                    // we want this:
-                    //
-                    // 1   3
-                    // 2   4
-                    //
-                    // not this:
-                    //
-                    // 1   2
-                    // 3   4
-
-                    // make sure database and oauth submenus do not extend below main menu
-                    scope.serviceTypesSingleColLimit = 5;
-                    var newTypeObj = {};
-                    angular.forEach(typeObj, function (types, group) {
-                        var newTypes = angular.copy(types);
-                        var limit = scope.serviceTypesSingleColLimit, i, j;
-                        if (types.length > limit) {
-                            for (i = 0, j = 0; i < types.length; i += 2) {
-                                newTypes[i] = types[j++];
-                            }
-                            for (i = 1; i < types.length; i += 2) {
-                                newTypes[i] = types[j++];
-                            }
-                        }
-                        newTypeObj[group] = newTypes;
-                    });
-
-                    var _serviceTypes = [];
-
-                    for (var i = 0; i < groups.length; i++) {
-
-                        _serviceTypes.push({"group_name": groups[i], "group_types": newTypeObj[groups[i]]});
-                    }
-                    scope.serviceTypes = _serviceTypes;
                 });
 
-                // after service types are loaded from API, pre-build service type lists for edit and create views
-
+                // after service types are loaded from API, pre-build service type list for create/edit views.
+                // in edit view, the displayed service type comes from the label for the service being edited and
+                // is displayed in a button. there is no menu in this case.
                 var watchServiceTypes = scope.$watchCollection('apiData.service_type', function (newValue, oldValue) {
 
                     if (newValue) {
-                        // all service types
-                        scope.serviceTypesEdit = scope.addMissingPaidServices(newValue);
+                        // add missing paid service for advertisement purposes
+                        scope.editableServiceTypes = scope.addMissingPaidServices(newValue);
                         // remove any non-creatable types like system or user
-                        scope.serviceTypesCreate = scope.serviceTypesEdit.filter(function (el) {
+                        scope.creatableServiceTypes = scope.editableServiceTypes.filter(function (el) {
                             return !el.singleton;
                         });
+
+                        // build scope.serviceTypes to populate menu
+
+                        var typeObj = {};
+
+                        var groups = scope.creatableServiceTypes.map(function(obj) {
+                            if (!typeObj.hasOwnProperty(obj.group)) {
+                                typeObj[obj.group] = [];
+                            }
+
+                            typeObj[obj.group].push({name: obj.name, label: obj.label});
+
+                            return obj.group;
+                        });
+
+                        groups = groups.filter(function(v,i) { return groups.indexOf(v) === i; });
+
+                        var sortingArray = [
+                            'Database',
+                            'File',
+                            'Email',
+                            'Notification',
+                            'Remote Service',
+                            'Script',
+                            'OAuth',
+                            'LDAP'
+                        ];
+
+                        // sort groups per above list
+                        // service types within each group are ordered as returned by server
+                        groups = scope.sortArray(groups, sortingArray);
+
+                        // sort each array of service types into a staggered list to
+                        // accomodate 2 columns when there are more than X items.
+                        // doing this work here allows the CSS to remain really simple
+                        // with a float left to create the 2 columns. we want them ordered
+                        // top to bottom not left to right. first column 1 then column 2.
+                        //
+                        // we want this:
+                        //
+                        // 1   3
+                        // 2   4
+                        //
+                        // not this:
+                        //
+                        // 1   2
+                        // 3   4
+
+                        // make sure database and oauth submenus do not extend below main menu
+                        scope.serviceTypesSingleColLimit = 5;
+                        var newTypeObj = {};
+                        angular.forEach(typeObj, function (types, group) {
+                            var newTypes = angular.copy(types);
+                            var limit = scope.serviceTypesSingleColLimit, i, j;
+                            if (types.length > limit) {
+                                for (i = 0, j = 0; i < types.length; i += 2) {
+                                    newTypes[i] = types[j++];
+                                }
+                                for (i = 1; i < types.length; i += 2) {
+                                    newTypes[i] = types[j++];
+                                }
+                            }
+                            newTypeObj[group] = newTypes;
+                        });
+
+                        var _serviceTypes = [];
+
+                        for (var i = 0; i < groups.length; i++) {
+
+                            _serviceTypes.push({"group_name": groups[i], "group_types": newTypeObj[groups[i]]});
+                        }
+                        scope.serviceTypes = _serviceTypes;
                     }
                 });
 
@@ -1528,7 +1524,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 // init service def
                 scope.serviceDefinition = {
                     "content": "",
-                    "format": 0
+                    "format": "json"
                 };
                 scope.isServiceDefEditable = false;
 
@@ -1536,7 +1532,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                     scope.serviceDefinition = {
                         "content": "",
-                        "format": 0
+                        "format": "json"
                     };
                     switch (scope.serviceInfo.type) {
 
@@ -1555,7 +1551,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                 scope.prepareServiceDefinition = function () {
 
-                    var doc = null;
+                    var doc = null, format;
 
                     switch (scope.serviceInfo.type) {
 
@@ -1568,7 +1564,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                             if (content !== "") {
                                 doc = scope.serviceDetails.record.service_doc_by_service_id || {};
                                 doc.content = content;
-                                doc.format = parseInt(scope.serviceDefinition.format);
+                                // on the way out, convert from json/yaml to 0/1
+                                // default to 0
+                                format = scope.serviceDefinition.format;
+                                if (format === "yaml") {
+                                    doc.format = 1;
+                                } else {
+                                    doc.format = 0;
+                                }
                             }
                             break;
                     }
@@ -1590,10 +1593,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                             scope.serviceDefUpdateCounter++;
 
                             if (files[0].name.indexOf('yml') !== -1 || files[0].name.indexOf('yaml') !== -1) {
-                                format = 1;
+                                format = "yaml";
                             }
                             else {
-                                format = 0;
+                                format = "json";
                             }
                             scope.serviceDefinition.format = format;
 
@@ -1611,9 +1614,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         return;
                     }
 
-                    // 0 = JSON, 1 = YAML
                     // default values will apply to services with no service def
-                    var content = '', format = 0, editable = false;
+                    var content = '', format = "json", editable = false;
 
                     // these service types have an editable service def
                     switch (newValue.record.type) {
@@ -1629,8 +1631,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                                     content = doc.content;
                                 }
                                 if (doc.hasOwnProperty("format")) {
-                                    if (doc.format === 0  || doc.format === 1) {
-                                        format = doc.format;
+                                    // on the way in, convert from 0/1 to json/yaml
+                                    // default to json
+                                    if (doc.format === 1) {
+                                        format = "yaml";
+                                    } else {
+                                        format = "json";
                                     }
                                 }
                             }

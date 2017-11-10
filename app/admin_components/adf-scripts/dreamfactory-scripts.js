@@ -543,24 +543,26 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                         $scope.newScript = false;
 
-                        // Needs to be replaced with angular messaging
-                        $(function () {
-                            new PNotify({
-                                title: 'Scripts',
-                                type: 'success',
-                                text: 'Script "' + $scope.currentScriptObj.name + '" saved successfully.'
-                            });
-                        });
+                        var messageOptions = {
+                            module: 'Scripts',
+                            type: 'success',
+                            provider: 'dreamfactory',
+                            message: 'Script "' + $scope.currentScriptObj.name + '" saved successfully.'
+                        };
+
+                        dfNotify.success(messageOptions);
                     },
 
                     function (reject) {
 
-                        throw {
+                        var messageOptions = {
                             module: 'Scripts',
                             type: 'error',
                             provider: 'dreamfactory',
-                            exception: reject
+                            message: reject
                         };
+
+                        dfNotify.error(messageOptions);
                     }
                 ).finally(
                     function () {
@@ -588,14 +590,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     }).then(
                         function (result) {
 
-                            // Needs to be replaced with angular messaging
-                            $(function () {
-                                new PNotify({
-                                    title: 'Scripts',
-                                    type: 'success',
-                                    text: 'Script deleted successfully.'
-                                });
-                            });
+                            var messageOptions = {
+                                module: 'Scripts',
+                                type: 'success',
+                                provider: 'dreamfactory',
+                                message: 'Script deleted successfully.'
+                            };
+
+                            dfNotify.success(messageOptions);
 
                             $scope.menuPathArr.pop();
                             $scope.currentScriptObj = null;
@@ -603,13 +605,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                         function (reject) {
 
-                            throw {
+                            var messageOptions = {
                                 module: 'Scripts',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                exception: reject
+                                message: reject
                             };
 
+                            dfNotify.error(messageOptions);
                         }
                     ).finally(
                         function () {

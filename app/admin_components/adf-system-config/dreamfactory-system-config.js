@@ -243,7 +243,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 scope.flushSystemCache = function () {
 
                     $http.delete(INSTANCE_URL + '/api/v2/system/cache')
-                        .success(function () {
+                        .then(function () {
 
                             var messageOptions = {
                                 module: 'Cache',
@@ -253,8 +253,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             };
 
                             dfNotify.success(messageOptions);
-                        })
-                        .error(function (error) {
+                        }, function (error) {
 
                             var messageOptions = {
                                 module: 'Api Error',
@@ -271,7 +270,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 scope.flushServiceCache = function (index) {
 
                     $http.delete(INSTANCE_URL + '/api/v2/system/cache/' + scope.apiData.cache[index].name)
-                        .success(function () {
+                        .then(function () {
 
                             var messageOptions = {
                                 module: 'Cache',
@@ -281,8 +280,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             };
 
                             dfNotify.success(messageOptions);
-                        })
-                        .error(function (error) {
+                        }, function (error) {
 
                             var messageOptions = {
                                 module: 'Api Error',

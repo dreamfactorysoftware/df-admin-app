@@ -10,8 +10,12 @@
 angular.module('dreamfactoryApp')
 
     // MainCtrl is the parent controller of everything.  Checks routing and deals with navs
-    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', '$http', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', 'dfIconService', 'allowAdminAccess', '$timeout',
-        function ($scope, UserDataService, SystemConfigDataService, $location, $http, INSTANCE_URL, dfApplicationData, dfNotify, dfIconService, allowAdminAccess, $timeout) {
+    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', '$http', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', 'dfIconService', 'allowAdminAccess', '$animate',
+        function ($scope, UserDataService, SystemConfigDataService, $location, $http, INSTANCE_URL, dfApplicationData, dfNotify, dfIconService, allowAdminAccess, $animate) {
+
+            // workaround for issue that causes flickering when loading schema tab
+            // https://github.com/angular/angular.js/issues/14015
+            $animate.enabled(false);
 
             // So child controllers can set the app section title
             $scope.title = '';

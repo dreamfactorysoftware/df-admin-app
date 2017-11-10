@@ -815,31 +815,35 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.serviceAccess.record.service_id = newValue.id;
                     scope.serviceAccess.record.service.components = ['', '*'];
                     if ('All' !== scope.serviceAccess.record.service.name) {
-                            var group = serviceTypeToGroup(scope.serviceAccess.record.service.type, scope.apiData['service_type_list']);
-                            if (group !== null) {
-                                switch (group) {
-                                    case 'Script':
-                                    case 'Email':
-                                        break;
-                                    default:
-                                        scope._getComponents().then(
-                                            function (result) {
+                        var group = serviceTypeToGroup(scope.serviceAccess.record.service.type, scope.apiData['service_type_list']);
+                        if (group !== null) {
+                            switch (group) {
+                                case 'Script':
+                                case 'Email':
+                                    break;
+                                default:
+                                    scope._getComponents().then(
 
-                                                scope.serviceAccess.record.service.components = result.data.resource;
-                                            },
+                                        function (result) {
 
-                                            function (reject) {
-                                                throw {
-                                                    module: 'DreamFactory Utility Module',
-                                                    type: 'error',
-                                                    provider: 'dreamfactory',
-                                                    exception: reject
-                                                }
-                                            }
-                                        );
-                                        break;
-                                }
+                                            scope.serviceAccess.record.service.components = result.data.resource;
+                                        },
+
+                                        function (reject) {
+
+                                            var messageOptions = {
+                                                module: 'Roles',
+                                                type: 'error',
+                                                provider: 'dreamfactory',
+                                                message: reject
+                                            };
+
+                                            dfNotify.error(messageOptions);
+                                        }
+                                    );
+                                    break;
                             }
+                        }
                     }
                     scope._checkForFailure();
                     scope._checkForFailure();

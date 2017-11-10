@@ -1540,7 +1540,7 @@ angular.module('dfTable', ['dfUtility'])
                         function (reject) {
 
                             throw {
-                                module: 'xxDreamFactory Table Module',
+                                module: 'DreamFactory Table Module',
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 exception: reject
