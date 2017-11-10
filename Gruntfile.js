@@ -164,14 +164,8 @@ module.exports = function (grunt) {
     wiredep: {
       app: {
         src: ['<%= yeoman.app %>/index.html'],
-        ignorePath: /\.\.\//,
-        fileTypes: {
-          html: {
-            replace: {
-              js: '<script src="../{{filePath}}"></script>'
-            }
-          }
-        }
+        ignorePath: /\.\.\//
+
       }
     },
 
@@ -244,27 +238,6 @@ module.exports = function (grunt) {
             steps: {
               js: ['concat', 'uglifyjs'],
               css: ['cssmin']
-            },
-            post: {
-              /** context here is what usemin uses to pull the locations of the source to concat.
-               *  needed here to remove the relative paths to app/ so dist builds correctly.
-               */
-              js: [{
-                name: 'concat',
-                createConfig: function (context, block) {
-                  context.inFiles.forEach( function(s, idx) {
-                    context.inFiles[idx] = s.replace('../', '')
-                  });
-                }
-              }],
-              css: [{
-                name: 'cssmin',
-                createConfig: function (context, block) {
-                  context.inFiles.forEach( function(s, idx) {
-                    context.inFiles[idx] = s.replace('../', '')
-                  });
-                }
-              }]
             }
           }
         }
