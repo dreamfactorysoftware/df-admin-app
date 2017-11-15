@@ -1335,14 +1335,9 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         scope.oauths = scope.systemConfig.authentication.oauth;
                     }
 
-                    scope.loginWithProvider = function (providerData) {
+                    scope.remoteAuthLogin = function (providerData) {
 
-                        scope._loginWithProvider(providerData);
-                    };
-
-                    scope._loginWithProvider = function (providerData) {
                         window.top.location.href = '/api/v2/'+providerData;
-                        //window.top.location.href = '/web/remoteLogin?pid=' + providerData.api_name + '&return_url=' + encodeURI(window.top.location);
                     };
                 }
             };
@@ -1365,7 +1360,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         scope.samls = scope.systemConfig.authentication.saml;
                     }
 
-                    scope.loginWithProvider = function (providerData) {
+                    scope.samlAuthLogin = function (providerData) {
+
                         window.top.location.href = '/api/v2/' + providerData;
                     };
                 }
