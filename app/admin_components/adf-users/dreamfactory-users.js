@@ -141,7 +141,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     };
                 };
 
-                scope.loginAttribute = SystemConfigDataService.getSystemConfig().authentication.login_attribute;
+                scope.loginAttribute = 'email';
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+                if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('login_attribute')) {
+                    scope.loginAttribute = systemConfig.authentication.login_attribute;
+                }
                 
                 scope.user = null;
 
@@ -410,7 +414,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         };
     }])
 
-    .directive('dfConfirmUser', ['INSTANCE_URL', 'MOD_USER_ASSET_PATH', '$http', 'SystemConfigDataService', 'dfNotify', function(INSTANCE_URL, MOD_USER_ASSET_PATH, $http, SystemConfigDataService, dfNotify) {
+    .directive('dfConfirmUser', ['INSTANCE_URL', 'MOD_USER_ASSET_PATH', '$http', 'dfNotify', function(INSTANCE_URL, MOD_USER_ASSET_PATH, $http, dfNotify) {
 
         return {
             restrict: 'E',
@@ -419,8 +423,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             link: function(scope, elem, attrs) {
 
                 scope.sendEmailOnCreate = false;
-
-                scope.systemConfig = SystemConfigDataService.getSystemConfig();
 
                 scope.invite = function() {
 

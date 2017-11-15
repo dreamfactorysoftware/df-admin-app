@@ -23,7 +23,7 @@
                                 <span class="input-group-addon">
                                     <i class="fa fa-fw fa-user"></i>
                                 </span>
-                                <input type="text" id="username" name="df-register-username" placeholder="{{ (loginAttribute=='username')? 'Choose Username (Required for login)' : 'Choose Username (Optional, defaults to email address)'}}"
+                                <input type="text" id="username" name="df-register-username" placeholder="{{ (loginAttribute==='username')? 'Choose Username (Required for login)' : 'Choose Username (Optional, defaults to email address)'}}"
                                        data-ng-model="user.username" class="form-control" autocomplete="off">
                             </div>
                         </div>
@@ -33,7 +33,7 @@
                                 <span class="input-group-addon">
                                     <i class="fa fa-fw fa-envelope"></i>
                                 </span>
-                                <input type="email" id="email" name="df-register-email" placeholder="{{ (loginAttribute=='username')? 'Enter Email' : 'Enter Email (Required for login)'}}"
+                                <input type="email" id="email" name="df-register-email" placeholder="{{ (loginAttribute==='username')? 'Enter Email' : 'Enter Email (Required for login)'}}"
                                        data-ng-model="user.email" class="form-control" required autocomplete="off">
                             </div>
 

@@ -52,10 +52,10 @@ angular
                 // it will be allowed for admin users, and non-admin users whose role allows it
                 // if no role is assigend for the user for the admin app the default role can also allow access
 
-                var config = SystemConfigDataService.getSystemConfig();
+                var systemConfig = SystemConfigDataService.getSystemConfig();
                 var result = false;
-                if (config) {
-                    result = (config.apps && config.apps.filter(function (item) {
+                if (systemConfig) {
+                    result = (systemConfig.apps && systemConfig.apps.filter(function (item) {
                         return (item.name === 'admin');
                     }).length > 0);
                 }
@@ -103,9 +103,9 @@ angular
 
             get: function () {
                 var result = false;
-                var config = SystemConfigDataService.getSystemConfig();
-                if (config) {
-                    result = (config.apps && config.apps.filter(function (item) {
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+                if (systemConfig) {
+                    result = (systemConfig.apps && systemConfig.apps.filter(function (item) {
                         return (item.name === 'admin');
                     }).length > 0);
                 }
@@ -151,8 +151,12 @@ angular
                         if (currentUser && currentUser.session_token) {
                             if (currentUser.is_sys_admin) {
                                 var systemConfig = SystemConfigDataService.getSystemConfig();
-                                if (currentUser.email === 'user@example.com' && systemConfig && !systemConfig.platform.bitnami_demo) {
-                                    $location.url('/profile');
+                                if ('user@example.com' === currentUser.email) {
+                                    if (systemConfig && systemConfig.platform && systemConfig.platform.hasOwnProperty('bitnami_demo') && !systemConfig.platform.bitnami_demo) {
+                                        $location.url('/profile');
+                                    } else {
+                                        $location.url('/home');
+                                    }
                                 } else {
                                     $location.url('/home');
                                 }
@@ -189,12 +193,12 @@ angular
                             }
                             deferred.reject();
                         } else {
-                            var sysConfig = SystemConfigDataService.getSystemConfig();
-                            if (!sysConfig.authentication.allow_open_registration) {
+                            var systemConfig = SystemConfigDataService.getSystemConfig();
+                            if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('allow_open_registration') && systemConfig.authentication.allow_open_registration) {
+                                deferred.resolve();
+                            } else {
                                 $location.url('/login');
                                 deferred.reject();
-                            } else {
-                                deferred.resolve();
                             }
                         }
                         return deferred.promise;
@@ -219,12 +223,12 @@ angular
                             }
                             deferred.reject();
                         } else {
-                            var sysConfig = SystemConfigDataService.getSystemConfig();
-                            if (!sysConfig.authentication.allow_open_registration) {
+                            var systemConfig = SystemConfigDataService.getSystemConfig();
+                            if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('allow_open_registration') && systemConfig.authentication.allow_open_registration) {
+                                deferred.resolve();
+                            } else {
                                 $location.url('/login');
                                 deferred.reject();
-                            } else {
-                                deferred.resolve();
                             }
                         }
                         return deferred.promise;
@@ -249,12 +253,12 @@ angular
                             }
                             deferred.reject();
                         } else {
-                            var sysConfig = SystemConfigDataService.getSystemConfig();
-                            if (!sysConfig.authentication.allow_open_registration) {
+                            var systemConfig = SystemConfigDataService.getSystemConfig();
+                            if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('allow_open_registration') && systemConfig.authentication.allow_open_registration) {
+                                deferred.resolve();
+                            } else {
                                 $location.url('/login');
                                 deferred.reject();
-                            } else {
-                                deferred.resolve();
                             }
                         }
                         return deferred.promise;
@@ -325,7 +329,7 @@ angular
                         if (currentUser && currentUser.session_token) {
                             if (currentUser.is_sys_admin) {
                                 var systemConfig = SystemConfigDataService.getSystemConfig();
-                                if (currentUser.email === 'user@example.com' && systemConfig && !systemConfig.platform.bitnami_demo) {
+                                if (currentUser.email === 'user@example.com' && systemConfig && systemConfig.platform.hasOwnProperty('bitnami_demo') && !systemConfig.platform.bitnami_demo) {
                                     $location.url('/profile');
                                 } else {
                                     $location.url('/home');
@@ -342,8 +346,6 @@ angular
                 }
             });
 
-        // $httpProvider.interceptors.push('httpVerbInterceptor');
-        //$httpProvider.interceptors.push('httpWrapperInterceptor');
         $httpProvider.interceptors.push('httpValidSession');
     }])
 

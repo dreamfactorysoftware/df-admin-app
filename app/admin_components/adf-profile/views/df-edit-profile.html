@@ -13,11 +13,11 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
-                    <label>{{ (loginAttribute=='username')? 'Username (Required for login)' : 'Username (Optional, defaults to email address)'}}</label>
+                    <label>{{ (loginAttribute==='username')? 'Username (Required for login)' : 'Username (Optional, defaults to email address)'}}</label>
                     <input type="text" class="form-control" data-ng-model="user.username" placeholder="Enter username.">
                 </div>
                 <div class="form-group">
-                    <label>{{ (loginAttribute=='username')? 'Email' : 'Email (Required for login)'}}</label>
+                    <label>{{ (loginAttribute==='username')? 'Email' : 'Email (Required for login)'}}</label>
                     <input type="text" class="form-control" data-ng-model="user.email" placeholder="Enter email address." data-ng-required="true">
                 </div>
                 <div class="form-group">

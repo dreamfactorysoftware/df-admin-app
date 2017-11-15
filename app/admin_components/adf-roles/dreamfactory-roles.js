@@ -43,7 +43,11 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             }
         ];
 
-        $scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
+        $scope.adldap = 0;
+        var systemConfig = SystemConfigDataService.getSystemConfig();
+        if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('adldap')) {
+            $scope.adldap = systemConfig.authentication.adldap.length;
+        }
 
         // Set empty section options
         $scope.emptySectionOptions = {
@@ -880,8 +884,11 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     };
                 };
 
-                scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
-
+                scope.adldap = 0;
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+                if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('adldap')) {
+                    scope.adldap = systemConfig.authentication.adldap.length;
+                }
                 scope.roles = null;
 
                 scope.currentEditRole = null;

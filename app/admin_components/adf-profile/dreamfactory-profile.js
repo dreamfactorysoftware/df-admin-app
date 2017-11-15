@@ -74,9 +74,16 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
             link: function (scope, elem, attrs) {
 
                 var messageOptions, requestDataObj, session_token, existingUser;
-                var config = SystemConfigDataService.getSystemConfig();
-                scope.loginAttribute = config.authentication.login_attribute;
-                scope.bitnami_demo = config.platform.bitnami_demo;
+
+                scope.loginAttribute = 'email';
+                scope.bitnami_demo = false;
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+                if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('login_attribute')) {
+                    scope.loginAttribute = systemConfig.authentication.login_attribute;
+                }
+                if (systemConfig && systemConfig.platform && systemConfig.platform.hasOwnProperty('bitnami_demo')) {
+                    scope.bitnami_demo = systemConfig.platform.bitnami_demo;
+                }
 
                 scope.updateUser = function () {
                     

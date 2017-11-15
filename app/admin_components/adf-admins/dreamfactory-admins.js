@@ -144,7 +144,11 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 };
 
-                scope.loginAttribute = SystemConfigDataService.getSystemConfig().authentication.login_attribute;
+                scope.loginAttribute = 'email';
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+                if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('login_attribute')) {
+                    scope.loginAttribute = systemConfig.authentication.login_attribute;
+                }
 
                 scope.admin = null;
 
@@ -415,8 +419,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
 
                 scope.sendEmailOnCreate = false;
-
-                scope.systemConfig = SystemConfigDataService.getSystemConfig();
 
                 scope.invite = function() {
                     

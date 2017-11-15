@@ -886,8 +886,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     types = types.concat(add);
 
                     // check for which service types are not available
+                    var product = 'OPEN SOURCE';
                     var systemConfig = SystemConfigDataService.getSystemConfig();
-                    var product = systemConfig.platform.license;
+                    if (systemConfig && systemConfig.platform && systemConfig.platform.hasOwnProperty('license')) {
+                        product = systemConfig.platform.license;
+                    }
                     angular.forEach(types, function (svc) {
                         svc.available = true;
                         if (svc.subscription_required) {
