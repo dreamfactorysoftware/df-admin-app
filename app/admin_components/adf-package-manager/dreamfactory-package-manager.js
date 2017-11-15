@@ -190,11 +190,14 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                         var currentUser = UserDataService.getCurrentUser();
 
+                        // unset content type, it'll get set later
+
                         $http({
                             method: 'POST',
                             url: INSTANCE_URL + '/api/v2/system/package?password=' + scope.packageImportPassword + '&overwrite=' + scope.overwrite,
                             headers: {
-                                'X-DreamFactory-Session-Token': currentUser.session_token
+                                'X-DreamFactory-Session-Token': currentUser.session_token,
+                                'Content-Type': undefined
                             },
                             data: {
                                 files: file,
@@ -207,10 +210,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                                 angular.forEach(data, function (value, key) {
                                     formData.append(key, value);
                                 });
-
-                                // delete content type, it'll get set later
-                                var headers = headersGetter();
-                                delete headers['Content-Type'];
 
                                 return formData;
                             }
