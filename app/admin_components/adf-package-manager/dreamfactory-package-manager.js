@@ -214,45 +214,48 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                                 return formData;
                             }
-                        }).success(function (data) {
+                        }).then(function (result) {
 
-                            if (data.success === true) {
+                            if (result && result.data) {
 
-                                var messageOptions = {
-                                    module: 'Packages',
-                                    provider: 'dreamfactory',
-                                    type: 'success',
-                                    message: 'Package was imported successfully.'
-                                };
+                                if (result.data.success === true) {
 
-                                dfNotify.success(messageOptions);
+                                    var messageOptions = {
+                                        module: 'Packages',
+                                        provider: 'dreamfactory',
+                                        type: 'success',
+                                        message: 'Package was imported successfully.'
+                                    };
 
-                                scope.importClear();
+                                    dfNotify.success(messageOptions);
 
-                                scope.loadTabData();
-                            } else {
+                                    scope.importClear();
 
-                                var notice = '';
+                                    scope.loadTabData();
+                                } else {
 
-                                angular.forEach(data.log.notice, function (value, key) {
-                                    notice += '* ' + value + '\n';
-                                });
+                                    var notice = '';
 
-                                var msg = 'Package import failed.\n\n' +
-                                    'Reason:\n' +
-                                    notice;
+                                    angular.forEach(result.data.log.notice, function (value, key) {
+                                        notice += '* ' + value + '\n';
+                                    });
 
-                                $timeout(function () {
-                                    alert(msg);
-                                });
+                                    var msg = 'Package import failed.\n\n' +
+                                        'Reason:\n' +
+                                        notice;
+
+                                    $timeout(function () {
+                                        alert(msg);
+                                    });
+                                }
                             }
-                        })
-                        .error(function (data, status) {
+                        }, function (reject) {
+
                             var messageOptions = {
                                 module: 'Packages',
                                 provider: 'dreamfactory',
                                 type: 'error',
-                                message: data.error.message
+                                message: reject
                             };
 
                             dfNotify.error(messageOptions);
