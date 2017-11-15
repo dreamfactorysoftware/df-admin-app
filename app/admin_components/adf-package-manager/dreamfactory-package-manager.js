@@ -196,14 +196,13 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                             method: 'POST',
                             url: INSTANCE_URL + '/api/v2/system/package?password=' + scope.packageImportPassword + '&overwrite=' + scope.overwrite,
                             headers: {
-                                'X-DreamFactory-Session-Token': currentUser.session_token,
-                                'Content-Type': undefined
+                                'X-DreamFactory-Session-Token': currentUser.session_token
                             },
                             data: {
                                 files: file,
                                 import_url: file
                             },
-                            transformRequest: function (data, headersGetter) {
+                            transformRequest: function (data) {
 
                                 var formData = new FormData();
 
