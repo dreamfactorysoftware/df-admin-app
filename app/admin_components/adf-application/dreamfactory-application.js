@@ -53,7 +53,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             var debugLevel = 0;
             var deferred = $q.defer();
 
-            if (forceRefresh !== true && dfApplicationObj.apis.hasOwnProperty(api)) {
+            if (forceRefresh === true) {
+                delete dfApplicationObj.apis[api];
+            }
+            if (dfApplicationObj.apis.hasOwnProperty(api)) {
                 if (debugLevel >= 1) console.log('_loadOne(' + api + '): from cache', dfApplicationObj.apis[api]);
                 if (debugLevel >= 2) console.log('_loadOne(' + api + '): dfApplicationObj', dfApplicationObj);
                 deferred.resolve(dfApplicationObj.apis[api]);
@@ -116,7 +119,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             var debugLevel = 0;
 
-            if (forceRefresh !== true && dfApplicationObj.apis.hasOwnProperty(api)) {
+            if (forceRefresh === true) {
+                delete dfApplicationObj.apis[api];
+            }
+            if (dfApplicationObj.apis.hasOwnProperty(api)) {
                 if (debugLevel >= 1) console.log('_getApiDataSync(' + api + '): from cache', dfApplicationObj.apis[api]);
                 if (debugLevel >= 2) console.log('_getApiDataSync(' + api + '): dfApplicationObj', dfApplicationObj);
             } else {
@@ -141,7 +147,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     if (debugLevel >= 1) console.log('_getApiDataSync(' + api + ',' +  !!forceRefresh + '): ok from server', dfApplicationObj.apis[api]);
                     if (debugLevel >= 2) console.log('_getApiDataSync(' + api + ',' +  !!forceRefresh + '): dfApplicationObj', dfApplicationObj);
                 } else {
-                    // return value will be undefined
                     if (debugLevel >= 1) console.log('_getApiDataSync(' + api + ',' +  !!forceRefresh + '): error from server', xhr.responseText);
                     if (debugLevel >= 2) console.log('_getApiDataSync(' + api + ',' +  !!forceRefresh + '): dfApplicationObj', dfApplicationObj);
                 }
@@ -648,83 +653,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             }
         };
     }])
-
-    // This intercepts outgoing http calls.  Checks for restricted verbs from config
-    // and tunnels them through a POST if necessary
-    .factory('httpVerbInterceptor', ['SystemConfigDataService', function (SystemConfigDataService) {
-
-        return {
-
-            request: function (config) {
-
-                var systemConfig = SystemConfigDataService.getSystemConfig();
-
-                if (systemConfig.restricted_verbs.length <= 0) {
-                    return config;
-                }
-
-                var restricted_verbs = config.restricted_verbs,
-                    i = 0,
-                    currMethod = config.method;
-
-                while (i < restricted_verbs.length) {
-
-                    if (currMethod === restricted_verbs[i]) {
-                        config.method = "POST";
-                        config.headers['X-HTTP-METHOD'] = currMethod;
-                        break;
-                    }
-
-                    i++;
-                }
-
-                return config;
-            }
-        };
-    }])
-
-
-    .factory('httpWrapperInterceptor', [ 'SystemConfigDataService',
-        function (SystemConfigDataService) {
-            return {
-                request: function (config) {
-
-                    var environment = SystemConfigDataService.getSystemConfig() || {};
-
-                    if (!environment.config) {
-                        return config;
-                    }
-
-                    if (config.data instanceof Array && environment.config.alway_wrap_resources) {
-                        // wrap the data with always_wrap_resources
-                        var data = {};
-                        data[environment.config.resource_wrapper] = angular.copy(config.data);
-                        config.data = data;
-                    }
-
-                    return config;
-                },
-
-                response: function (response) {
-
-                    var environment = SystemConfigDataService.getSystemConfig() || {};
-
-                    if (typeof(response.data) !== 'object' || !environment.config) {
-                        return response;
-                    }
-
-
-                    var keys = Object.keys(response.data);
-
-                    if (environment.config.always_wrap_resources && keys.length === 1 && response.data[keys[0]] instanceof Array && keys[0] === environment.config.resource_wrapper) {
-                        response.data = response.data[environment.config.resource_wrapper];
-                    }
-
-                    return response;
-                }
-            };
-        }
-    ])
 
     // Intercepts outgoing http calls.  Checks for valid session.  If 401 will trigger a pop up login screen.
     .factory('httpValidSession', ['$q', '$rootScope', '$location', 'INSTANCE_URL', '$injector', function ($q, $rootScope, $location, INSTANCE_URL, $injector) {
