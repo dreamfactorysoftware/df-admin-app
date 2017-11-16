@@ -396,7 +396,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 $http({
                     method: 'GET',
                     url: INSTANCE_URL + '/api/v2/system/event',
-                    params: {"service": serviceName}
+                    params: {"service": serviceName, "scriptable": true}
                 }).then(
                     function (result) {
 

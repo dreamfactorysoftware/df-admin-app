@@ -304,9 +304,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     cors: {
                         include_count: true
                     },
-                    event: {
-                        scriptable: true
-                    },
                     event_list: {
                         as_list: true
                     },
