@@ -105,9 +105,10 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 // always load event scripts from server
                 var primaryApis = ['event_script'];
 
-                // only load these one time as they should not change as scripts are created/deleted
-                // this is particularly important for 'event' as it can be slow when there are many services
-                var secondaryApis = ['event', 'script_type', 'service_link', 'environment'];
+                // Only load these one time as they should not change as scripts are created/deleted.
+                // service_list is used to build top level view then when you select a service it will query events
+                // for that service. We don't want to query events for all services up front becuase it's too slow.
+                var secondaryApis = ['service_list', 'script_type', 'service_link', 'environment'];
 
                 // for primaryApis force refresh to always load from server
                 dfApplicationData.getApiData(primaryApis, true).then(
@@ -123,10 +124,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             function (response) {
                                 secondaryApis.forEach(function(value, index) {
                                     newApiData[value] = response[index].resource ? response[index].resource : response[index];
-                                    if (value === 'event') {
-                                        // used for highlighting in ui
-                                        newApiData['event_lookup'] = $scope.buildEventLookup(newApiData[value]);
-                                    }
                                 });
                                 // all done
                                 $scope.apiData = newApiData;
@@ -286,6 +283,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.currentEndpointObj = null;
             $scope.currentScriptObj = null;
             $scope.menuPathArr = [];
+            $scope.eventLookup = {};
 
             // Stuff for the editor
             $scope.eventScriptEditorObj = {"editor": null};
@@ -348,13 +346,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.highlightService = function (serviceName) {
 
                 return $scope.apiData.event_script.some(function(scriptName) {
-                    var event = $scope.apiData.event_lookup[scriptName];
-                    if (event) {
-                        if (event.service === serviceName) {
-                            return true;
-                        }
-                    }
-                    return false;
+                    return scriptName.indexOf(serviceName + '.') === 0;
                 });
             };
 
@@ -363,7 +355,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.highlightResource = function (resourceName) {
 
                 return $scope.apiData.event_script.some(function(scriptName) {
-                    var event = $scope.apiData.event_lookup[scriptName];
+                    var event = $scope.eventLookup[scriptName];
                     if (event) {
                         return event.resource === resourceName;
                     }
@@ -376,7 +368,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.highlightEndpoint = function (endpointName) {
 
                 return $scope.apiData.event_script.some(function(scriptName) {
-                    var event = $scope.apiData.event_lookup[scriptName];
+                    var event = $scope.eventLookup[scriptName];
                     if (event) {
                         return event.endpoint === endpointName;
                     }
@@ -395,10 +387,38 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             // select a service and display all resources for that service
 
-            $scope.selectService = function (serviceName, resources) {
+            $scope.selectService = function (service) {
 
-                $scope.menuPathArr.push(serviceName);
-                $scope.currentServiceObj = {"name": serviceName, "resources": resources};
+                var serviceName = service.name;
+
+                // get the events for this service
+
+                $http({
+                    method: 'GET',
+                    url: INSTANCE_URL + '/api/v2/system/event',
+                    params: {"service": serviceName}
+                }).then(
+                    function (result) {
+
+                        $scope.menuPathArr.push(serviceName);
+                        var resources = result.data[serviceName];
+                        $scope.currentServiceObj = {"name": serviceName, "resources": resources};
+                        // used for highlighting in ui
+                        $scope.eventLookup = $scope.buildEventLookup(result.data);
+                    },
+
+                    function (reject) {
+
+                        var messageOptions = {
+                            module: 'Scripts',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: reject
+                        };
+                        dfNotify.error(messageOptions);
+                    }
+                ).finally(function () {
+                });
             };
 
             // select a resource and display all endpoints for that resource
