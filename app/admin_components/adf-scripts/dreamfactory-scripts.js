@@ -284,6 +284,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.currentScriptObj = null;
             $scope.menuPathArr = [];
             $scope.eventLookup = {};
+            $scope.eventsLoading = false;
 
             // Stuff for the editor
             $scope.eventScriptEditorObj = {"editor": null};
@@ -389,6 +390,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
             $scope.selectService = function (service) {
 
+                // prevent multiple clicks on service
+
+                if ($scope.eventsLoading) {
+                    return;
+                }
+
+                $scope.eventsLoading = true;
+
                 var serviceName = service.name;
 
                 // get the events for this service
@@ -418,6 +427,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         dfNotify.error(messageOptions);
                     }
                 ).finally(function () {
+
+                    $scope.eventsLoading = false;
                 });
             };
 
