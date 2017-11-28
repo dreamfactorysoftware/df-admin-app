@@ -197,7 +197,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 var serviceRepo = $scope.currentScriptObj.scm_repository;
                 var serviceRef = $scope.currentScriptObj.scm_reference;
                 var servicePath = $scope.currentScriptObj.storage_path;
-                var url = INSTANCE_URL + '/api/v2/' + serviceName;
+                var url = INSTANCE_URL.url + '/' + serviceName;
 
                 if($scope.selections.service && ($scope.selections.service.type === 'github' || $scope.selections.service.type === 'gitlab')){
                     var params = {
@@ -247,7 +247,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 $http({
                     method:'DELETE',
-                    url: INSTANCE_URL + '/api/v2/system/cache/_event/' + $scope.currentScriptObj.name
+                    url: INSTANCE_URL.url + '/system/cache/_event/' + $scope.currentScriptObj.name
                 }).then(
                     function(result){
 
@@ -404,7 +404,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 $http({
                     method: 'GET',
-                    url: INSTANCE_URL + '/api/v2/system/event',
+                    url: INSTANCE_URL.url + '/system/event',
                     params: {"service": serviceName, "scriptable": true}
                 }).then(
                     function (result) {
@@ -476,7 +476,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 $http({
                     method: 'GET',
-                    url: INSTANCE_URL + '/api/v2/system/event_script/' + requestDataObj.name,
+                    url: INSTANCE_URL.url + '/system/event_script/' + requestDataObj.name,
                     params: requestDataObj.params
                 }).then(
                     function (result) {
@@ -566,7 +566,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 $http({
                     method: 'POST',
-                    url: INSTANCE_URL + '/api/v2/system/event_script/' + requestDataObj.name,
+                    url: INSTANCE_URL.url + '/system/event_script/' + requestDataObj.name,
                     params: requestDataObj.params,
                     data: requestDataObj.data
                 }).then(
@@ -616,7 +616,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                     $http({
                         method: 'DELETE',
-                        url: INSTANCE_URL + '/api/v2/system/event_script/' + requestDataObj.name,
+                        url: INSTANCE_URL.url + '/system/event_script/' + requestDataObj.name,
                         params: requestDataObj.params
                     }).then(
                         function (result) {

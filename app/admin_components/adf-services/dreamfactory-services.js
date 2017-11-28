@@ -1128,7 +1128,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     var serviceRepo = scope.serviceConfig.scm_repository;
                     var serviceRef = scope.serviceConfig.scm_reference;
                     var servicePath = scope.serviceConfig.storage_path;
-                    var url = INSTANCE_URL + '/api/v2/' + serviceName;
+                    var url = INSTANCE_URL.url + '/' + serviceName;
 
                     if(scope.selections.service && (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab')){
                         var params = {
@@ -1178,7 +1178,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                     $http({
                         method:'DELETE',
-                        url: INSTANCE_URL + '/api/v2/system/cache/_event/' + scope.serviceInfo.name
+                        url: INSTANCE_URL.url + '/system/cache/_event/' + scope.serviceInfo.name
                     }).then(
                         function(result){
 

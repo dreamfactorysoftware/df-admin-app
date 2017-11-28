@@ -218,7 +218,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         scope.loginWaiting = true;
                         scope.showOAuth = false;
                         scope.loginDirect = true;
-                        $http.get(INSTANCE_URL + '/api/v2/user/session?session_token=' + token).then(
+                        $http.get(INSTANCE_URL.url + '/user/session?session_token=' + token).then(
                             // success method
                             function (result) {
 
@@ -240,7 +240,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     } else if((oauth_code && oauth_state) || oauth_token) {
                         scope.loginWaiting = true;
                         scope.showOAuth = false;
-                        $http.post(INSTANCE_URL + '/api/v2/user/session?oauth_callback=true&' + location.search.substring(1)).then(
+                        $http.post(INSTANCE_URL.url + '/user/session?oauth_callback=true&' + location.search.substring(1)).then(
                             // success method
                             function (result) {
 
@@ -317,9 +317,9 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                         if(!admin) {
                             // Return the posted request data as a promise
-                            return $http.post(INSTANCE_URL + '/api/v2/user/session', credsDataObj);
+                            return $http.post(INSTANCE_URL.url + '/user/session', credsDataObj);
                         } else {
-                            return $http.post(INSTANCE_URL + '/api/v2/system/admin/session', credsDataObj);
+                            return $http.post(INSTANCE_URL.url + '/system/admin/session', credsDataObj);
                         }
                     };
 
@@ -541,10 +541,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     if(!admin) {
                         // Post request for password change and return promise
-                        return $http.post(INSTANCE_URL + '/api/v2/user/password?reset=true', requestDataObj);
+                        return $http.post(INSTANCE_URL.url + '/user/password?reset=true', requestDataObj);
                     }
                     else{
-                        return $http.post(INSTANCE_URL + '/api/v2/system/admin/password?reset=true', requestDataObj);
+                        return $http.post(INSTANCE_URL.url + '/system/admin/password?reset=true', requestDataObj);
                     }
                 };
 
@@ -552,10 +552,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     if(!admin) {
                         // Post request for password change and return promise
-                        return $http.post(INSTANCE_URL + '/api/v2/user/password?login=false', requestDataObj);
+                        return $http.post(INSTANCE_URL.url + '/user/password?login=false', requestDataObj);
                     }
                     else{
-                        return $http.post(INSTANCE_URL + '/api/v2/system/admin/password?login=false', requestDataObj);
+                        return $http.post(INSTANCE_URL.url + '/system/admin/password?login=false', requestDataObj);
                     }
                 };
 
@@ -836,9 +836,9 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // PRIVATE API
                     scope._setPasswordRequest = function (requestDataObj, admin) {
 
-                        var url = INSTANCE_URL + '/api/v2/system/admin/password';
+                        var url = INSTANCE_URL.url + '/system/admin/password';
                         if(!admin){
-                            url = INSTANCE_URL + '/api/v2/user/password';
+                            url = INSTANCE_URL.url + '/user/password';
                         }
 
                         return $http({
@@ -973,8 +973,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // DELETE request for logging out user
                     scope._logoutRequest = function (admin) {
                         var user = UserDataService.getCurrentUser();
-                        var url = user.is_sys_admin ? '/api/v2/system/admin/session' : '/api/v2/user/session';
-                        return $http.delete(INSTANCE_URL + url);
+                        var url = user.is_sys_admin ? '/system/admin/session' : '/user/session';
+                        return $http.delete(INSTANCE_URL.url + url);
                     };
 
                     // COMPLEX IMPLEMENTATION ** See login directive for more info **
@@ -1115,7 +1115,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope._registerRequest = function (registerDataObj) {
 
                         return $http({
-                            url: INSTANCE_URL + '/api/v2/user/register',
+                            url: INSTANCE_URL.url + '/user/register',
                             method: 'POST',
                             params: {
                                 login: scope.options.login
@@ -1127,7 +1127,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // Returns the system configuration object
                     scope._getSystemConfig = function () {
 
-                        return $http.get(INSTANCE_URL + '/api/v2/system/environment');
+                        return $http.get(INSTANCE_URL.url + '/system/environment');
                     };
 
 
@@ -1314,8 +1314,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
     }])
 
     // Remote Auth Providers Directive
-    .directive('dreamfactoryRemoteAuthProviders', ['MODUSRMNGR_ASSET_PATH', '_dfObjectService', 'UserDataService', 'UserEventsService', 'SystemConfigDataService',
-        function(MODUSRMNGR_ASSET_PATH, _dfObjectService, UserDataService, UserEventsService, SystemConfigDataService) {
+    .directive('dreamfactoryRemoteAuthProviders', ['MODUSRMNGR_ASSET_PATH', 'SystemConfigDataService', 'INSTANCE_URL',
+        function(MODUSRMNGR_ASSET_PATH, SystemConfigDataService, INSTANCE_URL) {
 
             return {
 
@@ -1329,6 +1329,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // @TODO: Google Plus Provider name needs to be worked out on server so I don't have to change it on the client
                     // @TODO: Fix providers {{client_id}} stuff
 
+                    scope.url = INSTANCE_URL.url;
                     scope.oauths = [];
                     scope.systemConfig = SystemConfigDataService.getSystemConfig();
                     if (scope.systemConfig && scope.systemConfig.authentication && scope.systemConfig.authentication.hasOwnProperty('oauth')) {
@@ -1337,14 +1338,14 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     scope.remoteAuthLogin = function (providerData) {
 
-                        window.top.location.href = '/api/v2/'+providerData;
+                        window.top.location.href = scope.url + '/' + providerData;
                     };
                 }
             };
     }])
 
-    .directive('dreamfactorySamlAuthProviders', ['MODUSRMNGR_ASSET_PATH', '_dfObjectService', 'UserDataService', 'UserEventsService', 'SystemConfigDataService',
-        function(MODUSRMNGR_ASSET_PATH, _dfObjectService, UserDataService, UserEventsService, SystemConfigDataService) {
+    .directive('dreamfactorySamlAuthProviders', ['MODUSRMNGR_ASSET_PATH', 'SystemConfigDataService', 'INSTANCE_URL',
+        function(MODUSRMNGR_ASSET_PATH, SystemConfigDataService, INSTANCE_URL) {
 
             return {
 
@@ -1354,6 +1355,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 scope: false,
                 link: function(scope, elem, attrs) {
 
+                    scope.url = INSTANCE_URL.url;
                     scope.samls = [];
                     scope.systemConfig = SystemConfigDataService.getSystemConfig();
                     if (scope.systemConfig && scope.systemConfig.authentication && scope.systemConfig.authentication.hasOwnProperty('saml')) {
@@ -1362,7 +1364,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     scope.samlAuthLogin = function (providerData) {
 
-                        window.top.location.href = '/api/v2/' + providerData;
+                        window.top.location.href = scope.url + '/' + providerData;
                     };
                 }
             };
@@ -1477,7 +1479,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         var api = (scope.inviteType === 'user') ? 'user/password' : 'system/admin/password';
 
                         return $http({
-                            url: INSTANCE_URL + '/api/v2/' + api,
+                            url: INSTANCE_URL.url + '/' + api,
                             method: 'POST',
                             params: {
                                 login: false
@@ -1764,7 +1766,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             }
         };
     }])
-    .service('dfXHRHelper', ['INSTANCE_URL', 'ADMIN_API_KEY', 'UserDataService', function (INSTANCE_URL, ADMIN_API_KEY, UserDataService) {
+    .service('dfXHRHelper', ['INSTANCE_URL', 'APP_API_KEY', 'UserDataService', function (INSTANCE_URL, APP_API_KEY, UserDataService) {
 
         function _isEmpty(obj) {
 
@@ -1790,7 +1792,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         function _setHeaders(_xhrObj, _headersDataObj) {
 
             // Setting Dreamfactory Headers
-            _xhrObj.setRequestHeader("X-DreamFactory-API-Key", ADMIN_API_KEY);
+            _xhrObj.setRequestHeader("X-DreamFactory-API-Key", APP_API_KEY);
             var currentUser = UserDataService.getCurrentUser();
             if (currentUser && currentUser.session_tpken) {
                 xhrObj.setRequestHeader("X-DreamFactory-Session-Token", currentUser.session_token);
@@ -1856,7 +1858,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             var params = _setParams(_params);
 
             // Do XHR
-            xhr.open(_method, INSTANCE_URL + '/api/v2/' + _url + params, _async);
+            xhr.open(_method, INSTANCE_URL.url + '/' + _url + params, _async);
 
             // Set headers
             _setHeaders(xhr, _headers);

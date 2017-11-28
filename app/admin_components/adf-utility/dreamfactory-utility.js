@@ -1478,7 +1478,7 @@ angular.module('dfUtility', ['dfApplication'])
                     scope._getResources = function () {
                         return $http(
                             {
-                                method: 'GET', url: INSTANCE_URL + '/api/v2/' + scope.activeService
+                                method: 'GET', url: INSTANCE_URL.url + '/' + scope.activeService
                             }
                         )
                     };
@@ -1554,7 +1554,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                     // PRIVATE API
                     scope._getResources = function () {
-                        return dfApplicationData.getServiceComponents(scope.activeService, INSTANCE_URL + '/api/v2/' + scope.activeService + '/_table/',  {params: {fields: 'name,label'}})
+                        return dfApplicationData.getServiceComponents(scope.activeService, INSTANCE_URL.url + '/' + scope.activeService + '/_table/',  {params: {fields: 'name,label'}})
                     };
 
                     // COMPLEX IMPLEMENTATION
@@ -1630,7 +1630,7 @@ angular.module('dfUtility', ['dfApplication'])
                     scope._getResources = function () {
                         return $http(
                             {
-                                method: 'GET', url: INSTANCE_URL + '/api/v2/' + scope.activeService + '/_schema/'
+                                method: 'GET', url: INSTANCE_URL.url + '/' + scope.activeService + '/_schema/'
                             }
                         )
                     };
@@ -2744,7 +2744,7 @@ angular.module('dfUtility', ['dfApplication'])
 
     // allows us to make synchronous ajax calls.  Not extensive enough in its
     // functionality to replace $http but helps with loading/bootstrapping data
-    .service('XHRHelper', ['INSTANCE_URL', 'ADMIN_API_KEY', '$cookies', function (INSTANCE_URL, ADMIN_API_KEY, $cookies) {
+    .service('XHRHelper', ['INSTANCE_URL', 'APP_API_KEY', '$cookies', function (INSTANCE_URL, APP_API_KEY, $cookies) {
 
         function _isEmpty(obj) {
 
@@ -2770,7 +2770,7 @@ angular.module('dfUtility', ['dfApplication'])
         function _setHeaders(_xhrObj, _headersDataObj) {
 
             // Setting Dreamfactory Headers
-            _xhrObj.setRequestHeader("X-DreamFactory-API-Key", ADMIN_API_KEY);
+            _xhrObj.setRequestHeader("X-DreamFactory-API-Key", APP_API_KEY);
             var currentUser = UserDataService.getCurrentUser();
             if (currentUser && currentUser.session_tpken) {
                 xhrObj.setRequestHeader("X-DreamFactory-Session-Token", currentUser.session_token);
@@ -2838,7 +2838,7 @@ angular.module('dfUtility', ['dfApplication'])
 
 
             // Do XHR
-            xhr.open(_method, INSTANCE_URL + '/api/v2/' + _url + params, _async);
+            xhr.open(_method, INSTANCE_URL.url + '/' + _url + params, _async);
 
             // Set headers
             _setHeaders(xhr, _headers);

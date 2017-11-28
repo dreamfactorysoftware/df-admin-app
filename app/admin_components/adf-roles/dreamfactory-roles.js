@@ -760,7 +760,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 // PRIVATE API
 
                 scope._getComponents = function () {
-                        return $http.get(INSTANCE_URL + '/api/v2/' + scope.serviceAccess.record.service.name + '/?as_access_list=true');
+                        return $http.get(INSTANCE_URL.url + '/' + scope.serviceAccess.record.service.name + '/?as_access_list=true');
                 };
 
                 scope._checkForFailure = function () {

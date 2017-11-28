@@ -52,7 +52,7 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
             }
         ];
     }])
-    .directive('apiDocs', ['MOD_APIDOCS_ASSET_PATH', 'INSTANCE_URL', function(MOD_APIDOCS_ASSET_PATH, INSTANCE_URL) {
+    .directive('apiDocs', ['MOD_APIDOCS_ASSET_PATH', 'INSTANCE_BASE_URL', function(MOD_APIDOCS_ASSET_PATH, INSTANCE_BASE_URL) {
 
         return {
             restrict: 'E',
@@ -60,7 +60,7 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_APIDOCS_ASSET_PATH + 'views/apidocs.html',
             link: function( scope, elem, attrs ) {
 
-                scope.server = INSTANCE_URL + "/df-api-docs-ui/dist/index.html?admin_app=1";
+                scope.server = INSTANCE_BASE_URL + "/df-api-docs-ui/dist/index.html?admin_app=1";
 
                 scope.$broadcast('apidocs:loaded');
             }

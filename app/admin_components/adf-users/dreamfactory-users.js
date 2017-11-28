@@ -427,7 +427,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope.invite = function() {
 
                     $http({
-                        url: INSTANCE_URL + '/api/v2/system/user/' + scope.user.record.id,
+                        url: INSTANCE_URL.url + '/system/user/' + scope.user.record.id,
                         method: 'PATCH',
                         params: {
                             send_invite: true
@@ -1022,7 +1022,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     return $http({
                         method: 'POST',
-                        url: INSTANCE_URL + '/api/v2/system/user',
+                        url: INSTANCE_URL.url + '/system/user',
                         headers: {
                             "Content-Type" : scope.importType === 'csv' ? 'text/csv' : 'application/' + scope.importType
                         },
@@ -1123,7 +1123,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         };
     }])
 
-    .directive('dfExportUsers', ['MOD_USER_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', '$http', '$window', 'ADMIN_API_KEY', function (MOD_USER_ASSET_PATH, INSTANCE_URL, UserDataService, $http, $window, ADMIN_API_KEY) {
+    .directive('dfExportUsers', ['MOD_USER_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', '$http', '$window', 'APP_API_KEY', function (MOD_USER_ASSET_PATH, INSTANCE_URL, UserDataService, $http, $window, APP_API_KEY) {
 
         return {
 
@@ -1152,7 +1152,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         scope.fileFormatStr = fileFormatStr;
 
-                        var params = 'file=user.' + scope.fileFormatStr + '&api_key=' + ADMIN_API_KEY;
+                        var params = 'file=user.' + scope.fileFormatStr + '&api_key=' + APP_API_KEY;
                         var currentUser = UserDataService.getCurrentUser();
                         if (currentUser && currentUser.session_token) {
                             params += '&session_token=' + currentUser.session_token;
@@ -1160,7 +1160,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         // Jason's method to make it work.  He doesn't check for bad response.
                         // I'll look into angularJS's $location to fix this.
-                        $window.location.href= INSTANCE_URL + '/api/v2/system/user?' + params;
+                        $window.location.href= INSTANCE_URL.url + '/system/user?' + params;
                     }
                 };
             }

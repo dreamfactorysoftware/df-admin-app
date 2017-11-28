@@ -242,7 +242,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.flushSystemCache = function () {
 
-                    $http.delete(INSTANCE_URL + '/api/v2/system/cache')
+                    $http.delete(INSTANCE_URL.url + '/system/cache')
                         .then(function () {
 
                             var messageOptions = {
@@ -269,7 +269,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.flushServiceCache = function (index) {
 
-                    $http.delete(INSTANCE_URL + '/api/v2/system/cache/' + scope.apiData.cache[index].name)
+                    $http.delete(INSTANCE_URL.url + '/system/cache/' + scope.apiData.cache[index].name)
                         .then(function () {
 
                             var messageOptions = {
@@ -1319,7 +1319,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     }
                     // There could be other name/value pairs. Only change the chat setting.
                     data = {"name": "chat", "value": scope.chatEnabled};
-                    func(INSTANCE_URL + '/api/v2/system/custom', {"resource":[data]})
+                    func(INSTANCE_URL.url + '/system/custom', {"resource":[data]})
                         .then(function () {
 
                             // next time use PUT

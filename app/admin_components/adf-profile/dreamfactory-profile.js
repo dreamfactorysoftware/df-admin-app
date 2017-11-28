@@ -31,7 +31,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
         $http({
             method: 'GET',
-            url: INSTANCE_URL + '/api/v2/' + $scope.resource + '/profile'
+            url: INSTANCE_URL.url + '/' + $scope.resource + '/profile'
         }).then(
             function (result) {
                 $scope.user = result.data;
@@ -170,7 +170,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                             fields: '*'
                         },
                         data: scope.user,
-                        url: INSTANCE_URL + '/api/v2/' + scope.resource + '/profile'
+                        url: INSTANCE_URL.url + '/' + scope.resource + '/profile'
                     };
 
                     scope.updateUserToServer(requestDataObj).then(
@@ -240,7 +240,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                     return $http({
                         method: 'PUT',
-                        url: INSTANCE_URL + '/api/v2/' + scope.resource + '/profile',
+                        url: INSTANCE_URL.url + '/' + scope.resource + '/profile',
                         data: requestDataObj.data
                     })
                 };
@@ -249,7 +249,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                     return $http({
                         method: 'POST',
-                        url: INSTANCE_URL + '/api/v2/' + scope.resource + '/password',
+                        url: INSTANCE_URL.url + '/' + scope.resource + '/password',
                         params: requestDataObj.params,
                         data: requestDataObj.data
                     })

@@ -33,7 +33,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 return;
             }
 
-            dfApplicationData.getServiceComponents(currentService.name, INSTANCE_URL + '/api/v2/' + currentService.name + '/_schema', {
+            dfApplicationData.getServiceComponents(currentService.name, INSTANCE_URL.url + '/' + currentService.name + '/_schema', {
                 params: {
                     refresh: true,
                     fields: 'name,label'
@@ -94,13 +94,13 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             },
             delete: function(params) {
 
-                  return $http.delete(INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table);
+                  return $http.delete(INSTANCE_URL.url + '/' + params.service + '/_schema/' + params.table);
             },
             update: function(params) {
 
                 return $http({
                   method: 'PATCH',
-                  url: INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table,
+                  url: INSTANCE_URL.url + '/' + params.service + '/_schema/' + params.table,
                   data: this
                 });
             },
@@ -116,7 +116,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 return $http({
                   method: verb,
-                  url: INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_field',
+                  url: INSTANCE_URL.url + '/' + params.service + '/_schema/' + params.table + '/_field',
                   data: data
                 });
             },
@@ -153,7 +153,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             },
             _load: function(params, deferred) {
                 var scope = this;
-                var url = INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '?refresh=true';
+                var url = INSTANCE_URL.url + '/' + params.service + '/_schema/' + params.table + '?refresh=true';
                 $http.get(url).then(function(response) {
                         var tableData = response.data;
                         var table = scope._retrieveInstance(tableData.name, tableData);
@@ -164,11 +164,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             },
             _delete: function(params) {
 
-                return $http.delete(INSTANCE_URL + '/api/v2/' + params.service.name + '/_schema/' + params.table);
+                return $http.delete(INSTANCE_URL.url + '/' + params.service.name + '/_schema/' + params.table);
             },
             _deleteField: function (params) {
 
-                return $http.delete(INSTANCE_URL + '/api/v2/' + params.service.name + '/_schema/' + params.table + '/_field/' + params.field);
+                return $http.delete(INSTANCE_URL.url + '/' + params.service.name + '/_schema/' + params.table + '/_field/' + params.field);
             },
             _clearPool: function () {
                 this._pool = {};
@@ -187,7 +187,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             loadAllTables: function(params) {
                 var deferred = $q.defer();
                 var scope = this;
-                var url = INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table;
+                var url = INSTANCE_URL.url + '/' + params.service + '/_schema/' + params.table;
                 $http.get(url).then(function(response) {
                         var tables;
                         var tablesArray = response.data;
@@ -235,7 +235,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         ]
                     };
 
-                    return $http.post(INSTANCE_URL + '/api/v2/' + StateService.get('dfservice').name + '/_schema?fields=*', param);
+                    return $http.post(INSTANCE_URL.url + '/' + StateService.get('dfservice').name + '/_schema?fields=*', param);
                 } else {
 
                     if (table) {
@@ -339,13 +339,13 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 };
 
                 if (relationData.__dfUI.newRelation) {
-                    return $http.post(INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_related', data);
+                    return $http.post(INSTANCE_URL.url + '/' + params.service + '/_schema/' + params.table + '/_related', data);
                 }
                 else {
 
                     return $http({
                       method: 'PATCH',
-                      url: INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_related',
+                      url: INSTANCE_URL.url + '/' + params.service + '/_schema/' + params.table + '/_related',
                       data: data
                     });
                 }
@@ -359,7 +359,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             _deleteRelation: function (params) {
 
-                return $http.delete(INSTANCE_URL + '/api/v2/' + params.service + '/_schema/' + params.table + '/_related/' + params.relation);
+                return $http.delete(INSTANCE_URL.url + '/' + params.service + '/_schema/' + params.table + '/_related/' + params.relation);
             },
             deleteRelation: function (params) {
 
@@ -371,7 +371,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             updateRelations: function (params) {
 
                 var table = this._search(params.table);
-                var url = INSTANCE_URL + '/api/v2/' + params.service.name + '/_schema/' + params.table + '/_related';
+                var url = INSTANCE_URL.url + '/' + params.service.name + '/_schema/' + params.table + '/_related';
                 return $http.get(url).then(function(response) {
 
                         var relationData = response.data;
@@ -996,7 +996,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         };
       }])
 
-      .directive('dfTableCreateView', ['INSTANCE_URL', 'MOD_SCHEMA_ASSET_PATH', 'NavigationService', 'Table', 'TableDataModel', '$http', 'dfNotify', 'dfObjectService', 'StateService', 'dfApplicationData', 'TableObj', 'tableManager', function (INSTANCE_URL, MOD_SCHEMA_ASSET_PATH, NavigationService, Table, TableDataModel, $http, dfNotify, dfObjectService, StateService, dfApplicationData, TableObj, tableManager) {
+      .directive('dfTableCreateView', ['MOD_SCHEMA_ASSET_PATH', 'NavigationService', 'Table', 'TableDataModel', '$http', 'dfNotify', 'dfObjectService', 'StateService', 'dfApplicationData', 'TableObj', 'tableManager', function (MOD_SCHEMA_ASSET_PATH, NavigationService, Table, TableDataModel, $http, dfNotify, dfObjectService, StateService, dfApplicationData, TableObj, tableManager) {
 
         return {
             restrict: 'E',
@@ -1165,7 +1165,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
       }])
 
 
-      .directive('dfTableEditView', ['INSTANCE_URL', 'MOD_SCHEMA_ASSET_PATH', '$q', 'NavigationService', 'Table', 'TableDataModel', '$http', 'dfNotify', 'tableManager', 'TableObj', 'dfObjectService', 'dfApplicationData', 'StateService', function (INSTANCE_URL, MOD_SCHEMA_ASSET_PATH, $q, NavigationService, Table, TableDataModel, $http, dfNotify, tableManager, TableObj, dfObjectService, dfApplicationData, StateService) {
+      .directive('dfTableEditView', ['MOD_SCHEMA_ASSET_PATH', '$q', 'NavigationService', 'Table', 'TableDataModel', '$http', 'dfNotify', 'tableManager', 'TableObj', 'dfObjectService', 'dfApplicationData', 'StateService', function (MOD_SCHEMA_ASSET_PATH, $q, NavigationService, Table, TableDataModel, $http, dfNotify, tableManager, TableObj, dfObjectService, dfApplicationData, StateService) {
         var childNumber = 1;
         return {
             restrict: 'E',
@@ -2019,7 +2019,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     var ref_service_name = StateService.get('dfservice').name;
 
-                    $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/').then(
+                    $http.get(INSTANCE_URL.url + '/' + ref_service_name + '/_schema/').then(
 
                         function (result) {
                             scope.refTables = result.data.resource;
@@ -2049,7 +2049,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     var ref_service_name =  StateService.get('dfservice').name;
 
-                    $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/' + scope.field.record.ref_table).then(
+                    $http.get(INSTANCE_URL.url + '/' + ref_service_name + '/_schema/' + scope.field.record.ref_table).then(
                         function (result) {
 
                             scope.refFields = result.data.field;
@@ -2183,7 +2183,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                   scope._loadReferenceServices();
 
-                    $http.get(INSTANCE_URL + '/api/v2/' + StateService.get('dfservice').name + '/_schema/' + StateService.get('dftable') + '/_field/').then(
+                    $http.get(INSTANCE_URL.url + '/' + StateService.get('dfservice').name + '/_schema/' + StateService.get('dftable') + '/_field/').then(
 
                         function (result) {
 
@@ -2232,7 +2232,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     var ref_service_name = scope._getServiceNameFromId(scope.relation.record.ref_service_id);
 
-                    $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/').then(
+                    $http.get(INSTANCE_URL.url + '/' + ref_service_name + '/_schema/').then(
                         function (result) {
                             scope.refTables = result.data.resource;
                         },
@@ -2262,7 +2262,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     var ref_service_name = scope._getServiceNameFromId(scope.relation.record.ref_service_id);
 
-                    $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/' + scope.relation.record.ref_table).then(
+                    $http.get(INSTANCE_URL.url + '/' + ref_service_name + '/_schema/' + scope.relation.record.ref_table).then(
                         function (result) {
 
                             scope.refFields = result.data.field;
@@ -2297,7 +2297,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     var ref_service_name = scope._getServiceNameFromId(scope.relation.record.junction_service_id);
 
-                    $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/').then(
+                    $http.get(INSTANCE_URL.url + '/' + ref_service_name + '/_schema/').then(
                         function (result) {
                             scope.junctionTables = result.data.resource;
                         },
@@ -2329,7 +2329,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     var ref_service_name = scope._getServiceNameFromId(scope.relation.record.junction_service_id);
 
-                    $http.get(INSTANCE_URL + '/api/v2/' + ref_service_name + '/_schema/' + scope.relation.record.junction_table).then(
+                    $http.get(INSTANCE_URL.url + '/' + ref_service_name + '/_schema/' + scope.relation.record.junction_table).then(
                         function (result) {
 
                             scope.junctionFields = result.data.field;
@@ -2749,7 +2749,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: 'POST',
-                        url: INSTANCE_URL + '/api/v2/' + StateService.get('dfservice').name + '/_schema',
+                        url: INSTANCE_URL.url + '/' + StateService.get('dfservice').name + '/_schema',
                         data: requestDataObj.data
                     });
                 };

@@ -194,7 +194,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                         $http({
                             method: 'POST',
-                            url: INSTANCE_URL + '/api/v2/system/package?password=' + scope.packageImportPassword + '&overwrite=' + scope.overwrite,
+                            url: INSTANCE_URL.url + '/system/package?password=' + scope.packageImportPassword + '&overwrite=' + scope.overwrite,
                             headers: {
                                 'X-DreamFactory-Session-Token': currentUser.session_token
                             },
@@ -313,7 +313,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
             }
         };
     }])
-    .directive('dfSelectContent', ['$http', '$timeout', 'MOD_PACKAGE_MANAGER_ASSET_PATH', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', function ($http, $timeout, MOD_PACKAGE_MANAGER_ASSET_PATH, INSTANCE_URL, dfApplicationData, dfNotify) {
+    .directive('dfSelectContent', ['$http', '$timeout', 'MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', 'dfNotify', function ($http, $timeout, MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData, dfNotify) {
 
         return {
             restrict: 'E',
@@ -731,7 +731,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
             }
         };
     }])
-    .directive('dfExportPackage', ['INSTANCE_URL', 'ADMIN_API_KEY', 'dfNotify', '$http', '$window', '$timeout', 'UserDataService', function (INSTANCE_URL, ADMIN_API_KEY, dfNotify, $http, $window, $timeout, UserDataService) {
+    .directive('dfExportPackage', ['INSTANCE_URL', 'INSTANCE_API_PREFIX', 'APP_API_KEY', 'dfNotify', '$http', '$window', '$timeout', 'UserDataService', function (INSTANCE_URL, INSTANCE_API_PREFIX, APP_API_KEY, dfNotify, $http, $window, $timeout, UserDataService) {
 
         return {
 
@@ -852,12 +852,12 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                         $http({
                             method: 'POST',
-                            url: INSTANCE_URL + '/api/v2/system/package',
+                            url: INSTANCE_URL.url + '/system/package',
                             data: payload
                         }).then(function successCallback(response) {
                             exportPath = response.data.path;
                             var path = response.data.path;
-                            path = path.replace('api/v2/', '');
+                            path = path.replace(INSTANCE_API_PREFIX, '');
                             scope.publicFilePath = path;
                             scope.showFilePath = true;
 
@@ -894,7 +894,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                 scope.exportDownload = function()
                 {
                     if (exportPath !== '') {
-                        var params = "?api_key=" + ADMIN_API_KEY;
+                        var params = "?api_key=" + APP_API_KEY;
                         var currentUser = UserDataService.getCurrentUser();
                         if (currentUser && currentUser.session_token) {
                             params += "&session_token=" + currentUser.session_token;

@@ -30,7 +30,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         return { record: {}, recordCopy: {} };
     }])
 
-    .controller('LimitCtl', ['INSTANCE_URL', '$rootScope', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function (INSTANCE_URL, $rootScope, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {
+    .controller('LimitCtl', ['$rootScope', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function ($rootScope, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {
 
         $scope.$parent.title = 'Limits';
 
@@ -420,7 +420,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
 
                     return $http({
                         method: 'DELETE',
-                        url: INSTANCE_URL + '/api/v2/system/limit_cache',
+                        url: INSTANCE_URL.url + '/system/limit_cache',
                         params: requestDataObj.params
                     });
                 };
@@ -726,7 +726,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
     'dfApplicationData',
     'dfNotify',
     'dfObjectService',
-    'INSTANCE_URL',
     '$http',
     '$cookies',
     'UserDataService',
@@ -738,7 +737,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         dfApplicationData,
         dfNotify,
         dfObjectService,
-        INSTANCE_URL,
         $http,
         $cookies,
         UserDataService,

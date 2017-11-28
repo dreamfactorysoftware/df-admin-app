@@ -118,15 +118,21 @@ angular
     .constant('APP_VERSION', '2.12.2')
 
     // Set global url for this application
-    .constant('INSTANCE_URL', '')
+    .constant('INSTANCE_BASE_URL', '')
+
+    // Make prefix configurable
+    .constant('INSTANCE_API_PREFIX', '/api/v2')
+
+    // App should use this service when making calls to the API
+    .service('INSTANCE_URL', ['INSTANCE_BASE_URL', 'INSTANCE_API_PREFIX', function (INSTANCE_BASE_URL, INSTANCE_API_PREFIX) { this.url = INSTANCE_BASE_URL + INSTANCE_API_PREFIX;}])
 
     // Set API key for this application
-    .constant('ADMIN_API_KEY', '6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d')
+    .constant('APP_API_KEY', '6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d')
 
     // Set global header for calls made to DreamFactory instance
-    .config(['$httpProvider', 'ADMIN_API_KEY', function($httpProvider, ADMIN_API_KEY) {
+    .config(['$httpProvider', 'APP_API_KEY', function($httpProvider, APP_API_KEY) {
 
-        $httpProvider.defaults.headers.common['X-Dreamfactory-API-Key'] = ADMIN_API_KEY;
+        $httpProvider.defaults.headers.common['X-Dreamfactory-API-Key'] = APP_API_KEY;
         $httpProvider.defaults.headers.delete = {'Content-Type': 'application/json;charset=utf-8'};
     }])
 

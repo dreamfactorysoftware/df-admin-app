@@ -3,8 +3,12 @@
         <div class="panel-heading">SAML 2.0 Login</div>
         <div class="panel-body">
             <span style="margin-right:10px" ng-repeat="(key, val) in samls">
-                <button type="button" class="btn btn-primary btn-sm" data-ng-if="val.icon_class !== null && val.icon_class !== ''" data-ng-click="samlAuthLogin(val.path)"><i class="fa {{val.icon_class}} fa-2x"></i></button>
-                <a data-ng-if="val.icon_class === null || val.icon_class===''" href="/api/v2/{{val.path}}">{{val.label}}</a>
+                <!--we have an icon-->
+                <button type="button" class="btn btn-primary btn-sm" data-ng-if="val.icon_class" data-ng-click="samlAuthLogin(val.path)">
+                    <i class="fa {{val.icon_class}} fa-2x"></i>
+                </button>
+                <!--there is no icon-->
+                <a data-ng-if="!val.icon_class" ng-href="{{url}}/{{val.path}}">{{val.label}}</a>
             </span>
         </div>
     </div>
