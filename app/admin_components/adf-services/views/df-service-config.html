@@ -114,11 +114,10 @@
         </df-file-certificate>
 
         <df-multi-picklist data-ng-if="field.type == 'multi_picklist'"
-                           data-cols="field.columns"
-                           data-legend="field.legend"
-                           data-ng-model="serviceConfig[field.name]"
+                           data-options="field.values"
                            data-selected-options="serviceConfig[field.name]"
-                           data-options="field.values">
+                           data-cols="field.columns"
+                           data-legend="field.legend">
         </df-multi-picklist>
 
         <div class="panel panel-default" data-ng-if="field.type.indexOf('array') > -1">
