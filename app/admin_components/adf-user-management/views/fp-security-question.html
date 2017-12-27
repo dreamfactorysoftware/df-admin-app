@@ -34,7 +34,7 @@
                 <div class="form-group" data-ng-class="{'has-error' : identical === false}">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
-                        <input type="password" id="password" name="df-register-password" placeholder="Enter Password"
+                        <input type="password" id="df-security-password" name="df-security-password" placeholder="Enter Password"
                                data-ng-model="sq.new_password" class="form-control" required
                                data-ng-keyup="verifyPassword(user)"  autocomplete="off">
                     </div>
@@ -45,7 +45,7 @@
 
                     <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-fw fa-check"></i></span>
-                        <input type="password" id="verify-password" name="df-register-verify-password" placeholder="Verify Password"
+                        <input type="password" id="df-security-verify-password" name="df-security-verify-password" placeholder="Verify Password"
                                data-ng-model="sq.verify_password" class="form-control" required
                                data-ng-keyup="verifyPassword(user)" autocomplete="off">
                     </div>

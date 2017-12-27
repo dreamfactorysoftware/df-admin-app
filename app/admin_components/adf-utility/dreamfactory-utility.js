@@ -2438,14 +2438,14 @@ angular.module('dfUtility', ['dfApplication'])
                         var html = '';
 
                         html += '<div class="form-group" ng-if="requireOldPassword">' +
-                            '<input type="password" id="old-password" class="form-control" data-ng-model="password.old_password" placeholder="Enter Old Password" data-ng-required="true" />' +
+                            '<input type="password" id="setpassword-old-password" name="setpassword-old-password" class="form-control" data-ng-model="password.old_password" placeholder="Enter Old Password" data-ng-required="true" />' +
                             '</div>';
 
                         html +=  '<div class="form-group" data-ng-class="{\'has-error\' : identical === false}">' +
-                            '<input type="password" id="password" name="password" placeholder="Enter Password" data-ng-model="password.new_password" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword()" >' +
+                            '<input type="password" id="setpassword-password" name="setpassword-password" placeholder="Enter Password" data-ng-model="password.new_password" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword()" >' +
                             '</div>' +
                             '<div class="form-group" data-ng-class="{\'has-error\' : identical === false}">' +
-                            '<input type="password" id="verify-password" name="verify-password" placeholder="Verify Password" data-ng-model="password.verify_password" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword()" >' +
+                            '<input type="password" id="setpassword-verify-password" name="setpassword-verify-password" placeholder="Verify Password" data-ng-model="password.verify_password" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword()" >' +
                             '</div>';
 
                         var el = $compile(html)(scope);
