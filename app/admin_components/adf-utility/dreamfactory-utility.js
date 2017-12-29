@@ -948,76 +948,68 @@ angular.module('dfUtility', ['dfApplication'])
             return {
                 restrict: 'E',
                 scope: {
+                    options: '=?',
                     selectedOptions: '=?',
                     cols: '=?',
-                    options: '=?',
                     legend: '=?'
                 },
                 templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-multi-picklist.html',
                 link: function (scope, elem, attrs) {
-                    scope.width = 50;
-                    scope.allSelected = false;
-                    scope._init = function(){
-                        angular.forEach(scope.options, function (option) {
-                            option.active = false;
-                        });
-                        if(!scope.cols){
-                            scope.cols = 3;
-                        }
-                        scope.width = (100/(scope.cols*1))-3;
-                    };
-                    scope._init();
 
-                    scope._toggleSelectAll = function(event){
-                        event.stopPropagation();
+                    // init active flag for options, server does not provide this
+                    angular.forEach(scope.options, function (option) {
+                        option.active = false;
+                    });
+
+                    // model value for select all
+                    scope.allSelected = false;
+
+                    // formatting
+                    if (!scope.cols) {
+                        scope.cols = 3;
+                    }
+                    scope.width = (100/(scope.cols*1))-3;
+
+                    scope.toggleSelectAll = function () {
+
+                        // set or clear all based on 'select all' checkbox value
+
+                        var selected = [];
+                        if (scope.allSelected) {
+                            angular.forEach(scope.options, function (option) {
+                                selected.push(option.name);
+                            });
+                        }
+                        scope.selectedOptions = selected;
+                    };
+
+                    scope.setSelectedOptions = function () {
+
+                        // set selectedOptions based on checkbox values
+
                         var selected = [];
                         angular.forEach(scope.options, function (option) {
-                            if(!scope.allSelected) {
+                            if(option.active) {
                                 selected.push(option.name);
                             }
                         });
                         scope.selectedOptions = selected;
                     };
 
-                    scope._toggleOptionState = function (nameStr, event) {
-                        event.stopPropagation();
-                        var selected = [];
-                        angular.forEach(scope.options, function (option) {
-                            if (option.name === nameStr) {
-                                option.active = !option.active;
-                                if(option.active) {
-                                    selected.push(option.name);
-                                }
+                    scope.$watch('selectedOptions', function (newValue, oldValue) {
 
-                                angular.forEach(scope.selectedOptions, function(so){
-                                    if(so !== nameStr){
-                                        selected.push(so);
-                                    }
-                                });
+                        // set checkbox values based on selectedOptions
 
-                                scope.selectedOptions = selected;
-                                return;
-                            }
-                        });
-                    };
-
-                    scope.$watch('selectedOptions', function (n, o) {
-                        if (n == null && n == undefined) return false;
-
-                        angular.forEach(scope.options, function (option) {
-
-                            if (n.indexOf(option.name)!==-1) {
-                                option.active = true;
-                            } else {
-                                option.active = false;
-                            }
-                        });
+                        if (newValue) {
+                            angular.forEach(scope.options, function (option) {
+                                option.active = (newValue.indexOf(option.name) >= 0);
+                            });
+                        }
                     });
 
                     elem.css({
                         'display': 'inline-block', 'position': 'relative'
                     });
-
                 }
             };
         }
@@ -1478,7 +1470,7 @@ angular.module('dfUtility', ['dfApplication'])
                     scope._getResources = function () {
                         return $http(
                             {
-                                method: 'GET', url: INSTANCE_URL + '/api/v2/' + scope.activeService
+                                method: 'GET', url: INSTANCE_URL.url + '/' + scope.activeService
                             }
                         )
                     };
@@ -1554,7 +1546,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                     // PRIVATE API
                     scope._getResources = function () {
-                        return dfApplicationData.getServiceComponents(scope.activeService, INSTANCE_URL + '/api/v2/' + scope.activeService + '/_table/',  {params: {fields: 'name,label'}})
+                        return dfApplicationData.getServiceComponents(scope.activeService, INSTANCE_URL.url + '/' + scope.activeService + '/_table/',  {params: {fields: 'name,label'}})
                     };
 
                     // COMPLEX IMPLEMENTATION
@@ -1630,7 +1622,7 @@ angular.module('dfUtility', ['dfApplication'])
                     scope._getResources = function () {
                         return $http(
                             {
-                                method: 'GET', url: INSTANCE_URL + '/api/v2/' + scope.activeService + '/_schema/'
+                                method: 'GET', url: INSTANCE_URL.url + '/' + scope.activeService + '/_schema/'
                             }
                         )
                     };
@@ -2446,14 +2438,14 @@ angular.module('dfUtility', ['dfApplication'])
                         var html = '';
 
                         html += '<div class="form-group" ng-if="requireOldPassword">' +
-                            '<input type="password" id="old-password" class="form-control" data-ng-model="password.old_password" placeholder="Enter Old Password" data-ng-required="true" />' +
+                            '<input type="password" id="setpassword-old-password" name="setpassword-old-password" class="form-control" data-ng-model="password.old_password" placeholder="Enter Old Password" data-ng-required="true" />' +
                             '</div>';
 
                         html +=  '<div class="form-group" data-ng-class="{\'has-error\' : identical === false}">' +
-                            '<input type="password" id="password" name="password" placeholder="Enter Password" data-ng-model="password.new_password" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword()" >' +
+                            '<input type="password" id="setpassword-password" name="setpassword-password" placeholder="Enter Password" data-ng-model="password.new_password" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword()" >' +
                             '</div>' +
                             '<div class="form-group" data-ng-class="{\'has-error\' : identical === false}">' +
-                            '<input type="password" id="verify-password" name="verify-password" placeholder="Verify Password" data-ng-model="password.verify_password" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword()" >' +
+                            '<input type="password" id="setpassword-verify-password" name="setpassword-verify-password" placeholder="Verify Password" data-ng-model="password.verify_password" class="form-control" data-ng-required="true" data-ng-keyup="_verifyPassword()" >' +
                             '</div>';
 
                         var el = $compile(html)(scope);
@@ -2744,7 +2736,7 @@ angular.module('dfUtility', ['dfApplication'])
 
     // allows us to make synchronous ajax calls.  Not extensive enough in its
     // functionality to replace $http but helps with loading/bootstrapping data
-    .service('XHRHelper', ['INSTANCE_URL', 'ADMIN_API_KEY', '$cookies', function (INSTANCE_URL, ADMIN_API_KEY, $cookies) {
+    .service('XHRHelper', ['INSTANCE_URL', 'APP_API_KEY', '$cookies', function (INSTANCE_URL, APP_API_KEY, $cookies) {
 
         function _isEmpty(obj) {
 
@@ -2770,7 +2762,7 @@ angular.module('dfUtility', ['dfApplication'])
         function _setHeaders(_xhrObj, _headersDataObj) {
 
             // Setting Dreamfactory Headers
-            _xhrObj.setRequestHeader("X-DreamFactory-API-Key", ADMIN_API_KEY);
+            _xhrObj.setRequestHeader("X-DreamFactory-API-Key", APP_API_KEY);
             var currentUser = UserDataService.getCurrentUser();
             if (currentUser && currentUser.session_tpken) {
                 xhrObj.setRequestHeader("X-DreamFactory-Session-Token", currentUser.session_token);
@@ -2838,7 +2830,7 @@ angular.module('dfUtility', ['dfApplication'])
 
 
             // Do XHR
-            xhr.open(_method, INSTANCE_URL + '/api/v2/' + _url + params, _async);
+            xhr.open(_method, INSTANCE_URL.url + '/' + _url + params, _async);
 
             // Set headers
             _setHeaders(xhr, _headers);

@@ -190,17 +190,20 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                         var currentUser = UserDataService.getCurrentUser();
 
+                        // unset content type, it'll get set later
+
                         $http({
                             method: 'POST',
-                            url: INSTANCE_URL + '/api/v2/system/package?password=' + scope.packageImportPassword + '&overwrite=' + scope.overwrite,
+                            url: INSTANCE_URL.url + '/system/package?password=' + scope.packageImportPassword + '&overwrite=' + scope.overwrite,
                             headers: {
-                                'X-DreamFactory-Session-Token': currentUser.session_token
+                                'X-DreamFactory-Session-Token': currentUser.session_token,
+                                'Content-Type': undefined
                             },
                             data: {
                                 files: file,
                                 import_url: file
                             },
-                            transformRequest: function (data, headersGetter) {
+                            transformRequest: function (data) {
 
                                 var formData = new FormData();
 
@@ -208,51 +211,50 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                                     formData.append(key, value);
                                 });
 
-                                // delete content type, it'll get set later
-                                var headers = headersGetter();
-                                delete headers['Content-Type'];
-
                                 return formData;
                             }
-                        }).success(function (data) {
+                        }).then(function (result) {
 
-                            if (data.success === true) {
+                            if (result && result.data) {
 
-                                var messageOptions = {
-                                    module: 'Packages',
-                                    provider: 'dreamfactory',
-                                    type: 'success',
-                                    message: 'Package was imported successfully.'
-                                };
+                                if (result.data.success === true) {
 
-                                dfNotify.success(messageOptions);
+                                    var messageOptions = {
+                                        module: 'Packages',
+                                        provider: 'dreamfactory',
+                                        type: 'success',
+                                        message: 'Package was imported successfully.'
+                                    };
 
-                                scope.importClear();
+                                    dfNotify.success(messageOptions);
 
-                                scope.loadTabData();
-                            } else {
+                                    scope.importClear();
 
-                                var notice = '';
+                                    scope.loadTabData();
+                                } else {
 
-                                angular.forEach(data.log.notice, function (value, key) {
-                                    notice += '* ' + value + '\n';
-                                });
+                                    var notice = '';
 
-                                var msg = 'Package import failed.\n\n' +
-                                    'Reason:\n' +
-                                    notice;
+                                    angular.forEach(result.data.log.notice, function (value, key) {
+                                        notice += '* ' + value + '\n';
+                                    });
 
-                                $timeout(function () {
-                                    alert(msg);
-                                });
+                                    var msg = 'Package import failed.\n\n' +
+                                        'Reason:\n' +
+                                        notice;
+
+                                    $timeout(function () {
+                                        alert(msg);
+                                    });
+                                }
                             }
-                        })
-                        .error(function (data, status) {
+                        }, function (reject) {
+
                             var messageOptions = {
                                 module: 'Packages',
                                 provider: 'dreamfactory',
                                 type: 'error',
-                                message: data.error.message
+                                message: reject
                             };
 
                             dfNotify.error(messageOptions);
@@ -312,7 +314,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
             }
         };
     }])
-    .directive('dfSelectContent', ['$http', '$timeout', 'MOD_PACKAGE_MANAGER_ASSET_PATH', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', function ($http, $timeout, MOD_PACKAGE_MANAGER_ASSET_PATH, INSTANCE_URL, dfApplicationData, dfNotify) {
+    .directive('dfSelectContent', ['$http', '$timeout', 'MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', 'dfNotify', function ($http, $timeout, MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData, dfNotify) {
 
         return {
             restrict: 'E',
@@ -322,17 +324,17 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                 scope.initVars = function () {
                     scope.types = [];
-                    scope.selectedType = {};
+                    scope.selectedType = null;
                     scope.names = [];
-                    scope.selectedName = '';
+                    scope.selectedName = null;
                     scope.selectedNameData = [];
                     scope.tableData = [];
                     scope.search = {};
                 };
 
                 scope.resetVars = function () {
-                    scope.selectedType = {};
-                    scope.selectedName = '';
+                    scope.selectedType = null;
+                    scope.selectedName = null;
                     scope.selectedNameData = [];
                     scope.tableData = [];
                     scope.search = {};
@@ -640,7 +642,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                 scope.$watch('search.text', function (newValue, oldValue) {
 
-                    if (newValue === null) {
+                    if (newValue === null || newValue === undefined) {
                         return;
                     }
 
@@ -658,7 +660,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                     var _type, _name, _names = [], _services, _service;
 
                     scope.names = [];
-                    scope.selectedName = '';
+                    scope.selectedName = null;
                     scope.selectedNameData = [];
 
                     if (!newValue || !newValue.name) {
@@ -730,7 +732,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
             }
         };
     }])
-    .directive('dfExportPackage', ['INSTANCE_URL', 'ADMIN_API_KEY', 'dfNotify', '$http', '$window', '$timeout', 'UserDataService', function (INSTANCE_URL, ADMIN_API_KEY, dfNotify, $http, $window, $timeout, UserDataService) {
+    .directive('dfExportPackage', ['INSTANCE_URL', 'INSTANCE_API_PREFIX', 'APP_API_KEY', 'dfNotify', '$http', '$window', '$timeout', 'UserDataService', function (INSTANCE_URL, INSTANCE_API_PREFIX, APP_API_KEY, dfNotify, $http, $window, $timeout, UserDataService) {
 
         return {
 
@@ -851,12 +853,12 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                         $http({
                             method: 'POST',
-                            url: INSTANCE_URL + '/api/v2/system/package',
+                            url: INSTANCE_URL.url + '/system/package',
                             data: payload
                         }).then(function successCallback(response) {
                             exportPath = response.data.path;
                             var path = response.data.path;
-                            path = path.replace('api/v2/', '');
+                            path = path.replace(INSTANCE_API_PREFIX, '');
                             scope.publicFilePath = path;
                             scope.showFilePath = true;
 
@@ -893,7 +895,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                 scope.exportDownload = function()
                 {
                     if (exportPath !== '') {
-                        var params = "?api_key=" + ADMIN_API_KEY;
+                        var params = "?api_key=" + APP_API_KEY;
                         var currentUser = UserDataService.getCurrentUser();
                         if (currentUser && currentUser.session_token) {
                             params += "&session_token=" + currentUser.session_token;

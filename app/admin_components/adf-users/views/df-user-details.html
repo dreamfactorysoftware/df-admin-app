@@ -18,13 +18,13 @@
                     <div class="col-md-6">
                         <!-- User Username -->
                         <div class="form-group">
-                            <label>{{ (loginAttribute=='username')? 'Username (Required for login)' : 'Username (Optional, defaults to email address)'}}</label>
+                            <label>{{ (loginAttribute==='username')? 'Username (Required for login)' : 'Username (Optional, defaults to email address)'}}</label>
                             <input id="user_details_info_username" type="text" class="form-control" data-ng-model="user.record.username" placeholder=""/>
                         </div>
 
                         <!-- User Email -->
                         <div class="form-group">
-                            <label>{{ (loginAttribute=='username')? 'Email' : 'Email (Required for login)'}}</label>
+                            <label>{{ (loginAttribute==='username')? 'Email' : 'Email (Required for login)'}}</label>
                             <input id="user_details_info_email" type="email" class="form-control" data-ng-model="user.record.email" placeholder=""/>
                         </div>
 

@@ -1,4 +1,4 @@
-<div data-ng-if="showTemplate">
+<div data-ng-show="showTemplate">
     <div class="row">
         <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 df-auth-container df-section-all-round">
 
@@ -27,7 +27,7 @@
                         <div class="form-group" ng-show="useEmail">
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-fw fa-envelope"></i></span>
-                                <input type="email" id="df-login-email" name="df-login-email" placeholder="Enter Email"
+                                <input type="email" id="df-confirm-email" name="df-confirm-email" placeholder="Enter Email"
                                        data-ng-model="user.email" class="form-control" required>
                             </div>
                         </div>
@@ -35,7 +35,7 @@
                         <div class="form-group" ng-show="useUsername">
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-fw fa-user"></i></span>
-                                <input type="text" id="df-username" name="df-username" placeholder="Enter Username"
+                                <input type="text" id="df-confirm-username" name="df-confirm-username" placeholder="Enter Username"
                                        data-ng-model="user.username" class="form-control">
                             </div>
                         </div>
@@ -51,7 +51,7 @@
                         <div class="form-group" data-ng-class="{'has-error' : identical === false}">
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
-                                <input type="password" id="password" name="df-register-password" placeholder="Create new password"
+                                <input type="password" id="df-confirm-password" name="df-confirm-password" placeholder="Create new password"
                                        data-ng-model="user.new_password" class="form-control" required
                                        data-ng-keyup="verifyPassword(user)" >
                             </div>
@@ -62,7 +62,7 @@
 
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-fw fa-check"></i></span>
-                                <input type="password" id="verify-password" name="df-register-verify-password" placeholder="Verify new password"
+                                <input type="password" id="df-confirm-verify-password" name="df-confirm-verify-password" placeholder="Verify new password"
                                        data-ng-model="user.verify_password" class="form-control" required
                                        data-ng-keyup="verifyPassword(user)" >
                             </div>
@@ -70,7 +70,7 @@
 
 
                         <!-- <input type="submit" value="submit"> -->
-                        <input class="btn btn-primary btn-block" id="submit-login" type="submit" value="{{submitLabel}}">
+                        <input class="btn btn-primary btn-block" id="submit-confirm" type="submit" value="{{submitLabel}}">
                     </form>
                 </div>
             </div>

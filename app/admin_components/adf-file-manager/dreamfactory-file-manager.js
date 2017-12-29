@@ -34,7 +34,7 @@ angular.module('dfFileManager', ['ngRoute', 'dfUtility'])
         ];
     }])
 
-    .directive('dfFileManager', ['MOD_FILE_MANAGER_ASSET_PATH', 'INSTANCE_URL', function(MOD_FILE_MANAGER_ASSET_PATH, INSTANCE_URL) {
+    .directive('dfFileManager', ['MOD_FILE_MANAGER_ASSET_PATH', 'INSTANCE_BASE_URL', function(MOD_FILE_MANAGER_ASSET_PATH, INSTANCE_BASE_URL) {
 
         return {
 
@@ -43,7 +43,7 @@ angular.module('dfFileManager', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_FILE_MANAGER_ASSET_PATH + 'views/df-file-manager.html',
             link: function (scope, elem, attrs) {
 
-                $( "#root-file-manager iframe" ).attr( "src", INSTANCE_URL + '/filemanager/index.html?path=/&allowroot=true').show();
+                $( "#root-file-manager iframe" ).attr( "src", INSTANCE_BASE_URL + '/filemanager/index.html?path=/&allowroot=true').show();
 
                 scope.$broadcast('filemanager:loaded');
             }

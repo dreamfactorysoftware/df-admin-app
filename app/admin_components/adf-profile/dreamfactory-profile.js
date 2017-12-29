@@ -31,7 +31,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
         $http({
             method: 'GET',
-            url: INSTANCE_URL + '/api/v2/' + $scope.resource + '/profile'
+            url: INSTANCE_URL.url + '/' + $scope.resource + '/profile'
         }).then(
             function (result) {
                 $scope.user = result.data;
@@ -74,9 +74,16 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
             link: function (scope, elem, attrs) {
 
                 var messageOptions, requestDataObj, session_token, existingUser;
-                var config = SystemConfigDataService.getSystemConfig();
-                scope.loginAttribute = config.authentication.login_attribute;
-                scope.bitnami_demo = config.platform.bitnami_demo;
+
+                scope.loginAttribute = 'email';
+                scope.bitnami_demo = false;
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+                if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('login_attribute')) {
+                    scope.loginAttribute = systemConfig.authentication.login_attribute;
+                }
+                if (systemConfig && systemConfig.platform && systemConfig.platform.hasOwnProperty('bitnami_demo')) {
+                    scope.bitnami_demo = systemConfig.platform.bitnami_demo;
+                }
 
                 scope.updateUser = function () {
                     
@@ -163,7 +170,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                             fields: '*'
                         },
                         data: scope.user,
-                        url: INSTANCE_URL + '/api/v2/' + scope.resource + '/profile'
+                        url: INSTANCE_URL.url + '/' + scope.resource + '/profile'
                     };
 
                     scope.updateUserToServer(requestDataObj).then(
@@ -233,7 +240,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                     return $http({
                         method: 'PUT',
-                        url: INSTANCE_URL + '/api/v2/' + scope.resource + '/profile',
+                        url: INSTANCE_URL.url + '/' + scope.resource + '/profile',
                         data: requestDataObj.data
                     })
                 };
@@ -242,7 +249,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                     return $http({
                         method: 'POST',
-                        url: INSTANCE_URL + '/api/v2/' + scope.resource + '/password',
+                        url: INSTANCE_URL.url + '/' + scope.resource + '/password',
                         params: requestDataObj.params,
                         data: requestDataObj.data
                     })

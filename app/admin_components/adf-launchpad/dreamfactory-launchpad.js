@@ -43,30 +43,27 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
     .controller('LaunchpadCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', 'loadApps', function ($scope, UserDataService, SystemConfigDataService, loadApps) {
 
         $scope.apps = [];
+        $scope.error = false;
 
         $scope.$watch(function () {
 
             return loadApps;
         }, function (newValue, oldValue) {
 
-            if (!newValue) {
-                return;
-            }
+            var apps = [];
+            var error = true;
+            if (newValue && newValue.hasOwnProperty('apps')) {
 
-            $scope.apps = [];
+                error = false;
 
-            if (newValue.hasOwnProperty('apps') && newValue.apps.length > 0) {
-
-                var _apps = [];
-
-                angular.forEach(newValue.apps, function (app, index) {
+                angular.forEach(newValue.apps, function (app) {
                     if (app.url) {
-                        _apps.push(app);
+                        apps.push(app);
                     }
                 });
-
-                $scope.apps = _apps;
             }
+            $scope.apps = apps;
+            $scope.error = error;
         }, true);
     }])
 

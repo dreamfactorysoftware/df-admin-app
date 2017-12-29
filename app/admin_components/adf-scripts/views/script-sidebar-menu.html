@@ -17,8 +17,8 @@
     <div df-fs-height id="scripting-sidebar-list" style="height:500px; overflow-y: scroll">
         <div>
             <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 0">
-                <a class="list-group-item" ng-class="{ highlighted: highlightService(service) }" data-ng-repeat="(service, resources) in apiData.event"
-                   data-ng-click="selectService(service, resources)">{{service}}<i
+                <a class="list-group-item" ng-class="{ highlighted: highlightService(service.name) }" data-ng-repeat="service in apiData.service_list"
+                   data-ng-click="selectService(service)">{{service.name}}<i
                         class="fa fa-fw fa-chevron-right pull-right"></i></a>
             </div>
 

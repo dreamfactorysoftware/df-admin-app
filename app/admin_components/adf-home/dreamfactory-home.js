@@ -51,7 +51,10 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             $scope.$parent.title = 'Home';
 
             // Set module links
-            $scope.links = angular.copy(SystemConfigDataService.getSystemConfig().home_links) || [
+
+            // defaults
+
+            var links = [
                 {
                     name: 'welcome-home',
                     label: 'Welcome',
@@ -77,6 +80,15 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     attributes: []
                 }
             ];
+
+            // system config will override defaults
+
+            var systemConfig = SystemConfigDataService.getSystemConfig();
+            if (systemConfig && systemConfig.hasOwnProperty('home_links')) {
+                links = angular.copy(systemConfig.home_links);
+            }
+
+            $scope.links = links;
 
             angular.forEach($scope.links, function (link) {
                 if (!link.label) {

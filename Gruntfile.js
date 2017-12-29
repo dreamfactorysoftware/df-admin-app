@@ -162,11 +162,10 @@ module.exports = function (grunt) {
 
     // Automatically inject Bower components into the app
     wiredep: {
-      options: {
-      },
       app: {
         src: ['<%= yeoman.app %>/index.html'],
-        ignorePath:  /\.\.\//
+        ignorePath: /\.\.\//
+
       }
     },
 
@@ -211,21 +210,21 @@ module.exports = function (grunt) {
       }
     },
 
-      // Replace references to the images in the compiled js and css files, and the html views
+    // Replace references to the images in the compiled js and css files, and the html views
     filerev_replace: {
-          options: {
-              assets_root: '.tmp/assets/'
-          },
-          compiled_assets: {
-              src: '.tmp/assets/compiled/*.{css,js}'
-          },
-          views: {
-              options: {
-                  views_root: '<%= yeoman.dist%>/views/'
-              },
-              src: '<%= yeoman.dist%>/views/**/*.html'
-          }
+      options: {
+        assets_root: '.tmp/assets/'
       },
+      compiled_assets: {
+        src: '.tmp/assets/compiled/*.{css,js}'
+      },
+      views: {
+        options: {
+          views_root: '<%= yeoman.dist%>/views/'
+        },
+        src: '<%= yeoman.dist%>/views/**/*.html'
+      }
+    },
 
     // Reads HTML for usemin blocks to enable smart builds that automatically
     // concat, minify and revision files. Creates configurations in memory so
@@ -239,8 +238,7 @@ module.exports = function (grunt) {
             steps: {
               js: ['concat', 'uglifyjs'],
               css: ['cssmin']
-            },
-            post: {}
+            }
           }
         }
       }
@@ -251,7 +249,7 @@ module.exports = function (grunt) {
       html: ['<%= yeoman.dist %>/{,*/}*.html'],
       css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
       options: {
-        assetsDirs: ['<%= yeoman.dist %>','<%= yeoman.dist %>/images']
+        assetsDirs: ['<%= yeoman.dist %>', '<%= yeoman.dist %>/images']
       }
     },
 

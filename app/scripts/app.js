@@ -52,10 +52,10 @@ angular
                 // it will be allowed for admin users, and non-admin users whose role allows it
                 // if no role is assigend for the user for the admin app the default role can also allow access
 
-                var config = SystemConfigDataService.getSystemConfig();
+                var systemConfig = SystemConfigDataService.getSystemConfig();
                 var result = false;
-                if (config) {
-                    result = (config.apps && config.apps.filter(function (item) {
+                if (systemConfig) {
+                    result = (systemConfig.apps && systemConfig.apps.filter(function (item) {
                         return (item.name === 'admin');
                     }).length > 0);
                 }
@@ -103,9 +103,9 @@ angular
 
             get: function () {
                 var result = false;
-                var config = SystemConfigDataService.getSystemConfig();
-                if (config) {
-                    result = (config.apps && config.apps.filter(function (item) {
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+                if (systemConfig) {
+                    result = (systemConfig.apps && systemConfig.apps.filter(function (item) {
                         return (item.name === 'admin');
                     }).length > 0);
                 }
@@ -115,23 +115,32 @@ angular
     })
 
     // Set application version number
-    .constant('APP_VERSION', '2.12.2')
+    .constant('APP_VERSION', '2.13.0')
 
     // Set global url for this application
-    .constant('INSTANCE_URL', '')
+    .constant('INSTANCE_BASE_URL', '')
+
+    // Make prefix configurable
+    .constant('INSTANCE_API_PREFIX', '/api/v2')
+
+    // App should use this service when making calls to the API
+    .service('INSTANCE_URL', ['INSTANCE_BASE_URL', 'INSTANCE_API_PREFIX', function (INSTANCE_BASE_URL, INSTANCE_API_PREFIX) { this.url = INSTANCE_BASE_URL + INSTANCE_API_PREFIX;}])
 
     // Set API key for this application
-    .constant('ADMIN_API_KEY', '6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d')
+    .constant('APP_API_KEY', '6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d')
 
     // Set global header for calls made to DreamFactory instance
-    .config(['$httpProvider', 'ADMIN_API_KEY', function($httpProvider, ADMIN_API_KEY) {
+    .config(['$httpProvider', 'APP_API_KEY', function($httpProvider, APP_API_KEY) {
 
-        $httpProvider.defaults.headers.common['X-Dreamfactory-API-Key'] = ADMIN_API_KEY;
+        $httpProvider.defaults.headers.common['X-Dreamfactory-API-Key'] = APP_API_KEY;
         $httpProvider.defaults.headers.delete = {'Content-Type': 'application/json;charset=utf-8'};
     }])
 
     // Configure main app routing rules
-    .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
+    .config(['$routeProvider', '$locationProvider', '$httpProvider', '$qProvider', function ($routeProvider, $locationProvider, $httpProvider, $qProvider) {
+
+        $locationProvider.hashPrefix("");
+
         $routeProvider
             .when('/login', {
                 controller: 'LoginCtrl',
@@ -148,8 +157,12 @@ angular
                         if (currentUser && currentUser.session_token) {
                             if (currentUser.is_sys_admin) {
                                 var systemConfig = SystemConfigDataService.getSystemConfig();
-                                if (currentUser.email === 'user@example.com' && systemConfig && !systemConfig.platform.bitnami_demo) {
-                                    $location.url('/profile');
+                                if ('user@example.com' === currentUser.email) {
+                                    if (systemConfig && systemConfig.platform && systemConfig.platform.hasOwnProperty('bitnami_demo') && !systemConfig.platform.bitnami_demo) {
+                                        $location.url('/profile');
+                                    } else {
+                                        $location.url('/home');
+                                    }
                                 } else {
                                     $location.url('/home');
                                 }
@@ -186,12 +199,12 @@ angular
                             }
                             deferred.reject();
                         } else {
-                            var sysConfig = SystemConfigDataService.getSystemConfig();
-                            if (!sysConfig.authentication.allow_open_registration) {
+                            var systemConfig = SystemConfigDataService.getSystemConfig();
+                            if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('allow_open_registration') && systemConfig.authentication.allow_open_registration) {
+                                deferred.resolve();
+                            } else {
                                 $location.url('/login');
                                 deferred.reject();
-                            } else {
-                                deferred.resolve();
                             }
                         }
                         return deferred.promise;
@@ -216,12 +229,12 @@ angular
                             }
                             deferred.reject();
                         } else {
-                            var sysConfig = SystemConfigDataService.getSystemConfig();
-                            if (!sysConfig.authentication.allow_open_registration) {
+                            var systemConfig = SystemConfigDataService.getSystemConfig();
+                            if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('allow_open_registration') && systemConfig.authentication.allow_open_registration) {
+                                deferred.resolve();
+                            } else {
                                 $location.url('/login');
                                 deferred.reject();
-                            } else {
-                                deferred.resolve();
                             }
                         }
                         return deferred.promise;
@@ -246,12 +259,12 @@ angular
                             }
                             deferred.reject();
                         } else {
-                            var sysConfig = SystemConfigDataService.getSystemConfig();
-                            if (!sysConfig.authentication.allow_open_registration) {
+                            var systemConfig = SystemConfigDataService.getSystemConfig();
+                            if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('allow_open_registration') && systemConfig.authentication.allow_open_registration) {
+                                deferred.resolve();
+                            } else {
                                 $location.url('/login');
                                 deferred.reject();
-                            } else {
-                                deferred.resolve();
                             }
                         }
                         return deferred.promise;
@@ -322,7 +335,7 @@ angular
                         if (currentUser && currentUser.session_token) {
                             if (currentUser.is_sys_admin) {
                                 var systemConfig = SystemConfigDataService.getSystemConfig();
-                                if (currentUser.email === 'user@example.com' && systemConfig && !systemConfig.platform.bitnami_demo) {
+                                if (currentUser.email === 'user@example.com' && systemConfig && systemConfig.platform.hasOwnProperty('bitnami_demo') && !systemConfig.platform.bitnami_demo) {
                                     $location.url('/profile');
                                 } else {
                                     $location.url('/home');
@@ -339,8 +352,6 @@ angular
                 }
             });
 
-        // $httpProvider.interceptors.push('httpVerbInterceptor');
-        //$httpProvider.interceptors.push('httpWrapperInterceptor');
         $httpProvider.interceptors.push('httpValidSession');
     }])
 
@@ -349,9 +360,23 @@ angular
 
         $provide.decorator('$exceptionHandler', ['$delegate', '$injector', function($delegate, $injector) {
 
-            return function(exception) {
+            return function(exception, foo) {
+
+                // Angular 1.6 requires exceptions thrown in promises to be caught.
+                // The admin app itself should use dfNotify and not throw exceptions
+                // for rejected promises. In order to allow modules like user mgt,
+                // tables, and utility to continue to throw exceptions we add this
+                // check here.
+
+                if (typeof exception === 'string') {
+                    var prefix = "Possibly unhandled rejection: ";
+                    if (exception.indexOf(prefix) === 0) {
+                        exception = angular.fromJson(exception.slice(prefix.length));
+                    }
+                }
 
                 // Was this error thrown explicitly by a module
+
                 if (exception.provider && (exception.provider === 'dreamfactory')) {
 
                     $injector.invoke(['dfNotify', function(dfNotify) {

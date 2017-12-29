@@ -1540,7 +1540,7 @@ angular.module('dfTable', ['dfUtility'])
                         function (reject) {
 
                             throw {
-                                module: 'xxDreamFactory Table Module',
+                                module: 'DreamFactory Table Module',
                                 type: 'error',
                                 provider: 'dreamfactory',
                                 exception: reject
@@ -3019,7 +3019,7 @@ angular.module('dfTable', ['dfUtility'])
 
                         scope._buildURL = function (serviceNameStr, tableNameStr) {
 
-                            return INSTANCE_URL + '/api/v2/' + serviceNameStr + '/_table/' + tableNameStr
+                            return INSTANCE_URL.url + '/' + serviceNameStr + '/_table/' + tableNameStr
                         };
 
                         scope.relatedOptions = {
@@ -3227,7 +3227,7 @@ angular.module('dfTable', ['dfUtility'])
                     var options = {
                         service: scope._setSystemService(newValue.ref_table),
                         table: newValue.ref_table,
-                        url: INSTANCE_URL + '/api/v2/' + scope._setSystemService(newValue.ref_table) + '/_table/' + scope._parseSystemTableName(newValue.ref_table),
+                        url: INSTANCE_URL.url + '/' + scope._setSystemService(newValue.ref_table) + '/_table/' + scope._parseSystemTableName(newValue.ref_table),
                         params: {
                             filter: newValue.ref_field + ' = ' + scope.childTableParentRecord[newValue.field]
                         }

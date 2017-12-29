@@ -10,8 +10,12 @@
 angular.module('dreamfactoryApp')
 
     // MainCtrl is the parent controller of everything.  Checks routing and deals with navs
-    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', '$http', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', 'dfIconService', 'allowAdminAccess', '$timeout',
-        function ($scope, UserDataService, SystemConfigDataService, $location, $http, INSTANCE_URL, dfApplicationData, dfNotify, dfIconService, allowAdminAccess, $timeout) {
+    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', 'dfApplicationData', 'dfNotify', 'dfIconService', 'allowAdminAccess', '$animate',
+        function ($scope, UserDataService, SystemConfigDataService, $location, dfApplicationData, dfNotify, dfIconService, allowAdminAccess, $animate) {
+
+            // workaround for issue that causes flickering when loading schema tab
+            // https://github.com/angular/angular.js/issues/14015
+            $animate.enabled(false);
 
             // So child controllers can set the app section title
             $scope.title = '';
@@ -237,7 +241,7 @@ angular.module('dreamfactoryApp')
 
         $scope.$watch('currentUser', function (newValue, oldValue) {
 
-            var links, config;
+            var links, systemConfig;
 
             if (!angular.equals(newValue, oldValue)) {
                 // user changed, reset application object to force reload of all data
@@ -247,10 +251,10 @@ angular.module('dreamfactoryApp')
             links = ['support'];
 
             // get updated system config. it changes on login/logout
-            config = SystemConfigDataService.getSystemConfig();
-            if (config) {
+            systemConfig = SystemConfigDataService.getSystemConfig();
+            if (systemConfig) {
                 // Check for apps.
-                if (config.apps && config.apps.length > 0) {
+                if (systemConfig.apps && systemConfig.apps.length > 0) {
                     // There are apps so show launchpad option.
                     links.push("launchpad");
                 }
@@ -264,7 +268,7 @@ angular.module('dreamfactoryApp')
 
                 // If no config available then hide register option.
                 // Else if open reg is enabled then show register option.
-                if (config && config.authentication.allow_open_registration) {
+                if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('allow_open_registration') && systemConfig.authentication.allow_open_registration) {
                     links.push('register');
                 }
 
@@ -414,8 +418,13 @@ angular.module('dreamfactoryApp')
                     var uri = $location.absUrl().split('?');
                     $window.location.href = uri[0] + '#/home';
                 } else {
-                    if (userDataObj.is_sys_admin && 'user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
-                        $location.url('/profile');
+                    if (userDataObj.is_sys_admin && 'user@example.com' === userDataObj.email) {
+                        var systemConfig = SystemConfigDataService.getSystemConfig();
+                        if (systemConfig && systemConfig.platform && systemConfig.platform.hasOwnProperty('bitnami_demo') && !systemConfig.platform.bitnami_demo) {
+                            $location.url('/profile');
+                        } else {
+                            $location.url('/home');
+                        }
                     } else {
                         $location.url('/home');
                     }
@@ -464,8 +473,14 @@ angular.module('dreamfactoryApp')
         // If we have an email service registered with open registration then
         // we require confirmation.  If that value is null...then we do not require
         // confirmation
+        var confirmationRequired = true;
+        var systemConfig = SystemConfigDataService.getSystemConfig();
+        if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('open_reg_email_service_id')) {
+            confirmationRequired = !!systemConfig.authentication.open_reg_email_service_id;
+        }
+
         $scope.options = {
-            confirmationRequired: SystemConfigDataService.getSystemConfig().authentication.open_reg_email_service_id
+            confirmationRequired: confirmationRequired
         };
 
         // Listen for a register success message
@@ -627,8 +642,13 @@ angular.module('dreamfactoryApp')
             $scope.loginOptions.showTemplate = false;
 
             // Change our app location back to the home page
-            if (userDataObj.is_sys_admin && 'user@example.com' === userDataObj.email && !SystemConfigDataService.getSystemConfig().platform.bitnami_demo) {
-                $location.url('/profile');
+            if (userDataObj.is_sys_admin && 'user@example.com' === userDataObj.email) {
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+                if (systemConfig && systemConfig.platform && systemConfig.platform.hasOwnProperty('bitnami_demo') && !systemConfig.platform.bitnami_demo) {
+                    $location.url('/profile');
+                } else {
+                    $location.url('/home');
+                }
             } else {
                 $location.url('/home');
             }

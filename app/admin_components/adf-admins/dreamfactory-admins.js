@@ -105,7 +105,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             $scope.loadTabData();
         }])
 
-    .directive('dfAdminDetails', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', '$http', '$cookies', 'UserDataService', '$cookieStore', 'SystemConfigDataService', function(MOD_ADMIN_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, INSTANCE_URL, $http, $cookies, UserDataService, $cookieStore, SystemConfigDataService) {
+    .directive('dfAdminDetails', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$http', '$cookies', 'UserDataService', '$cookieStore', 'SystemConfigDataService', function(MOD_ADMIN_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, $http, $cookies, UserDataService, $cookieStore, SystemConfigDataService) {
 
         return {
 
@@ -144,7 +144,11 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 };
 
-                scope.loginAttribute = SystemConfigDataService.getSystemConfig().authentication.login_attribute;
+                scope.loginAttribute = 'email';
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+                if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('login_attribute')) {
+                    scope.loginAttribute = systemConfig.authentication.login_attribute;
+                }
 
                 scope.admin = null;
 
@@ -416,12 +420,10 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.sendEmailOnCreate = false;
 
-                scope.systemConfig = SystemConfigDataService.getSystemConfig();
-
                 scope.invite = function() {
                     
                     $http({
-                        url: INSTANCE_URL + '/api/v2/system/admin/' + scope.admin.record.id,
+                        url: INSTANCE_URL.url + '/system/admin/' + scope.admin.record.id,
                         method: 'PATCH',
                         params: {
                             send_invite: true
@@ -946,7 +948,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     return $http({
                         method: 'POST',
-                        url: INSTANCE_URL + '/api/v2/system/admin',
+                        url: INSTANCE_URL.url + '/system/admin',
                         headers: {
                             "Content-Type" : scope.importType === 'csv' ? 'text/csv' : 'application/' + scope.importType
                         },
@@ -1046,7 +1048,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         };
     }])
 
-    .directive('dfExportAdmins', ['MOD_ADMIN_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', '$http', '$window', 'ADMIN_API_KEY', function (MOD_ADMIN_ASSET_PATH, INSTANCE_URL, UserDataService, $http, $window, ADMIN_API_KEY) {
+    .directive('dfExportAdmins', ['MOD_ADMIN_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', '$http', '$window', 'APP_API_KEY', function (MOD_ADMIN_ASSET_PATH, INSTANCE_URL, UserDataService, $http, $window, APP_API_KEY) {
 
         return {
 
@@ -1075,7 +1077,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         scope.fileFormatStr = fileFormatStr;
 
-                        var params = 'file=admin.' + scope.fileFormatStr + '&api_key=' + ADMIN_API_KEY;
+                        var params = 'file=admin.' + scope.fileFormatStr + '&api_key=' + APP_API_KEY;
                         var currentUser = UserDataService.getCurrentUser();
                         if (currentUser && currentUser.session_token) {
                             params += '&session_token=' + currentUser.session_token;
@@ -1083,7 +1085,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                         // Jason's method to make it work.  He doesn't check for bad response.
                         // I'll look into angularJS's $location to fix this.
-                        $window.location.href= INSTANCE_URL + '/api/v2/system/admin?' + params;
+                        $window.location.href= INSTANCE_URL.url + '/system/admin?' + params;
                     }
                 };
             }

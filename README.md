@@ -1,16 +1,16 @@
 # df-admin-app
-AngularJS administration application for the DreamFactory v2.0 and up
+AngularJS admin application for DreamFactory v2.0 and up.
 
-Administer your DreamFactory instance from anywhere with this Admin application.  Customize with themes from Bootswatch or roll your own with SCSS/SASS.  Concat, minify, and uglify component modules with Node.js, Grunt, and the included grunt script for a deployment ready application.
+Administer your DreamFactory instance from anywhere with this admin application.  Customize with themes from Bootswatch or roll your own with SCSS/SASS.  Concat, minify, and uglify component modules with Node.js, Grunt, and the included grunt script for a deployment ready application.
 
-## Installing Admin App
+## Installing the app
 Clone the repo.  Navigate to the top level directory of where you cloned the repo and type `bower install`.  **NOTE: you must have Node, Grunt, and GruntCLI installed.**  
 
 
 ## Building the app with Node and Grunt
-Admin App comes prepackaged with a grunt file that concats, minifies, uglifies, compresses and reorgs the source files into a more "transit" friendly manner.  It decreases load time and automatically busts client side caches so your changes will be seen the next time a client uses it without any pesky manual cache clearing.  This process will create a folder named `dist` that will contain the app after processing.  From here on out the phrase 'build the app' is referring to this process.  To run the build process simply type `grunt build` on the command line whilst in the top level directory of the app. **NOTE: you must have Node, Grunt, and GruntCLI, and Bower installed.**
+The app comes prepackaged with a grunt file that concats, minifies, uglifies, compresses, and reorgs the source files into a more "transit" friendly manner.  It decreases load time and automatically busts client side caches so your changes will be seen the next time a client uses it without any pesky manual cache clearing.  This process will create a folder named `dist` that will contain the app after processing.  From here on out the phrase 'build the app' is referring to this process.  To run the build process simply type `grunt build` on the command line whilst in the top level directory of the app. **NOTE: you must have Node, Grunt, and GruntCLI, and Bower installed.**
 
-Here's how to build the dist version of admin2.
+Here's how to build the dist version.
 
 One Time Setup:
 
@@ -18,22 +18,20 @@ One Time Setup:
 install node and npm (downloadable installer)
 sudo npm install -g bower
 sudo npm install -g grunt-cli
-cd ~/repos/admin2 (or wherever your repo is)
+cd ~/repos/df-admin-app (or wherever your repo is)
 npm install
-bower install
+bower install (creates sym link app/bower_components)
 ```
 
-Then to rebuild dist folder :
+The app was built using Sass/Scss and compiled with Compass.  This requires [Ruby](https://www.ruby-lang.org/en/downloads/) and Compass.  Follow this [guide](http://compass-style.org/install/) to set it all up. 
+
+Then to rebuild dist folder:
 
 ```
 grunt build
 ```
 
-Before committing changes you should revert /dist/fonts and app/index.html. These modified files are unwanted artifacts of the build process.
-
-```
-git checkout -- dist/fonts app/index.html
-```
+The final compiled CSS will be written to `app/styles/styles.css`.
 
 ## Building a release version
 
@@ -44,22 +42,21 @@ git checkout master
 git pull origin master
 git checkout develop
 git pull origin develop
-git flow release start 2.8.1
+git flow release start 2.12.2
 ```
 
-Bump the app version in app/scripts/app.js.
+Bump the app version in `app/scripts/app.js`.
 
 ```
 // Set application version number
-.constant('APP_VERSION', '2.8.1')
+.constant('APP_VERSION', '2.12.2')
 ```
 
 ```
 grunt build
-git checkout -- dist/fonts app/index.html
 git add --all
-git commit -m "Release 2.8.1"
-git flow release finish 2.8.1
+git commit -m "Release 2.12.2"
+git flow release finish 2.12.2
 git push origin develop
 git checkout master
 git push origin master
@@ -67,17 +64,16 @@ git push --tags
 ```
 
 ## Administer your DreamFactory instance from anywhere
-The Admin App 2 can be configured to manage your DreamFactory instance from another remote server.  Simply open the `app.js` file contained in `app\scripts` directory and add your DreamFactory instance host name to the `INSTANCE_URL` constant at the top.  You can now optionally build the app and deploy the `dist` directory.  You must enable CORS in the DreamFactory instance you will be deploying the app to.
+The app can be configured to manage your DreamFactory instance from another remote server.  Simply open the `app.js` file contained in `app/scripts` directory and add your DreamFactory instance host name to the `INSTANCE_BASE_URL` constant at the top.  You can now optionally build the app and deploy the `dist` directory.  You must enable CORS in the DreamFactory instance you will be deploying the app to.
 
+## Theme the app 
+In `app/styles/sass/partials` you can find the stylesheets for all the custom parts of the app as well as a few bootswatch templates in the `themes` directory.  All of these are added in a specific order in `styles.scss`.  To change to a different bootswatch theme simply change all occurrences of the theme name in `styles.scss`. Dont forget to run `grunt build` to compile the stylesheets and build the app.
 
-## Theme Admin App 
-The Admin App was built using Sass/Scss and compiled with Compass.  This requires [Ruby](https://www.ruby-lang.org/en/downloads/) and Compass.  Follow this [guide](http://compass-style.org/install/) to set it all up.  In `app/styles/sass/partials` you can find the stylesheets for all the custom parts of the admin app as well as a few bootswatch templates (these are named variables(1-8).scss).  All of these are added in a specific order in `styles.scss`.  To change to a different bootswatch theme simply find the '@import variables(1-8).scss' line and change the number.  Or download a different bootswatch theme and replace the current variables.scss with the new themes' variables.scss.  Dont forget to run compass to compile the stylesheets and then optionally build the app and deploy the dist directory.
-
-## Admin App 2 Architecture
-The Admin App 2 was designed to have plugable modules.  Every module contains it's own routes, events, and logic so as to remove one would not stop the app from working.  These modules are stored under `app/admin_components`.  In order to faciliate speed when using Admin App 2 a module was designed as a central repository for data that is used frequently in the app.  Many other modules rely on this module for data to do their job but with a small bit of refactoring it can be removed to produce truly untethered modules.
+## App Architecture
+The app was designed to have plugable modules.  Every module contains it's own routes, events, and logic so as to remove one would not stop the app from working.  These modules are stored under `app/admin_components`.  In order to faciliate speed a module was designed as a central repository for data that is used frequently in the app.  Many other modules rely on this module for data to do their job but with a small bit of refactoring it can be removed to produce truly untethered modules.
 
 ### Main Application
-The main application files are located in two directories.  `scripts` and `views` located under the `app` directory.  The `scripts` directory contains your app.js file and a sub directory called `controllers` contains `main.js`.  Corresponding views for controllers defined in `main.js` can be found in the aforementioned `views` directory.  The `app.js` file contains a few constants.  The ones of note are the `INSTANCE_URL` and `ADMIN_API_KEY`.  The `INSTANCE_URL` allows a host to be set which the application and it's modules will refer to for api calls. `ADMIN_API_KEY` is used in a config option defined below the constants that sets the api key for all calls made from the app. `app.js` also defines standard routes for login, logout, registering.  These routes have corresponding controllers defined in `main.js`.
+The main application files are located in two directories.  `scripts` and `views` located under the `app` directory.  The `scripts` directory contains your app.js file and a sub directory called `controllers` contains `main.js`.  Corresponding views for controllers defined in `main.js` can be found in the aforementioned `views` directory.  The `app.js` file contains a few constants.  The ones of note are the `INSTANCE_BASE_URL`, `INSTANCE_API_PREFIX`, and `APP_API_KEY`.  The `INSTANCE_BASE_URL` allows a host to be set which the application and it's modules will refer to for api calls. `INSTANCE_API_PREFIX` can be changed to match the server setup. `APP_API_KEY` is used in a config option defined below the constants that sets the api key for all calls made from the app. `app.js` also defines standard routes for login, logout, registering.  These routes have corresponding controllers defined in `main.js`.
 
 `main.js` defines app specific controllers.  The MainCtrl acts as a top level scope which other modules can query for app wide data. For example, our top level navigation and component navigation links are stored here in arrays which are passed to directives that render the links and control active link highlighting.  Whenever a module is added/removed it's link will need to be handled here.  But you shouldn't encounter this very often (or at all).
 
@@ -237,9 +233,9 @@ Each one of the directives is organized in a similar fashion.  See the stubbed o
         var Thing = function (thingData) {
             var thingModel = {
                 thingName: 'My Awesome thing name'
-            }
+            };
             
-            thingData = thingData || thingModel
+            thingData = thingData || thingModel;
             
             return {
                 __dfUI: {
@@ -249,7 +245,7 @@ Each one of the directives is organized in a similar fashion.  See the stubbed o
                 record: thingData,
                 recordCopy: angular.copy(thingData);
             }
-        }
+        };
         
         scope.theThing = null;
         
@@ -266,7 +262,7 @@ Each one of the directives is organized in a similar fashion.  See the stubbed o
             }
             
             scope._saveThing()
-        }
+        };
         
         
         // PRIVATE API
@@ -275,12 +271,12 @@ Each one of the directives is organized in a similar fashion.  See the stubbed o
         scope._myPrivFuncOne = function () {
         
             // Do someting
-        }
+        };
         
          scope._saveThingToServer = function () {
         
             // Save thing to server.  Return promise
-        }
+        };
         
         
         // COMPLEX IMPLEMENTATION
@@ -304,7 +300,7 @@ Each one of the directives is organized in a similar fashion.  See the stubbed o
                     //report error
                 }
             );
-        }
+        };
         
         
         // WATCHERS 
@@ -312,7 +308,7 @@ Each one of the directives is organized in a similar fashion.  See the stubbed o
         var watchThing = scope.$watch('thingData', function (newValue, oldValue) {
         
             scope.theThing = new Thing(newValue);
-        }
+        };
         
         
         // MESSAGES
@@ -320,7 +316,7 @@ Each one of the directives is organized in a similar fashion.  See the stubbed o
         scope.$on('$destroy', function (e) {
         
             watchThing();
-        }
+        };
         
         
     }

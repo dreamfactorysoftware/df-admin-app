@@ -43,7 +43,11 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             }
         ];
 
-        $scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
+        $scope.adldap = 0;
+        var systemConfig = SystemConfigDataService.getSystemConfig();
+        if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('adldap')) {
+            $scope.adldap = systemConfig.authentication.adldap.length;
+        }
 
         // Set empty section options
         $scope.emptySectionOptions = {
@@ -68,7 +72,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
             $scope.dataLoading = true;
 
-            var apis = ['role', 'service', 'service_type'];
+            var apis = ['role', 'service_list', 'service_type_list'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -421,7 +425,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     }
                 });
 
-                var watchServiceData = scope.$watchCollection('apiData.service', function (newValue, oldValue) {
+                var watchServiceData = scope.$watchCollection('apiData.service_list', function (newValue, oldValue) {
 
                     if (!newValue) {
                         return;
@@ -726,7 +730,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 scope.allowFilters = function () {
 
                     var type = scope.serviceAccess.record.service.type;
-                    var group = serviceTypeToGroup(type, scope.apiData['service_type']);
+                    var group = serviceTypeToGroup(type, scope.apiData['service_type_list']);
                     scope.serviceAccess.__dfUI.allowFilters = (group === 'Database' && type !== 'couchdb');
                 };
 
@@ -756,7 +760,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 // PRIVATE API
 
                 scope._getComponents = function () {
-                        return $http.get(INSTANCE_URL + '/api/v2/' + scope.serviceAccess.record.service.name + '/?as_access_list=true');
+                        return $http.get(INSTANCE_URL.url + '/' + scope.serviceAccess.record.service.name + '/?as_access_list=true');
                 };
 
                 scope._checkForFailure = function () {
@@ -815,31 +819,35 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.serviceAccess.record.service_id = newValue.id;
                     scope.serviceAccess.record.service.components = ['', '*'];
                     if ('All' !== scope.serviceAccess.record.service.name) {
-                            var group = serviceTypeToGroup(scope.serviceAccess.record.service.type, scope.apiData['service_type']);
-                            if (group !== null) {
-                                switch (group) {
-                                    case 'Script':
-                                    case 'Email':
-                                        break;
-                                    default:
-                                        scope._getComponents().then(
-                                            function (result) {
+                        var group = serviceTypeToGroup(scope.serviceAccess.record.service.type, scope.apiData['service_type_list']);
+                        if (group !== null) {
+                            switch (group) {
+                                case 'Script':
+                                case 'Email':
+                                    break;
+                                default:
+                                    scope._getComponents().then(
 
-                                                scope.serviceAccess.record.service.components = result.data.resource;
-                                            },
+                                        function (result) {
 
-                                            function (reject) {
-                                                throw {
-                                                    module: 'DreamFactory Utility Module',
-                                                    type: 'error',
-                                                    provider: 'dreamfactory',
-                                                    exception: reject
-                                                }
-                                            }
-                                        );
-                                        break;
-                                }
+                                            scope.serviceAccess.record.service.components = result.data.resource;
+                                        },
+
+                                        function (reject) {
+
+                                            var messageOptions = {
+                                                module: 'Roles',
+                                                type: 'error',
+                                                provider: 'dreamfactory',
+                                                message: reject
+                                            };
+
+                                            dfNotify.error(messageOptions);
+                                        }
+                                    );
+                                    break;
                             }
+                        }
                     }
                     scope._checkForFailure();
                     scope._checkForFailure();
@@ -876,8 +884,11 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     };
                 };
 
-                scope.adldap = SystemConfigDataService.getSystemConfig().authentication.adldap.length;
-
+                scope.adldap = 0;
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+                if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('adldap')) {
+                    scope.adldap = systemConfig.authentication.adldap.length;
+                }
                 scope.roles = null;
 
                 scope.currentEditRole = null;

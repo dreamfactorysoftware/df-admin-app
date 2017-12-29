@@ -6,8 +6,8 @@
             <select class="form-control"
                     data-ng-model="serviceDefinition.format"
                     ng-disabled="!isServiceDefEditable">
-                <option value=0 selected="selected">JSON</option>
-                <option value=1>YAML</option>
+                <option value="json" selected="selected">JSON</option>
+                <option value="yaml">YAML</option>
             </select>
         </div>
 
@@ -30,7 +30,7 @@
                 <df-ace-editor data-input-type="'string'"
                                data-input-content="serviceDefinition.content"
                                data-input-update="serviceDefUpdateCounter"
-                               data-input-format="serviceDefinition.format == 0 ? 'json' : 'yaml'"
+                               data-input-format="serviceDefinition.format"
                                data-is-editable="isServiceDefEditable"
                                data-editor-obj="serviceDefEditorObj"
                                data-target-div="newService? 'serviceDefCreate' : 'serviceDefEdit'">
