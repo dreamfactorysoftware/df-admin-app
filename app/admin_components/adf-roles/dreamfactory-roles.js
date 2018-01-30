@@ -864,7 +864,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             var group = serviceTypeToGroup(scope.serviceAccess.record.service.type, scope.apiData['service_type']);
                             if (group !== null) {
                                 switch (group) {
-                                    case 'Script':
                                     case 'Email':
                                         break;
                                     default:
