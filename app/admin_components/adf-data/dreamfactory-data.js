@@ -88,7 +88,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
             if (newValue) {
 
                 $scope.services = newValue.filter(function (obj) {
-                    return ['mysql', 'pgsql', 'sqlite', 'sqlsrv', 'sqlanywhere', 'oracle', 'ibmdb2', 'informix', 'firebird', 'aws_redshift_db'].indexOf(obj.type) >= 0;
+                    return ['mysql', 'pgsql', 'sqlite', 'sqlsrv', 'memsql', 'sqlanywhere', 'oracle', 'ibmdb2', 'informix', 'firebird', 'aws_redshift_db'].indexOf(obj.type) >= 0;
                 });
             }
         });

@@ -832,6 +832,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         "description": "Database service supporting SQL Server connections.",
                         "group": "Database"
                     }, {
+                        "name": "memsql",
+                        "label": "MemSQL",
+                        "description": "Database service supporting MemSQL connections.",
+                        "group": "Database"
+                    }, {
                         "name": "apns",
                         "label": "Apple Push Notification",
                         "description": "Apple Push Notification Service Provider.",
