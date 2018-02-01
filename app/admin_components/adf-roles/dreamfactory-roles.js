@@ -434,8 +434,15 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.services = angular.copy(newValue);
 
                     if (scope.services[0].name !== 'All') {
-                        scope.services.unshift({id: null, name: 'All', components: ["", "*"]});
+                        scope.services.unshift({id: null, name: 'All'});
                     }
+
+                    angular.forEach(scope.services, function (svc) {
+
+                        if (!svc.components) {
+                            svc.components = ["", "*"];
+                        }
+                    });
                 });
 
                 // MESSAGES
@@ -626,25 +633,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             // Get the service for this serviceAccess's service_id
                             _newSA.record['service'] = scope._getService(obj.service_id);
 
-
-                            if (_newSA.record.service.hasOwnProperty('components') && typeof _newSA.record.service.components === 'string') {
-
-                                // Set error to true.  This will trigger the ui changes
-                                _newSA.__dfUI.hasError = true;
-
-                                // Set component to null;
-                                _newSA.record.component = null;
-
-                                var messageOptions = {
-                                    module: 'Roles',
-                                    type: 'error',
-                                    provider: 'dreamfactory',
-                                    message: _newSA.record.service.components
-                                };
-
-                                dfNotify.error(messageOptions);
-                            }
-
                             // store on the scope
                             scope.roleServiceAccesses.push(_newSA);
                         });
@@ -760,51 +748,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 // PRIVATE API
 
                 scope._getComponents = function () {
-                        return $http.get(INSTANCE_URL.url + '/' + scope.serviceAccess.record.service.name + '/?as_access_list=true');
+
+                    var name = scope.serviceAccess.record.service.name;
+                    return $http.get(INSTANCE_URL.url + '/' + name + '/?as_access_list=true');
                 };
-
-                scope._checkForFailure = function () {
-
-                    // Check if service components is a string.  If it is it's an error
-                    if (typeof scope.serviceAccess.record.components === 'string') {
-
-                        // Set error to true.  This will trigger the ui changes
-                        scope.serviceAccess.__dfUI.hasError = true;
-
-                        // Set component to null;
-                        scope.serviceAccess.record.component = null;
-
-                        var messageOptions = {
-                            module: 'Roles',
-                            type: 'error',
-                            provider: 'dreamfactory',
-                            message: scope.serviceAccess.record.components
-                        };
-
-                        dfNotify.error(messageOptions);
-                    }
-                    else {
-
-                        // set error to false. ditto
-                        scope.serviceAccess.__dfUI.hasError = false;
-                    }
-                };
-
 
                 // WATCHERS
-
-                var watchServiceAccess = scope.$watch('serviceAccess', function (oldValue, newValue) {
-
-                    if (!newValue) {
-                        return false;
-                    }
-                    if (!newValue.record.service) {
-                        return false;
-                    }
-
-                    // set filters if allowed
-                    scope.allowFilters();
-                });
 
                 var watchServiceAccessRecordService = scope.$watch('serviceAccess.record.service', function (newValue, oldValue) {
 
@@ -812,52 +761,59 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         return false;
                     }
 
+                    scope.serviceAccess.__dfUI.hasError = false;
+
                     // set filters if allowed
                     scope.allowFilters();
 
                     // update service_id prop
                     scope.serviceAccess.record.service_id = newValue.id;
-                    scope.serviceAccess.record.service.components = ['', '*'];
-                    if ('All' !== scope.serviceAccess.record.service.name) {
-                        var group = serviceTypeToGroup(scope.serviceAccess.record.service.type, scope.apiData['service_type_list']);
-                        if (group !== null) {
-                            switch (group) {
-                                case 'Email':
-                                    break;
-                                default:
-                                    scope._getComponents().then(
 
-                                        function (result) {
-
-                                            scope.serviceAccess.record.service.components = result.data.resource;
-                                        },
-
-                                        function (reject) {
-
-                                            var messageOptions = {
-                                                module: 'Roles',
-                                                type: 'error',
-                                                provider: 'dreamfactory',
-                                                message: reject
-                                            };
-
-                                            dfNotify.error(messageOptions);
-                                        }
-                                    );
-                                    break;
-                            }
-                        }
+                    var name = scope.serviceAccess.record.service.name;
+                    var group = serviceTypeToGroup(scope.serviceAccess.record.service.type, scope.apiData['service_type_list']);
+                    if (name === 'All' || group === null || group === 'Email') {
+                        // use default components
+                        return;
                     }
-                    scope._checkForFailure();
-                    scope._checkForFailure();
+
+                    // try to get actual components
+
+                    var components = ['', '*'];
+
+                    scope._getComponents().then(
+
+                        function (result) {
+
+                            components = result.data.resource;
+                        },
+
+                        function (reject) {
+
+                            scope.serviceAccess.__dfUI.hasError = true;
+                            scope.serviceAccess.record.component = null;
+
+                            var messageOptions = {
+                                module: 'Roles',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            };
+
+                            dfNotify.error(messageOptions);
+                        }
+                    ).finally(
+                        function () {
+                            scope.serviceAccess.record.service.components = components;
+                        }
+                    );
                 });
 
 
                 // MESSAGES
 
                 scope.$on('$destroy', function (e) {
+
                     watchServiceAccessRecordService();
-                    watchServiceAccess();
                 });
             }
         };
