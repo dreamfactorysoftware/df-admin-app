@@ -1106,7 +1106,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                     if (scope.selections.service) {
                         type = scope.selections.service.type;
-                        if (type === 'github' || type === 'gitlab') {
+                        if (type === 'github' || type === 'gitlab' || type === 'bitbucket') {
                             if (scope.serviceConfig.scm_repository && scope.serviceConfig.scm_reference && scope.serviceConfig.storage_path) {
                                 enable = true;
                             }
@@ -1135,7 +1135,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     var servicePath = scope.serviceConfig.storage_path;
                     var url = INSTANCE_URL.url + '/' + serviceName;
 
-                    if(scope.selections.service && (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab')){
+                    if(scope.selections.service && (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket')){
                         var params = {
                             path: servicePath,
                             branch: serviceRef,
@@ -1486,17 +1486,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         // service to link to
                         config.storage_service_id = (scope.selections.service ? scope.selections.service.id : null);
 
-                        // repo is allowed for github or gitlab, replace empty string with null
+                        // repo is allowed for github or bitbucket, gitlab, replace empty string with null
                         if (scope.selections.service &&
-                            (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab')) {
+                            (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket')) {
                             config.scm_repository = (config.scm_repository ? config.scm_repository : null);
                         } else {
                             config.scm_repository = null;
                         }
 
-                        // ref is allowed for github or gitlab, replace empty string with null
+                        // ref is allowed for github or bitbucket, gitlab, replace empty string with null
                         if (scope.selections.service &&
-                            (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab')) {
+                            (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket')) {
                             config.scm_reference = (config.scm_reference ? config.scm_reference : null);
                         }  else {
                             config.scm_reference = null;
