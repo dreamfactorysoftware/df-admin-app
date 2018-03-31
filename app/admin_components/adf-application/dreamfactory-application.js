@@ -268,7 +268,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     role: {
                         include_count: true,
                         related: 'role_service_access_by_role_id,lookup_by_role_id',
-                        limit: limit
+                        limit: 10000
                     },
                     admin: {
                         include_count: true,
