@@ -317,7 +317,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // declare our directive and pass in our constant
-    .directive('dfComponentNav', ['MOD_UTILITY_ASSET_PATH', '$location', '$rootScope', function (MOD_UTILITY_ASSET_PATH, $location, $rootScope) {
+    .directive('dfComponentNav', ['MOD_UTILITY_ASSET_PATH', '$location', '$route', '$rootScope', function (MOD_UTILITY_ASSET_PATH, $location, $route, $rootScope) {
 
         return {
 
@@ -354,6 +354,15 @@ angular.module('dfUtility', ['dfApplication'])
                     scope._closeMenu();
                 };
 
+                scope.reloadRoute = function (path) {
+                    if (scope._activeTabClicked(path)) {
+                        $route.reload();
+                    }
+                };
+
+                scope._activeTabClicked = function (path) {
+                    return $location.path() === path;
+                };
 
                 // COMPLEX IMPLEMENTATION
                 scope._openMenu = function () {
