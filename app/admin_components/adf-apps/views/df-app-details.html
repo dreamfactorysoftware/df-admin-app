@@ -121,9 +121,13 @@
 
                 <div class="col-md-6">
                     <!-- Assign a Role -->
+                    <div class="form-group"> 
+                        <label>Assign a Default Role Filter </label>
+                        <input class="form-control" ng-model="roleFilter">
+                    </div>
                     <div class="form-group">
                         <label>Assign a Default Role</label><df-simple-help data-options="dfHelp.assignRole"></df-simple-help>
-                        <select id="apps_details_role" class="form-control" data-ng-model="app.record.role_id" data-ng-options="role.id as role.name for role in apiData.role">
+                        <select id="apps_details_role" class="form-control" data-ng-model="app.record.role_id" data-ng-options="role.id as role.name for role in apiData.role | filter:{name:roleFilter}">
                             <option value="">-- No Role Selected --</option>
                         </select>
                     </div>
