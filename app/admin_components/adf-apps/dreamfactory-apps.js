@@ -52,7 +52,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         // Set empty section options
         $scope.emptySectionOptions = {
             title: 'You have no Apps!',
-            text: 'Click the button below to get started building your first application.  You can always create new applications by clicking the tab located in the section menu to the left.',
+            text: 'Click the button below to get started building your first application. You can always create new applications by clicking the tab located in the section menu to the left.',
             buttonText: 'Create An App!',
             viewLink: $scope.links[1],
             active: false
@@ -470,6 +470,11 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     {
                         name: 'name',
                         label: 'Name',
+                        active: true
+                    },
+                    {
+                        name: 'role_by_role_id',
+                        label: 'Role',
                         active: true
                     },
                     {
