@@ -753,14 +753,17 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                                 if (reject.status === 401 || (reject.data && reject.data.error && reject.data.error.code === 401)  ||
                                     ((reject.status === 403 || (reject.data && reject.data.error && reject.data.error.code === 403)) && reject.data.error.message.indexOf('The token has been blacklisted') >= 0)) {
 
-                                    if (reject.data.error.message.indexOf('Token has expired') >= 0 || reject.config.url.indexOf('/profile') !== -1) {
-                                        //  refresh session
-                                        return refreshSession(reject);
+                                    if (reject.data.error) {
+                                        if (reject.data.error.message.indexOf('Token has expired') >= 0 || reject.config.url.indexOf('/profile') !== -1) {
+                                            //  refresh session
+                                            return refreshSession(reject);
+                                        }
+                                        else {
+                                            // new session
+                                            return newSession(reject);
+                                        }
                                     }
-                                    else {
-                                        // new session
-                                        return newSession(reject);
-                                    }
+
                                 }
                             }
                         }

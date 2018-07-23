@@ -29,6 +29,7 @@
         <!-- Top level Nav -->
         <df-top-level-nav-std data-options="topLevelNavOptions"></df-top-level-nav-std>
 
+       <df-license-expiry-notification></df-license-expiry-notification>
 
         <div data-ng-if="showAdminComponentNav" style="margin: 10px auto;">
             <!-- Component nav and title -->
@@ -97,6 +98,7 @@
     <!-- build:js({.tmp,app}) scripts/app.js -->
     <script src="admin_components/adf-user-management/dreamfactory-user-management.js"></script>
     <script src="admin_components/adf-utility/dreamfactory-utility.js"></script>
+    <script src="admin_components/adf-utility/license-expiry-notification/license-expiry-notification.directive.js"></script>
     <script src="admin_components/adf-system-config/dreamfactory-system-config.js"></script>
     <script src="admin_components/adf-admins/dreamfactory-admins.js"></script>
     <script src="admin_components/adf-users/dreamfactory-users.js"></script>
@@ -120,6 +122,7 @@
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/main.js"></script>
     <script src="scripts/polyfill.js"></script>
+    <script src="services/license-data.service.js"></script>
     <!-- endbuild -->
 
     <!-- other deps -->
