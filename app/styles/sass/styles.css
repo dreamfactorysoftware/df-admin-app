@@ -10346,6 +10346,19 @@ body {
   overflow-y: scroll;
 }
 
+/* line 1, partials/_df-license-expiry-notification.scss */
+#df-license-expiry-notification {
+  background-color: red;
+  padding: 15px;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+/* line 8, partials/_df-license-expiry-notification.scss */
+#df-license-expiry-notification .description {
+  margin: 0;
+}
+
 /* line 2, ../../admin_components/adf-help/styles/style.scss */
 .help-container {
   display: inline;
