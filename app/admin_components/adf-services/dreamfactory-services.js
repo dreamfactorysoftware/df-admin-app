@@ -798,8 +798,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         "group": "SSO"
                     }, {
                         "name": "ibmdb2",
-                        "label": "IBM DB2",
-                        "description": "Database service supporting IBM DB2 SQL connections.",
+                        "label": "IBM Db2",
+                        "description": "Database service supporting IBM Db2 SQL connections.",
                         "group": "Database"
                     }, {
                         "name": "informix",
