@@ -18,6 +18,9 @@
 // needed for filter gradient
 @import "compass";
 
+
+@import "font-awesome.min.css";
+
 // Custom DreamFactory SCSS
 @import "partials/_base.scss";
 @import "partials/_df-remote-login-providers.scss";
@@ -31,3 +34,7 @@
 @import "partials/_df-dropdown-submenu.scss";
 @import "partials/_df-event-picker.scss";
 @import "../../admin_components/adf-help/styles/style.scss";
+
+[data-ng-click] {
+  cursor: pointer;
+}
