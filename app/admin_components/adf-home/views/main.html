@@ -7,7 +7,7 @@
 
         <div data-ng-repeat="link in links" data-ng-if="activeView.name === link.name" style="height: 100%">
             <div style="height:100%">
-                <iframe src="{{ trustUrl(link.href) }}" data-ng-if="link.href" style="padding-bottom: 75px; height: 100%; width: 100%; border: 0px"></iframe>
+                <iframe ng-src="{{ trustUrl(link.href) }}" data-ng-if="link.href" style="padding-bottom: 75px; height: 100%; width: 100%; border: 0px"></iframe>
             </div>
         </div>
     </div>

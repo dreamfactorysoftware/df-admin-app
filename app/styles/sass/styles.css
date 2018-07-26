@@ -5,6 +5,7 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+@import url(font-awesome.min.css);
 /* line 9, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_normalize.scss */
 html {
   font-family: sans-serif;
@@ -9545,4 +9546,9 @@ body {
   top: 20px;
   left: 20px;
   z-index: 10001;
+}
+
+/* line 38, styles.scss */
+[data-ng-click] {
+  cursor: pointer;
 }

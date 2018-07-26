@@ -27,6 +27,7 @@
                         <table class="table table-responsive table-bordered table-striped table-hover table-condensed">
                             <thead>
                             <th></th>
+
                             <th data-ng-class="order.orderBy === field.name ? 'df-th-selected' : ''"
                                 data-ng-click="orderOnSelect(field)"
                                 data-ng-repeat="field in fields">
@@ -58,7 +59,10 @@
                                         &nbsp;
                                         <i class="fa fa-clipboard" ngclipboard data-clipboard-target="#apps_table_row_{{$index}}_{{obj.record.id}}_api_key" data-ng-click="$event.stopPropagation()" title="Copy to clipboard"></i>
                                     </span>
-                                    <span ng-if="fields[$index].name !== 'api_key'">
+                                    <span ng-if="fields[$index].name === 'role_by_role_id'">
+                                        {{value.name}}
+                                    </span>
+                                    <span ng-if="fields[$index].name !== 'api_key' && fields[$index].name != 'role_by_role_id'">
                                         {{value}}
                                     </span>
                                 </td>

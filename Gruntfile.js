@@ -21,6 +21,8 @@ module.exports = function (grunt) {
     dist: 'dist'
   };
 
+  var serveStatic = require('serve-static');
+
   // Define the configuration for all the tasks
   grunt.initConfig({
 
@@ -76,12 +78,12 @@ module.exports = function (grunt) {
           open: true,
           middleware: function (connect) {
             return [
-              connect.static('.tmp'),
+              serveStatic('.tmp'),
               connect().use(
                 '/bower_components',
-                connect.static('./bower_components')
+                serveStatic('./bower_components')
               ),
-              connect.static(appConfig.app)
+              serveStatic(appConfig.app)
             ];
           }
         }
@@ -91,13 +93,13 @@ module.exports = function (grunt) {
           port: 9001,
           middleware: function (connect) {
             return [
-              connect.static('.tmp'),
-              connect.static('test'),
+              serveStatic('.tmp'),
+              serveStatic('test'),
               connect().use(
                 '/bower_components',
-                connect.static('./bower_components')
+                serveStatic('./bower_components')
               ),
-              connect.static(appConfig.app)
+              serveStatic(appConfig.app)
             ];
           }
         }
@@ -340,13 +342,6 @@ module.exports = function (grunt) {
       }
     },
 
-    // Replace Google CDN references
-    cdnify: {
-      dist: {
-        html: ['<%= yeoman.dist %>/*.html']
-      }
-    },
-
     // Copies remaining files to places other tasks can use
     copy: {
       dist: {
@@ -361,7 +356,6 @@ module.exports = function (grunt) {
             '*.html',
             'views/{,*/}*.html',
             'images/{,*/}*.{png,jpg,jpeg,gif,webp}',
-            'fonts/*',
             'admin_components/**/*.html',
             'admin_components/**/examples/**/*',
             'vendor/**/*'
@@ -376,6 +370,11 @@ module.exports = function (grunt) {
           cwd: 'bower_components/bootstrap-sass/assets',
           src: 'fonts/*',
           dest: '<%= yeoman.dist %>'
+        }, {
+            expand: true,
+            cwd: '<%= yeoman.app %>/styles/fonts/',
+            src: 'font-awesome/*',
+            dest: '<%= yeoman.dist %>/fonts'
         }]
       },
       styles: {
@@ -448,7 +447,6 @@ module.exports = function (grunt) {
     'autoprefixer',
     'concat',
     'copy:dist',
-    'cdnify',
     'cssmin',
     'uglify',
     'filerev',

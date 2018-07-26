@@ -1,7 +1,7 @@
 <div class="df-component-navbar">
     <ul class="nav nav-pills pull-right visible-md visible-lg">
         <li data-ng-repeat="link in options.links" data-ng-class="activeLink === link.name ? 'active' : ''">
-            <a href="#{{link.path}}">{{link.label}}</a>
+            <a href="#{{link.path}}" ng-click="reloadRoute(link.path)">{{link.label}}</a>
         </li>
     </ul>
 
@@ -17,7 +17,7 @@
             </div>
             <ul class="list-group">
                 <li data-ng-repeat="link in options.links" class="list-group-item" data-ng-class="activeLink === link.name ? 'active' : ''">
-                    <a href="#{{link.path}}" >{{link.label}}</a>
+                    <a href="#{{link.path}}" ng-click="reloadRoute(link.path)" >{{link.label}}</a>
                 </li>
             </ul>
         </div>

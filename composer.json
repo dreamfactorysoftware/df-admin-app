@@ -16,9 +16,9 @@
     "license":           ["Apache-2.0"],
     "authors":           [
         {
-            "name":  "Todd Appleton",
-            "email": "toddappleton@dreamfactory.com",
-            "role":  "Lead Developer and QA, client-side"
+            "name":  "DreamFactory Dev Team",
+            "email": "dspsupport@dreamfactory.com",
+            "role":  "Development team"
         }
     ],
     "support":           {
@@ -32,7 +32,7 @@
     },
     "extra":             {
         "branch-alias":   {
-            "dev-develop": "2.10.x-dev"
+            "dev-develop": "2.16.x-dev"
         },
         "installer-name": "dreamfactory"
     }
