@@ -17,7 +17,6 @@ angular
         'ngSanitize',
         'ngTouch',
         'dfUtility',
-        'dfLicense',
         'dfHome',
         'dfSystemConfig',
         'dfAdmins',
@@ -36,7 +35,9 @@ angular
         'dfApiDocs',
         'dfFileManager',
         'dfPackageManager',
-        'dfLimit'
+        'dfLimit',
+        'dfLicenseExpired',
+        'dfLicenseExpiredBanner'
     ])
 
     // each tab uses this in its resolve function to make sure user is allowed access
