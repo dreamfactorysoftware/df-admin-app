@@ -108,6 +108,8 @@ angular.module('dreamfactoryApp')
 
             // View options
             $scope.showAdminComponentNav = false;
+            $scope.showHeader = true;
+            $scope.showLicenseExpiredBanner = true;
 
             var navLinks = [
 
@@ -332,10 +334,10 @@ angular.module('dreamfactoryApp')
 
         $scope.$on('$routeChangeSuccess', function (e) {
 
-            var path;
+            $scope.showHeader = true;
+            $scope.showLicenseExpiredBanner = true;
 
-            path = $location.path();
-            switch (path) {
+            switch ($location.path()) {
                 case '/home':
                 case '/apps':
                 case '/admins':
@@ -351,6 +353,11 @@ angular.module('dreamfactoryApp')
                 case '/package-manager':
                 case '/limits':
                     $scope.showAdminComponentNav = true;
+                    break;
+                case '/license-expired':
+                    $scope.showHeader = false;
+                    $scope.showLicenseExpiredBanner = false;
+                    $scope.showAdminComponentNav = false;
                     break;
                 default:
                     $scope.showAdminComponentNav = false;
