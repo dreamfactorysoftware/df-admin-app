@@ -350,7 +350,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
         };
     }])
 
-    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService) {
+    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', 'INSTANCE_URL', function (MOD_SERVICES_ASSET_PATH, $q, $http, dfApplicationData, dfNotify, dfObjectService, INSTANCE_URL) {
 
         return {
 
@@ -502,6 +502,32 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     }
 
                     return data;
+                };
+
+
+                scope.testServiceConnection = function () {
+
+                    var url = INSTANCE_URL.url + '/' + scope.serviceInfo.name + '/_schema';
+
+                    var messageOptions = {
+                        module: 'Services',
+                        provider: 'dreamfactory'
+                    };
+
+                    $http.get(url).then(function (response) {
+                        messageOptions.type = 'success';
+                        messageOptions.message = 'Test connection succeeded.';
+                        dfNotify.success(messageOptions);
+
+                    }, function (reject) {
+                        messageOptions.type = 'error';
+                        messageOptions.message = reject.data.error.message;
+                        dfNotify.error(messageOptions);
+                    });
+                };
+
+                scope.isServiceTypeDatabase = function () {
+                    return scope.selectedSchema.group == 'Database';
                 };
 
                 scope.saveService = function () {
