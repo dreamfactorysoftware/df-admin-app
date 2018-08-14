@@ -9160,6 +9160,15 @@ body {
 .df-top-navbar .df-navbar-nav .notification-item:last-child {
   border-bottom: none;
 }
+/* line 29, partials/_df-top-level-nav-std.scss */
+.df-top-navbar .df-navbar-nav .notify:after {
+  position: absolute;
+  top: 21%;
+  content: '';
+  padding: .25em;
+  border-radius: 50%;
+  background: red;
+}
 
 /* line 15, partials/_df-component-nav.scss */
 .df-component-navbar {

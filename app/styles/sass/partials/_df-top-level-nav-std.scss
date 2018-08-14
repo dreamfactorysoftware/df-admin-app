@@ -26,6 +26,15 @@
       border-bottom: none;
     }
 
+    .notify:after{
+      position: absolute;
+      top: 21%;
+      content: '';
+      padding: .25em;
+      border-radius: 50%;
+      background: red;
+    }
+
     li {
 
       a {}
