@@ -9148,6 +9148,18 @@ body {
   padding-left: 15px;
   padding-top: 4px;
 }
+/* line 17, partials/_df-top-level-nav-std.scss */
+.df-top-navbar .df-navbar-nav .notification-item:hover {
+  text-decoration: underline;
+}
+/* line 21, partials/_df-top-level-nav-std.scss */
+.df-top-navbar .df-navbar-nav .notification-item {
+  border-bottom: 1px solid #999999;
+}
+/* line 25, partials/_df-top-level-nav-std.scss */
+.df-top-navbar .df-navbar-nav .notification-item:last-child {
+  border-bottom: none;
+}
 
 /* line 15, partials/_df-component-nav.scss */
 .df-component-navbar {
