@@ -3029,6 +3029,7 @@ angular.module('dfUtility', ['dfApplication'])
         return function () {
 
             return {
+                upgrade: 'fa fa-fw fa-level-up',
                 support: 'fa fa-fw fa-support',
                 launchpad: 'fa fa-fw fa-bars',
                 admin: 'fa fa-fw fa-cog',
