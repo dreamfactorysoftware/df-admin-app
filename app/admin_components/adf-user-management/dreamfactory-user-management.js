@@ -1766,7 +1766,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             }
         };
     }])
-    .service('dfXHRHelper', ['INSTANCE_URL', 'APP_API_KEY', 'UserDataService', function (INSTANCE_URL, APP_API_KEY, UserDataService) {
+    .service('dfXHRHelper', ['INSTANCE_URL', 'SystemConfigDataService', 'UserDataService', function (INSTANCE_URL, SystemConfigDataService, UserDataService) {
 
         function _isEmpty(obj) {
 
@@ -1792,7 +1792,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         function _setHeaders(_xhrObj, _headersDataObj) {
 
             // Setting Dreamfactory Headers
-            _xhrObj.setRequestHeader("X-DreamFactory-API-Key", APP_API_KEY);
+            _xhrObj.setRequestHeader("X-DreamFactory-API-Key", SystemConfigDataService.getApiKey());
             var currentUser = UserDataService.getCurrentUser();
             if (currentUser && currentUser.session_tpken) {
                 xhrObj.setRequestHeader("X-DreamFactory-Session-Token", currentUser.session_token);

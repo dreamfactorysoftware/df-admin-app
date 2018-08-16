@@ -1,19 +1,18 @@
 'use strict';
 angular.module('dfApplication')
-// Intercepts outgoing http calls.  Checks for valid session.  If 401 will trigger a pop up login screen.
     .factory('globalHeaders', ['$injector', function ($injector) {
 
+        var isHTMLRequested = function (url) {
+            return url.indexOf('.html') > -1;
+        };
         return {
             request: function (config) {
 
-                if (config.url.indexOf('.html') == -1) {
+                if (!isHTMLRequested(config.url)) {
                     var SystemConfigDataService = $injector.get('SystemConfigDataService');
-                    if (SystemConfigDataService) {
-                        var systemConfig = SystemConfigDataService.getSystemConfig();
-                        if (systemConfig && systemConfig.platform) {
-                            var key = systemConfig.platform.api_key;
-                            config.headers['X-Dreamfactory-API-Key'] = key
-                        }
+                    var systemConfig = SystemConfigDataService.getSystemConfig();
+                    if (systemConfig && systemConfig.platform) {
+                        config.headers['X-Dreamfactory-API-Key'] = systemConfig.platform.api_key
                     }
                 }
                 return config;
