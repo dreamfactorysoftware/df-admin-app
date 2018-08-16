@@ -135,14 +135,12 @@ angular
     .constant('APP_API_KEY', '6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d')
 
     // Set global header for calls made to DreamFactory instance
-    .config(['$httpProvider', 'APP_API_KEY', function($httpProvider, APP_API_KEY) {
-
-        $httpProvider.defaults.headers.common['X-Dreamfactory-API-Key'] = APP_API_KEY;
+    .config(['$httpProvider', function($httpProvider) {
         $httpProvider.defaults.headers.delete = {'Content-Type': 'application/json;charset=utf-8'};
     }])
 
     // Configure main app routing rules
-    .config(['$routeProvider', '$locationProvider', '$httpProvider', '$qProvider', function ($routeProvider, $locationProvider, $httpProvider, $qProvider) {
+    .config(['$routeProvider', '$locationProvider', '$qProvider', function ($routeProvider, $locationProvider, $qProvider) {
 
         $locationProvider.hashPrefix("");
 
@@ -357,7 +355,6 @@ angular
                 }
             });
 
-        $httpProvider.interceptors.push('httpValidSession');
     }])
 
     // Configure Error handling
