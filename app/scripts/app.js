@@ -40,7 +40,7 @@ angular
 
     // each tab uses this in its resolve function to make sure user is allowed access
     // if access is not allowed the user is sent to launchpad
-    .factory('checkUserService', function ($location, $q, SystemConfigDataService) {
+    .factory('checkUserService', function ($location, $q, SystemConfigDataService, UserDataService) {
 
         return {
 
@@ -59,7 +59,10 @@ angular
                         return (item.name === 'admin');
                     }).length > 0);
                 }
-                if (result) {
+
+                var currentUser = UserDataService.getCurrentUser();
+
+                if (result && currentUser) {
                     // user has access to admin, proceed to load the requested admin route
                     deferred.resolve();
                 } else {
