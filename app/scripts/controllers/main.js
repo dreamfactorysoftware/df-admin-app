@@ -27,6 +27,14 @@ angular.module('dreamfactoryApp')
             $scope.topLevelLinks = [
 
                 {
+                    path: 'https://www.dreamfactory.com/products',
+                    target: '_blank',
+                    label: 'Upgrade',
+                    name: 'upgrade',
+                    icon: dfIconService().upgrade,
+                    show: false
+                },
+                {
                     path: 'http://www.dreamfactory.com/support',
                     target: '_blank',
                     label: 'Support',
@@ -257,6 +265,10 @@ angular.module('dreamfactoryApp')
                 if (systemConfig.apps && systemConfig.apps.length > 0) {
                     // There are apps so show launchpad option.
                     links.push("launchpad");
+                }
+
+                if (systemConfig.hasOwnProperty('platform') && systemConfig.platform.license == 'OPEN SOURCE'){
+                    links.push("upgrade");
                 }
             }
 

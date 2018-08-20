@@ -316,6 +316,21 @@ angular.module('dfUtility', ['dfApplication'])
         };
     }])
 
+    .directive('dfNavNotification', ['MOD_UTILITY_ASSET_PATH', '$http', function (MOD_UTILITY_ASSET_PATH, $http) {
+
+        return {
+            replace: true,
+            templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-nav-notification.html',
+            link: function (scope, elem, attrs) {
+
+                $http.get('https://dreamfactory.com/in_product_v2/notifications.php')
+                    .then(function (result) {
+                        scope.notifications = result.data.notifications;
+                    })
+            }
+        };
+    }])
+
     // declare our directive and pass in our constant
     .directive('dfComponentNav', ['MOD_UTILITY_ASSET_PATH', '$location', '$route', '$rootScope', function (MOD_UTILITY_ASSET_PATH, $location, $route, $rootScope) {
 
@@ -3029,6 +3044,7 @@ angular.module('dfUtility', ['dfApplication'])
         return function () {
 
             return {
+                upgrade: 'fa fa-fw fa-level-up',
                 support: 'fa fa-fw fa-support',
                 launchpad: 'fa fa-fw fa-bars',
                 admin: 'fa fa-fw fa-cog',
