@@ -36,6 +36,7 @@ angular
         'dfFileManager',
         'dfPackageManager',
         'dfLimit',
+        'dfTutorial',
         'angular-intro'
     ])
 

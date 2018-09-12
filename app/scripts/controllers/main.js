@@ -180,6 +180,11 @@ angular.module('dreamfactoryApp')
                     name: 'limit',
                     label: 'Limits',
                     path: '/limits'
+                },
+                {
+                    name: 'tutorial',
+                    label: 'Tutorials',
+                    path: '/tutorials'
                 }
             ];
 
