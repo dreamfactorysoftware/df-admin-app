@@ -1,6 +1,6 @@
 <div class="df-component-navbar">
-    <ul class="nav nav-pills pull-right visible-md visible-lg">
-        <li data-ng-repeat="link in options.links" data-ng-class="activeLink === link.name ? 'active' : ''">
+    <ul class="nav nav-pills pull-right visible-md visible-lg" >
+        <li class="tutorial-step-{{link.label}}" data-ng-repeat="link in options.links" data-ng-class="activeLink === link.name ? 'active' : ''">
             <a href="#{{link.path}}" ng-click="reloadRoute(link.path)">{{link.label}}</a>
         </li>
     </ul>
@@ -15,6 +15,7 @@
             <div class="panel-heading">
                 <button class="btn btn-default btn-xs" data-ng-click="closeMenu()">Cancel</button>
             </div>
+            <!--//Todo Think about walkthrough guide when navbar is hidden and right burger menu is available -->
             <ul class="list-group">
                 <li data-ng-repeat="link in options.links" class="list-group-item" data-ng-class="activeLink === link.name ? 'active' : ''">
                     <a href="#{{link.path}}" ng-click="reloadRoute(link.path)" >{{link.label}}</a>

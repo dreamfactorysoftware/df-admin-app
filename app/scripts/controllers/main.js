@@ -177,12 +177,12 @@ angular.module('dreamfactoryApp')
                     path: '/package-manager'
                 },
                 {
-                    name: 'limit',
+                    name: 'limits',
                     label: 'Limits',
                     path: '/limits'
                 },
                 {
-                    name: 'tutorial',
+                    name: 'tutorials',
                     label: 'Tutorials',
                     path: '/tutorials'
                 }
