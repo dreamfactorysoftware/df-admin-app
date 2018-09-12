@@ -7,7 +7,7 @@ angular.module('dfTutorial', [])
         function ($routeProvider, MOD_TUTORIALS_ROUTER_PATH, MOD_TUTORIALS_ASSET_PATH) {
             $routeProvider
                 .when(MOD_TUTORIALS_ROUTER_PATH, {
-                    templateUrl: MOD_TUTORIALS_ASSET_PATH + 'main-tutorial.html',
+                    templateUrl: MOD_TUTORIALS_ASSET_PATH + 'views/main-tutorial.html',
                     controller: 'TutorialController',
                     resolve: {
                         checkUser: ['checkUserService', function (checkUserService) {
