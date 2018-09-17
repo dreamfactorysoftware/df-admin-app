@@ -96,6 +96,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
         };
 
         $scope.loadTabData(true);
+
+        $scope.showStep = function () {
+            Shepherd.activeTour.show('example2');
+        }
     }])
 
     .directive('dfServiceLoading', [function() {

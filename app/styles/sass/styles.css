@@ -18,6 +18,22 @@ body {
   margin: 0;
 }
 
+body.shepherd-active::after {
+  content: "";
+  display: block;
+  background-color: #000;
+  opacity: 0.4;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1100; }
+
+.shepherd-element   {
+  z-index: 1101;
+}
+
 /* line 33, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_normalize.scss */
 article,
 aside,

@@ -177,9 +177,14 @@ angular.module('dreamfactoryApp')
                     path: '/package-manager'
                 },
                 {
-                    name: 'limit',
+                    name: 'limits',
                     label: 'Limits',
                     path: '/limits'
+                },
+                {
+                    name: 'tutorials',
+                    label: 'Tutorials',
+                    path: '/tutorials'
                 }
             ];
 
@@ -350,6 +355,7 @@ angular.module('dreamfactoryApp')
                 case '/config':
                 case '/package-manager':
                 case '/limits':
+                case '/tutorials':
                     $scope.showAdminComponentNav = true;
                     break;
                 default:
