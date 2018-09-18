@@ -36,7 +36,8 @@ angular
         'dfFileManager',
         'dfPackageManager',
         'dfLimit',
-        'dfTutorial'
+        'dfTutorial',
+        'dfServiceModule'
     ])
 
     // each tab uses this in its resolve function to make sure user is allowed access

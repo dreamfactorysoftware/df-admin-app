@@ -8,16 +8,16 @@ angular.module('dfTutorial')
 
         $scope.links = [
             {
-                name: 'service',
-                label: 'Service',
+                name: 'services',
+                label: 'Services',
                 path: 'service-tutorial'
             },
             {
-                name: 'app',
-                label: 'App',
+                name: 'apps',
+                label: 'Apps',
                 path: 'app-tutorial'
             }
         ];
-    }])
+    }]);
 
 

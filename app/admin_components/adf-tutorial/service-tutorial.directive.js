@@ -64,7 +64,7 @@ angular.module('dfTutorial')
                 tour.addStep('example3', {
                     title: 'Service type',
                     text: 'Service type which was selected during service creation.',
-                    attachTo: {element: '.tutorial-dropdown', on: 'bottom'},
+                    attachTo: {element: '.tutorial-service-name', on: 'bottom'},
                     buttons: [
 
                         {
