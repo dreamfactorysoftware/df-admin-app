@@ -6,12 +6,6 @@
   border-radius: 6px;
 }
 
-highlighted-element-disabled {
-  @extend .highlighted-element;
-  pointer-events: none
-
-}
-
 body.shepherd-active::after {
   content: "";
   display: block;

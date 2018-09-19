@@ -65,17 +65,17 @@
             </div>
         </div>
 
-        <input class="form-control" data-ng-if="field.type == 'string' && field.name !== 'storage_path' && field.name !== 'scm_reference' && field.name !== 'scm_repository'"
+        <input class="form-control tutorial-step-{{field.name}}-input" data-ng-if="field.type == 'string' && field.name !== 'storage_path' && field.name !== 'scm_reference' && field.name !== 'scm_repository'"
                id="services_details_config_string_{{$index}}"
                data-ng-model="serviceConfig[field.name]"
                type="text" data-ng-required="field.required"/>
 
-        <input class="form-control" data-ng-if="field.type == 'password' || field.name == 'password'"
+        <input class="form-control tutorial-step-{{field.name}}-input" data-ng-if="field.type == 'password' || field.name == 'password'"
                id="services_details_config_password_{{$index}}"
                data-ng-model="serviceConfig[field.name]"
-               type="password" data-ng-required="field.required"/>
+               type="password" ta-ng-required="field.required"/>
 
-        <input class="form-control" data-ng-if="field.type == 'text' && field.name !== 'content' && field.name !== 'password'"
+        <input class="form-control tutorial-step-{{field.name}}-input" data-ng-if="field.type == 'text' && field.name !== 'content' && field.name !== 'password'"
                id="services_details_config_text_{{$index}}"
                data-ng-model="serviceConfig[field.name]"
                type="text" data-ng-required="field.required"/>
@@ -90,7 +90,7 @@
                        data-target-div="'serviceConfig'">
         </df-ace-editor>
 
-        <input class="form-control" data-ng-if="field.type == 'integer' && field.name !== 'storage_service_id'"
+        <input class="form-control tutorial-step-{{field.name}}" data-ng-if="field.type == 'integer' && field.name !== 'storage_service_id'"
                id="services_details_config_integer_{{$index}}"
                data-ng-model="serviceConfig[field.name]"
                type="number" data-ng-required="field.required">
