@@ -2,7 +2,7 @@
 
     <!-- Regular side bar menu shown on medium/large -->
     <ul class="nav nav-pills nav-stacked visible-md visible-lg">
-        <li id="{{link.label}}" data-ng-repeat="link in links" data-ng-class="link.active ? 'active' : ''" data-ng-click="setActiveView(link)"><a id="{{link.label}}">{{link.label}}</a></li>
+        <li id="{{link.label}}" class="tutorial-step-{{link.name}}-button" ng-init="showStep('services-tab', 'create-button')"  data-ng-repeat="link in links" data-ng-class="link.active ? 'active' : ''" data-ng-click="setActiveView(link)"><a id="{{link.label}}">{{link.label}}</a></li>
     </ul>
 
 

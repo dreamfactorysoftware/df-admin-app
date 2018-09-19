@@ -22,7 +22,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
     }])
 
-    .controller('ServicesCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, $scope, dfApplicationData, dfNotify, $location) {
+    .controller('ServicesCtrl', ['$rootScope','dfTutorialHandler', '$scope', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, dfTutorialHandler, $scope, dfApplicationData, dfNotify, $location) {
 
         $scope.$parent.title = 'Services';
 
@@ -97,8 +97,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
         $scope.loadTabData(true);
 
-        $scope.showStep = function () {
-            Shepherd.activeTour.show('example2');
+        $scope.showStep = function (currentStepId, nextStepId) {
+            dfTutorialHandler.showStep(currentStepId, nextStepId);
         }
     }])
 

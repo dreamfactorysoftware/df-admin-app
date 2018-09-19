@@ -18,22 +18,6 @@ body {
   margin: 0;
 }
 
-body.shepherd-active::after {
-  content: "";
-  display: block;
-  background-color: #000;
-  opacity: 0.4;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  z-index: 1100; }
-
-.shepherd-element   {
-  z-index: 1101;
-}
-
 /* line 33, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_normalize.scss */
 article,
 aside,
@@ -9235,7 +9219,6 @@ body {
 
 /* line 3, partials/_df-sidebar-nav.scss */
 .df-sidebar-nav {
-  z-index: 1001;
   position: relative;
 }
 @media screen and (max-width: 992px) {
@@ -9245,34 +9228,34 @@ body {
     height: 0 !important;
   }
 }
-/* line 16, partials/_df-sidebar-nav.scss */
+/* line 15, partials/_df-sidebar-nav.scss */
 .df-sidebar-nav .nav-pills {
   width: 100%;
 }
-/* line 21, partials/_df-sidebar-nav.scss */
+/* line 20, partials/_df-sidebar-nav.scss */
 .df-sidebar-nav .nav-pills li > a {
   border-radius: 4px;
 }
-/* line 27, partials/_df-sidebar-nav.scss */
+/* line 26, partials/_df-sidebar-nav.scss */
 .df-sidebar-nav .nav-pills li > a:hover {
   background: #333333;
   color: #999999;
 }
 
-/* line 47, partials/_df-sidebar-nav.scss */
+/* line 46, partials/_df-sidebar-nav.scss */
 #sidebar-open {
   position: absolute;
   top: -43px;
   left: 15px;
 }
 
-/* line 53, partials/_df-sidebar-nav.scss */
+/* line 52, partials/_df-sidebar-nav.scss */
 #sidebar-flyout-panel {
   height: 100%;
   background: #eeeeee !important;
 }
 
-/* line 58, partials/_df-sidebar-nav.scss */
+/* line 57, partials/_df-sidebar-nav.scss */
 .df-flyout-menu-left {
   position: fixed;
   left: -300px;
@@ -9585,7 +9568,40 @@ body {
   z-index: 10001;
 }
 
-/* line 38, styles.scss */
+/* line 1, partials/_df-tutorial.scss */
+.highlighted-element, highlighted-element-disabled {
+  position: relative;
+  z-index: 1102;
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  border-radius: 6px;
+}
+
+/* line 9, partials/_df-tutorial.scss */
+highlighted-element-disabled {
+  pointer-events: none;
+}
+
+/* line 15, partials/_df-tutorial.scss */
+body.shepherd-active::after {
+  content: "";
+  display: block;
+  background-color: #000;
+  opacity: 0.4;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1100;
+}
+
+/* line 28, partials/_df-tutorial.scss */
+.shepherd-element {
+  z-index: 1101;
+}
+
+/* line 39, styles.scss */
 [data-ng-click] {
   cursor: pointer;
 }

@@ -4,6 +4,12 @@ angular
     .module('dfServiceModule')
     .service('dfTutorialHandler', [function () {
 
-        return {}
+        this.showStep = function (currentStepId, nextStepId) {
+            setTimeout(function () {
+                if (Shepherd.activeTour && Shepherd.activeTour.getCurrentStep().id == currentStepId) {
+                    Shepherd.activeTour.show(nextStepId);
+                }
+            }, 100)
+        };
 
     }]);
