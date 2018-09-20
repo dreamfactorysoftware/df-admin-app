@@ -9578,6 +9578,13 @@ body {
 }
 
 /* line 9, partials/_df-tutorial.scss */
+.tutorial-disabled-button {
+  background: #e5e5e5 !important;
+  color: rgba(0, 0, 0, 0.75) !important;
+  pointer-events: none !important;
+}
+
+/* line 15, partials/_df-tutorial.scss */
 body.shepherd-active::after {
   content: "";
   display: block;
@@ -9591,7 +9598,7 @@ body.shepherd-active::after {
   z-index: 1100;
 }
 
-/* line 22, partials/_df-tutorial.scss */
+/* line 28, partials/_df-tutorial.scss */
 .shepherd-element {
   z-index: 1101;
 }

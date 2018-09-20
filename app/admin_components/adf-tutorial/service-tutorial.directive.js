@@ -23,10 +23,31 @@ angular.module('dfTutorial')
                     });
                 }
 
-                function setFocusAfterShow(step){
+                function subscribeDisableButtonNextForEmptyInputs(step) {
+                    var inputSelector = step.options.attachTo.element;
+                    var buttonSelector = '.shepherd-element .shepherd-content footer .shepherd-buttons li:last-child .shepherd-button';
+
+                    step.on('show', function () {
+                        if ($(inputSelector).val() == '') {
+                            $(buttonSelector).addClass("tutorial-disabled-button");
+                        }
+
+                        $(inputSelector).on('input', function (e) {
+                            if ($(inputSelector).val() == '') {
+                                $(buttonSelector).addClass("tutorial-disabled-button")
+                            } else {
+                                $(buttonSelector).removeClass("tutorial-disabled-button")
+                            }
+                        });
+
+                    });
+                }
+
+
+                function setFocusAfterShow(step) {
                     var selector = step.options.attachTo.element;
                     step.on('show', function () {
-                        $( selector ).focus();
+                        $(selector).focus();
                     });
                 }
 
@@ -42,11 +63,11 @@ angular.module('dfTutorial')
                     text: 'Tab with settings related to services. Let\'s open it.',
                     attachTo: {element: '.tutorial-step-services-tab', on: 'bottom'},
                     advanceOn: {element: '.tutorial-step-services-tab', on: 'click'},
-                    showCancelLink: true,
                     buttons: [
 
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         }
                     ]
@@ -64,6 +85,7 @@ angular.module('dfTutorial')
                     buttons: [
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         }
                     ]
@@ -85,6 +107,7 @@ angular.module('dfTutorial')
 
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         }
                     ]
@@ -115,15 +138,21 @@ angular.module('dfTutorial')
 
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         },
                         {
                             text: 'next',
-                            action: tour.next
+                            action: function () {
+                                if ($('.tutorial-service-name').val() != '') {
+                                    tour.next()
+                                }
+                            }
                         }
                     ]
                 });
 
+                subscribeDisableButtonNextForEmptyInputs(step4);
 
                 setFocusAfterShow(step4);
                 subscribeHighlightingElement(step4);
@@ -138,7 +167,12 @@ angular.module('dfTutorial')
 
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
+                        },
+                        {
+                            text: 'back',
+                            action: tour.back
                         },
                         {
                             text: 'next',
@@ -147,6 +181,7 @@ angular.module('dfTutorial')
                     ]
                 });
 
+                subscribeDisableButtonNextForEmptyInputs(step5);
                 setFocusAfterShow(step5);
                 subscribeHighlightingElement(step5);
 
@@ -159,6 +194,7 @@ angular.module('dfTutorial')
 
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         },
                         {
@@ -179,6 +215,7 @@ angular.module('dfTutorial')
 
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         }
                     ]
@@ -199,6 +236,7 @@ angular.module('dfTutorial')
                     buttons: [
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         },
                         {
@@ -208,8 +246,8 @@ angular.module('dfTutorial')
                     ]
                 });
 
+                subscribeDisableButtonNextForEmptyInputs(step8);
                 setFocusAfterShow(step8);
-
                 subscribeHighlightingElement(step8);
 
 
@@ -221,6 +259,7 @@ angular.module('dfTutorial')
 
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         },
                         {
@@ -229,7 +268,7 @@ angular.module('dfTutorial')
                         }
                     ]
                 });
-
+                subscribeDisableButtonNextForEmptyInputs(step9);
                 setFocusAfterShow(step9);
                 subscribeHighlightingElement(step9);
 
@@ -238,12 +277,13 @@ angular.module('dfTutorial')
                     text: 'The name of the database to connect to on the given server.',
                     attachTo: {element: '.tutorial-step-database-input', on: 'top'},
                     scrollTo: true,
-                    scrollToHandler: function(){
+                    scrollToHandler: function () {
                         document.getElementById('scroll-element').scrollTop = 350;
                     },
                     buttons: [
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         },
                         {
@@ -253,6 +293,7 @@ angular.module('dfTutorial')
                     ]
                 });
 
+                subscribeDisableButtonNextForEmptyInputs(step10);
                 setFocusAfterShow(step10);
                 subscribeHighlightingElement(step10);
 
@@ -264,6 +305,7 @@ angular.module('dfTutorial')
 
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         },
                         {
@@ -273,6 +315,7 @@ angular.module('dfTutorial')
                     ]
                 });
 
+                subscribeDisableButtonNextForEmptyInputs(step11);
                 setFocusAfterShow(step11);
                 subscribeHighlightingElement(step11);
 
@@ -284,6 +327,7 @@ angular.module('dfTutorial')
 
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         },
                         {
@@ -293,6 +337,7 @@ angular.module('dfTutorial')
                     ]
                 });
 
+                subscribeDisableButtonNextForEmptyInputs(step12);
                 setFocusAfterShow(step12);
                 subscribeHighlightingElement(step12);
 
@@ -303,13 +348,14 @@ angular.module('dfTutorial')
                     '<p> or type in a specific schema to use for this service.</p>',
                     attachTo: {element: '.tutorial-step-schema-input', on: 'top'},
                     scrollTo: true,
-                    scrollToHandler: function(){
+                    scrollToHandler: function () {
                         document.getElementById('scroll-element').scrollTop = 600;
                     },
                     buttons: [
 
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         },
                         {
@@ -319,6 +365,7 @@ angular.module('dfTutorial')
                     ]
                 });
 
+                subscribeDisableButtonNextForEmptyInputs(step13);
                 setFocusAfterShow(step13);
                 subscribeHighlightingElement(step13);
 
@@ -329,6 +376,7 @@ angular.module('dfTutorial')
                     buttons: [
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         },
                         {
@@ -338,6 +386,7 @@ angular.module('dfTutorial')
                     ]
                 });
 
+                subscribeDisableButtonNextForEmptyInputs(step14);
                 setFocusAfterShow(step14);
                 subscribeHighlightingElement(step14);
 
@@ -346,12 +395,13 @@ angular.module('dfTutorial')
                     text: 'The character set collation to use for this connection, i.e. utf8_unicode_ci.',
                     attachTo: {element: '.tutorial-step-collation-input', on: 'top'},
                     scrollTo: true,
-                    scrollToHandler: function(){
+                    scrollToHandler: function () {
                         document.getElementById('scroll-element').scrollTop = 700;
                     },
                     buttons: [
                         {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         },
                         {
@@ -361,6 +411,7 @@ angular.module('dfTutorial')
                     ]
                 });
 
+                subscribeDisableButtonNextForEmptyInputs(step15);
                 setFocusAfterShow(step15);
                 subscribeHighlightingElement(step15);
 
@@ -371,7 +422,12 @@ angular.module('dfTutorial')
                     scrollTo: true,
                     buttons: [
                         {
+                            text: 'back',
+                            action: tour.back
+                        },
+                        {
                             text: 'skip',
+                            classes: 'shepherd-button-secondary',
                             action: tour.complete
                         }
                     ]
@@ -381,7 +437,7 @@ angular.module('dfTutorial')
 
                 var step17 = tour.addStep('show-created-service', {
                     title: 'Service which we have created',
-                    text: 'You have just create a service. God job :)',
+                    text: 'You have just created a service. God job :)',
                     attachTo: {element: '.tutorial-step-created-service', on: 'top'},
                     scrollTo: true,
                     buttons: [
@@ -408,7 +464,6 @@ angular.module('dfTutorial')
                 // });
 
                 // subscribeHighlightingElement(step17);
-
 
 
             }

@@ -6,6 +6,12 @@
   border-radius: 6px;
 }
 
+.tutorial-disabled-button {
+  background: #e5e5e5 !important;
+  color: rgba(0, 0, 0, 0.75) !important;
+  pointer-events: none !important;
+}
+
 body.shepherd-active::after {
   content: "";
   display: block;
