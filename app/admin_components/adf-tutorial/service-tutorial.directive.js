@@ -23,6 +23,13 @@ angular.module('dfTutorial')
                     });
                 }
 
+                function setFocusAfterShow(step){
+                    var selector = step.options.attachTo.element;
+                    step.on('show', function () {
+                        $( selector ).focus();
+                    });
+                }
+
                 var tour = new Shepherd.Tour({
                     defaultStepOptions: {
                         classes: 'shepherd-theme-arrows',
@@ -118,6 +125,7 @@ angular.module('dfTutorial')
                 });
 
 
+                setFocusAfterShow(step4);
                 subscribeHighlightingElement(step4);
 
 
@@ -139,6 +147,7 @@ angular.module('dfTutorial')
                     ]
                 });
 
+                setFocusAfterShow(step5);
                 subscribeHighlightingElement(step5);
 
                 var step6 = tour.addStep('service-active-checkbox', {
@@ -199,6 +208,7 @@ angular.module('dfTutorial')
                     ]
                 });
 
+                setFocusAfterShow(step8);
 
                 subscribeHighlightingElement(step8);
 
@@ -219,6 +229,8 @@ angular.module('dfTutorial')
                         }
                     ]
                 });
+
+                setFocusAfterShow(step9);
                 subscribeHighlightingElement(step9);
 
                 var step10 = tour.addStep('service-database-input', {
@@ -240,6 +252,8 @@ angular.module('dfTutorial')
                         }
                     ]
                 });
+
+                setFocusAfterShow(step10);
                 subscribeHighlightingElement(step10);
 
                 var step11 = tour.addStep('service-username-input', {
@@ -258,6 +272,8 @@ angular.module('dfTutorial')
                         }
                     ]
                 });
+
+                setFocusAfterShow(step11);
                 subscribeHighlightingElement(step11);
 
                 var step12 = tour.addStep('service-user-password-input', {
@@ -276,6 +292,8 @@ angular.module('dfTutorial')
                         }
                     ]
                 });
+
+                setFocusAfterShow(step12);
                 subscribeHighlightingElement(step12);
 
                 var step13 = tour.addStep('service-schema-input', {
@@ -300,6 +318,8 @@ angular.module('dfTutorial')
                         }
                     ]
                 });
+
+                setFocusAfterShow(step13);
                 subscribeHighlightingElement(step13);
 
                 var step14 = tour.addStep('service-character-set-input', {
@@ -318,6 +338,7 @@ angular.module('dfTutorial')
                     ]
                 });
 
+                setFocusAfterShow(step14);
                 subscribeHighlightingElement(step14);
 
                 var step15 = tour.addStep('service-character-set-collation-input', {
@@ -340,6 +361,7 @@ angular.module('dfTutorial')
                     ]
                 });
 
+                setFocusAfterShow(step15);
                 subscribeHighlightingElement(step15);
 
                 var step16 = tour.addStep('service-save-button', {
