@@ -41,7 +41,17 @@ angular.module('dfTutorial')
                         });
 
                     });
+
+                    unsubscribeDisableButtonNextForEmptyInputs(step);
                 }
+
+                function unsubscribeDisableButtonNextForEmptyInputs(step) {
+                    var buttonSelector = '.shepherd-element .shepherd-content footer .shepherd-buttons li:last-child .shepherd-button';
+                    step.on('before-hide', function () {
+                        $(buttonSelector).removeClass("tutorial-disabled-button")
+                    });
+                }
+
 
 
                 function setFocusAfterShow(step) {
@@ -198,6 +208,10 @@ angular.module('dfTutorial')
                             action: tour.complete
                         },
                         {
+                            text: 'back',
+                            action: tour.back
+                        },
+                        {
                             text: 'next',
                             action: tour.next
                         }
@@ -212,18 +226,21 @@ angular.module('dfTutorial')
                     attachTo: {element: '#config-tab', on: 'bottom'},
                     scrollTo: true,
                     buttons: [
-
                         {
                             text: 'skip',
                             classes: 'shepherd-button-secondary',
                             action: tour.complete
+                        },
+                        {
+                            text: 'back',
+                            action: tour.back
                         }
                     ]
                 });
 
                 step7.on('show', function () {
                     $('#config-tab').on('click', function () {
-                        tour.next()
+                        Shepherd.activeTour.show('service-host-input')
                     });
                 });
 
@@ -238,6 +255,13 @@ angular.module('dfTutorial')
                             text: 'skip',
                             classes: 'shepherd-button-secondary',
                             action: tour.complete
+                        },
+                        {
+                            text: 'back',
+                            action: function (){
+                                $( "#info-tab" ).trigger( "click" );
+                                tour.back()
+                            }
                         },
                         {
                             text: 'next',
@@ -261,6 +285,10 @@ angular.module('dfTutorial')
                             text: 'skip',
                             classes: 'shepherd-button-secondary',
                             action: tour.complete
+                        },
+                        {
+                            text: 'back',
+                            action: tour.back
                         },
                         {
                             text: 'next',
@@ -287,6 +315,10 @@ angular.module('dfTutorial')
                             action: tour.complete
                         },
                         {
+                            text: 'back',
+                            action: tour.back
+                        },
+                        {
                             text: 'next',
                             action: tour.next
                         }
@@ -309,6 +341,10 @@ angular.module('dfTutorial')
                             action: tour.complete
                         },
                         {
+                            text: 'back',
+                            action: tour.back
+                        },
+                        {
                             text: 'next',
                             action: tour.next
                         }
@@ -329,6 +365,10 @@ angular.module('dfTutorial')
                             text: 'skip',
                             classes: 'shepherd-button-secondary',
                             action: tour.complete
+                        },
+                        {
+                            text: 'back',
+                            action: tour.back
                         },
                         {
                             text: 'next',
@@ -359,6 +399,10 @@ angular.module('dfTutorial')
                             action: tour.complete
                         },
                         {
+                            text: 'back',
+                            action: tour.back
+                        },
+                        {
                             text: 'next',
                             action: tour.next
                         }
@@ -378,6 +422,10 @@ angular.module('dfTutorial')
                             text: 'skip',
                             classes: 'shepherd-button-secondary',
                             action: tour.complete
+                        },
+                        {
+                            text: 'back',
+                            action: tour.back
                         },
                         {
                             text: 'next',
@@ -403,6 +451,10 @@ angular.module('dfTutorial')
                             text: 'skip',
                             classes: 'shepherd-button-secondary',
                             action: tour.complete
+                        },
+                        {
+                            text: 'back',
+                            action: tour.back
                         },
                         {
                             text: 'next',
@@ -442,7 +494,7 @@ angular.module('dfTutorial')
                     scrollTo: true,
                     buttons: [
                         {
-                            text: 'THANKS!',
+                            text: 'DONE',
                             action: tour.complete
                         }
                     ]
