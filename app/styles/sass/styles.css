@@ -9569,7 +9569,7 @@ body {
 }
 
 /* line 1, partials/_df-tutorial.scss */
-.highlighted-element, highlighted-element-disabled {
+.highlighted-element {
   position: relative;
   z-index: 1102;
   background-color: white;
@@ -9578,11 +9578,6 @@ body {
 }
 
 /* line 9, partials/_df-tutorial.scss */
-highlighted-element-disabled {
-  pointer-events: none;
-}
-
-/* line 15, partials/_df-tutorial.scss */
 body.shepherd-active::after {
   content: "";
   display: block;
@@ -9596,7 +9591,7 @@ body.shepherd-active::after {
   z-index: 1100;
 }
 
-/* line 28, partials/_df-tutorial.scss */
+/* line 22, partials/_df-tutorial.scss */
 .shepherd-element {
   z-index: 1101;
 }

@@ -72,7 +72,7 @@ angular.module('dfTutorial')
 
                 var step3 = tour.addStep('selecting-service-type', {
                     title: 'Service type',
-                    text: 'Select \'Database\' service type and choose MongoDB',
+                    text: 'Select \'Database\' service type and choose MySQL',
                     attachTo: {element: '.tutorial-step-selecting-service-type-dropdown', on: 'top'},
                     buttons: [
 
@@ -87,7 +87,7 @@ angular.module('dfTutorial')
                     angular.element('.tutorial-step-selecting-service-type-dropdown-list').css('z-index', '1102');
 
                     $('.tutorial-step-service-type-selected').on('click', function (event) {
-                        if ($('.tutorial-step-selecting-service-type-dropdown').text().indexOf('MongoDB') !== -1) {
+                        if ($('.tutorial-step-selecting-service-type-dropdown').text().indexOf('MySQL') !== -1) {
                             tour.next()
                         }
                     });
@@ -278,13 +278,15 @@ angular.module('dfTutorial')
                 });
                 subscribeHighlightingElement(step12);
 
-                var step13 = tour.addStep('service-dns-input', {
-                    title: 'Service connecting string',
-                    text: 'Type connecting string and click next.',
-                    attachTo: {element: '.tutorial-step-dsn-input', on: 'top'},
+                var step13 = tour.addStep('service-schema-input', {
+                    title: 'Schema',
+                    text: '<p>Leave blank to work with all available schemas, type "default"</p> ' +
+                    '<p> to only work with the default schema for the given credentials,</p>' +
+                    '<p> or type in a specific schema to use for this service.</p>',
+                    attachTo: {element: '.tutorial-step-schema-input', on: 'top'},
                     scrollTo: true,
                     scrollToHandler: function(){
-                        document.getElementById('scroll-element').scrollTop = 450;
+                        document.getElementById('scroll-element').scrollTop = 600;
                     },
                     buttons: [
 
@@ -300,7 +302,47 @@ angular.module('dfTutorial')
                 });
                 subscribeHighlightingElement(step13);
 
-                var step14 = tour.addStep('service-save-button', {
+                var step14 = tour.addStep('service-character-set-input', {
+                    title: 'Character Set',
+                    text: 'The character set to use for this connection, i.e. utf8.',
+                    attachTo: {element: '.tutorial-step-charset-input', on: 'top'},
+                    buttons: [
+                        {
+                            text: 'skip',
+                            action: tour.complete
+                        },
+                        {
+                            text: 'next',
+                            action: tour.next
+                        }
+                    ]
+                });
+
+                subscribeHighlightingElement(step14);
+
+                var step15 = tour.addStep('service-character-set-collation-input', {
+                    title: 'Character Set Collation ',
+                    text: 'The character set collation to use for this connection, i.e. utf8_unicode_ci.',
+                    attachTo: {element: '.tutorial-step-collation-input', on: 'top'},
+                    scrollTo: true,
+                    scrollToHandler: function(){
+                        document.getElementById('scroll-element').scrollTop = 700;
+                    },
+                    buttons: [
+                        {
+                            text: 'skip',
+                            action: tour.complete
+                        },
+                        {
+                            text: 'next',
+                            action: tour.next
+                        }
+                    ]
+                });
+
+                subscribeHighlightingElement(step15);
+
+                var step16 = tour.addStep('service-save-button', {
                     title: 'Save the new service',
                     text: 'Click save.',
                     attachTo: {element: '#services_details_save   ', on: 'top'},
@@ -313,28 +355,38 @@ angular.module('dfTutorial')
                     ]
                 });
 
-                subscribeHighlightingElement(step14);
+                subscribeHighlightingElement(step16);
 
-                // var step15 = tour.addStep('show-created-service', {
-                //     title: 'Service which we have created',
-                //     text: 'God job :)',
-                //     attachTo: {element: '.tutorial-step-created-service', on: 'top'},
-                //     scrollTo: true,
-                //     buttons: [
-                //         {
-                //             text: 'skip',
-                //             action: tour.complete
-                //         }
-                //     ]
+                var step17 = tour.addStep('show-created-service', {
+                    title: 'Service which we have created',
+                    text: 'You have just create a service. God job :)',
+                    attachTo: {element: '.tutorial-step-created-service', on: 'top'},
+                    scrollTo: true,
+                    buttons: [
+                        {
+                            text: 'THANKS!',
+                            action: tour.complete
+                        }
+                    ]
+                });
+
+                step17.on('before-show', function () {
+                    angular.element('body').removeClass('shepherd-active');
+                    document.getElementById('services-table').lastElementChild.lastElementChild.classList.add('tutorial-step-created-service')
+                });
+
+                // var selector = step17.options.attachTo.element;
+                // step17.on('show', function () {
+                //     setTimeout(function () {
+                //         angular.element(selector).addClass('highlighted-element');
+                //     },2000)
                 // });
-                //
-                // subscribeHighlightingElement(step15);
-                //
-                // step15.on('before-show', function () {
-                //     console.log('before-show')
-                //     document.getElementById('services-table').lastElementChild.lastElementChild.classList.add('tutorial-step-created-service')
-                //
+                // step17.on('before-hide', function () {
+                //     angular.element(selector).removeClass('highlighted-element')
                 // });
+
+                // subscribeHighlightingElement(step17);
+
 
 
             }
