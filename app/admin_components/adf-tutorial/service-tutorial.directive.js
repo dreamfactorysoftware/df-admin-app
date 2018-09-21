@@ -2,7 +2,7 @@
 
 angular.module('dfTutorial')
 
-    .directive('dfServiceTutorial', ['MOD_TUTORIALS_ASSET_PATH', '$location', function (MOD_TUTORIALS_ASSET_PATH, $location) {
+    .directive('dfServiceTutorial', ['MOD_TUTORIALS_ASSET_PATH', function (MOD_TUTORIALS_ASSET_PATH) {
 
         return {
             restrict: 'E',
