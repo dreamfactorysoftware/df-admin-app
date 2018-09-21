@@ -40,8 +40,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
     }])
 
-    .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$rootScope', '$http', 'dfApplicationData', 'dfNotify', '$location',
-        function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify, $location) {
+    .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$rootScope', '$http', 'dfApplicationData', 'dfNotify', '$location','dfTutorialHandler',
+        function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify, $location, dfTutorialHandler) {
 
             $scope.$parent.title = 'Scripts';
             $scope.scriptGitHubTarget = 'scripts';
@@ -801,6 +801,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 watchSelections();
                 watchApiData();
             });
+
+
+            $scope.showTutorialStep = function (currentStepId, nextStepId) {
+                dfTutorialHandler.showStepAfterViewInit(currentStepId, nextStepId);
+            }
         }])
 
     .directive('scriptSidebarMenu', ['MODSCRIPTING_ASSET_PATH', function (MODSCRIPTING_ASSET_PATH) {

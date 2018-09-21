@@ -2,7 +2,7 @@
 
 angular.module('dfTutorial')
 
-    .directive('dfServiceTutorial', ['MOD_TUTORIALS_ASSET_PATH', function (MOD_TUTORIALS_ASSET_PATH) {
+    .directive('dfServiceTutorial', ['MOD_TUTORIALS_ASSET_PATH', 'dfTutorialHandler', function (MOD_TUTORIALS_ASSET_PATH, dfTutorialHandler) {
 
         return {
             restrict: 'E',
@@ -12,54 +12,6 @@ angular.module('dfTutorial')
                 scope.start = function () {
                     tour.start();
                 };
-
-                function subscribeHighlightingElement(step) {
-                    var selector = step.options.attachTo.element;
-                    step.on('show', function () {
-                        angular.element(selector).addClass('highlighted-element');
-                    });
-                    step.on('before-hide', function () {
-                        angular.element(selector).removeClass('highlighted-element')
-                    });
-                }
-
-                function subscribeDisableButtonNextForEmptyInputs(step) {
-                    var inputSelector = step.options.attachTo.element;
-                    var buttonSelector = '.shepherd-element .shepherd-content footer .shepherd-buttons li:last-child .shepherd-button';
-                    var disabledButtonClass = 'tutorial-disabled-button';
-
-                    step.on('show', function () {
-                        if ($(inputSelector).val() == '') {
-                            $(buttonSelector).addClass(disabledButtonClass);
-                        }
-
-                        $(inputSelector).on('input', function (e) {
-                            if ($(inputSelector).val() == '') {
-                                $(buttonSelector).addClass(disabledButtonClass)
-                            } else {
-                                $(buttonSelector).removeClass(disabledButtonClass)
-                            }
-                        });
-
-                    });
-
-                    unsubscribeDisableButtonNextForEmptyInputs(step);
-                }
-
-                function unsubscribeDisableButtonNextForEmptyInputs(step) {
-                    var buttonSelector = '.shepherd-element .shepherd-content footer .shepherd-buttons li:last-child .shepherd-button';
-                    step.on('before-hide', function () {
-                        $(buttonSelector).removeClass("tutorial-disabled-button")
-                    });
-                }
-
-
-                function setFocusAfterShow(step) {
-                    var selector = step.options.attachTo.element;
-                    step.on('show', function () {
-                        $(selector).focus();
-                    });
-                }
 
                 var tour = new Shepherd.Tour({
                     defaultStepOptions: {
@@ -84,7 +36,7 @@ angular.module('dfTutorial')
 
                 });
 
-                subscribeHighlightingElement(step1);
+                dfTutorialHandler.subscribeHighlightingElement(step1);
 
 
                 var step2 = tour.addStep('create-button', {
@@ -107,7 +59,7 @@ angular.module('dfTutorial')
                     });
                 });
 
-                subscribeHighlightingElement(step2);
+                dfTutorialHandler.subscribeHighlightingElement(step2);
 
                 var step3 = tour.addStep('selecting-service-type', {
                     title: 'Service type',
@@ -134,7 +86,7 @@ angular.module('dfTutorial')
 
                 });
 
-                subscribeHighlightingElement(step3);
+                dfTutorialHandler.subscribeHighlightingElement(step3);
 
                 step3.on('before-hide', function () {
                     angular.element('.tutorial-step-selecting-service-type-dropdown-list').css('z-index', 'auto;');
@@ -162,10 +114,10 @@ angular.module('dfTutorial')
                     ]
                 });
 
-                subscribeDisableButtonNextForEmptyInputs(step4);
+                dfTutorialHandler.subscribeDisableButtonNextForEmptyInputs(step4);
 
-                setFocusAfterShow(step4);
-                subscribeHighlightingElement(step4);
+                dfTutorialHandler.setFocusAfterShow(step4);
+                dfTutorialHandler.subscribeHighlightingElement(step4);
 
 
                 var step5 = tour.addStep('service-label-input', {
@@ -191,9 +143,9 @@ angular.module('dfTutorial')
                     ]
                 });
 
-                subscribeDisableButtonNextForEmptyInputs(step5);
-                setFocusAfterShow(step5);
-                subscribeHighlightingElement(step5);
+                dfTutorialHandler.subscribeDisableButtonNextForEmptyInputs(step5);
+                dfTutorialHandler.setFocusAfterShow(step5);
+                dfTutorialHandler.subscribeHighlightingElement(step5);
 
                 var step6 = tour.addStep('service-active-checkbox', {
                     title: 'The \'active\' checkbox',
@@ -218,7 +170,7 @@ angular.module('dfTutorial')
                     ]
                 });
 
-                subscribeHighlightingElement(step6);
+                dfTutorialHandler.subscribeHighlightingElement(step6);
 
                 var step7 = tour.addStep('service-config-tab', {
                     title: 'Config tab',
@@ -244,7 +196,7 @@ angular.module('dfTutorial')
                     });
                 });
 
-                subscribeHighlightingElement(step7);
+                dfTutorialHandler.subscribeHighlightingElement(step7);
 
                 var step8 = tour.addStep('service-host-input', {
                     title: 'Host',
@@ -270,9 +222,9 @@ angular.module('dfTutorial')
                     ]
                 });
 
-                subscribeDisableButtonNextForEmptyInputs(step8);
-                setFocusAfterShow(step8);
-                subscribeHighlightingElement(step8);
+                dfTutorialHandler.subscribeDisableButtonNextForEmptyInputs(step8);
+                dfTutorialHandler.setFocusAfterShow(step8);
+                dfTutorialHandler.subscribeHighlightingElement(step8);
 
 
                 var step9 = tour.addStep('service-port-input', {
@@ -296,9 +248,9 @@ angular.module('dfTutorial')
                         }
                     ]
                 });
-                subscribeDisableButtonNextForEmptyInputs(step9);
-                setFocusAfterShow(step9);
-                subscribeHighlightingElement(step9);
+                dfTutorialHandler.subscribeDisableButtonNextForEmptyInputs(step9);
+                dfTutorialHandler.setFocusAfterShow(step9);
+                dfTutorialHandler.subscribeHighlightingElement(step9);
 
                 var step10 = tour.addStep('service-database-input', {
                     title: 'Database',
@@ -325,9 +277,9 @@ angular.module('dfTutorial')
                     ]
                 });
 
-                subscribeDisableButtonNextForEmptyInputs(step10);
-                setFocusAfterShow(step10);
-                subscribeHighlightingElement(step10);
+                dfTutorialHandler.subscribeDisableButtonNextForEmptyInputs(step10);
+                dfTutorialHandler.setFocusAfterShow(step10);
+                dfTutorialHandler.subscribeHighlightingElement(step10);
 
                 var step11 = tour.addStep('service-username-input', {
                     title: 'Username',
@@ -351,9 +303,9 @@ angular.module('dfTutorial')
                     ]
                 });
 
-                subscribeDisableButtonNextForEmptyInputs(step11);
-                setFocusAfterShow(step11);
-                subscribeHighlightingElement(step11);
+                dfTutorialHandler.subscribeDisableButtonNextForEmptyInputs(step11);
+                dfTutorialHandler.setFocusAfterShow(step11);
+                dfTutorialHandler.subscribeHighlightingElement(step11);
 
                 var step12 = tour.addStep('service-user-password-input', {
                     title: 'User password',
@@ -377,9 +329,9 @@ angular.module('dfTutorial')
                     ]
                 });
 
-                subscribeDisableButtonNextForEmptyInputs(step12);
-                setFocusAfterShow(step12);
-                subscribeHighlightingElement(step12);
+                dfTutorialHandler.subscribeDisableButtonNextForEmptyInputs(step12);
+                dfTutorialHandler.setFocusAfterShow(step12);
+                dfTutorialHandler.subscribeHighlightingElement(step12);
 
                 var step13 = tour.addStep('service-schema-input', {
                     title: 'Schema',
@@ -409,9 +361,9 @@ angular.module('dfTutorial')
                     ]
                 });
 
-                subscribeDisableButtonNextForEmptyInputs(step13);
-                setFocusAfterShow(step13);
-                subscribeHighlightingElement(step13);
+                dfTutorialHandler.subscribeDisableButtonNextForEmptyInputs(step13);
+                dfTutorialHandler.setFocusAfterShow(step13);
+                dfTutorialHandler.subscribeHighlightingElement(step13);
 
                 var step14 = tour.addStep('service-character-set-input', {
                     title: 'Character Set',
@@ -434,9 +386,9 @@ angular.module('dfTutorial')
                     ]
                 });
 
-                subscribeDisableButtonNextForEmptyInputs(step14);
-                setFocusAfterShow(step14);
-                subscribeHighlightingElement(step14);
+                dfTutorialHandler.subscribeDisableButtonNextForEmptyInputs(step14);
+                dfTutorialHandler.setFocusAfterShow(step14);
+                dfTutorialHandler.subscribeHighlightingElement(step14);
 
                 var step15 = tour.addStep('service-character-set-collation-input', {
                     title: 'Character Set Collation ',
@@ -463,9 +415,9 @@ angular.module('dfTutorial')
                     ]
                 });
 
-                subscribeDisableButtonNextForEmptyInputs(step15);
-                setFocusAfterShow(step15);
-                subscribeHighlightingElement(step15);
+                dfTutorialHandler.subscribeDisableButtonNextForEmptyInputs(step15);
+                dfTutorialHandler.setFocusAfterShow(step15);
+                dfTutorialHandler.subscribeHighlightingElement(step15);
 
                 var step16 = tour.addStep('service-save-button', {
                     title: 'Save the new service',
@@ -485,7 +437,7 @@ angular.module('dfTutorial')
                     ]
                 });
 
-                subscribeHighlightingElement(step16);
+                dfTutorialHandler.subscribeHighlightingElement(step16);
 
                 var step17 = tour.addStep('show-created-service', {
                     title: 'Service which we have created',
@@ -504,19 +456,6 @@ angular.module('dfTutorial')
                     angular.element('body').removeClass('shepherd-active');
                     document.getElementById('services-table').lastElementChild.lastElementChild.classList.add('tutorial-step-created-service')
                 });
-
-                // var selector = step17.options.attachTo.element;
-                // step17.on('show', function () {
-                //     setTimeout(function () {
-                //         angular.element(selector).addClass('highlighted-element');
-                //     },2000)
-                // });
-                // step17.on('before-hide', function () {
-                //     angular.element(selector).removeClass('highlighted-element')
-                // });
-
-                // subscribeHighlightingElement(step17);
-
 
             }
         };

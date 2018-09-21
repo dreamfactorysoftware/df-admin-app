@@ -14,7 +14,7 @@
         </div>
     </div>
 
-    <div df-fs-height id="scripting-sidebar-list" style="height:500px; overflow-y: scroll">
+    <div df-fs-height id="scripting-sidebar-list" ng-init="showTutorialStep('scripts-tab','scripts-table')" style="height:500px; overflow-y: scroll">
         <div>
             <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 0">
                 <a class="list-group-item" ng-class="{ highlighted: highlightService(service.name) }" data-ng-repeat="service in apiData.service_list"
