@@ -3,7 +3,7 @@
     <div class="well well-sm">
         <div class="row">
             <div class="col-xs-2">
-                <button type="button" class="btn btn-default btn-sm" data-ng-click="menuBack()"
+                <button type="button" class="btn btn-default btn-sm back-button" data-ng-click="menuBack()"
                         data-ng-disabled="menuPathArr.length === 0">Back
                 </button>
             </div>
@@ -17,13 +17,13 @@
     <div df-fs-height id="scripting-sidebar-list" ng-init="showTutorialStep('scripts-tab','scripts-table')" style="height:500px; overflow-y: scroll">
         <div>
             <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 0">
-                <a class="list-group-item" ng-class="{ highlighted: highlightService(service.name) }" data-ng-repeat="service in apiData.service_list"
+                <a class="list-group-item tutorial-step-choose-{{service.name}}-service-for-script" ng-class="{ highlighted: highlightService(service.name) }" data-ng-repeat="service in apiData.service_list"
                    data-ng-click="selectService(service)">{{service.name}}<i
                         class="fa fa-fw fa-chevron-right pull-right"></i></a>
             </div>
 
             <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 1">
-                <a class="list-group-item"
+                <a class="list-group-item tutorial-step-choose-{{resource.substring(0, 4)+'-'+resource.substring(5,20)}}-resource"
                    data-ng-repeat="(resource, data) in currentServiceObj.resources"
                    ng-class="{ highlighted: highlightResource(resource) }"
                    data-ng-click="selectResource(resource, data)">{{resource}}<i class="fa fa-fw fa-chevron-right pull-right"></i></a>

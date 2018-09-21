@@ -49,6 +49,10 @@ angular.module('dfTutorial')
                             text: 'skip',
                             classes: 'shepherd-button-secondary',
                             action: tour.complete
+                        },
+                        {
+                            text: 'next',
+                            action: tour.next
                         }
                     ]
                 });
@@ -57,7 +61,69 @@ angular.module('dfTutorial')
                     $('#scripting-sidebar-list').children().css('pointer-events', 'none');
                 });
 
+                step2.on('before-hide', function () {
+                    $('#scripting-sidebar-list').children().css('pointer-events', '');
+                });
+
                 dfTutorialHandler.subscribeHighlightingElement(step2);
+
+
+                var step3 = tour.addStep('selecting-service', {
+                    title: 'Service for scripting',
+                    text: '<p>Select \'service\' for which we you create a script.</p> <p>Choose \'user\' service to get next step.</p>',
+                    attachTo: {element: '.tutorial-step-choose-user-service-for-script', on: 'top'},
+                    buttons: [
+
+                        {
+                            text: 'skip',
+                            classes: 'shepherd-button-secondary',
+                            action: tour.complete
+                        }
+                    ]
+                });
+
+                step3.on('show', function () {
+                    var a = $._data($('.tutorial-step-choose-user-service-for-script').get(0), 'events' ).click
+
+                    $('.tutorial-step-choose-user-service-for-script').on('click',{name:"tutorialHandler"}, function (event) {
+                        setTimeout(function () {
+                            console.log("test")
+                            tour.next()
+                        }, 100)
+                    });
+                });
+
+                // step3.on('hide', function () {
+                //     $('.tutorial-step-choose-user-service-for-script').off('click');
+                // });
+
+                dfTutorialHandler.subscribeHighlightingElement(step3);
+
+                var step4 = tour.addStep('selecting-endpoint', {
+                    title: 'Endpoint for scripting',
+                    text: '<p>Let\'s choose register endpoint.</p>',
+                    attachTo: {element: '.tutorial-step-choose-user-register-resource', on: 'top'},
+                    advanceOn: {element: '.tutorial-step-choose-user-register-resource', on: 'click'},
+                    buttons: [
+
+                        {
+                            text: 'skip',
+                            classes: 'shepherd-button-secondary',
+                            action: tour.complete
+                        },
+                        {
+                            text: 'back',
+                            action: function () {
+                                $(".back-button").trigger("click");
+                                tour.back()
+                            }
+                        }
+                    ]
+                });
+
+                dfTutorialHandler.subscribeHighlightingElement(step4);
+
+
             }
         };
     }]);
