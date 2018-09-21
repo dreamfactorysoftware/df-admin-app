@@ -2,7 +2,7 @@
 
 angular
     .module('dfServiceModule')
-    .service('dfTutorialHandler', [function () {
+    .service('dfTutorial', [function () {
 
         this.showStepAfterViewInit = function (currentStepId, stepToBeShown) {
             setTimeout(function () {

@@ -11,11 +11,6 @@ angular.module('dfTutorial')
                 name: 'services',
                 label: 'Services',
                 path: 'service-tutorial'
-            },
-            {
-                name: 'apps',
-                label: 'Apps',
-                path: 'app-tutorial'
             }
         ];
     }]);

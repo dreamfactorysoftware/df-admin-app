@@ -22,7 +22,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
     }])
 
-    .controller('ServicesCtrl', ['$rootScope','dfTutorialHandler', '$scope', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, dfTutorialHandler, $scope, dfApplicationData, dfNotify, $location) {
+    .controller('ServicesCtrl', ['$rootScope','dfTutorial', '$scope', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, dfTutorial, $scope, dfApplicationData, dfNotify, $location) {
 
         $scope.$parent.title = 'Services';
 
@@ -98,7 +98,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
         $scope.loadTabData(true);
 
         $scope.showTutorialStep = function (currentStepId, nextStepId) {
-            dfTutorialHandler.showStepAfterViewInit(currentStepId, nextStepId);
+            dfTutorial.showStepAfterViewInit(currentStepId, nextStepId);
         }
     }])
 
