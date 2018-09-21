@@ -15,8 +15,4 @@ angular.module('dfTutorial', [])
                         }]
                     }
                 });
-        }])
-
-    .run([function () {
-
-    }])
+        }]);

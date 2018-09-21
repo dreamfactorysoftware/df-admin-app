@@ -26,17 +26,18 @@ angular.module('dfTutorial')
                 function subscribeDisableButtonNextForEmptyInputs(step) {
                     var inputSelector = step.options.attachTo.element;
                     var buttonSelector = '.shepherd-element .shepherd-content footer .shepherd-buttons li:last-child .shepherd-button';
+                    var disabledButtonClass = 'tutorial-disabled-button';
 
                     step.on('show', function () {
                         if ($(inputSelector).val() == '') {
-                            $(buttonSelector).addClass("tutorial-disabled-button");
+                            $(buttonSelector).addClass(disabledButtonClass);
                         }
 
                         $(inputSelector).on('input', function (e) {
                             if ($(inputSelector).val() == '') {
-                                $(buttonSelector).addClass("tutorial-disabled-button")
+                                $(buttonSelector).addClass(disabledButtonClass)
                             } else {
-                                $(buttonSelector).removeClass("tutorial-disabled-button")
+                                $(buttonSelector).removeClass(disabledButtonClass)
                             }
                         });
 
@@ -51,7 +52,6 @@ angular.module('dfTutorial')
                         $(buttonSelector).removeClass("tutorial-disabled-button")
                     });
                 }
-
 
 
                 function setFocusAfterShow(step) {
@@ -258,8 +258,8 @@ angular.module('dfTutorial')
                         },
                         {
                             text: 'back',
-                            action: function (){
-                                $( "#info-tab" ).trigger( "click" );
+                            action: function () {
+                                $("#info-tab").trigger("click");
                                 tour.back()
                             }
                         },
