@@ -97,8 +97,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
         $scope.loadTabData(true);
 
-        $scope.showStep = function (currentStepId, nextStepId) {
-            dfTutorialHandler.showStep(currentStepId, nextStepId);
+        $scope.showTutorialStep = function (currentStepId, nextStepId) {
+            dfTutorialHandler.showStepAfterViewInit(currentStepId, nextStepId);
         }
     }])
 

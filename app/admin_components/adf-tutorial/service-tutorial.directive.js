@@ -26,17 +26,18 @@ angular.module('dfTutorial')
                 function subscribeDisableButtonNextForEmptyInputs(step) {
                     var inputSelector = step.options.attachTo.element;
                     var buttonSelector = '.shepherd-element .shepherd-content footer .shepherd-buttons li:last-child .shepherd-button';
+                    var disabledButtonClass = 'tutorial-disabled-button';
 
                     step.on('show', function () {
                         if ($(inputSelector).val() == '') {
-                            $(buttonSelector).addClass("tutorial-disabled-button");
+                            $(buttonSelector).addClass(disabledButtonClass);
                         }
 
                         $(inputSelector).on('input', function (e) {
                             if ($(inputSelector).val() == '') {
-                                $(buttonSelector).addClass("tutorial-disabled-button")
+                                $(buttonSelector).addClass(disabledButtonClass)
                             } else {
-                                $(buttonSelector).removeClass("tutorial-disabled-button")
+                                $(buttonSelector).removeClass(disabledButtonClass)
                             }
                         });
 
@@ -51,7 +52,6 @@ angular.module('dfTutorial')
                         $(buttonSelector).removeClass("tutorial-disabled-button")
                     });
                 }
-
 
 
                 function setFocusAfterShow(step) {
@@ -258,8 +258,8 @@ angular.module('dfTutorial')
                         },
                         {
                             text: 'back',
-                            action: function (){
-                                $( "#info-tab" ).trigger( "click" );
+                            action: function () {
+                                $("#info-tab").trigger("click");
                                 tour.back()
                             }
                         },
@@ -504,19 +504,6 @@ angular.module('dfTutorial')
                     angular.element('body').removeClass('shepherd-active');
                     document.getElementById('services-table').lastElementChild.lastElementChild.classList.add('tutorial-step-created-service')
                 });
-
-                // var selector = step17.options.attachTo.element;
-                // step17.on('show', function () {
-                //     setTimeout(function () {
-                //         angular.element(selector).addClass('highlighted-element');
-                //     },2000)
-                // });
-                // step17.on('before-hide', function () {
-                //     angular.element(selector).removeClass('highlighted-element')
-                // });
-
-                // subscribeHighlightingElement(step17);
-
 
             }
         };

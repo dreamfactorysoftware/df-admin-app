@@ -4,10 +4,10 @@ angular
     .module('dfServiceModule')
     .service('dfTutorialHandler', [function () {
 
-        this.showStep = function (currentStepId, nextStepId) {
+        this.showStepAfterViewInit = function (currentStepId, stepToBeShown) {
             setTimeout(function () {
                 if (Shepherd.activeTour && Shepherd.activeTour.getCurrentStep().id == currentStepId) {
-                    Shepherd.activeTour.show(nextStepId);
+                    Shepherd.activeTour.show(stepToBeShown);
                 }
             }, 100)
         };
