@@ -1,5 +1,6 @@
 var createServiceScenario = {
     steps: [
+
         {
             name: 'services-tab',
             type: 'click',
@@ -17,8 +18,7 @@ var createServiceScenario = {
                         }
                     }
                 ]
-            },
-            customFunctionObjects: []
+            }
         },
 
         {
@@ -38,7 +38,7 @@ var createServiceScenario = {
                     }
                 ]
             },
-            customFunctionObjects: [
+            eventHandlers: [
                 {
                     event: 'show',
                     handler:
@@ -53,7 +53,7 @@ var createServiceScenario = {
 
         {
             name: 'selecting-service-type',
-            type: 'click',
+            type: 'select',
             options: {
                 title: 'Service type',
                 text: 'Select \'Database\' service type and choose MySQL',
@@ -68,7 +68,7 @@ var createServiceScenario = {
                     }
                 ]
             },
-            customFunctionObjects: [
+            eventHandlers: [
                 {
                     event: 'show',
                     handler:
@@ -119,8 +119,7 @@ var createServiceScenario = {
                     }
                 ]
 
-            },
-            customFunctionObjects: []
+            }
         },
 
         {
@@ -155,13 +154,12 @@ var createServiceScenario = {
                     }
                 ]
 
-            },
-            customFunctionObjects: []
+            }
         },
 
         {
             name: 'service-active-checkbox',
-            type: 'click',
+            type: 'notice',
             options: {
                 title: 'The \'active\' checkbox',
                 text: 'You can make your service inactive when you need.',
@@ -191,8 +189,8 @@ var createServiceScenario = {
                     }
                 ]
 
-            },
-            customFunctionObjects: []
+            }
+
         },
 
         {
@@ -222,7 +220,7 @@ var createServiceScenario = {
                 ]
 
             },
-            customFunctionObjects: [
+            eventHandlers: [
                 {
                     event: 'show',
                     handler:
@@ -273,8 +271,8 @@ var createServiceScenario = {
                     }
                 ]
 
-            },
-            customFunctionObjects: []
+            }
+
         },
 
         {
@@ -309,8 +307,8 @@ var createServiceScenario = {
                     }
                 ]
 
-            },
-            customFunctionObjects: []
+            }
+
         },
 
         {
@@ -349,8 +347,8 @@ var createServiceScenario = {
                     }
                 ]
 
-            },
-            customFunctionObjects: []
+            }
+
         },
 
         {
@@ -385,8 +383,8 @@ var createServiceScenario = {
                     }
                 ]
 
-            },
-            customFunctionObjects: []
+            }
+
         },
 
         {
@@ -421,8 +419,8 @@ var createServiceScenario = {
                     }
                 ]
 
-            },
-            customFunctionObjects: []
+            }
+
         },
 
         {
@@ -463,8 +461,8 @@ var createServiceScenario = {
                     }
                 ]
 
-            },
-            customFunctionObjects: []
+            }
+
         },
 
         {
@@ -499,8 +497,8 @@ var createServiceScenario = {
                     }
                 ]
 
-            },
-            customFunctionObjects: []
+            }
+
         },
 
         {
@@ -539,8 +537,8 @@ var createServiceScenario = {
                     }
                 ]
 
-            },
-            customFunctionObjects: []
+            }
+
         },
 
         {
@@ -570,8 +568,8 @@ var createServiceScenario = {
                     }
                 ]
 
-            },
-            customFunctionObjects: []
+            }
+
         },
 
         {
@@ -593,7 +591,7 @@ var createServiceScenario = {
                 ]
 
             },
-            customFunctionObjects: [
+            eventHandlers: [
                 {
                     event: 'before-show',
                     handler:

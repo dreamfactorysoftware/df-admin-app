@@ -13,6 +13,11 @@ angular.module('dfTutorial')
                 path: 'service-tutorial'
             }
         ];
+
+        $scope.start = function () {
+            TourBuilder.buildTour(createServiceScenario);
+        };
+
     }]);
 
 
