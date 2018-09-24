@@ -19,7 +19,7 @@ angular.module('dfTutorial')
                         }
                     });
 
-                    dfTutorial.fillWithScenario(tour, allScenarios.createService);
+                    dfTutorial.fillWithScenario(tour, createServiceScenario);
 
                     tour.start();
                 };
