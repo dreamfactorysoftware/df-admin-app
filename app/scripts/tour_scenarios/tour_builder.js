@@ -131,10 +131,10 @@ var TourBuilder = {
         var selector = TourBuilder.getSelector(step);
 
         step.on('show', function () {
-            angular.element(selector).addClass('highlighted-element');
+            $(selector).addClass('highlighted-element');
         });
         step.on('before-hide', function () {
-            angular.element(selector).removeClass('highlighted-element')
+            $(selector).removeClass('highlighted-element')
         });
     },
 
@@ -170,4 +170,4 @@ var TourBuilder = {
         });
     }
 
-}
+};
