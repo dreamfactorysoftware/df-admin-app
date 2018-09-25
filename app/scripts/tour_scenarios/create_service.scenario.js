@@ -330,8 +330,7 @@ var createServiceScenario = {
             type: 'input',
             options: {
                 title: 'Schema',
-                text: '<p>Leave blank to work with all available schemas, type "default"</p> ' +
-                '<p> to only work with the default schema for the given credentials,</p>' +
+                text: '<p>Type "default" to only work with the default schema for the given credentials,</p>' +
                 '<p> or type in a specific schema to use for this service.</p>',
                 attachTo: {element: '.tutorial-step-schema-input', on: 'top'},
                 scrollTo: true,
