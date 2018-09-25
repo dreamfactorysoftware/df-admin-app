@@ -6,15 +6,7 @@ angular.module('dfTutorial')
 
         $scope.$parent.title = 'Tutorials';
 
-        $scope.links = [
-            {
-                name: 'services',
-                label: 'Services',
-                path: 'service-tutorial'
-            }
-        ];
-
-        $scope.start = function () {
+        $scope.startServiceTutorial = function () {
             TourBuilder.buildTour(createServiceScenario);
         };
 
