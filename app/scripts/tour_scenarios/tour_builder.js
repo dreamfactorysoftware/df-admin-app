@@ -78,20 +78,14 @@ var TourBuilder = {
                         };
                     }
                 }
-                TourBuilder.buttonActionSetter(preButton, button);
 
+                if (preButton.action !== undefined) {
+                    button.action = preButton.action;
+                }
                 buttons.push(button);
             });
         return buttons
     },
-
-
-    buttonActionSetter: function (preButton, button) {
-        if (preButton.action !== undefined) {
-            button.action = preButton.action;
-        }
-    },
-
 
     bindEventsByStepType: function (step, createdStep) {
         switch (step.type) {
