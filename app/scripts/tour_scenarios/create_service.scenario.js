@@ -73,9 +73,9 @@ var createServiceScenario = {
                     event: 'show',
                     handler:
                         function () {
-                            angular.element('.tutorial-step-selecting-service-type-dropdown-list').css('z-index', '1102');
+                            $('.tutorial-step-selecting-service-type-dropdown-list').css('z-index', '1102');
 
-                            $('.tutorial-step-service-type-selected').on('click', function (event) {
+                            $('.tutorial-step-service-type-selected').on('click', function () {
                                 if ($('.tutorial-step-selecting-service-type-dropdown').text().indexOf('MySQL') !== -1) {
                                     createServiceScenario.tour.next()
                                 }
@@ -85,10 +85,8 @@ var createServiceScenario = {
                 {
                     event: 'before-hide',
                     handler: function () {
-                        angular.element('.tutorial-step-selecting-service-type-dropdown-list').css('z-index', 'auto;');
+                        $('.tutorial-step-selecting-service-type-dropdown-list').css('z-index', 'auto');
                     }
-
-
                 }
             ]
         },
@@ -596,7 +594,7 @@ var createServiceScenario = {
                     event: 'before-show',
                     handler:
                         function () {
-                            angular.element('body').removeClass('shepherd-active');
+                            $('body').removeClass('shepherd-active');
                             document.getElementById('services-table').lastElementChild.lastElementChild.classList.add('tutorial-step-created-service')
                         }
                 }
