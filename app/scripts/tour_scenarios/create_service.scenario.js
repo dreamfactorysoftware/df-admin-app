@@ -11,11 +11,7 @@ var createServiceScenario = {
                 advanceOn: {element: '.tutorial-step-services-tab', on: 'click'},
                 buttons: [
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     }
                 ]
             }
@@ -30,11 +26,7 @@ var createServiceScenario = {
                 attachTo: {element: '.tutorial-step-create-service-button', on: 'bottom'},
                 buttons: [
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     }
                 ]
             },
@@ -43,7 +35,7 @@ var createServiceScenario = {
                     event: 'show',
                     handler:
                         function () {
-                            $('.tutorial-step-create-service-button').on('click', function (event) {
+                            $('.tutorial-step-create-service-button').click(function () {
                                 createServiceScenario.tour.next()
                             });
                         }
@@ -60,11 +52,7 @@ var createServiceScenario = {
                 attachTo: {element: '.tutorial-step-selecting-service-type-dropdown', on: 'top'},
                 buttons: [
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     }
                 ]
             },
@@ -101,14 +89,10 @@ var createServiceScenario = {
                 buttons: [
 
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     },
                     {
-                        text: 'next',
+                        type: 'next',
                         action: function () {
                             if ($('.tutorial-service-name').val() !== '') {
                                 createServiceScenario.tour.next()
@@ -131,24 +115,13 @@ var createServiceScenario = {
                 buttons: [
 
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     },
                     {
-                        text: 'back',
-                        action: function () {
-                            createServiceScenario.tour.back()
-                        }
-
+                        type: 'back'
                     },
                     {
-                        text: 'next',
-                        action: function () {
-                            createServiceScenario.tour.next()
-                        }
+                        type: 'next'
                     }
                 ]
 
@@ -166,24 +139,13 @@ var createServiceScenario = {
                 buttons: [
 
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     },
                     {
-                        text: 'back',
-                        action: function () {
-                            createServiceScenario.tour.back()
-                        }
-
+                        type: 'back'
                     },
                     {
-                        text: 'next',
-                        action: function () {
-                            createServiceScenario.tour.next()
-                        }
+                        type: 'next'
                     }
                 ]
 
@@ -202,18 +164,10 @@ var createServiceScenario = {
                 buttons: [
 
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     },
                     {
-                        text: 'back',
-                        action: function () {
-                            createServiceScenario.tour.back()
-                        }
-
+                        type: 'back'
                     }
                 ]
 
@@ -246,15 +200,11 @@ var createServiceScenario = {
                 buttons: [
 
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     },
 
                     {
-                        text: 'back',
+                        type: 'back',
                         action: function () {
                             $("#info-tab").trigger("click");
                             createServiceScenario.tour.back()
@@ -262,10 +212,7 @@ var createServiceScenario = {
 
                     },
                     {
-                        text: 'next',
-                        action: function () {
-                            createServiceScenario.tour.next()
-                        }
+                        type: 'next'
                     }
                 ]
 
@@ -283,25 +230,14 @@ var createServiceScenario = {
                 buttons: [
 
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     },
 
                     {
-                        text: 'back',
-                        action: function () {
-                            createServiceScenario.tour.back()
-                        }
-
+                        type: 'back'
                     },
                     {
-                        text: 'next',
-                        action: function () {
-                            createServiceScenario.tour.next()
-                        }
+                        type: 'next'
                     }
                 ]
 
@@ -323,25 +259,14 @@ var createServiceScenario = {
                 buttons: [
 
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     },
 
                     {
-                        text: 'back',
-                        action: function () {
-                            createServiceScenario.tour.back()
-                        }
-
+                        type: 'back'
                     },
                     {
-                        text: 'next',
-                        action: function () {
-                            createServiceScenario.tour.next()
-                        }
+                        type: 'next'
                     }
                 ]
 
@@ -359,25 +284,15 @@ var createServiceScenario = {
                 buttons: [
 
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     },
 
                     {
-                        text: 'back',
-                        action: function () {
-                            createServiceScenario.tour.back()
-                        }
+                        type: 'back'
 
                     },
                     {
-                        text: 'next',
-                        action: function () {
-                            createServiceScenario.tour.next()
-                        }
+                        type: 'next'
                     }
                 ]
 
@@ -395,25 +310,14 @@ var createServiceScenario = {
                 buttons: [
 
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     },
 
                     {
-                        text: 'back',
-                        action: function () {
-                            createServiceScenario.tour.back()
-                        }
-
+                        type: 'back'
                     },
                     {
-                        text: 'next',
-                        action: function () {
-                            createServiceScenario.tour.next()
-                        }
+                        type: 'next'
                     }
                 ]
 
@@ -437,25 +341,15 @@ var createServiceScenario = {
                 buttons: [
 
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     },
 
                     {
-                        text: 'back',
-                        action: function () {
-                            createServiceScenario.tour.back()
-                        }
+                        type: 'back'
 
                     },
                     {
-                        text: 'next',
-                        action: function () {
-                            createServiceScenario.tour.next()
-                        }
+                        type: 'next'
                     }
                 ]
 
@@ -473,25 +367,14 @@ var createServiceScenario = {
                 buttons: [
 
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     },
 
                     {
-                        text: 'back',
-                        action: function () {
-                            createServiceScenario.tour.back()
-                        }
-
+                        type: 'back'
                     },
                     {
-                        text: 'next',
-                        action: function () {
-                            createServiceScenario.tour.next()
-                        }
+                        type: 'next'
                     }
                 ]
 
@@ -513,25 +396,14 @@ var createServiceScenario = {
                 buttons: [
 
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     },
 
                     {
-                        text: 'back',
-                        action: function () {
-                            createServiceScenario.tour.back()
-                        }
-
+                        type: 'back'
                     },
                     {
-                        text: 'next',
-                        action: function () {
-                            createServiceScenario.tour.next()
-                        }
+                        type: 'next'
                     }
                 ]
 
@@ -550,19 +422,11 @@ var createServiceScenario = {
                 buttons: [
 
                     {
-                        text: 'skip',
-                        classes: 'shepherd-button-secondary',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'skip'
                     },
 
                     {
-                        text: 'back',
-                        action: function () {
-                            createServiceScenario.tour.back()
-                        }
-
+                        type: 'back'
                     }
                 ]
 
@@ -579,12 +443,8 @@ var createServiceScenario = {
                 attachTo: {element: '.tutorial-step-created-service', on: 'top'},
                 scrollTo: true,
                 buttons: [
-
                     {
-                        text: 'DONE',
-                        action: function () {
-                            createServiceScenario.tour.complete()
-                        }
+                        type: 'done'
                     }
                 ]
 

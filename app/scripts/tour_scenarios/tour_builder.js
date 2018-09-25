@@ -8,7 +8,7 @@ var TourBuilder = {
         }, 100)
     },
 
-    buildTour: function (scenario){
+    buildTour: function (scenario) {
 
         var tour = new Shepherd.Tour({
             defaultStepOptions: {
@@ -22,19 +22,76 @@ var TourBuilder = {
         tour.start();
     },
 
+
     fillTourWithScenario: function (tour, scenario) {
         scenario.tour = tour;
 
         scenario.steps
             .forEach(function (step) {
 
+                var stepButtons = TourBuilder.createButtons(step, tour);
+
                 var createdStep = tour.addStep(step.name, step.options);
+                createdStep.options.buttons = stepButtons;
 
                 TourBuilder.bindEventsByStepType(step, createdStep);
 
                 TourBuilder.bindCustomEvents(step, createdStep);
             });
     },
+
+    createButtons: function (step, tour) {
+
+        var buttons = [];
+
+        step.options.buttons
+            .forEach(function (preButton) {
+                var button;
+                switch (preButton.type) {
+
+                    case 'skip': {
+                        button = {
+                            text: 'skip',
+                            classes: 'shepherd-button-secondary',
+                            action: tour.complete
+                        };
+                        break;
+                    }
+                    case 'next': {
+                        button = {
+                            text: 'next',
+                            action: tour.next
+                        };
+                        break;
+                    }
+                    case 'back': {
+                        button = {
+                            text: 'back',
+                            action: tour.back
+                        };
+                        break;
+                    }
+                    case 'done': {
+                        button = {
+                            text: 'done',
+                            action: tour.complete
+                        };
+                    }
+                }
+                TourBuilder.buttonActionSetter(preButton, button);
+
+                buttons.push(button);
+            });
+        return buttons
+    },
+
+
+    buttonActionSetter: function (preButton, button) {
+        if (preButton.action !== undefined) {
+            button.action = preButton.action;
+        }
+    },
+
 
     bindEventsByStepType: function (step, createdStep) {
         switch (step.type) {
