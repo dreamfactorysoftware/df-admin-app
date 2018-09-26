@@ -6,7 +6,7 @@ var createServiceScenario = {
             type: 'click',
             options: {
                 title: 'Services Tab',
-                text: 'Tab with settings related to services. Let\'s open it.',
+                text: 'Click on this tab to go to the services page.',
                 attachTo: {element: '.tutorial-step-services-tab', on: 'bottom'},
                 advanceOn: {element: '.tutorial-step-services-tab', on: 'click'},
                 buttons: [
@@ -21,8 +21,8 @@ var createServiceScenario = {
             name: 'create-button',
             type: 'click',
             options: {
-                title: 'Button to create a service',
-                text: 'Let\'s create a service. Click on the button.',
+                title: 'Create Button',
+                text: 'Clicking on this button will take you to the create form.',
                 attachTo: {element: '.tutorial-step-create-service-button', on: 'bottom'},
                 buttons: [
                     {
@@ -47,8 +47,8 @@ var createServiceScenario = {
             name: 'selecting-service-type',
             type: 'select',
             options: {
-                title: 'Service type',
-                text: 'Select \'Database\' service type and choose MySQL',
+                title: 'Service Type',
+                text: 'Open select. Next go to \'Database\' category. Next find and choose MySQL',
                 attachTo: {element: '.tutorial-step-selecting-service-type-dropdown', on: 'top'},
                 buttons: [
                     {
@@ -83,8 +83,8 @@ var createServiceScenario = {
             name: 'service-name-input',
             type: 'input',
             options: {
-                title: 'Service name',
-                text: 'Select a name for making API requests, such as \'db\' in /api/v2/db.',
+                title: 'Service Name',
+                text: 'Enter a name for making API requests, such as \'db\' which will result in \'/api/v2/db.\'',
                 attachTo: {element: '.tutorial-service-name', on: 'top'},
                 buttons: [
 
@@ -109,7 +109,7 @@ var createServiceScenario = {
             type: 'input',
             options: {
                 title: 'Label',
-                text: 'The display name or label for the service.',
+                text: 'Enter a display name for the service.',
                 attachTo: {element: '.tutorial-service-label', on: 'top'},
                 scrollTo: true,
                 buttons: [
@@ -132,8 +132,8 @@ var createServiceScenario = {
             name: 'service-active-checkbox',
             type: 'notice',
             options: {
-                title: 'The \'active\' checkbox',
-                text: 'You can make your service inactive when you need.',
+                title: 'Activate',
+                text: 'Make sure the checkbox is checked.',
                 attachTo: {element: '.tutorial-step-active-service-checkbox', on: 'bottom'},
                 scrollTo: true,
                 buttons: [
@@ -157,8 +157,8 @@ var createServiceScenario = {
             name: 'service-config-tab',
             type: 'click',
             options: {
-                title: 'Config tab',
-                text: 'Let\'s open config tab.',
+                title: 'Config Tab',
+                text: 'Next click on this tab to do further service specific configurations.',
                 attachTo: {element: '#config-tab', on: 'bottom'},
                 scrollTo: true,
                 buttons: [
@@ -195,7 +195,7 @@ var createServiceScenario = {
             type: 'input',
             options: {
                 title: 'Host',
-                text: 'The name of the database host, i.e. localhost, 192.168.1.1, etc.',
+                text: 'Enter the host where database is running, i.e. localhost, 192.168.1.1, etc.',
                 attachTo: {element: '.tutorial-step-host-input', on: 'top'},
                 buttons: [
 
@@ -225,7 +225,7 @@ var createServiceScenario = {
             type: 'input',
             options: {
                 title: 'Port Number',
-                text: 'The number of the database host port, i.e. 27017',
+                text: 'Enter the number of the port where database is running, i.e. 3306 which is default for MySql',
                 attachTo: {element: '.tutorial-step-port', on: 'top'},
                 buttons: [
 
@@ -250,7 +250,7 @@ var createServiceScenario = {
             type: 'input',
             options: {
                 title: 'Database',
-                text: 'The name of the database to connect to on the given server.',
+                text: 'Enter a name of the database to connect to on the given server.',
                 attachTo: {element: '.tutorial-step-database-input', on: 'top'},
                 scrollTo: true,
                 scrollToHandler: function () {
@@ -279,7 +279,7 @@ var createServiceScenario = {
             type: 'input',
             options: {
                 title: 'Username',
-                text: 'The name of the database user.',
+                text: 'Enter a name of the database user.',
                 attachTo: {element: '.tutorial-step-username-input', on: 'top'},
                 buttons: [
 
@@ -304,8 +304,8 @@ var createServiceScenario = {
             name: 'service-user-password-input',
             type: 'input',
             options: {
-                title: 'User password',
-                text: 'Type password and click next.',
+                title: 'User Password',
+                text: 'Enter a password and for the given user.',
                 attachTo: {element: '.tutorial-step-password-input', on: 'top'},
                 buttons: [
 
@@ -414,8 +414,8 @@ var createServiceScenario = {
             name: 'service-save-button',
             type: 'input',
             options: {
-                title: 'Save the new service',
-                text: 'Click save.',
+                title: 'Save',
+                text: 'Click save to finalize the service setup.',
                 attachTo: {element: '#services_details_save   ', on: 'top'},
                 scrollTo: true,
                 buttons: [
@@ -437,8 +437,8 @@ var createServiceScenario = {
             name: 'show-created-service',
             type: 'click',
             options: {
-                title: 'Service which we have created',
-                text: 'You have just created a service. God job :)',
+                title: 'New Serice',
+                text: 'Notice a new service in a list. Now it is ready to use.',
                 attachTo: {element: '.tutorial-step-created-service', on: 'top'},
                 scrollTo: true,
                 buttons: [
