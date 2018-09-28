@@ -7,8 +7,8 @@ FeatureTour.scenarios.createService = {
             options: {
                 title: 'Services Tab',
                 text: 'Click on this tab to go to the services page.',
-                attachTo: {element: '.tutorial-step-services-tab', on: 'bottom'},
-                advanceOn: {element: '.tutorial-step-services-tab', on: 'click'},
+                attachTo: {element: '[data-step=services-tab]', on: 'bottom'},
+                advanceOn: {element: '[data-step=services-tab]', on: 'click'},
                 buttons: [
                     {
                         type: 'skip'
