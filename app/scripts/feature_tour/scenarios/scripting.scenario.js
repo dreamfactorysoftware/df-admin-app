@@ -138,7 +138,6 @@ FeatureTour.scenarios.scripting = {
                     event: 'show',
                     handler:
                         function () {
-                            // $('.tutorial-step-selecting-service-type-dropdown-list').css('z-index', '1102');
                             var $checkbox = $('[data-tour=scripting][data-step=activate-script]');
                             $checkbox.on('change', function (e) {
                                 if ($checkbox.is(":checked")) {
@@ -157,7 +156,6 @@ FeatureTour.scenarios.scripting = {
                 title: 'Modify Response',
                 text: 'Check this checkbox to allow the modification of response which will then be available for using in script.',
                 attachTo: {element: '[data-tour=scripting][data-step=modify-response]', on: 'bottom'},
-                // advanceOn: {element: '.tutorial-step-select-service-system', on: 'click'},
                 buttons: [
                     {
                         type: 'skip'
@@ -169,7 +167,6 @@ FeatureTour.scenarios.scripting = {
                     event: 'show',
                     handler:
                         function () {
-                            // $('.tutorial-step-selecting-service-type-dropdown-list').css('z-index', '1102');
                             var $checkbox = $('[data-tour=scripting][data-step=modify-response]');
                             $checkbox.on('change', function (e) {
                                 if ($checkbox.is(":checked")) {
@@ -188,7 +185,6 @@ FeatureTour.scenarios.scripting = {
                 title: 'Script Editor',
                 text: "Notice the editor area. This is a place where you can write your custom scripts.<br>This time we will do it for you. So after you click next we will automatically fill in the example script.",
                 attachTo: {element: '[data-tour=scripting][data-step-1=show-script-editor]', on: 'top'},
-                // advanceOn: {element: '.tutorial-step-select-service-system', on: 'click'},
                 buttons: [
                     {
                         type: 'skip'
