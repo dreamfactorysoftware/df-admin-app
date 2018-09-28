@@ -225,7 +225,7 @@ FeatureTour.scenarios.createService = {
             type: 'input',
             options: {
                 title: 'Port Number',
-                text: 'Enter the number of the port where database is running, i.e. 3306 which is default for MySql',
+                text: 'Enter the number of the port where database is running, i.e. 3306 which is default for MySQL',
                 attachTo: {element: '.tutorial-step-port', on: 'top'},
                 buttons: [
 
