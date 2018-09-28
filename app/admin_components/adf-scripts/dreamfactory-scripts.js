@@ -801,6 +801,12 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 watchSelections();
                 watchApiData();
             });
+
+            // TODO Temporary hack to handle view render. Need to replace with more explicit solution.
+            $scope.showTutorialStep = function (currentStepId, nextStepId) {
+                return FeatureTour.showStep(currentStepId, nextStepId);
+            }
+
         }])
 
     .directive('scriptSidebarMenu', ['MODSCRIPTING_ASSET_PATH', function (MODSCRIPTING_ASSET_PATH) {

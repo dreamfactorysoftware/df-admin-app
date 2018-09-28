@@ -16,14 +16,17 @@
 
     <div df-fs-height id="scripting-sidebar-list" style="height:500px; overflow-y: scroll">
         <div>
-            <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 0">
-                <a class="list-group-item" ng-class="{ highlighted: highlightService(service.name) }" data-ng-repeat="service in apiData.service_list"
+            <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 0" ng-init="showTutorialStep('scripts-tab', 'choose-system-service')">
+                <a data-tutorial="scripting" data-step="select-service-{{service.name}}" class="list-group-item tutorial-step-select-service-{{service.name}}" ng-class="{ highlighted: highlightService(service.name) }" data-ng-repeat="service in apiData.service_list"
                    data-ng-click="selectService(service)">{{service.name}}<i
                         class="fa fa-fw fa-chevron-right pull-right"></i></a>
             </div>
 
             <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 1">
                 <a class="list-group-item"
+                   data-tutorial="scripting"
+                   data-step="choose-{{resource.split('.').join('-')}}"
+                   ng-init="showTutorialStep('choose-system-service', 'choose-system-admin')"
                    data-ng-repeat="(resource, data) in currentServiceObj.resources"
                    ng-class="{ highlighted: highlightResource(resource) }"
                    data-ng-click="selectResource(resource, data)">{{resource}}<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
@@ -31,6 +34,9 @@
 
             <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 2">
                 <a class="list-group-item"
+                   data-tutorial="scripting"
+                   data-step="{{endpoint.split('.').join('-')}}"
+                   ng-init="showTutorialStep('choose-system-admin', 'choose-admin-post-process')"
                    data-ng-repeat="endpoint in currentResourceObj.endpoints"
                    ng-class="{ highlighted: highlightEndpoint(endpoint) }"
                    data-ng-click="selectEndpoint(endpoint)">{{endpoint}}<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
@@ -38,6 +44,9 @@
 
             <div class="list-group scripting-list-group" data-ng-show="menuPathArr.length === 3">
                 <a class="list-group-item"
+                   data-tutorial="scripting"
+                   data-step="{{endpoint.split('.').join('-')}}-again"
+                   ng-init="showTutorialStep('choose-admin-post-process', 'again-choose-admin-post-process')"
                    data-ng-repeat="endpoint in currentEndpointObj.endpoints"
                    ng-class="{ highlighted: highlightExplodedEndpoint(endpoint) }"
                    data-ng-click="getScript(endpoint)">{{endpoint}}<i class="fa fa-fw fa-chevron-right pull-right"></i></a>
@@ -53,6 +62,8 @@
                 <div class="form-group">
                     <label>Script Type/Language</label>
                     <select class="form-control input-sm"
+                            data-tutorial="scripting"
+                            data-step="choose-language"
                             data-ng-model="currentScriptObj.type"
                             data-ng-options="scriptType.name as scriptType.label for scriptType in apiData.script_type">
                     </select>
@@ -60,7 +71,7 @@
                 <div class="form-inline">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" data-ng-model="currentScriptObj.is_active"/>
+                            <input type="checkbox" data-tour="scripting" data-step="activate-script" data-ng-model="currentScriptObj.is_active"/>
                             &nbsp;
                             Active
                         </label>
@@ -69,7 +80,7 @@
                 <div data-ng-if="currentScriptObj.name.indexOf('pre_process') >= 0 || currentScriptObj.name.indexOf('post_process') >= 0" class="form-inline">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" data-ng-model="currentScriptObj.allow_event_modification"/>
+                            <input type="checkbox" data-tour="scripting" data-step="modify-response" data-ng-model="currentScriptObj.allow_event_modification"/>
                             &nbsp;
                             <span data-ng-if="currentScriptObj.name.indexOf('pre_process') >= 0">Allow script to modify request payload</span>
                             <span data-ng-if="currentScriptObj.name.indexOf('post_process') >= 0">Allow script to modify response payload</span>

@@ -1,14 +1,20 @@
-var TourBuilder = {
+var FeatureTour = {
+    current: undefined,
+    scenarios: {},
 
-    showStepAfterViewInit: function (currentStepId, stepToBeShown) {
+    //This is a hack to show a step after the corresponding Angular's view was rendered
+    showStep: function (currentStepId, stepToBeShown) {
         setTimeout(function () {
-            if (Shepherd.activeTour && Shepherd.activeTour.getCurrentStep().id == currentStepId) {
-                Shepherd.activeTour.show(stepToBeShown);
+            if (FeatureTour.current && FeatureTour.current.getCurrentStep().id == currentStepId) {
+                FeatureTour.current.show(stepToBeShown);
             }
-        }, 100)
+        }, 100);
+
+        return 'done';
     },
 
-    buildTour: function (scenario) {
+    start: function(scenarioName) {
+        var scenario = this.scenarios[scenarioName]
 
         var tour = new Shepherd.Tour({
             defaultStepOptions: {
@@ -17,26 +23,26 @@ var TourBuilder = {
             }
         });
 
-        TourBuilder.fillTourWithScenario(tour, scenario);
+        this.current = tour;
+
+        this.fillTourWithScenario(tour, scenario);
 
         tour.start();
     },
 
-
     fillTourWithScenario: function (tour, scenario) {
-        scenario.tour = tour;
+        var self = this;
 
         scenario.steps
-            .forEach(function (step) {
+            .forEach(function (stepTemplate) {
 
-                var stepButtons = TourBuilder.createButtons(step, tour);
+                var buttons = self.createButtons(stepTemplate, tour);
 
-                var createdStep = tour.addStep(step.name, step.options);
-                createdStep.options.buttons = stepButtons;
+                var step = tour.addStep(stepTemplate.name, stepTemplate.options);
+                step.options.buttons = buttons;
 
-                TourBuilder.bindEventsByStepType(step, createdStep);
-
-                TourBuilder.bindCustomEvents(step, createdStep);
+                self.bindEventsByStepType(stepTemplate, step);
+                self.bindCustomEvents(stepTemplate, step);
             });
     },
 
@@ -53,21 +59,24 @@ var TourBuilder = {
                         button = {
                             text: 'skip',
                             classes: 'shepherd-button-secondary',
-                            action: tour.complete
+                            action: function (){
+                                FeatureTour.current.complete();
+                                FeatureTour.current = undefined;
+                            }
                         };
                         break;
                     }
                     case 'next': {
                         button = {
                             text: 'next',
-                            action: tour.next
+                            action: FeatureTour.current.next
                         };
                         break;
                     }
                     case 'back': {
                         button = {
                             text: 'back',
-                            action: tour.back
+                            action: FeatureTour.current.back
                         };
                         break;
                     }
@@ -90,21 +99,21 @@ var TourBuilder = {
     bindEventsByStepType: function (step, createdStep) {
         switch (step.type) {
             case 'click': {
-                TourBuilder.bindHighlighting(createdStep);
+                this.bindHighlighting(createdStep);
                 break;
             }
             case 'input': {
-                TourBuilder.bindEmptyInputsValidation(createdStep);
-                TourBuilder.bindFocus(createdStep);
-                TourBuilder.bindHighlighting(createdStep);
+                this.bindEmptyInputsValidation(createdStep);
+                this.bindFocus(createdStep);
+                this.bindHighlighting(createdStep);
                 break;
             }
             case 'select': {
-                TourBuilder.bindHighlighting(createdStep);
+                this.bindHighlighting(createdStep);
                 break
             }
             case 'notice': {
-                TourBuilder.bindHighlighting(createdStep);
+                this.bindHighlighting(createdStep);
             }
         }
     },
@@ -122,7 +131,7 @@ var TourBuilder = {
     },
 
     bindHighlighting: function (step) {
-        var selector = TourBuilder.getSelector(step);
+        var selector = this.getSelector(step);
 
         step.on('show', function () {
             $(selector).addClass('highlighted-element');
@@ -133,7 +142,7 @@ var TourBuilder = {
     },
 
     bindEmptyInputsValidation: function (step) {
-        var inputSelector = TourBuilder.getSelector(step);
+        var inputSelector = this.getSelector(step);
         var buttonSelector = '.shepherd-element .shepherd-content footer .shepherd-buttons li:last-child .shepherd-button';
         var disabledButtonClass = 'tutorial-disabled-button';
 
@@ -158,10 +167,9 @@ var TourBuilder = {
     },
 
     bindFocus: function (step) {
-        var selector = TourBuilder.getSelector(step);
+        var selector = this.getSelector(step);
         step.on('show', function () {
             $(selector).focus();
         });
     }
-
-};
+}

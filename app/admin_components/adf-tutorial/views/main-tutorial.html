@@ -1,12 +1,34 @@
-<div>
-    <div class="col-md-12 df-section" df-fs-height>
-        <df-section-header data-title="'Tutorials'"></df-section-header>
-        <br>
-        <p class="hero-example">Services are where you set up REST API connections to databases, file storage,
-            email, remote web services, and more.
-        </p>
-        <button class="btn btn-primary" type="button" ng-click="startServiceTutorial()">
-            Let's create a Service
-        </button>
-    </div>
+<style>
+    .tutorials-index .start-service-link{
+        font-size: 18px;
+    }
+
+    .tutorials-index ul li {
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="col-md-12 df-section tutorials-index" df-fs-height>
+    <df-large-help data-options="dfLargeHelp.manageSchema"></df-large-help>
+    <ul>
+        <li>
+            <a type="button" class="start-service-link" data-ng-click="startTutorial('createService')">
+                <b>Create Service</b>
+            </a>
+            <br>
+            This is where you would want to start. Services are the building blocks of DreamFactory. They are the entrypoints for interaction with your application.
+            In this tutorial we will guide you through the service creation workflow. As a result you will end up with a simple database service for MySQL.
+        </li>
+        <li>
+            <a type="button" class="start-service-link" data-ng-click="startTutorial('scripting')">
+                <b>Scripting</b>
+            </a>
+            <br>
+            Sometimes you would want to add the custom behavior to some of your endpoint.
+            To achieve that we have this feature called Scripting.
+            For example this interactive guide will show you how to add the custom PHP code to one of the standard system endpoints.
+            We have already prepared an example script so you won't do any coding this time.
+            Just start the tour and follow the instructions.
+        </li>
+    </ul>
 </div>
