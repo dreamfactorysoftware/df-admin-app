@@ -2,7 +2,7 @@
 
 To add a new tutorial you need to do the following:
 
-1) Add a file with a scenario to tour_scenarios folder which you want to implement
+1) Add a file with a scenario to `scripts/feature_tour/scenarios` folder which you want to implement
 2) Create a method in tutorial.controller.js which will start the tour.
 3) Create a button in main-tutorial.html.
 4) Add ng-click directive to the button with a method which will start the tour.

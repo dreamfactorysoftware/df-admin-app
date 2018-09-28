@@ -97,8 +97,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
         $scope.loadTabData(true);
 
+        // TODO Temporary hack to handle view render. Need to replace with more explicit solution.
         $scope.showTutorialStep = function (currentStepId, nextStepId) {
-            TourBuilder.showStepAfterViewInit(currentStepId, nextStepId);
+            FeatureTour.showStep(currentStepId, nextStepId);
         }
     }])
 

@@ -9571,7 +9571,7 @@ body {
 /* line 1, partials/_df-tutorial.scss */
 .highlighted-element {
   position: relative;
-  z-index: 1102;
+  z-index: 1102!important;
   background-color: white;
   border: 1px solid rgba(0, 0, 0, 0.4);
   border-radius: 6px;

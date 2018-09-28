@@ -1,4 +1,4 @@
-var createServiceScenario = {
+FeatureTour.scenarios.createService = {
     steps: [
 
         {
@@ -36,7 +36,7 @@ var createServiceScenario = {
                     handler:
                         function () {
                             $('.tutorial-step-create-service-button').click(function () {
-                                createServiceScenario.tour.next()
+                                FeatureTour.current.next();
                             });
                         }
                 }
@@ -65,7 +65,7 @@ var createServiceScenario = {
 
                             $('.tutorial-step-service-type-selected').on('click', function () {
                                 if ($('.tutorial-step-selecting-service-type-dropdown').text().indexOf('MySQL') !== -1) {
-                                    createServiceScenario.tour.next()
+                                    FeatureTour.current.next();
                                 }
                             });
                         }
@@ -95,7 +95,7 @@ var createServiceScenario = {
                         type: 'next',
                         action: function () {
                             if ($('.tutorial-service-name').val() !== '') {
-                                createServiceScenario.tour.next()
+                                FeatureTour.current.next();
                             }
                         }
                     }
@@ -177,14 +177,14 @@ var createServiceScenario = {
                     event: 'show',
                     handler:
                         function () {
-                            $('#config-tab').on('click', createServiceScenario.tour.next);
+                            $('#config-tab').on('click', FeatureTour.current.next);
                         }
                 },
                 {
                     event: 'hide',
                     handler:
                         function () {
-                            $('#config-tab').unbind("click", createServiceScenario.tour.next);
+                            $('#config-tab').unbind("click", FeatureTour.current.next);
                         }
                 }
             ]
@@ -207,7 +207,7 @@ var createServiceScenario = {
                         type: 'back',
                         action: function () {
                             $("#info-tab").trigger("click");
-                            createServiceScenario.tour.back()
+                            FeatureTour.current.back()
                         }
 
                     },
@@ -331,7 +331,7 @@ var createServiceScenario = {
             options: {
                 title: 'Schema',
                 text: '<p>Type "default" to only work with the default schema for the given credentials,</p>' +
-                '<p> or type in a specific schema to use for this service.</p>',
+                    '<p> or type in a specific schema to use for this service.</p>',
                 attachTo: {element: '.tutorial-step-schema-input', on: 'top'},
                 scrollTo: true,
                 scrollToHandler: function () {
