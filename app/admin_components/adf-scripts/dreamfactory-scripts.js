@@ -840,6 +840,9 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                         case 'python':
                             fileExt = 'py';
                             break;
+                        case 'python3':
+                            fileExt = 'python3.py';
+                            break;
                         case 'v8js':
                             fileExt = 'v8.js';
                             break;
