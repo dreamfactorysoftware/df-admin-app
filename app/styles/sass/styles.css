@@ -10356,6 +10356,19 @@ body {
   overflow-y: scroll;
 }
 
+/* line 1, partials/_df-license-expired-banner.scss */
+#df-license-expired-banner {
+  background-color: red;
+  padding: 15px;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+/* line 8, partials/_df-license-expired-banner.scss */
+#df-license-expired-banner .description {
+  margin: 0;
+}
+
 /* line 2, ../../admin_components/adf-help/styles/style.scss */
 .help-container {
   display: inline;
@@ -10409,7 +10422,7 @@ body {
   z-index: 10001;
 }
 
-/* line 39, styles.scss */
+/* line 40, styles.scss */
 [data-ng-click] {
   cursor: pointer;
 }
