@@ -36,6 +36,9 @@ angular
         'dfFileManager',
         'dfPackageManager',
         'dfLimit',
+        'dfLicenseExpired',
+        'dfLicenseExpiredBanner',
+        'dfLimit',
         'dfReports',
         'dfScheduler'
     ])

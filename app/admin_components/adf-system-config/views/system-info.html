@@ -9,6 +9,15 @@
                         License Level: {{systemEnv.platform.license}}
                     </p>
                     <p>
+                        License Key: {{systemEnv.platform.license_key}}
+                    </p>
+                    <p>
+                        Subscription Status: {{subscriptionData.msg}}
+                    </p>
+                    <p>
+                        Subscription Expiration Date: {{subscriptionData.renewal_date}}
+                    </p>
+                    <p>
                         DreamFactory Version: {{systemEnv.platform.version}}
                     </p>
                     <p ng-if="isSysAdmin">

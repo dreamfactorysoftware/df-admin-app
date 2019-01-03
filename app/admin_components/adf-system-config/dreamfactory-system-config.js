@@ -190,7 +190,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.loadTabData();
         }])
 
-    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', function (MODSYSCONFIG_ASSET_PATH) {
+    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', 'LicenseDataService', function (MODSYSCONFIG_ASSET_PATH, LicenseDataService) {
 
         return {
             restrict: 'E',
@@ -202,6 +202,11 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                     window.top.location = 'http://wiki.dreamfactory.com/';
                 };
+
+                LicenseDataService.getSubscriptionData()
+                    .then(function (data) {
+                        scope.subscriptionData = data;
+                    });
 
                 var watchEnvironment = scope.$watchCollection('apiData.environment', function (newValue, oldValue) {
 

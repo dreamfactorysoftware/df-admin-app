@@ -27,8 +27,9 @@
         <div id="popup-login-container"></div>
 
         <!-- Top level Nav -->
-        <df-top-level-nav-std data-options="topLevelNavOptions"></df-top-level-nav-std>
+       <df-top-level-nav-std data-ng-if="showHeader" data-options="topLevelNavOptions"></df-top-level-nav-std>
 
+       <df-license-expired-banner data-ng-if="showLicenseExpiredBanner"></df-license-expired-banner>
 
         <div data-ng-if="showAdminComponentNav" style="margin: 10px auto;" class="df-menu">
             <!-- Component nav and title -->
@@ -118,12 +119,15 @@
     <script src="admin_components/adf-table/dreamfactory-table.js"></script>
     <script src="admin_components/adf-home/dreamfactory-home.js"></script>
     <script src="admin_components/adf-limit/dreamfactory-limit.js"></script>
+    <script src="admin_components/adf-license-expired/license-expiry-banner/license-expired-banner.directive.js"></script>
+    <script src="admin_components/adf-license-expired/license-expired.config.js"></script>
     <script src="admin_components/adf-reports/dreamfactory-reports.js"></script>
     <script src="admin_components/adf-scheduler/dreamfactory-scheduler.js"></script>
 
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/main.js"></script>
     <script src="scripts/polyfill.js"></script>
+    <script src="services/license-data.service.js"></script>
     <!-- endbuild -->
 
     <!-- other deps -->
