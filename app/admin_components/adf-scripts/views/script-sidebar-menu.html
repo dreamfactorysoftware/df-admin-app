@@ -102,11 +102,11 @@
                             <option value="">-- None --</option>
                         </select>
                     </div>
-                    <div class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab' || selections.service.type === 'bitbucket')">
+                    <div class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab' || selections.service.type === 'bitbucket' || selections.service.type === 'bitbucket2')">
                         <span>Repository: </span>
                         <input id="selected_service_repo" class="form-control input-sm" data-ng-model="currentScriptObj.scm_repository" />
                     </div>
-                    <div class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab' || selections.service.type === 'bitbucket')">
+                    <div class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab' || selections.service.type === 'bitbucket' || selections.service.type === 'bitbucket2')">
                         <span>Branch/Tag: </span>
                         <input id="selected_service_ref" class="form-control input-sm" data-ng-model="currentScriptObj.scm_reference" />
                     </div>
