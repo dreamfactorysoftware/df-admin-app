@@ -28,6 +28,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
     .controller('RolesCtrl', ['$rootScope', '$scope', '$q', 'dfApplicationData', 'SystemConfigDataService', 'dfNotify', function ($rootScope, $scope, $q, dfApplicationData, SystemConfigDataService, dfNotify) {
 
         $scope.$parent.title = 'Roles';
+        $scope.$parent.titleIcon = 'exclamation-circle';
 
         // Set module links
         $scope.links = [

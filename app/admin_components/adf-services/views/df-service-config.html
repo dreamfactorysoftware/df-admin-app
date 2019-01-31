@@ -5,6 +5,7 @@
     </div>
 
     <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema">
+
         <div class="form-group ng-scope" data-ng-if="field.type == 'boolean'">
             <div class="checkbox">
                 <label>
@@ -122,166 +123,245 @@
 
         <div class="panel panel-default" data-ng-if="field.type.indexOf('array') > -1">
             <div class="form-group" data-ng-if="!isArray(field.items)">
-                <table class="table table-hover table-striped field-list">
+                <table class="table table-hover table-striped field-list table-rows-extendable">
                     <thead>
-                    <tr>
-                        <th>Values</th>
+                        <tr>
+                            <th>
+                                <div>Values</div>
+                            </th>
 
-                        <th class="no-border">
-                            <div class="btn-group pull-left">
-                                <button type="button" class="btn btn-default btn-sm"
-                                        id="services_details_config_array_item_add_{{$index}}"
-                                        data-ng-click="appendItemToArray(serviceConfig, field.name)"
-                                        title="Add">
-                                    <i class="fa fa-plus fa-fw"></i>
-                                </button>
-                            </div>
-                        </th>
-                    </tr>
+                            <th>
+                                <i class="fa fa-trash-o fa-fw"></i>
+                            </th>
+
+                            <th class="no-border">
+                                <div>
+                                    <div class="btn-group">
+                                        <button
+                                            type="button"
+                                            id="services_details_config_array_item_add_{{$index}}"
+                                            class="btn btn-default btn-sm"
+                                            data-ng-click="appendItemToArray(serviceConfig, field.name)"
+                                            title="Add"
+                                        >
+                                            <i class="fa fa-plus fa-fw"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody class="tbody-transparent">
+                        <tr data-ng-repeat="str in serviceConfig[field.name] track by $index">
+                            <td>
+                                <div class="cell-content input-cell">
+                                    <div>
+                                        <input
+                                            class="form-control"
+                                            data-ng-model="serviceConfig[field.name][$index]"
+                                            id="services_details_config_array_item_value_{{$parent.$index}}_{{$index}}"
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
+                            </td>
 
-                    <tr data-ng-repeat="str in serviceConfig[field.name] track by $index">
-                        <td>
-                            <input class="form-control"
-                                   data-ng-model="serviceConfig[field.name][$index]"
-                                   id="services_details_config_array_item_value_{{$parent.$index}}_{{$index}}"
-                                   type="text"/>
-                        </td>
-                        <td class="no-border">
-                            <div class="btn-group pull-left">
-                                <button type="button" class="btn btn-default"
-                                        data-ng-click="deleteStringFromArray(serviceConfig[field.name], $index)"
-                                        id="services_details_config_array_item_removevalue_{{$parent.$index}}_{{$index}}"
-                                        title="Delete">
-                                    <i class="fa fa-trash-o fa-fw"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                            <td class="no-border">
+                                <div class="cell-content icon-cell">
+                                    <div>
+                                        <div class="btn-group">
+                                            <button
+                                                    type="button"
+                                                    class="btn btn-default"
+                                                    data-ng-click="deleteStringFromArray(serviceConfig[field.name], $index)"
+                                                    id="services_details_config_array_item_removevalue_{{$parent.$index}}_{{$index}}"
+                                                    title="Delete"
+                                            >
+                                                <i class="fa fa-trash-o fa-fw"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="cell-content"></div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
             <div class="form-group" data-ng-if="isArray(field.items)">
-                <table class="table table-hover table-striped field-list">
+                <table class="table table-hover table-striped field-list table-rows-extendable">
                     <thead>
-                    <tr>
-                        <th data-ng-repeat="part in field.items">{{ part.label }}</th>
+                        <tr>
+                            <th data-ng-repeat="part in field.items">
+                                <div>
+                                    {{ part.label }}
+                                </div>
+                            </th>
 
-                        <th class="no-border">
-                            <div class="btn-group pull-left">
-                                <button type="button" class="btn btn-default btn-sm"
+                            <th>
+                                <i class="fa fa-trash-o fa-fw"></i>
+                            </th>
+
+                            <th class="no-border">
+                                <div class="btn-group">
+                                    <button
+                                        type="button"
+                                        class="btn btn-default btn-sm"
                                         id="services_details_config_array_arrayitem_add_{{$index}}"
                                         data-ng-click="appendItemToArray(serviceConfig, field.name)"
-                                        title="Add">
-                                    <i class="fa fa-plus fa-fw"></i>
-                                </button>
-                            </div>
-                        </th>
-                    </tr>
+                                        title="Add"
+                                    >
+
+                                        <i class="fa fa-plus fa-fw"></i>
+                                    </button>
+                                </div>
+                            </th>
+                        </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody class="tbody-transparent">
+                        <tr data-ng-repeat="obj in serviceConfig[field.name] track by $index">
+                            <td data-ng-repeat="part in field.items">
+                                <div class="cell-content input-cell">
+                                    <div>
+                                        <input class="form-control" data-ng-if="part.type == 'string'"
+                                               id="services_details_config_array_arrayitem_string_{{$parent.$index}}_{{$index}}"
+                                               data-ng-model="serviceConfig[field.name][$parent.$parent.$index][part.name]"
+                                               type="text" data-ng-required="part.required">
+                                        <input class="form-control" data-ng-if="part.type == 'password'"
+                                               id="services_details_config_array_arrayitem_password_{{$parent.$index}}_{{$index}}"
+                                               data-ng-model="serviceConfig[field.name][$parent.$parent.$index][part.name]"
+                                               type="password" data-ng-required="part.required">
+                                        <input class="form-control" data-ng-if="part.type == 'text'"
+                                               id="services_details_config_array_arrayitem_text_{{$parent.$index}}_{{$index}}"
+                                               data-ng-model="serviceConfig[field.name][$parent.$parent.$index][part.name]"
+                                               type="text" data-ng-required="part.required">
+                                        <input class="checkbox" data-ng-if="part.type == 'boolean'"
+                                               id="services_details_config_array_arrayitem_boolean_{{$parent.$index}}_{{$index}}"
+                                               data-ng-model="serviceConfig[field.name][$parent.$parent.$index][part.name]"
+                                               type="checkbox" style="margin-top: 13px">
+                                        <input class="form-control" data-ng-if="part.type == 'integer'"
+                                               id="services_details_config_array_arrayitem_integer_{{$parent.$index}}_{{$index}}"
+                                               data-ng-model="serviceConfig[field.name][$parent.$parent.$index][part.name]"
+                                               type="number" data-ng-required="part.required">
 
-                    <tr data-ng-repeat="obj in serviceConfig[field.name] track by $index">
-                        <td data-ng-repeat="part in field.items">
-                            <input class="form-control" data-ng-if="part.type == 'string'"
-                                   id="services_details_config_array_arrayitem_string_{{$parent.$index}}_{{$index}}"
-                                   data-ng-model="serviceConfig[field.name][$parent.$parent.$index][part.name]"
-                                   type="text" data-ng-required="part.required">
-                            <input class="form-control" data-ng-if="part.type == 'password'"
-                                   id="services_details_config_array_arrayitem_password_{{$parent.$index}}_{{$index}}"
-                                   data-ng-model="serviceConfig[field.name][$parent.$parent.$index][part.name]"
-                                   type="password" data-ng-required="part.required">
-                            <input class="form-control" data-ng-if="part.type == 'text'"
-                                   id="services_details_config_array_arrayitem_text_{{$parent.$index}}_{{$index}}"
-                                   data-ng-model="serviceConfig[field.name][$parent.$parent.$index][part.name]"
-                                   type="text" data-ng-required="part.required">
-                            <input class="checkbox" data-ng-if="part.type == 'boolean'"
-                                   id="services_details_config_array_arrayitem_boolean_{{$parent.$index}}_{{$index}}"
-                                   data-ng-model="serviceConfig[field.name][$parent.$parent.$index][part.name]"
-                                   type="checkbox" style="margin-top: 13px">
-                            <input class="form-control" data-ng-if="part.type == 'integer'"
-                                   id="services_details_config_array_arrayitem_integer_{{$parent.$index}}_{{$index}}"
-                                   data-ng-model="serviceConfig[field.name][$parent.$parent.$index][part.name]"
-                                   type="number" data-ng-required="part.required">
+                                        <select class="form-control" data-ng-if="part.type == 'picklist'"
+                                                id="services_details_config_array_arrayitem_picklist_{{$parent.$index}}_{{$index}}"
+                                                data-ng-model="serviceConfig[field.name][$parent.$parent.$index][part.name]"
+                                                data-ng-options="option.name as option.label for option in part.values"
+                                                data-ng-click="updateAffectedFields(serviceConfig[field.name], field)">
+                                        </select>
 
-                            <select class="form-control" data-ng-if="part.type == 'picklist'"
-                                    id="services_details_config_array_arrayitem_picklist_{{$parent.$index}}_{{$index}}"
-                                    data-ng-model="serviceConfig[field.name][$parent.$parent.$index][part.name]"
-                                    data-ng-options="option.name as option.label for option in part.values"
-                                    data-ng-click="updateAffectedFields(serviceConfig[field.name], field)">
-                            </select>
-                            <df-grouped-picklist data-ng-if="part.type == 'grouped_picklist'"
-                                                 data-options="part.values"
-                                                 data-selected="serviceConfig[field.name][$parent.$parent.$index][part.name]">
-                            </df-grouped-picklist>
-                            <df-event-picker data-ng-if="part.type == 'event_picklist'"
-                                             data-options="eventList"
-                                             data-selected="serviceConfig[field.name][$parent.$parent.$index][part.name]">
-                            </df-event-picker>
-                            <df-verb-picker data-ng-if="part.type == 'verb_mask'"
-                                            data-allowed-verb-mask="serviceConfig[field.name][$parent.$parent.$index][part.name]"
-                                            data-size="">
-                            </df-verb-picker>
-                        </td>
-                        <td class="no-border">
-                            <div class="btn-group pull-left">
-                                <button type="button" class="btn btn-default"
-                                        data-ng-click="deleteObjectFromArray(serviceConfig[field.name], $index)"
-                                        id="services_details_config_array_arrayitem_remove_{{$parent.$index}}_{{$index}}"
-                                        title="Delete">
-                                    <i class="fa fa-trash-o fa-fw"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                                        <df-grouped-picklist data-ng-if="part.type == 'grouped_picklist'"
+                                                             data-options="part.values"
+                                                             data-selected="serviceConfig[field.name][$parent.$parent.$index][part.name]">
+                                        </df-grouped-picklist>
+
+                                        <df-event-picker data-ng-if="part.type == 'event_picklist'"
+                                                         data-options="eventList"
+                                                         data-selected="serviceConfig[field.name][$parent.$parent.$index][part.name]">
+                                        </df-event-picker>
+
+                                        <df-verb-picker data-ng-if="part.type == 'verb_mask'"
+                                                        data-allowed-verb-mask="serviceConfig[field.name][$parent.$parent.$index][part.name]"
+                                                        data-size="">
+                                        </df-verb-picker>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="no-border">
+                                <div class="cell-content icon-cell">
+                                    <div>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-default"
+                                                    data-ng-click="deleteObjectFromArray(serviceConfig[field.name], $index)"
+                                                    id="services_details_config_array_arrayitem_remove_{{$parent.$index}}_{{$index}}"
+                                                    title="Delete">
+                                                <i class="fa fa-trash-o fa-fw"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="cell-content"></div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
         <div class="panel panel-default" data-ng-if="field.type.indexOf('object') > -1">
-            <table class="table table-hover table-striped field-list">
+            <table class="table table-hover table-striped field-list table-rows-extendable">
                 <thead>
-                <tr>
-                    <th>{{ field.object.key.label }}</th>
-                    <th>{{ field.object.value.label }}</th>
-                    <th class="no-border">
-                        <div class="btn-group pull-left">
-                            <button type="button" class="btn btn-default btn-sm"
+                    <tr>
+                        <th><div>{{ field.object.key.label }}</div></th>
+                        <th><div>{{ field.object.value.label }}</div></th>
+                        <th>
+                            <i class="fa fa-trash-o fa-fw"></i>
+                        </th>
+
+                        <th>
+                            <div class="btn-group">
+                                <button
+                                    type="button"
+                                    id="services_details_config_object_add_{{$index}}"
+                                    class="btn btn-default btn-sm"
                                     data-ng-click="addKeyValue(field.name)"
-                                    id="services_details_config_object_add_{{$index}}">
-                                <i class="fa fa-plus fa-fw"></i>
-                            </button>
-                        </div>
-                    </th>
-                </tr>
+                                    title="Add lookup key"
+                                >
+                                    <i class="fa fa-plus fa-fw"></i>
+                                </button>
+                            </div>
+                        </th>
+                    </tr>
                 </thead>
 
-                <tbody>
+                <tbody class="tbody-transparent">
+                    <tr data-ng-repeat="item in serviceConfig[field.name]">
+                        <td>
+                            <div class="cell-content input-cell">
+                                <div>
+                                    <input id="services_details_config_object_key_{{$parent.$index}}_{{$index}}" class="form-control" data-ng-model="item.key" type="text"/>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-content input-cell">
+                                <div>
+                                    <input id="services_details_config_object_value_{{$parent.$index}}_{{$index}}" class="form-control" data-ng-model="item.value" type="text"/>
+                                </div>
+                            </div>
 
-                <tr data-ng-repeat="item in serviceConfig[field.name]">
-                    <td>
-                        <input id="services_details_config_object_key_{{$parent.$index}}_{{$index}}" class="form-control" data-ng-model="item.key" type="text"/>
+                        </td>
 
-                    </td>
-                    <td>
-                        <input id="services_details_config_object_value_{{$parent.$index}}_{{$index}}" class="form-control" data-ng-model="item.value" type="text"/>
+                        <td class="no-border">
+                            <div class="cell-content icon-cell">
+                                <div>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default"
+                                                data-ng-click="deleteKeyValue(serviceConfig[field.name], key)"
+                                                id="services_details_config_object_removevalue_{{$parent.$index}}_{{$index}}">
+                                            <i class="fa fa-trash-o fa-fw"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
 
-                    </td>
-
-                    <td class="no-border">
-                        <div class="btn-group pull-left">
-                            <button type="button" class="btn btn-default"
-                                    data-ng-click="deleteKeyValue(serviceConfig[field.name], key)"
-                                    id="services_details_config_object_removevalue_{{$parent.$index}}_{{$index}}">
-                                <i class="fa fa-trash-o fa-fw"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
+                        <td>
+                            <div class="cell-content input-cell">
+                                <div></div>
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>

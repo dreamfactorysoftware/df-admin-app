@@ -1,6 +1,6 @@
 <df-package-loading></df-package-loading>
 <div ng-show="!dataLoading">
-    <div class="col-xs-12 df-section" df-fs-height>
+    <div class="col-xs-12 df-section">
         <div>
             <df-large-help data-options="dfLargeHelp.packageManager"></df-large-help>
             <tabs>
@@ -16,17 +16,20 @@
                             <hr />
                         </div>
                     </div>
+                    <br>
                     <div class="row"> 
                         <div class="col-xs-12"> 
                             <df-view-content></df-view-content>
                         </div> 
-                    </div> 
+                    </div>
+                    <br>
                     <div class="row" style="padding-bottom: 20px; padding-top: 15px">
                         <div class="col-xs-12">
                             <df-select-folder></df-select-folder>
                         </div>
                     </div>
                 </pane>
+
                 <pane title="Import Package">
                     <div class="row">
                         <div class="col-xs-12">

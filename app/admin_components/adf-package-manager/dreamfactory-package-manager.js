@@ -71,6 +71,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
     .controller('PackageCtrl', ['$scope', '$rootScope', 'dfApplicationData', 'dfNotify', '$location', function($scope, $rootScope, dfApplicationData, dfNotify, $location) {
 
         $scope.$parent.title = 'Packages';
+        $scope.$parent.titleIcon = 'plus-square';
 
         // load data
 

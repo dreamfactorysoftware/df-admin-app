@@ -1,0 +1,72 @@
+$df-inputs-max-width: 500px;
+
+html {
+  body {
+
+    .list-group-item, table, .form-group {
+      button.dropdown-toggle, .dropdown-menu {
+        background-color: #ffffff;
+        border: 1px solid #cfd9e2;
+        border-radius: 4px;
+      }
+    }
+
+    form.df-inputs-width {
+      .df-inputs-row {
+        > input, select, .dropdown-toggle, .dropdown-menu {
+          width: 100%;
+          max-width: $df-inputs-max-width;
+          text-align: left;
+        }
+      }
+    }
+
+    input, input.form-control {
+      border: 1px solid #cfd9e2;
+    }
+
+    label {
+      display: inline-block;
+      max-width: 100%;
+      margin-bottom: 5px;
+      font-weight: normal;
+      padding-left: 8px;
+    }
+
+    div.checkbox, div.radio {
+      padding-left: 7px;
+    }
+
+    i.fa-info-circle {
+      color: #7490a9;
+    }
+
+    .form-controls {
+
+      .btn {
+        min-width: 80px;
+        font-size: 12px;
+      }
+
+      .btn-default {
+        border: 1px solid #8D9CA8;
+        border-radius: 4px;
+        height: 35px;
+      }
+
+      .btn-primary, .form-group .btn-primary .btn-primary:hover, .btn-default.btn-primary:hover {
+        height: 35px;
+        border-radius: 4px;
+        box-shadow: 0 13px 14px -10px rgba(0, 0, 0, 0.2), 0 0 10px 0 rgba(0, 0, 0, 0.05);
+        background-image: linear-gradient(113deg, #5a6aff, #789dff);
+        background-color: #789dff;
+        border: none;
+      }
+
+      .btn-dark {
+        background-color: #1d3d56;
+        color: #ffffff;
+      }
+    }
+  }
+}

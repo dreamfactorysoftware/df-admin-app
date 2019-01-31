@@ -22,6 +22,7 @@ angular.module('dfFileManager', ['ngRoute', 'dfUtility'])
     .controller('FileCtrl', ['$scope', function($scope) {
 
         $scope.$parent.title = 'Files';
+        $scope.$parent.titleIcon = 'file-o';
 
         // Set module links
         $scope.links = [

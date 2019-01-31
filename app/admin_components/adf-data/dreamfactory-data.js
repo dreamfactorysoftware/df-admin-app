@@ -44,6 +44,7 @@ angular.module('dfData', ['ngRoute', 'dfUtility', 'dfTable'])
     .controller('DataCtrl', ['$scope', 'INSTANCE_URL', 'dfApplicationData', 'dfNotify', '$location', function($scope, INSTANCE_URL, dfApplicationData, dfNotify, $location) {
 
         $scope.$parent.title = 'Data';
+        $scope.$parent.titleIcon = 'database';
 
         // Set module links
         $scope.links = [

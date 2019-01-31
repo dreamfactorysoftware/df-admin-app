@@ -7,16 +7,16 @@
     <form name="create-application" data-ng-submit="saveApp()">
         <div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <!-- Application Name -->
                     <div class="form-group">
                         <label>Application Name</label><df-simple-help data-options="dfHelp.name"></df-simple-help>
-                        <input id="apps_details_name" class="form-control" type="text" data-ng-model="app.record.name" placeholder="" data-ng-required="true"/>
+                        <input id="apps_details_name" class="form-control" type="text" data-ng-model="app.record.name" placeholder="Application Name" data-ng-required="true"/>
                     </div>
 
                     <div class="form-group">
                         <label>Description</label><df-simple-help data-options="dfHelp.description"></df-simple-help>
-                        <input id="apps_details_description" class="form-control" type="text" data-ng-model="app.record.description" placeholder=""/>
+                        <input id="apps_details_description" class="form-control" type="text" data-ng-model="app.record.description" placeholder="Description"/>
                     </div>
 
                     <!-- Your Application API Key -->
@@ -51,8 +51,6 @@
                         </div>
                     </div>
 
-                    <hr />
-
                     <!-- Application Storage Service -->
                     <div data-ng-if="app.record.type == 1">
                         <!--<df-simple-help data-options="dfHelp.storageAndLaunchpad"></df-simple-help> -->
@@ -71,7 +69,7 @@
                             <input id="apps_details_storage_launchpath" class="form-control" type="text" data-ng-model="app.record.path" placeholder="Enter default path and file to launch." />
                         </div>
 
-                        <hr />
+
                     </div>
 
                     <!-- Supply URL -->
@@ -81,7 +79,7 @@
                             <input id="apps_details_remote_url" class="form-control" type="text" data-ng-model="app.record.url" placeholder="Enter full URL e.g. http://www.myserver.com" data-ng-required="true"/>
                         </div>
 
-                        <hr />
+
                     </div>
 
                     <!-- Supply Path -->
@@ -91,7 +89,7 @@
                             <input id="apps_details_server_path" class="form-control" type="text" data-ng-model="app.record.path" placeholder="Enter path relative to this web server." data-ng-required="true"/>
                         </div>
 
-                        <hr />
+
                     </div>
 
                     <!-- Your Application URL -->
@@ -119,11 +117,11 @@
                 </div>
 
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <!-- Assign a Role -->
                     <div class="form-group"> 
                         <label>Assign a Default Role Filter </label>
-                        <input class="form-control" ng-model="roleFilter">
+                        <input class="form-control" ng-model="roleFilter" placeholder="Assign a Default Role Filter">
                     </div>
                     <div class="form-group">
                         <label>Assign a Default Role</label><df-simple-help data-options="dfHelp.assignRole"></df-simple-help>
@@ -134,15 +132,20 @@
 
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <hr/>
+                </div>
+            </div>
         </div>
 
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-md-8">
 
                 <div class="form-group">
-                    <div>
-                        <input id="apps_details_save" class="btn btn-default btn-primary" type="submit" value="Save" />
+                    <div class="form-controls pull-right">
                         <button id="apps_details_cancel" type="button" class="btn btn-default" data-ng-click="cancelEditor()">Cancel</button>
+                        <input id="apps_details_save" class="btn btn-default btn-primary" type="submit" value="Save" />
                     </div>
                 </div>
 

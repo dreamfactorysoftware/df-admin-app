@@ -44,6 +44,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
         function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify, $location) {
 
             $scope.$parent.title = 'Scripts';
+            $scope.$parent.titleIcon = 'code';
+
             $scope.scriptGitHubTarget = 'scripts';
             $scope.newScript = true;
             $scope.isEventScriptEditable = true;

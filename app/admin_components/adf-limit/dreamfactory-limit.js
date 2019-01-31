@@ -33,6 +33,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
     .controller('LimitCtl', ['$rootScope', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function ($rootScope, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {
 
         $scope.$parent.title = 'Limits';
+        $scope.$parent.titleIcon = 'minus-circle';
 
         // Set module links
         $scope.links = [

@@ -29,6 +29,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
         // Set Title in parent
         $scope.$parent.title = 'Apps';
+        $scope.$parent.titleIcon = 'desktop';
 
         // Set module links
         $scope.links = [
@@ -756,7 +757,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 scope.field = angular.element('#upload');
                 scope.uploadFile = null;
 
-                scope.sampleApps = [
+                scope.sampleAppsFirstColumn = [
                     {
                         name: 'Address Book for Android',
                         description: '',
@@ -786,7 +787,10 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         description: '',
                         package_url: 'https://raw.github.com/dreamfactorysoftware/angular-sdk/master/add_angular.dfpkg',
                         repo_url: 'https://github.com/dreamfactorysoftware/angular-sdk'
-                    },
+                    }
+                ];
+
+                scope.sampleAppsSecondColumn = [
                     {
                         name: 'Address Book for Angular 2',
                         description: '',

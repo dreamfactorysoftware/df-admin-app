@@ -1,0 +1,33 @@
+<div class="container-fluid">
+    <div class="row" style="padding-top: 20px">
+        <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-0 col-lg-6">
+            <h3>Resources</h3>
+
+            <p>DreamFactory provides all of the backend services that you need to build great mobile, web, and IoT applications. Follow the links below to get started:</p>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-0 col-lg-6">
+            <div data-ng-init="resources = [
+                        {name: 'Written Tutorials',         icon: 'file-text',       link: 'http://wiki.dreamfactory.com/DreamFactory/Tutorials'},
+                        {name: 'Video Tutorials',           icon: 'video-camera',    link: 'http://wiki.dreamfactory.com/DreamFactory/Videos'},
+                        {name: 'Full Documentation',        icon: 'book',            link: 'http://wiki.dreamfactory.com/'},
+                        {name: 'Community Forum',           icon: 'comments',        link: 'http://community.dreamfactory.com/'},
+                        {name: 'Bugs and Feature Requests', icon: 'bug',             link: 'https://github.com/dreamfactorysoftware/dreamfactory/issues'},
+                        {name: 'DreamFactory on Twitter',   icon: 'twitter',         link: 'https://twitter.com/dfsoftwareinc'},
+                        {name: 'DreamFactory Blog',         icon: 'pencil-square-o', link: 'http://blog.dreamfactory.com/'},
+                        {name: 'Contact Support',           icon: 'support',         link: 'http://www.dreamfactory.com/support'}
+                    ]">
+
+                <div data-ng-repeat="resource in resources">
+                    <div class="banner outligned resource-link">
+                        <i class="fa fa-{{resource.icon}}" aria-hidden="true"></i>
+                        &nbsp;
+                        <a href="{{resource.link}}" target="_blank">{{resource.name}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

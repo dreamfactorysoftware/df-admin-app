@@ -3,7 +3,7 @@
     <label>Service Type</label>
     <df-simple-help data-options="dfSimpleHelp.serviceType"></df-simple-help><br/>
 
-    <div class="dropdown" data-ng-if="newService">
+    <div class="dropdown df-inputs-row" data-ng-if="newService">
         <button id="services_info_type" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
             {{selectedSchema.label || 'Select Service Type'}}
             <span class="caret"></span>
@@ -20,26 +20,26 @@
         </ul>
     </div>
 
-    <div class="btn-group" data-ng-if="!newService">
+    <div class="form-group df-inputs-row" data-ng-if="!newService">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled="disabled">
             {{selectedSchema.label}}    <span class="caret"></span>
         </button>
     </div>
 
-    <div class="form-group" data-ng-if="selectedSchema && selectedSchema.config_schema">
+    <div class="form-group df-inputs-row" data-ng-if="selectedSchema && selectedSchema.config_schema">
         <br/>
         <label>Name</label>
         <df-simple-help data-options="dfSimpleHelp.name"></df-simple-help>
         <input id="services_info_name" class="form-control" data-ng-model="serviceInfo.name" type="text" required="" style="">
     </div>
 
-    <div class="form-group" data-ng-if="selectedSchema && selectedSchema.config_schema">
+    <div class="form-group df-inputs-row" data-ng-if="selectedSchema && selectedSchema.config_schema">
         <label>Label</label>
         <df-simple-help data-options="dfSimpleHelp.label"></df-simple-help>
         <input id="services_info_label" class="form-control" data-ng-model="serviceInfo.label" type="text" required="" style="">
     </div>
 
-    <div class="form-group" data-ng-if="selectedSchema && selectedSchema.config_schema">
+    <div class="form-group df-inputs-row" data-ng-if="selectedSchema && selectedSchema.config_schema">
         <label>Description</label>
         <df-simple-help data-options="dfSimpleHelp.description"></df-simple-help>
         <input id="services_info_description" class="form-control" data-ng-model="serviceInfo.description" type="text">

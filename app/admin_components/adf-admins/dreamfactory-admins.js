@@ -47,6 +47,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         function($rootScope, $scope, dfApplicationData, dfNotify) {
 
             $scope.$parent.title = 'Admins';
+            $scope.$parent.titleIcon = 'unlock';
 
             // Set module links
             $scope.links = [

@@ -49,6 +49,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.isSysAdmin = (currentUser && currentUser.is_sys_admin);
 
             $scope.$parent.title = 'Config';
+            $scope.$parent.titleIcon = 'gear';
 
             // CREATE SHORT NAMES
             $scope.es = SystemConfigEventsService.systemConfigController;

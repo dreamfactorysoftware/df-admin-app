@@ -1,0 +1,127 @@
+@import "homepage";
+@import "forms";
+@import "alerts_override";
+@import "navs_override";
+@import "tables_override";
+@import "df-auth-module";
+@import "base_override";
+
+.btn-primary {
+
+  &:hover {
+    color: #FFF;
+  }
+}
+
+.df-menu {
+  & {
+    margin: 0px auto !important;
+  }
+
+  .df-menu-container {
+
+    &.second-nav-menu-items {
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+
+    .df-menu-icon {
+      vertical-align: middle;
+      color: #2e2ea3;
+      padding: 10px 15px 10px 0px;
+      margin: 10px auto;
+    }
+
+    .nav-pills {
+      li:hover {
+        background-color: $nav-link-hover-bg;
+      }
+
+      > li:first-child {
+        padding-left: 13px;
+        padding-right: 13px;
+      }
+
+      > li {
+
+
+        a {
+          color: #7490a9;
+          margin: 10px auto;
+        }
+
+        &.active {
+          & {
+            background-color: #f7f9fa;
+          }
+
+          & > a {
+            &,
+            &:hover,
+            &:focus {
+              font-weight: bold;
+              color: $nav-pills-active-link-hover-color;
+              background-color: $nav-pills-active-link-hover-bg;
+            }
+          }
+        }
+
+        &.active:after {
+          @extend %nav-underscore;
+        }
+      }
+    }
+  }
+}
+
+body .df-sidebar-nav {
+
+  .nav-pills {
+
+    li {
+      & > a {
+        padding-left: 0px;
+      }
+
+      & > a:hover {
+        background: transparent;
+        color: $link-color;
+        font-weight: bold;
+      }
+
+      &.active {
+        & a {
+          font-weight: bold;
+        }
+
+        &:hover a{
+          color: $nav-pills-active-link-hover-color;
+        }
+      }
+    }
+  }
+}
+
+.well {
+  box-shadow: none;
+}
+
+.well, table {
+  .btn-default {
+    background-image: none;
+    background-color: transparent;
+    border-color: transparent;
+    opacity: 1!important;
+  }
+}
+
+.panel {
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+.row-no-padding > [class*="col-"] {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}

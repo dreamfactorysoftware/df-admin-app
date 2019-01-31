@@ -7,7 +7,10 @@
 
   .navbar-brand {
 
-    padding-left: 15px;
+    @media (max-width: $screen-xs-max) {
+      padding-left: 15px!important;
+    }
+
     padding-top: 4px;
   }
 

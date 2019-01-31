@@ -25,6 +25,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
     .controller('ServicesCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, $scope, dfApplicationData, dfNotify, $location) {
 
         $scope.$parent.title = 'Services';
+        $scope.$parent.titleIcon = 'cubes';
 
         // Set module links
         $scope.links = [

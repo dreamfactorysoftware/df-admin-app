@@ -30,12 +30,14 @@
         <df-top-level-nav-std data-options="topLevelNavOptions"></df-top-level-nav-std>
 
 
-        <div data-ng-if="showAdminComponentNav" style="margin: 10px auto;">
+        <div data-ng-if="showAdminComponentNav" style="margin: 10px auto;" class="df-menu">
             <!-- Component nav and title -->
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-xs-12">
+                    <div class="col-md-2 df-menu-container">
                         <df-component-title></df-component-title>
+                    </div>
+                    <div class="col-md-10 df-menu-container second-nav-menu-items">
                         <df-component-nav data-options="componentNavOptions"></df-component-nav>
                     </div>
                 </div>

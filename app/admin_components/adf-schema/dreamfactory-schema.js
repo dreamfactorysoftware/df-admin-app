@@ -742,6 +742,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
         // Set Title in parent
         $scope.$parent.title = 'Schema';
+        $scope.$parent.titleIcon = 'table';
         
         // Set module links
         $scope.links = [
