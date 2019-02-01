@@ -1807,6 +1807,8 @@ angular.module('dfUtility', ['dfApplication'])
                     if (newValue) {
                         if (newValue === 'nodejs' || newValue === 'v8js') {
                             newValue = 'javascript';
+                        } else if(newValue === 'python3') {
+                            newValue = 'python';
                         }
                         scope._setEditorMode(newValue);
                     }

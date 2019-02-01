@@ -1322,6 +1322,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'nodejs':
                         case 'php':
                         case 'python':
+                        case 'python3':
                         case 'v8js':
                             scope.selections.service = scope.getServiceById(scope.serviceConfig.storage_service_id);
                             break;
@@ -1355,6 +1356,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                             scope.allowedConfigGitFormats = ['php'];
                             break;
                         case 'python':
+                            scope.allowedConfigFormats = '.py,.python';
+                            scope.allowedConfigGitFormats = ['py','python'];
+                            break;
+                        case 'python3':
                             scope.allowedConfigFormats = '.py,.python';
                             scope.allowedConfigGitFormats = ['py','python'];
                             break;
@@ -1470,6 +1475,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     if (type === 'nodejs' ||
                         type === 'php' ||
                         type === 'python' ||
+                        type === 'python3' ||
                         type === 'v8js') {
 
                         // if linked to a service set script content to empty
@@ -1549,6 +1555,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'nodejs':
                         case 'php':
                         case 'python':
+                        case 'python3':
                         case 'v8js':
                             scope.isServiceDefEditable = true;
                             break;
@@ -1568,6 +1575,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'nodejs':
                         case 'php':
                         case 'python':
+                        case 'python3':
                         case 'v8js':
                             var content = scope.serviceDefEditorObj.editor.getValue();
                             if (content !== "") {
@@ -1632,6 +1640,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'nodejs':
                         case 'php':
                         case 'python':
+                        case 'python3':
                         case 'v8js':
                             // get content and format, if valid, otherwise use defaults
                             var doc = newValue.record.service_doc_by_service_id;
