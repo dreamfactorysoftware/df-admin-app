@@ -43,8 +43,8 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
     }])
 
-    .controller('AdminsCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify',
-        function($rootScope, $scope, dfApplicationData, dfNotify) {
+    .controller('AdminsCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location',
+        function($rootScope, $scope, dfApplicationData, dfNotify, $location) {
 
             $scope.$parent.title = 'Admins';
 
@@ -87,11 +87,17 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         $scope.apiData = newApiData;
                     },
                     function (error) {
+                        var msg = 'To use the Admins tab your role must allow GET access to system/admin/*. To create, update, or delete admins you need POST, PUT, DELETE access to /system/admin/*.';
+
+                        if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                            $location.url('/home');
+                        }
+
                         var messageOptions = {
                             module: 'Admins',
                             provider: 'dreamfactory',
                             type: 'error',
-                            message: 'There was an error loading data for the Admins tab. Please try refreshing your browser and logging in again.'
+                            message: msg
                         };
                         dfNotify.error(messageOptions);
                     }

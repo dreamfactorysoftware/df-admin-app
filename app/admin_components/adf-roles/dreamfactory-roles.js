@@ -25,7 +25,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
     }])
 
-    .controller('RolesCtrl', ['$rootScope', '$scope', '$q', 'dfApplicationData', 'SystemConfigDataService', 'dfNotify', function ($rootScope, $scope, $q, dfApplicationData, SystemConfigDataService, dfNotify) {
+    .controller('RolesCtrl', ['$rootScope', '$scope', '$q', 'dfApplicationData', 'SystemConfigDataService', 'dfNotify', '$location',
+        function ($rootScope, $scope, $q, dfApplicationData, SystemConfigDataService, dfNotify, $location) {
 
         $scope.$parent.title = 'Roles';
 
@@ -86,11 +87,17 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     }
                 },
                 function (error) {
+                    var msg = 'To use the Roles tab your role must allow GET access to service \'system\' and system/role/*. To create, update, or delete roles you need POST, PUT, DELETE access to /system/role/*.';
+
+                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                        $location.url('/home');
+                    }
+
                     var messageOptions = {
                         module: 'Roles',
                         provider: 'dreamfactory',
                         type: 'error',
-                        message: 'There was an error loading data for the Roles tab. Please try refreshing your browser and logging in again.'
+                        message: msg
                     };
                     dfNotify.error(messageOptions);
                 }
