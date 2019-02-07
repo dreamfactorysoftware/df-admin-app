@@ -105,7 +105,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             $scope.loadTabData();
         }])
 
-    .directive('dfAdminDetails', ['MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$http', '$cookies', 'UserDataService', '$cookieStore', 'SystemConfigDataService', function(MOD_ADMIN_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, $http, $cookies, UserDataService, $cookieStore, SystemConfigDataService) {
+    .directive('dfAdminDetails', ['INSTANCE_URL', 'MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$http', '$cookies', 'UserDataService', '$cookieStore', 'SystemConfigDataService', function (INSTANCE_URL, MOD_ADMIN_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, $http, $cookies, UserDataService, $cookieStore, SystemConfigDataService) {
 
         return {
 
@@ -254,6 +254,9 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     // merge data from UI into current edit record
                     scope._prepareAdminData();
 
+                    if (!scope.isAllTabsSelected) scope.admin.record.access_by_tabs = scope.accessByTabs;
+                    else scope.admin.record.access_by_tabs = null;
+
                     var requestDataObj = {
                         params: {
                             fields: '*',
@@ -323,7 +326,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 existingUser.session_token = result.session_token;
                                 UserDataService.setCurrentUser(existingUser);
                             }
-                            
+
                             var messageOptions = {
                                 module: 'Admins',
                                 provider: 'dreamfactory',
@@ -361,6 +364,21 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     if (newValue) {
                         scope.admin = new Admin(newValue);
+
+                        // get admin session data where role_id is
+                        $http.get(INSTANCE_URL.url + '/system/admin/' + scope.admin.record.id + '/session?related=user_to_app_to_role_by_user_id').then(
+                            // success method
+                            function (result) {
+                                if(result.data.user_to_app_to_role_by_user_id.length > 0) {
+                                    scope.adminRoleId = result.data.user_to_app_to_role_by_user_id[0].role_id;
+                                }
+                            },
+                            // failure method
+                            function (result){
+                                scope.adminRoleId = null;
+                                console.error(result);
+                            }
+                        );
                     }
                 });
 
@@ -421,7 +439,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope.sendEmailOnCreate = false;
 
                 scope.invite = function() {
-                    
+
                     $http({
                         url: INSTANCE_URL.url + '/system/admin/' + scope.admin.record.id,
                         method: 'PATCH',
@@ -458,7 +476,76 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         };
     }])
 
-    .directive('dfAdminLookupKeys', ['MOD_ADMIN_ASSET_PATH', function(MOD_ADMIN_ASSET_PATH) {
+    .directive('dfAccessByTabs', ['INSTANCE_URL', 'MOD_ADMIN_ASSET_PATH', function (INSTANCE_URL, MOD_ADMIN_ASSET_PATH) {
+
+        return {
+            restrict: 'E',
+            scope: false,
+            templateUrl: MOD_ADMIN_ASSET_PATH + 'views/df-access-by-tabs.html',
+            link: function (scope, elem, attrs) {
+                scope.tabs = [
+                    {name: 'apps', title: "Apps", checked: true},
+                    {name: 'admins', title: "Admins", checked: true},
+                    {name: 'user', title: "User", checked: true},
+                    {name: 'services', title: "Services", checked: true},
+                    {name: 'apidocs', title: "API Docs", checked: true},
+                    {name: 'schema', title: "Schema", checked: true},
+                    {name: 'data', title: "Data", checked: true},
+                    {name: 'files', title: "Files", checked: true},
+                    {name: 'scripts', title: "Scripts", checked: true},
+                    {name: 'config', title: "Config", checked: true},
+                    {name: 'packages', title: "Packages", checked: true},
+                    {name: 'limits', title: "Limits", checked: true}
+                ];
+                scope.accessByTabs = [
+                    'apps',
+                    'admins',
+                    'user',
+                    'services',
+                    'apidocs',
+                    'schema',
+                    'data',
+                    'files',
+                    'scripts',
+                    'config',
+                    'packages',
+                    'limits'
+                ];
+                scope.isAllTabsSelected = scope.accessByTabs.length === scope.tabs.length;
+
+                scope.selectTab = function (tab) {
+                    if (tab.checked) {
+                        if (!scope.accessByTabs.includes(tab.name)) {
+                            scope.accessByTabs.push(tab.name);
+                        }
+                    } else {
+                        var toDel = scope.accessByTabs.indexOf(tab.name);
+                        scope.accessByTabs.splice(toDel, 1);
+                    }
+                    scope.isAllTabsSelected = scope.accessByTabs.length === scope.tabs.length;
+                };
+
+                scope.selectAllTabs = function (isSelected) {
+                    var arr = [];
+                    scope.isAllTabsSelected = isSelected;
+                    if (scope.isAllTabsSelected) {
+                        scope.tabs.forEach(function (tab) {
+                            tab.checked = true;
+                            arr.push(tab.name)
+                        });
+                        scope.accessByTabs = arr;
+                    } else {
+                        scope.tabs.forEach(function (tab) {
+                            tab.checked = false;
+                        });
+                        scope.accessByTabs = [];
+                    }
+                };
+            }
+        };
+    }])
+
+    .directive('dfAdminLookupKeys', ['MOD_ADMIN_ASSET_PATH', function (MOD_ADMIN_ASSET_PATH) {
 
         return {
             restrict: 'E',
@@ -893,7 +980,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 }, function (newValue, oldValue) {
 
                     var _admins = [];
-                    
+
                     if (newValue) {
                         angular.forEach(newValue, function (admin) {
                             _admins.push(new ManagedAdmin(admin));
