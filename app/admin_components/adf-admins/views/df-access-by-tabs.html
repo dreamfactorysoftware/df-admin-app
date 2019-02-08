@@ -1,4 +1,4 @@
-<div class="panel" data-ng-show="newAdmin">
+<div class="panel" style="box-shadow: none;" data-ng-show="newAdmin">
     <div>
         <a data-toggle="collapse" style="text-decoration: none; cursor: pointer" data-target="#select-access-tabs-body">
             <h4 class="panel-title">Access by tabs</h4>
@@ -29,6 +29,7 @@
             </div>
         </div>
     </div>
+    <hr data-ng-show="newAdmin"/>
 </div>
 
 <div class="alert alert-info" data-ng-show="!newAdmin && adminRoleId">
