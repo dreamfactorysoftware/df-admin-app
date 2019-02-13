@@ -260,8 +260,15 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     // merge data from UI into current edit record
                     scope._prepareAdminData();
 
-                    if (!scope.isAllTabsSelected) scope.admin.record.access_by_tabs = scope.accessByTabs;
-                    else scope.admin.record.access_by_tabs = null;
+                    if (!scope.areAllTabsSelected) {
+                        var accessByTabs = [];
+                        scope.accessByTabs.forEach(function(tab) {
+                            if(tab.checked)  accessByTabs.push(tab['name']);
+                        });
+                        scope.admin.record.access_by_tabs = accessByTabs;
+                    } else {
+                        scope.admin.record.access_by_tabs = null;
+                    }
 
                     var requestDataObj = {
                         params: {
@@ -489,7 +496,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             scope: false,
             templateUrl: MOD_ADMIN_ASSET_PATH + 'views/df-access-by-tabs.html',
             link: function (scope, elem, attrs) {
-                scope.tabs = [
+                scope.accessByTabs = [
                     {name: 'apps', title: "Apps", checked: true},
                     {name: 'admins', title: "Admins", checked: true},
                     {name: 'users', title: "Users", checked: true},
@@ -502,47 +509,26 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     {name: 'packages', title: "Packages", checked: true},
                     {name: 'limits', title: "Limits", checked: true}
                 ];
-                scope.accessByTabs = [
-                    'apps',
-                    'admins',
-                    'users',
-                    'services',
-                    'apidocs',
-                    'schema/data',
-                    'files',
-                    'scripts',
-                    'config',
-                    'packages',
-                    'limits'
-                ];
-                scope.isAllTabsSelected = scope.accessByTabs.length === scope.tabs.length;
+                scope.areAllTabsSelected = scope.accessByTabs.every(function (tab) {
+                    return tab.checked === true
+                });
 
                 scope.selectTab = function (tab) {
-                    if (tab.checked) {
-                        if (!scope.accessByTabs.includes(tab.name)) {
-                            scope.accessByTabs.push(tab.name);
-                        }
-                    } else {
-                        var toDel = scope.accessByTabs.indexOf(tab.name);
-                        scope.accessByTabs.splice(toDel, 1);
-                    }
-                    scope.isAllTabsSelected = scope.accessByTabs.length === scope.tabs.length;
+                    scope.areAllTabsSelected = scope.accessByTabs.every(function (tab) {
+                        return tab.checked === true
+                    });
                 };
 
                 scope.selectAllTabs = function (isSelected) {
-                    var arr = [];
-                    scope.isAllTabsSelected = isSelected;
-                    if (scope.isAllTabsSelected) {
-                        scope.tabs.forEach(function (tab) {
+                    scope.areAllTabsSelected = isSelected;
+                    if (scope.areAllTabsSelected) {
+                        scope.accessByTabs.forEach(function (tab) {
                             tab.checked = true;
-                            arr.push(tab.name)
                         });
-                        scope.accessByTabs = arr;
                     } else {
-                        scope.tabs.forEach(function (tab) {
+                        scope.accessByTabs.forEach(function (tab) {
                             tab.checked = false;
                         });
-                        scope.accessByTabs = [];
                     }
                 };
             }
