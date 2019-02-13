@@ -208,34 +208,15 @@ angular.module('dreamfactoryApp')
                 }
             };
 
-            // does user has access to tab
-            $scope._hasAccess = function (tabServicesMap, tabName, roleServiceAccesses) {
-                return tabServicesMap[tabName].every(function (r) {
-                    return roleServiceAccesses.some(function (a) {
-                        return (a.service_id === r.service_id && a.component === r.component && a.verb_mask === r.verb_mask)
-                    })
-                });
-            };
-
             // set accessible links by role [restricted admin]
             $scope._setAccessibleLinks = function (tabsLinks, currentUser) {
                 // Roles tab not allowed for restricted admins by default
-                tabsLinks = $scope._removeLink("Roles", tabsLinks);
-                $http.get(INSTANCE_URL.url + '/system/role/' + currentUser.role_id + '?related=role_service_access_by_role_id').then(
+                $http.get(INSTANCE_URL.url + '/system/role/' + currentUser.role_id + '?related=role_service_access_by_role_id&accessible_tabs=true').then(
                     // success method
                     function (result) {
-                        if (result.data) {
-                            var roleServiceAccesses = result.data.role_service_access_by_role_id;
-                            var tabServicesMap = $scope._getTabServicesMap();
-
-                            angular.forEach(Object.keys(tabServicesMap), function (tabName) {
-                                if (!$scope._hasAccess(tabServicesMap, tabName, roleServiceAccesses)) {
-                                    tabsLinks = $scope._removeLink(tabName, tabsLinks);
-                                }
-                            });
-
+                        if (result.data && result.data["accessible_tabs"]) {
                             $scope.componentNavOptions = {
-                                links: tabsLinks
+                                links: result.data["accessible_tabs"]
                             };
                         }
                     },
@@ -244,64 +225,6 @@ angular.module('dreamfactoryApp')
                         console.error(result);
                     }
                 );
-            };
-
-            // accessible services to tab map
-            $scope._getTabServicesMap = function () {
-                return {
-                    Apps: [
-                        {service_id: 1, component: "app/*", verb_mask: 31},
-                        {service_id: 1, component: "service/*", verb_mask: 1}], //{service_id: 1, component: "role/*", verb_mask: 1}
-                    Admins: [
-                        {service_id: 1, component: "admin/*", verb_mask: 31},
-                        {service_id: 1, component: "role/*", verb_mask: 1}],
-                    Users: [
-                        {service_id: 1, component: "user/*", verb_mask: 31},
-                        {service_id: 1, component: "role/*", verb_mask: 1},
-                        {service_id: 1, component: "app/*", verb_mask: 1}],
-                    /*Roles: [
-                        {service_id: 1, component: "role/!*", verb_mask: 31},
-                        {service_id: 1, component: "app/!*", verb_mask: 1}],*/
-                    Services: [
-                        {service_id: 1, component: "service_type/", verb_mask: 31},
-                        {service_id: 1, component: "service/*", verb_mask: 31}],
-                    APIDocs: [
-                        {service_id: 2, component: "*", verb_mask: 31}],
-                    SchemaData: [
-                        {service_id: 5, component: "*", verb_mask: 31}],
-                    Files: [
-                        {service_id: 3, component: "*", verb_mask: 31}],
-                    Scripts: [
-                        {service_id: 1, component: "event/*", verb_mask: 31},
-                        {service_id: 1, component: "event_script/*", verb_mask: 31},
-                        {service_id: 1, component: "script_type/*", verb_mask: 31}],
-                    /*Config: [
-                        {service_id: 1, component: "cache/!*", verb_mask: 31},
-                        {service_id: 1, component: "cors/!*", verb_mask: 31},
-                        {service_id: 1, component: "email_template/!*", verb_mask: 31},
-                        {service_id: 1, component: "lookup/!*", verb_mask: 31},
-                        {service_id: 1, component: "", verb_mask: 31},
-                        {service_id: 2, component: "*", verb_mask: 31},
-                        {service_id: 3, component: "*", verb_mask: 31},
-                        {service_id: 4, component: "*", verb_mask: 31},
-                        {service_id: 6, component: "*", verb_mask: 31},
-                        {service_id: 7, component: "*", verb_mask: 31}],*/
-                    Packages: [{service_id: 1, component: "package/*", verb_mask: 31}],
-                    Limits: [
-                        {service_id: 1, component: "limit/*", verb_mask: 31},
-                        {service_id: 1, component: "limit_cache/*", verb_mask: 31},
-                        {service_id: 1, component: "user/", verb_mask: 1},
-                        {service_id: 1, component: "role/", verb_mask: 1},
-                        {service_id: 1, component: "service/", verb_mask: 1}]
-                }
-            };
-
-            //remove link by tab name
-            $scope._removeLink = function (tabName, links) {
-                return links.filter(function (link) {
-                    //replace because API Docs need no spaces
-                    return !tabName.includes(link.label.replace(/\s+/g, ''));
-                });
             };
 
         // Sets links for navigation
