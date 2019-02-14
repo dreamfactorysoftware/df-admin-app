@@ -109,83 +109,83 @@ angular.module('dreamfactoryApp')
             // View options
             $scope.showAdminComponentNav = false;
 
-            var navLinks = [
+            var navLinks = {
 
-                {
+                home: {
                     name: 'home',
                     label: 'Home',
                     path: '/home'
                 },
-                {
+                apps: {
                     name: 'apps',
                     label: 'Apps',
                     path: '/apps'
                 },
-                {
+                admins: {
                     name: 'admins',
                     label: 'Admins',
                     path: '/admins'
                 },
-                {
+                users: {
                     name: 'users',
                     label: 'Users',
                     path: '/users'
                 },
-                {
+                roles: {
                     name: 'roles',
                     label: 'Roles',
                     path: '/roles'
                 },
-                {
+                services: {
                     name: 'services',
                     label: 'Services',
                     path: '/services'
                 },
-                {
+                apidocs: {
                     name: 'apidocs',
                     label: 'API Docs',
                     path: '/apidocs'
                 },
-                {
+                schema: {
                     name: 'schema',
                     label: 'Schema',
                     path: '/schema'
                 },
-                {
+                data: {
                     name: 'data',
                     label: 'Data',
                     path: '/data'
                 },
-                {
+                files: {
                     name: 'file-manager',
                     label: 'Files',
                     path: '/file-manager'
                 },
-                {
+                scripts: {
                     name: 'scripts',
                     label: 'Scripts',
                     path: '/scripts'
                 },
-                {
+                config: {
                     name: 'config',
                     label: 'Config',
                     path: '/config'
                 },
-                {
+                packages: {
                     name: 'package-manager',
                     label: 'Packages',
                     path: '/package-manager'
                 },
-                {
+                limits: {
                     name: 'limit',
                     label: 'Limits',
                     path: '/limits'
                 }
-            ];
+        };
 
             $scope.componentNavOptions = {
 
-                links: navLinks
+                links: Object.values(navLinks)
             };
 
             // PRIVATE API
@@ -197,26 +197,48 @@ angular.module('dreamfactoryApp')
 
                 if (!isAdmin) {
                     // remove admins, roles, limits for non-admins
-                    links.splice(2, 1);
-                    links.splice(3, 1);
-                    links.splice(11, 1);
+                    delete links.admins;
+                    delete links.roles;
+                    delete links.limits;
                     $scope.componentNavOptions = {
-                        links: links
+                        links: Object.values(links)
                     };
                 } else if (isAdmin && currentUser.role_id) {
                     $scope._setAccessibleLinks(links, currentUser);
                 }
             };
 
+            function splitSchemaDataTab(accessibleTabs) {
+                accessibleTabs.splice(accessibleTabs.indexOf('schema/data'), 1, 'data');
+                accessibleTabs.splice(accessibleTabs.indexOf('data'), 0, 'schema');
+            }
+
+            function intersectAccessibleTabsWithLinks(tabsLinks, accessibleTabs) {
+                var accessibleLinks = [tabsLinks['home']];
+                accessibleTabs.forEach(function (tab) {
+                    accessibleLinks.push(tabsLinks[tab]);
+                });
+                return accessibleLinks;
+            }
+
             // set accessible links by role [restricted admin]
             $scope._setAccessibleLinks = function (tabsLinks, currentUser) {
+
                 // Roles tab not allowed for restricted admins by default
+                delete tabsLinks.roles;
+
                 $http.get(INSTANCE_URL.url + '/system/role/' + currentUser.role_id + '?related=role_service_access_by_role_id&accessible_tabs=true').then(
                     // success method
                     function (result) {
-                        if (result.data && result.data["accessible_tabs"]) {
+                        if (result.data && result.data['accessible_tabs']) {
+                            var accessibleTabs = result.data['accessible_tabs'];
+
+                            if (accessibleTabs.indexOf('schema/data') !== -1) {
+                                splitSchemaDataTab(accessibleTabs);
+                            }
+
                             $scope.componentNavOptions = {
-                                links: result.data["accessible_tabs"]
+                                links: intersectAccessibleTabsWithLinks(tabsLinks, accessibleTabs)
                             };
                         }
                     },
