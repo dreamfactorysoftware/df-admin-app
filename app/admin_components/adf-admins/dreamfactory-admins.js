@@ -262,12 +262,15 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     scope._prepareAdminData();
 
                     if (!scope.areAllTabsSelected) {
+                        scope.admin.record.is_restricted_admin = true;
                         var accessByTabs = [];
+
                         scope.accessByTabs.forEach(function(tab) {
                             if(tab.checked)  accessByTabs.push(tab['name']);
                         });
                         scope.admin.record.access_by_tabs = accessByTabs;
                     } else {
+                        scope.admin.record.is_restricted_admin = false;
                         scope.admin.record.access_by_tabs = null;
                     }
 
