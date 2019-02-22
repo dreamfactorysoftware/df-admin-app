@@ -240,6 +240,15 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             scope: false,
             templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/cache-config.html',
             link: function (scope, elem, attrs) {
+                if(scope.apiData.cache && scope.apiData.cache.length > 0){
+                    scope.apiData.cache.sort(function(a, b) {
+                        if (a.label > b.label) {
+                            return 1; }
+                        if (a.label < b.label) {
+                            return -1; }
+                        return 0;
+                    });
+                }
 
                 scope.flushSystemCache = function () {
 
