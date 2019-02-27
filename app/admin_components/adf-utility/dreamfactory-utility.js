@@ -746,55 +746,59 @@ angular.module('dfUtility', ['dfApplication'])
 
             var setSize = function () {
 
+                setTimeout(function(){
 
-                var _elem = $(elem),
-                    winHeight = $(window).height(),
-                    winWidth = $(window).width();
+                    var _elem = $(elem),
+                        winHeight = $(document).height(),
+                        winWidth = $(document).width();
 
-                // If this is the swagger iframe
-                if (_elem.is('#apidocs')) {
+                    // If this is the swagger iframe
+                    if (_elem.is('#apidocs')) {
 
-                    _elem.attr('height', winHeight - 25 + 'px');
-                }
-                // If this is the swagger iframe
-                else if (_elem.is('#file-manager')) {
+                        _elem.attr('height', winHeight - 25 + 'px');
+                    }
+                    // If this is the swagger iframe
+                    else if (_elem.is('#file-manager')) {
 
-                    _elem.attr('height', winHeight - 130 + 'px');
-                    $rootScope.$emit('filemanager:sized');
-                }
-                else if (_elem.is('#scripting-sidebar-list')) {
+                        _elem.attr('height', winHeight - 130 + 'px');
+                        $rootScope.$emit('filemanager:sized');
+                    }
+                    else if (_elem.is('#scripting-sidebar-list')) {
 
-                    _elem.css('height', winHeight - 280 + 'px');
-                }
+                        _elem.css('height', winHeight - 280 + 'px');
+                    }
 
-                // if this is the scripting ide
-                else if (_elem.attr('id') === 'ide') {
+                    // if this is the scripting ide
+                    else if (_elem.attr('id') === 'ide') {
 
-                    _elem.css({
-                        height: winHeight - 280 + 'px'
-                    });
-                }
-
-                else if (_elem.hasClass('package-export-table')) {
-
-                    _elem.css({
-                        height: winHeight - 600
-                    });
-                }
-
-                // else
-                else {
-                    if (winWidth >= 992) {
-                        $(elem).css({
-                            height:  winHeight - 120
+                        _elem.css({
+                            height: winHeight - 280 + 'px'
                         });
                     }
+
+                    else if (_elem.hasClass('package-export-table')) {
+
+                        _elem.css({
+                            height: winHeight - 600
+                        });
+                    }
+
+                    // else
                     else {
-                        $(elem).css({
-                            height: 'auto'
-                        });
+                        if (winWidth >= 992) {
+                            $(elem).css({
+                                height:  winHeight - 120
+                            });
+                        }
+                        else {
+                            $(elem).css({
+                                height: 'auto'
+                            });
+                        }
                     }
-                }
+                }, 10)
+
+
             };
 
             // Respond to swagger loaded
