@@ -1,13 +1,13 @@
-<div class="panel" style="box-shadow: none;" data-ng-show="newAdmin">
+<div class="panel" style="box-shadow: none;">
     <div>
         <a data-toggle="collapse" style="text-decoration: none; cursor: pointer" data-target="#select-access-tabs-body">
             <h4 class="panel-title">Access by tabs</h4>
         </a>
     </div>
-    <div id="select-access-tabs-body" class="panel-collapse collapse out">
-        <div class="alert alert-info" style="margin-top: 20px" data-ng-show="newAdmin">
+    <div id="select-access-tabs-body" class="panel-collapse collapse in">
+        <div class="alert alert-info" style="margin-top: 20px">
             <div class="fa fa-info-circle"></div>
-            Restricted admin. An auto-generated role will be created for this admin.
+            {{ description }}
         </div>
         <div class="panel-body" style="padding: 0px;">
             <div class="form-group">
@@ -19,7 +19,7 @@
                         Select all
                     </label>
                 </div>
-                <div class="checkbox row col-sm-6 no-gutter" ng-repeat="tab in accessByTabs">
+                <div class="checkbox row col-sm-6 no-gutter" ng-repeat="tab in accessByTabs track by $index">
                     <label>
                         <input type="checkbox" ng-model="tab.checked" ng-change="selectTab(tab)"/>
                         {{tab.title}}
@@ -29,12 +29,5 @@
             </div>
         </div>
     </div>
-    <hr data-ng-show="newAdmin"/>
+    <hr/>
 </div>
-
-<div class="alert alert-info" data-ng-show="!newAdmin && adminRoleId">
-    <div class="fa fa-info-circle"></div>
-    Admin is restricted by role with id: {{adminRoleId}}
-</div>
-
-<hr data-ng-show="!newAdmin && adminRoleId"/>
