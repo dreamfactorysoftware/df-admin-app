@@ -250,6 +250,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope._prepareAdminData = function () {
 
                     scope._preparePasswordData();
+                    scope._prepareAccessByTabsData();
                     scope._prepareLookupKeyData();
                 };
 
@@ -259,19 +260,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     // merge data from UI into current edit record
                     scope._prepareAdminData();
-
-                    if (!scope.areAllTabsSelected) {
-                        scope.admin.record.is_restricted_admin = true;
-                        var accessByTabs = [];
-
-                        scope.accessByTabs.forEach(function(tab) {
-                            if(tab.checked)  accessByTabs.push(tab['name']);
-                        });
-                        scope.admin.record.access_by_tabs = accessByTabs;
-                    } else {
-                        scope.admin.record.is_restricted_admin = false;
-                        scope.admin.record.access_by_tabs = null;
-                    }
 
                     var requestDataObj = {
                         params: {
@@ -492,13 +480,17 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         };
     }])
 
-    .directive('dfAccessByTabs', ['INSTANCE_URL', 'MOD_ADMIN_ASSET_PATH', function (INSTANCE_URL, MOD_ADMIN_ASSET_PATH) {
+    .directive('dfAccessByTabs', ['INSTANCE_URL', 'MOD_ADMIN_ASSET_PATH', '$http', function (INSTANCE_URL, MOD_ADMIN_ASSET_PATH, $http) {
 
         return {
             restrict: 'E',
             scope: false,
             templateUrl: MOD_ADMIN_ASSET_PATH + 'views/df-access-by-tabs.html',
             link: function (scope, elem, attrs) {
+                scope.description = "Restricted admin. ";
+                if(scope.newAdmin){
+                    scope.description += "An auto-generated role will be created for this admin.";
+                }
                 scope.accessByTabs = [
                     {name: 'apps', title: "Apps", checked: true},
                     {name: 'admins', title: "Admins", checked: true},
@@ -534,6 +526,45 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         });
                     }
                 };
+
+                // WATCHERS
+
+                // this fires when a admin roleId is received
+                var watchAccessTabsData = scope.$watch('adminRoleId', function (newValue, oldValue) {
+
+                    if (newValue) {
+                        scope.description += "Role id: " + newValue;
+
+                        // get role data where accessible tabs are
+                        $http.get(INSTANCE_URL.url + '/system/role/' + newValue + '/?accessible_tabs=true').then(
+                            // success method
+                            function (result) {
+                                if(result.data) {
+                                    scope.accessByTabs.forEach(function (tab) {
+                                        if (result.data.accessible_tabs && result.data.accessible_tabs.indexOf(tab.name) === -1) {
+                                            tab.checked = false;
+                                        }
+                                    });
+                                    scope.areAllTabsSelected = scope.accessByTabs.every(function (tab) {
+                                        return tab.checked === true
+                                    });
+                                }
+                            },
+
+                            // failure method
+                            function (result){
+                                console.error(result);
+                            }
+                        );
+                    }
+                });
+
+                // MESSAGES
+
+                scope.$on('$destroy', function(e) {
+
+                    watchAccessTabsData();
+                });
             }
         };
     }])
@@ -610,6 +641,21 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         if (scope.admin.record.password) {
                             delete scope.admin.record.password;
                         }
+                    }
+                };
+
+                scope._prepareAccessByTabsData = function () {
+                    var accessByTabs = [];
+
+                    scope.accessByTabs.forEach(function(tab) {
+                        if(tab.checked)  accessByTabs.push(tab['name']);
+                    });
+                    scope.admin.record.access_by_tabs = accessByTabs;
+
+                    if (!scope.areAllTabsSelected) {
+                        scope.admin.record.is_restricted_admin = true;
+                    } else {
+                        scope.admin.record.is_restricted_admin = false;
                     }
                 };
 

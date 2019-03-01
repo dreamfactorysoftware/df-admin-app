@@ -183,11 +183,6 @@ angular.module('dreamfactoryApp')
                 }
         };
 
-            $scope.componentNavOptions = {
-
-                links: Object.values(navLinks)
-            };
-
             // PRIVATE API
 
             $scope._setComponentLinks = function (isAdmin) {
@@ -205,6 +200,10 @@ angular.module('dreamfactoryApp')
                     };
                 } else if (isAdmin && currentUser.role_id) {
                     $scope._setAccessibleLinks(links, currentUser);
+                } else {
+                    $scope.componentNavOptions = {
+                        links: Object.values(navLinks)
+                    };
                 }
             };
 
@@ -213,18 +212,44 @@ angular.module('dreamfactoryApp')
                 accessibleTabs.splice(accessibleTabs.indexOf('data'), 0, 'schema');
             }
 
+            function addDefaultTab(accessibleLinks, tabsLinks, tabName) {
+                switch (tabName) {
+                    case("home"): {
+                        accessibleLinks.unshift(tabsLinks[tabName]);
+                        break;
+                    }
+                    case("config"): {
+                        if (accessibleLinks.indexOf(tabsLinks[tabName]) === -1) {
+                            // push config link exactly between scripts and packages
+                            if (accessibleLinks.indexOf(tabsLinks['scripts']) === -1 && accessibleLinks.indexOf(tabsLinks['packages']) === -1) {
+                                accessibleLinks.push(tabsLinks[tabName]);
+                            } else if (accessibleLinks.indexOf(tabsLinks['scripts']) !== -1) {
+                                accessibleLinks.splice(accessibleLinks.indexOf(tabsLinks['scripts']) + 1, 0, tabsLinks[tabName]);
+                            } else if (accessibleLinks.indexOf(tabsLinks['packages']) !== -1) {
+                                accessibleLinks.splice(accessibleLinks.indexOf(tabsLinks['packages']), 0, tabsLinks[tabName]);
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                return accessibleLinks;
+            }
+
             function intersectAccessibleTabsWithLinks(tabsLinks, accessibleTabs) {
-                var accessibleLinks = [tabsLinks['home']];
+                // home and config tabs are visible by default
+                var accessibleLinks = addDefaultTab([], tabsLinks, "home");
                 accessibleTabs.forEach(function (tab) {
                     accessibleLinks.push(tabsLinks[tab]);
                 });
+                accessibleLinks = addDefaultTab(accessibleLinks, tabsLinks, "config");
                 return accessibleLinks;
             }
 
             // set accessible links by role [restricted admin]
             $scope._setAccessibleLinks = function (tabsLinks, currentUser) {
 
-                // Roles tab not allowed for restricted admins by default
+                // Roles tab is not allowed for restricted admins by default
                 delete tabsLinks.roles;
 
                 $http.get(INSTANCE_URL.url + '/system/role/' + currentUser.role_id + '?related=role_service_access_by_role_id&accessible_tabs=true').then(
@@ -244,6 +269,8 @@ angular.module('dreamfactoryApp')
                     },
                     // failure method
                     function (result) {
+                        UserDataService.unsetCurrentUser();
+                        $location.url("/login");
                         console.error(result);
                     }
                 );
