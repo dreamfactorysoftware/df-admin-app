@@ -368,6 +368,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     if (newValue) {
                         scope.admin = new Admin(newValue);
+                        scope.isCurrentUser = UserDataService.getCurrentUser().id === newValue.id;
 
                         // get admin session data where role_id is
                         $http.get(INSTANCE_URL.url + '/system/admin/' + scope.admin.record.id + '/session?related=user_to_app_to_role_by_user_id').then(
@@ -488,6 +489,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             templateUrl: MOD_ADMIN_ASSET_PATH + 'views/df-access-by-tabs.html',
             link: function (scope, elem, attrs) {
                 scope.description = "Restricted admin. ";
+                // scope.isCurrentUser = UserDataService.getCurrentUser().id === scope.adminData.id;
                 if(scope.newAdmin){
                     scope.description += "An auto-generated role will be created for this admin.";
                 }
