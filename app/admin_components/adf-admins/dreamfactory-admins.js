@@ -370,6 +370,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     if (newValue) {
                         scope.admin = new Admin(newValue);
                         scope.isCurrentUser = UserDataService.getCurrentUser().id === newValue.id;
+                        scope.isRestrictedAdmin = !!UserDataService.getCurrentUser().role_id;
 
                         // get admin session data where role_id is
                         $http.get(INSTANCE_URL.url + '/system/admin/' + scope.admin.record.id + '/session?related=user_to_app_to_role_by_user_id').then(
