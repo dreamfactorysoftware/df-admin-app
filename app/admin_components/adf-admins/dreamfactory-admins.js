@@ -508,12 +508,12 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     {name: 'limits', title: "Limits", checked: true}
                 ];
                 scope.areAllTabsSelected = scope.accessByTabs.every(function (tab) {
-                    return tab.checked === true
+                    return tab.checked
                 });
 
                 scope.selectTab = function (tab) {
                     scope.areAllTabsSelected = scope.accessByTabs.every(function (tab) {
-                        return tab.checked === true
+                        return tab.checked
                     });
                 };
 
@@ -654,12 +654,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         if(tab.checked)  accessByTabs.push(tab['name']);
                     });
                     scope.admin.record.access_by_tabs = accessByTabs;
-
-                    if (!scope.areAllTabsSelected) {
-                        scope.admin.record.is_restricted_admin = true;
-                    } else {
-                        scope.admin.record.is_restricted_admin = false;
-                    }
+                    scope.admin.record.is_restricted_admin = !scope.areAllTabsSelected;
                 };
 
                 scope._prepareLookupKeyData = function () {

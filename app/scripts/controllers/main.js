@@ -236,7 +236,7 @@ angular.module('dreamfactoryApp')
                 return accessibleLinks;
             }
 
-            function intersectAccessibleTabsWithLinks(tabsLinks, accessibleTabs) {
+            function getAccessibleLinks(tabsLinks, accessibleTabs) {
                 // home and config tabs are visible by default
                 var accessibleLinks = addDefaultTab([], tabsLinks, "home");
                 accessibleTabs.forEach(function (tab) {
@@ -255,17 +255,15 @@ angular.module('dreamfactoryApp')
                 $http.get(INSTANCE_URL.url + '/system/role/' + currentUser.role_id + '?related=role_service_access_by_role_id&accessible_tabs=true').then(
                     // success method
                     function (result) {
-                        if (result.data && result.data['accessible_tabs']) {
-                            var accessibleTabs = result.data['accessible_tabs'];
+                        var accessibleTabs = result.data['accessible_tabs'];
 
-                            if (accessibleTabs.indexOf('schema/data') !== -1) {
-                                splitSchemaDataTab(accessibleTabs);
-                            }
-
-                            $scope.componentNavOptions = {
-                                links: intersectAccessibleTabsWithLinks(tabsLinks, accessibleTabs)
-                            };
+                        if (accessibleTabs.indexOf('schema/data') !== -1) {
+                            splitSchemaDataTab(accessibleTabs);
                         }
+
+                        $scope.componentNavOptions = {
+                            links: getAccessibleLinks(tabsLinks, accessibleTabs)
+                        };
                     },
                     // failure method
                     function (result) {
