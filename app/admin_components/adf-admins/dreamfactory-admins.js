@@ -507,11 +507,9 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     {name: 'packages', title: "Packages", checked: true},
                     {name: 'limits', title: "Limits", checked: true}
                 ];
-                scope.areAllTabsSelected = scope.accessByTabs.every(function (tab) {
-                    return tab.checked
-                });
+                scope.areAllTabsSelected = true;
 
-                scope.selectTab = function (tab) {
+                scope.selectTab = function () {
                     scope.areAllTabsSelected = scope.accessByTabs.every(function (tab) {
                         return tab.checked
                     });
@@ -542,20 +540,18 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         $http.get(INSTANCE_URL.url + '/system/role/' + newValue + '/?accessible_tabs=true').then(
                             // success method
                             function (result) {
-                                if(result.data) {
-                                    scope.accessByTabs.forEach(function (tab) {
-                                        if (result.data.accessible_tabs && result.data.accessible_tabs.indexOf(tab.name) === -1) {
-                                            tab.checked = false;
-                                        }
-                                    });
-                                    scope.areAllTabsSelected = scope.accessByTabs.every(function (tab) {
-                                        return tab.checked === true
-                                    });
-                                }
+                                scope.accessByTabs.forEach(function (tab) {
+                                    if (result.data.accessible_tabs && result.data.accessible_tabs.indexOf(tab.name) === -1) {
+                                        tab.checked = false;
+                                    }
+                                });
+                                scope.areAllTabsSelected = scope.accessByTabs.every(function (tab) {
+                                    return tab.checked === true
+                                });
                             },
 
                             // failure method
-                            function (result){
+                            function (result) {
                                 console.error(result);
                             }
                         );
@@ -564,7 +560,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 // MESSAGES
 
-                scope.$on('$destroy', function(e) {
+                scope.$on('$destroy', function (e) {
 
                     watchAccessTabsData();
                 });
