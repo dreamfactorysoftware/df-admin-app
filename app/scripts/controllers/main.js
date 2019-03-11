@@ -207,9 +207,18 @@ angular.module('dreamfactoryApp')
                 }
             };
 
-            function splitSchemaDataTab(accessibleTabs) {
-                accessibleTabs.splice(accessibleTabs.indexOf('schema/data'), 1, 'data');
-                accessibleTabs.splice(accessibleTabs.indexOf('data'), 0, 'schema');
+            function splitSchemaDataTab(accessibleTabs, schemaDataIndex) {
+                var schemaDataArr = accessibleTabs[schemaDataIndex].split('/');
+                accessibleTabs.splice(schemaDataIndex, 1, schemaDataArr[0], schemaDataArr[1]);
+                return accessibleTabs;
+            }
+
+            function getConfigTabInsertIndex(accessibleLinks, tabsLinks) {
+                var scriptsTabIndex = accessibleLinks.indexOf(tabsLinks['scripts']);
+                var packagesTabIndex = accessibleLinks.indexOf(tabsLinks['packages']);
+                var hasNearbyTabs = scriptsTabIndex !== -1 || packagesTabIndex !== -1;
+                if (!hasNearbyTabs) return accessibleLinks.length;
+                else return scriptsTabIndex !== -1 ? scriptsTabIndex + 1 : packagesTabIndex;
             }
 
             function addDefaultTab(accessibleLinks, tabsLinks, tabName) {
@@ -221,13 +230,7 @@ angular.module('dreamfactoryApp')
                     case("config"): {
                         if (accessibleLinks.indexOf(tabsLinks[tabName]) === -1) {
                             // push config link exactly between scripts and packages
-                            if (accessibleLinks.indexOf(tabsLinks['scripts']) === -1 && accessibleLinks.indexOf(tabsLinks['packages']) === -1) {
-                                accessibleLinks.push(tabsLinks[tabName]);
-                            } else if (accessibleLinks.indexOf(tabsLinks['scripts']) !== -1) {
-                                accessibleLinks.splice(accessibleLinks.indexOf(tabsLinks['scripts']) + 1, 0, tabsLinks[tabName]);
-                            } else if (accessibleLinks.indexOf(tabsLinks['packages']) !== -1) {
-                                accessibleLinks.splice(accessibleLinks.indexOf(tabsLinks['packages']), 0, tabsLinks[tabName]);
-                            }
+                            accessibleLinks.splice(getConfigTabInsertIndex(accessibleLinks, tabsLinks), 0, tabsLinks[tabName]);
                         }
                         break;
                     }
@@ -257,8 +260,9 @@ angular.module('dreamfactoryApp')
                     function (result) {
                         var accessibleTabs = result.data['accessible_tabs'];
 
-                        if (accessibleTabs.indexOf('schema/data') !== -1) {
-                            splitSchemaDataTab(accessibleTabs);
+                        var schemaDataIndex = accessibleTabs.indexOf('schema/data');
+                        if (schemaDataIndex !== -1) {
+                            accessibleTabs = splitSchemaDataTab(accessibleTabs, schemaDataIndex);
                         }
 
                         $scope.componentNavOptions = {
