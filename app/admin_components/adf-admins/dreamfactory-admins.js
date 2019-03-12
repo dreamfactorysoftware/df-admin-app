@@ -490,7 +490,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             templateUrl: MOD_ADMIN_ASSET_PATH + 'views/df-access-by-tabs.html',
             link: function (scope, elem, attrs) {
                 scope.description = "Restricted admin. ";
-                // scope.isCurrentUser = UserDataService.getCurrentUser().id === scope.adminData.id;
                 if(scope.newAdmin){
                     scope.description += "An auto-generated role will be created for this admin.";
                 }
@@ -534,7 +533,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 var watchAccessTabsData = scope.$watch('adminRoleId', function (newValue, oldValue) {
 
                     if (newValue) {
-                        scope.description += "Role id: " + newValue;
+                        scope.description = "Restricted admin. Role id: " + newValue;
 
                         // get role data where accessible tabs are
                         $http.get(INSTANCE_URL.url + '/system/role/' + newValue + '/?accessible_tabs=true').then(
