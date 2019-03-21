@@ -482,17 +482,19 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         };
     }])
 
-    .directive('dfAccessByTabs', ['INSTANCE_URL', 'MOD_ADMIN_ASSET_PATH', '$http', function (INSTANCE_URL, MOD_ADMIN_ASSET_PATH, $http) {
+    .directive('dfAccessByTabs', ['INSTANCE_URL', 'MOD_ADMIN_ASSET_PATH', '$http', 'SystemConfigDataService', function (INSTANCE_URL, MOD_ADMIN_ASSET_PATH, $http, SystemConfigDataService) {
 
         return {
             restrict: 'E',
             scope: false,
             templateUrl: MOD_ADMIN_ASSET_PATH + 'views/df-access-by-tabs.html',
             link: function (scope, elem, attrs) {
+                scope.subscription_required = SystemConfigDataService.getSystemConfig().platform.license !== 'GOLD';
                 scope.description = "Restricted admin. ";
                 if(scope.newAdmin){
                     scope.description += "An auto-generated role will be created for this admin.";
                 }
+
                 scope.accessByTabs = [
                     {name: 'apps', title: "Apps", checked: true},
                     {name: 'admins', title: "Admins", checked: true},
