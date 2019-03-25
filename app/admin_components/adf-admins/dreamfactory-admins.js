@@ -251,7 +251,9 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope._prepareAdminData = function () {
 
                     scope._preparePasswordData();
+
                     scope._prepareAccessByTabsData();
+
                     scope._prepareLookupKeyData();
                 };
 
@@ -368,9 +370,11 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 var watchAdminData = scope.$watch('adminData', function (newValue, oldValue) {
 
                     if (newValue) {
+                        var currentUser = UserDataService.getCurrentUser();
+
                         scope.admin = new Admin(newValue);
-                        scope.isCurrentUser = UserDataService.getCurrentUser().id === newValue.id;
-                        scope.isRestrictedAdmin = !!UserDataService.getCurrentUser().role_id;
+                        scope.isCurrentUser = currentUser.id === newValue.id;
+                        scope.isRestrictedAdmin = !!currentUser.role_id;
 
                         // get admin session data where role_id is
                         $http.get(INSTANCE_URL.url + '/system/admin/' + scope.admin.record.id + '/session?related=user_to_app_to_role_by_user_id').then(
@@ -651,6 +655,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     scope.accessByTabs.forEach(function(tab) {
                         if(tab.checked)  accessByTabs.push(tab['name']);
                     });
+
                     scope.admin.record.access_by_tabs = accessByTabs;
                     scope.admin.record.is_restricted_admin = !scope.areAllTabsSelected;
                 };
