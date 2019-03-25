@@ -30,7 +30,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         return { record: {}, recordCopy: {} };
     }])
 
-    .controller('LimitCtl', ['$rootScope', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService' , "$location", function ($rootScope, $scope, $http, dfApplicationData, dfNotify, dfObjectService, $location) {
+    .controller('LimitCtl', ['$rootScope', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService' , '$location', function ($rootScope, $scope, $http, dfApplicationData, dfNotify, dfObjectService, $location) {
 
         $scope.$parent.title = 'Limits';
 
