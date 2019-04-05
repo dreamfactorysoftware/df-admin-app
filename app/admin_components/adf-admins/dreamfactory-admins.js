@@ -659,7 +659,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     });
 
                     scope.admin.record.access_by_tabs = accessByTabs;
-                    scope.admin.record.is_restricted_admin = !scope.areAllTabsSelected;
+                    scope.admin.record.is_restricted_admin = !scope.areAllTabsSelected || !!scope.adminRoleId;
                 };
 
                 scope._prepareLookupKeyData = function () {
