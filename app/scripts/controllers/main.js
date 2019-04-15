@@ -188,7 +188,6 @@ angular.module('dreamfactoryApp')
             $scope._setComponentLinks = function (isAdmin) {
 
                 var links = angular.copy(navLinks);
-                var currentUser = UserDataService.getCurrentUser();
 
                 if (!isAdmin) {
                     // remove admins, roles, limits for non-admins
@@ -198,9 +197,18 @@ angular.module('dreamfactoryApp')
                     $scope.componentNavOptions = {
                         links: Object.values(links)
                     };
-                } else if (isAdmin && currentUser.role_id) {
-                    $scope._setAccessibleLinks(links, currentUser);
-                } else {
+                } else if (isAdmin && $scope.currentUser.role_id) {
+                    $scope._setAccessibleLinks(links);
+                } else if($scope.currentUser.hasOwnProperty('is_root_admin') && $scope.currentUser['is_root_admin']){
+                    links['reports'] = {
+                        name: 'reports',
+                        label: 'Reports',
+                        path: '/reports'
+                    };
+                    $scope.componentNavOptions = {
+                        links: Object.values(links)
+                    };
+                }else {
                     $scope.componentNavOptions = {
                         links: Object.values(navLinks)
                     };
@@ -427,6 +435,7 @@ angular.module('dreamfactoryApp')
                 case '/config':
                 case '/package-manager':
                 case '/limits':
+                case '/reports':
                     $scope.showAdminComponentNav = true;
                     break;
                 default:
