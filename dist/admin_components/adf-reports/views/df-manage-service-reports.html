@@ -1,0 +1,30 @@
+<div> <!-- Service reportsListing --> <div> <!-- Section Header --> <df-section-header data-title="'Manage Service Reports'"></df-section-header> <!-- ToolBar --> <df-section-toolbar> <div class="btn-toolbar pull-left" role="toolbar" aria-label="Toolbar with button groups"> <div class="btn-group" role="group" aria-label="Third group"> <df-toolbar-paginate data-api="'service_report'"></df-toolbar-paginate> </div> <div class="btn-group" role="group" aria-label="Third group"> <input type="text" data-ng-model="$parent.filterText" data-ng-change="changeFilter($parent.filterText)" class="df-search-box" placeholder="Search"> </div> <!--<div class="btn-group" role="group" aria-label="Third group">--> <!--<button class="btn btn-default btn-sm pull-right" data-ng-click="deleteSelectedServiceReports()" data-ng-disabled="selectedServiceReports.length === 0" title="Delete selected service reports"><i class="fa fa-fw fa-trash"></i></button>--> <!--</div>--> </div> <!--<div class="btn-toolbar pull-right" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <div class="btn-group df-btn-group">
+                        <a df-export-service-reports type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" title="Export service reports to xml, json, or csv file">
+                            <i class="fa fa-fw fa-download">&nbsp; </i>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li data-ng-click="exportServiceReports('csv')">
+                                <a>CSV</a>
+                            </li>
+                            <li data-ng-click="exportServiceReports('json')">
+                                <a>JSON</a>
+                            </li>
+                            <li data-ng-click="exportServiceReports('xml')">
+                                <a>XML</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>--> <div style="clear: both"></div> </df-section-toolbar> <div data-ng-show="serviceReports.length === 0 && !filterText"> <df-empty-section></df-empty-section> </div> <div data-ng-show="serviceReports.length === 0 && filterText"> <df-empty-search-result></df-empty-search-result> </div> <div data-ng-show="serviceReports.length > 0"> <div> <div class="row"> <div class="col-xs-12"> <div class="panel panel-default" style="overflow-x: scroll"> <table class="table table-responsive table-bordered table-hover table-condensed"> <thead> <!--<th></th>--> <th data-ng-class="order.orderBy === field.name ? 'df-th-selected' : ''" data-ng-click="orderOnSelect(field)" data-ng-repeat="field in fields"> <span class="df-th-text" style="white-space: nowrap">{{field.label}} <i style="margin-left: 5px;" data-ng-if="order.orderBy === field.name" class="fa" data-ng-class="order.orderBy === field.name && order.orderByReverse ? 'fa-caret-down' : 'fa-caret-up'"></i> </span> </th> </thead> <tbody> <tr data-ng-repeat="obj in serviceReports | orderObjectBy:order.orderBy:order.orderByReverse" class="repeated-item" class="repeated-item" data-ng-class="obj.__dfUI.selected ? 'danger' : ''" style="cursor: auto"> <!--<td style="width: 80px">
+                                        <div class="checkbox" style="margin: 0">
+                                            <label>
+                                                <input id="reports_table_row_checkbox_{{obj.record.id}}" type="checkbox" data-ng-checked="obj.__dfUI.selected" data-ng-click="setSelected(obj)" />
+                                                <div class="btn-group btn-group-xs">
+                                                    <button id="reports_table_row_delete_{{obj.record.id}}" type="button" class="btn btn-default" data-ng-click="deleteServiceReport(obj)" title="Delete report"><i class="fa fa-trash"></i></button>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </td>--> <!-- Auto build table based on fieldorderobj in directive --> <!-- <td data-ng-click="editAdmin(obj.record)" data-ng-repeat="value in obj.record | orderAndShowValue : fields track by $index">{{value}}</td>--> <td id="reports_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.id}}</td> <td id="repotrs_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.created_date}} UTC</td><p>{{obj.record.created_at}}</p> <td id="reports_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.service_id}}</td> <td id="reports_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.service_name}}</td> <td id="reports_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.user_email}}</td> <td id="reports_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.action}}</td> <td id="reports_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.request_verb}}</td> </tr> </tbody> </table> </div> </div> </div> </div> </div> </div> </div> 

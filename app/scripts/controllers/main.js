@@ -188,7 +188,6 @@ angular.module('dreamfactoryApp')
             $scope._setComponentLinks = function (isAdmin) {
 
                 var links = angular.copy(navLinks);
-                var currentUser = UserDataService.getCurrentUser();
 
                 if (!isAdmin) {
                     // remove admins, roles, limits for non-admins
@@ -198,9 +197,18 @@ angular.module('dreamfactoryApp')
                     $scope.componentNavOptions = {
                         links: Object.values(links)
                     };
-                } else if (isAdmin && currentUser.role_id) {
-                    $scope._setAccessibleLinks(links, currentUser);
-                } else {
+                } else if (isAdmin && $scope.currentUser.role_id) {
+                    $scope._setAccessibleLinks(links);
+                } else if($scope.currentUser.hasOwnProperty('is_root_admin') && $scope.currentUser['is_root_admin']){
+                    links['reports'] = {
+                        name: 'reports',
+                        label: 'Reports',
+                        path: '/reports'
+                    };
+                    $scope.componentNavOptions = {
+                        links: Object.values(links)
+                    };
+                }else {
                     $scope.componentNavOptions = {
                         links: Object.values(navLinks)
                     };
@@ -250,12 +258,12 @@ angular.module('dreamfactoryApp')
             }
 
             // set accessible links by role [restricted admin]
-            $scope._setAccessibleLinks = function (tabsLinks, currentUser) {
+            $scope._setAccessibleLinks = function (tabsLinks) {
 
                 // Roles tab is not allowed for restricted admins by default
                 delete tabsLinks.roles;
 
-                $http.get(INSTANCE_URL.url + '/system/role/' + currentUser.role_id + '?related=role_service_access_by_role_id&accessible_tabs=true').then(
+                $http.get(INSTANCE_URL.url + '/system/role/' + $scope.currentUser.role_id + '?related=role_service_access_by_role_id&accessible_tabs=true').then(
                     // success method
                     function (result) {
                         var accessibleTabs = result.data['accessible_tabs'];

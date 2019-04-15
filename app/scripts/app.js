@@ -35,7 +35,8 @@ angular
         'dfApiDocs',
         'dfFileManager',
         'dfPackageManager',
-        'dfLimit'
+        'dfLimit',
+        'dfReports'
     ])
 
     // each tab uses this in its resolve function to make sure user is allowed access
@@ -84,6 +85,31 @@ angular
                 var currentUser = UserDataService.getCurrentUser();
 
                 if (currentUser && currentUser.is_sys_admin) {
+                    // admin
+                    deferred.resolve();
+                } else {
+                    // not admin
+                    $location.url('/launchpad');
+                    deferred.reject();
+                }
+
+                return deferred.promise;
+            }
+        };
+    })
+
+    // some tabs allowed for root admin only
+
+    .factory('checkRootAdminService', function ($q, UserDataService, $location) {
+
+        return {
+
+            checkRootAdmin: function () {
+
+                var deferred = $q.defer();
+                var currentUser = UserDataService.getCurrentUser();
+
+                if (currentUser && currentUser.is_sys_admin && currentUser.is_root_admin) {
                     // admin
                     deferred.resolve();
                 } else {
