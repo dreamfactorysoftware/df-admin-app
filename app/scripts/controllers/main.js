@@ -429,6 +429,7 @@ angular.module('dreamfactoryApp')
                 case '/config':
                 case '/package-manager':
                 case '/limits':
+                case '/reports':
                     $scope.showAdminComponentNav = true;
                     break;
                 default:
