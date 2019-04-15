@@ -11,7 +11,7 @@
             <th>Per-Service Caches</th>
             <th></th>
         </tr>
-        <tr data-ng-repeat="service in apiData.cache | orderBy:'label' track by $index ">
+        <tr data-ng-repeat="service in apiData.cache track by $index ">
             <td>
                 {{service.label}}
             </td>
