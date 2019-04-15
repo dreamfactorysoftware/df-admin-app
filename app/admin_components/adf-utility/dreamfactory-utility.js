@@ -2106,11 +2106,25 @@ angular.module('dfUtility', ['dfApplication'])
                     // Checking if we have filters applied
                     var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : '';
 
-                    if(!filterText) return '';
+                    if (!filterText) return '';
 
-                    var arr = [ "first_name", "last_name", "name", "email" ];
+                    var arr = ["first_name", "last_name", "name", "email"];
 
-                    return arr.map(function(item) {
+                    if ($location.path().includes('reports')) {
+                        arr = ["id", "service_id", "service_name", "user_email", "action", "request_verb"];
+
+                        return arr.map(function (item) {
+                            if (item.includes('id')) {
+                                return !Number.isNaN(parseInt(filterText)) ? '(' + item + ' like ' + parseInt(filterText) + ')' : ''
+                            } else {
+                                return '(' + item + ' like "%' + filterText + '%")'
+                            }
+                        }).filter(function (filter) {
+                            return typeof filter === 'string' && filter.length > 0
+                        }).join(' or ')
+                    }
+
+                    return arr.map(function (item) {
                         return '(' + item + ' like "%' + filterText + '%")'
                     }).join(' or ');
                 };
