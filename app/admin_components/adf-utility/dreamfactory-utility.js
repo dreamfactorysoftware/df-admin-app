@@ -289,6 +289,7 @@ angular.module('dfUtility', ['dfApplication'])
                         case '/apidocs':
                         case '/downloads':
                         case '/limits':
+                        case '/reports':
                             scope.activeLink = 'admin';
                             break;
 
@@ -617,6 +618,7 @@ angular.module('dfUtility', ['dfApplication'])
                         case '/roles':
                         case '/services':
                         case '/config':
+                        case '/reports':
 
                             var _elem = $(document).find('#sidebar-open');
 

@@ -314,7 +314,11 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         include_count: true,
                         limit: limit,
                         related: 'service_by_service_id,role_by_role_id,user_by_user_id,limit_cache_by_limit_id'
-                    }
+                    },
+                    service_report: {
+                        include_count: true,
+                        limit: limit
+                    },
                 }
             };
         }
