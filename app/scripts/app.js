@@ -35,7 +35,8 @@ angular
         'dfApiDocs',
         'dfFileManager',
         'dfPackageManager',
-        'dfLimit'
+        'dfLimit',
+        'dfReports'
     ])
 
     // each tab uses this in its resolve function to make sure user is allowed access
