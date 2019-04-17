@@ -29,9 +29,6 @@ angular.module('dfReports', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     templateUrl: MOD_REPORT_ASSET_PATH + 'views/main.html',
                     controller: 'ReportsCtrl',
                     resolve: {
-                        checkRootAdmin:['checkRootAdminService', function (checkRootAdminService) {
-                            return checkRootAdminService.checkRootAdmin();
-                        }],
                         checkAdmin:['checkAdminService', function (checkAdminService) {
                             return checkAdminService.checkAdmin();
                         }],

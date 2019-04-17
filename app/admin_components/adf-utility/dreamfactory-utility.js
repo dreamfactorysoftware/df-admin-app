@@ -3057,6 +3057,27 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
+    // Root Admin Service
+    .service('dfRootAdminService', ['UserDataService', function (UserDataService) {
+
+        function _isRootAdmin (){
+            var currentUser = UserDataService.getCurrentUser();
+
+            if (currentUser.hasOwnProperty('is_root_admin')){
+                return currentUser.is_root_admin;
+            }
+
+            return false;
+        }
+
+        return {
+                isRootAdmin: function () {
+
+                    return _isRootAdmin();
+                },
+            };
+    }])
+
     // ServerInfo Service
     .service('dfServerInfoService', ['$window', function ($window) {
 

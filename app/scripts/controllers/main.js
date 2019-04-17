@@ -10,8 +10,8 @@
 angular.module('dreamfactoryApp')
 
     // MainCtrl is the parent controller of everything.  Checks routing and deals with navs
-    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', 'dfApplicationData', 'dfNotify', 'dfIconService', 'allowAdminAccess', '$animate','$http', 'INSTANCE_URL',
-        function ($scope, UserDataService, SystemConfigDataService, $location, dfApplicationData, dfNotify, dfIconService, allowAdminAccess, $animate, $http, INSTANCE_URL) {
+    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', 'dfApplicationData', 'dfNotify', 'dfIconService', 'allowAdminAccess', '$animate','$http', 'INSTANCE_URL', 'dfRootAdminService',
+        function ($scope, UserDataService, SystemConfigDataService, $location, dfApplicationData, dfNotify, dfIconService, allowAdminAccess, $animate, $http, INSTANCE_URL, dfRootAdminService) {
 
             // workaround for issue that causes flickering when loading schema tab
             // https://github.com/angular/angular.js/issues/14015
@@ -194,24 +194,12 @@ angular.module('dreamfactoryApp')
                     delete links.admins;
                     delete links.roles;
                     delete links.limits;
-                    $scope.componentNavOptions = {
-                        links: Object.values(links)
-                    };
+                    setLinksValues(links);
                 } else if (isAdmin && $scope.currentUser.role_id) {
                     $scope._setAccessibleLinks(links);
-                } else if($scope.currentUser.hasOwnProperty('is_root_admin') && $scope.currentUser['is_root_admin']){
-                    links['reports'] = {
-                        name: 'reports',
-                        label: 'Reports',
-                        path: '/reports'
-                    };
-                    $scope.componentNavOptions = {
-                        links: Object.values(links)
-                    };
-                }else {
-                    $scope.componentNavOptions = {
-                        links: Object.values(navLinks)
-                    };
+                } else {
+                    $scope.handleReportsTab(links);
+                    setLinksValues(links);
                 }
             };
 
@@ -245,6 +233,47 @@ angular.module('dreamfactoryApp')
                 }
 
                 return accessibleLinks;
+            }
+
+            function setLinksValues (links) {
+                $scope.componentNavOptions = {
+                    links: Object.values(links)
+                };
+            }
+
+            $scope.handleReportsTab = function (links) {
+                console.log(dfRootAdminService.isRootAdmin());
+                if (dfRootAdminService.isRootAdmin()) {
+                    addReportsTab(links);
+                } else if (!$scope.currentUser.hasOwnProperty('is_root_admin') && $scope.currentUser.is_sys_admin) {
+                    // if there is no is_root_admin field check that session endpoint doesn't return it.
+                    $http.get(INSTANCE_URL.url + '/system/admin/session').then(
+                        // success method
+                        function (result) {
+                            if (result.data.hasOwnProperty('is_root_admin')) {
+                                UserDataService.setCurrentUser(result.data);
+                                if(result.data['is_root_admin']) {
+                                    addReportsTab(links);
+                                    setLinksValues(links);
+                                }
+                            }
+                        },
+                        // failure method
+                        function (result) {
+                            UserDataService.unsetCurrentUser();
+                            $location.url("/login");
+                            console.error(result);
+                        }
+                    );
+                }
+            };
+
+            function addReportsTab (links){
+                links['reports'] = {
+                    name: 'reports',
+                    label: 'Reports',
+                    path: '/reports'
+                };
             }
 
             function getAccessibleLinks(tabsLinks, accessibleTabs) {
