@@ -29,9 +29,6 @@ angular.module('dfReports', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     templateUrl: MOD_REPORT_ASSET_PATH + 'views/main.html',
                     controller: 'ReportsCtrl',
                     resolve: {
-                        checkRootAdmin:['checkRootAdminService', function (checkRootAdminService) {
-                            return checkRootAdminService.checkRootAdmin();
-                        }],
                         checkAdmin:['checkAdminService', function (checkAdminService) {
                             return checkAdminService.checkAdmin();
                         }],
@@ -85,7 +82,7 @@ angular.module('dfReports', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         $scope.apiData = newApiData;
                     },
                     function (error) {
-                        var msg = 'To use the Reports tab you must be Root Admin.';
+                        var msg = 'To use the Reports tab you must be Root Admin and have GOLD license.';
 
                         if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
                             $location.url('/home');
@@ -175,84 +172,10 @@ angular.module('dfReports', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 // PUBLIC API
 
-                /*scope.deleteServiceReport = function (serviceReport) {
-
-                    if (dfNotify.confirm("Delete " + serviceReport.record.id + "?")) {
-                        scope._deleteServiceReport(serviceReport);
-                    }
-                };
-
-                scope.deleteSelectedServiceReports = function () {
-
-                    if (dfNotify.confirm("Delete selected service reports?")) {
-                        scope._deleteSelectedReports();
-                    }
-                };
-*/
                 scope.orderOnSelect = function (fieldObj) {
 
                     scope._orderOnSelect(fieldObj);
                 };
-
-
-                /*scope.setSelected = function (serviceReport) {
-
-                    scope._setSelected(serviceReport);
-                };*/
-
-                // COMPLEX IMPLEMENTATION
-
-                /*scope._deleteServiceReport = function(serviceReport) {
-
-                    var requestDataObj = {
-                        params: {
-                            id: serviceReport.record.id
-                        }
-                    };
-
-                    dfApplicationData.deleteApiData('service_report', requestDataObj).$promise.then(
-
-                        function(result) {
-
-                            // notify success
-                            var messageOptions = {
-                                module: 'Reports',
-                                type: 'success',
-                                provider: 'dreamfactory',
-                                message: 'Reports successfully deleted.'
-                            };
-
-                            dfNotify.success(messageOptions);
-
-                            // Was this service previously selected before
-                            // we decided to remove them individually
-                            if (serviceReport.__dfUI.selected) {
-
-                                // This will remove the report from the selected
-                                // report array
-                                scope.setSelected(serviceReport);
-                            }
-
-                            scope.$broadcast('toolbar:paginate:service_report:delete');
-                        },
-
-                        function(reject) {
-
-                            var messageOptions = {
-                                module: 'Api Error',
-                                provider: 'dreamfactory',
-                                type: 'error',
-                                message: reject
-                            };
-
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(
-                        function() {
-
-                        }
-                    );
-                };*/
 
                 scope._orderOnSelect = function (fieldObj) {
 
@@ -265,73 +188,6 @@ angular.module('dfReports', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         scope.order.orderByReverse = false;
                     }
                 };
-
-
-                /*scope._setSelected = function (report) {
-
-                    var i = 0;
-
-                    while (i < scope.selectedReports.length) {
-
-                        if (report.record.id === scope.selectedReports[i]) {
-
-                            report.__dfUI.selected = false;
-                            scope.selectedReports.splice(i, 1);
-                            return;
-                        }
-
-                        i++;
-                    }
-
-                    report.__dfUI.selected = true;
-                    scope.selectedReports.push(report.record.id);
-                };*/
-
-                /*scope._deleteSelectedReports = function () {
-
-                    var requestDataObj = {
-                        params: {
-                            ids: scope.selectedReports.join(','),
-                            rollback: true
-                        }
-                    };
-
-                    dfApplicationData.deleteApiData('service_report', requestDataObj).$promise.then(
-
-                        function(result) {
-
-                            var messageOptions = {
-                                module: 'Reports',
-                                type: 'success',
-                                provider: 'dreamfactory',
-                                message: 'Reports deleted successfully.'
-                            };
-
-                            dfNotify.success(messageOptions);
-
-                            scope.selectedReports = [];
-
-                            scope.$broadcast('toolbar:paginate:service_report:reset');
-                        },
-
-                        function(reject) {
-
-                            var messageOptions = {
-                                module: 'Api Error',
-                                provider: 'dreamfactory',
-                                type: 'error',
-                                message: reject
-                            };
-
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(
-                        function () {
-
-                        }
-                    );
-                };*/
-
 
                 // WATCHERS
 
@@ -373,47 +229,3 @@ angular.module('dfReports', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         template: "<div class='col-lg-12' ng-if='dataLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
       };
     }]);
-
-    /*.directive('dfExportServiceReports', ['MOD_REPORT_ASSET_PATH', 'INSTANCE_URL', 'UserDataService', '$http', '$window', 'APP_API_KEY', function (MOD_REPORT_ASSET_PATH, INSTANCE_URL, UserDataService, $http, $window, APP_API_KEY) {
-
-        return {
-
-            restrict: 'A',
-            scope: false,
-            replace: true,
-            link: function (scope, elem, attrs) {
-
-                scope.fileFormatStr = null;
-
-                scope.exportServiceReports = function(fileFormatStr) {
-                    scope._exportServiceReports(fileFormatStr);
-                };
-
-                scope._getFile = function (urlStr) {
-
-                    return $http({
-                        method: 'GET',
-                        url: urlStr
-                    });
-                };
-
-                scope._exportServiceReports = function (fileFormatStr) {
-
-                    if (fileFormatStr === 'csv' || fileFormatStr === 'json' || fileFormatStr === 'xml' ) {
-
-                        scope.fileFormatStr = fileFormatStr;
-
-                        var params = 'file=ServiceReport.' + scope.fileFormatStr + '&api_key=' + APP_API_KEY;
-                        var currentUser = UserDataService.getCurrentUser();
-                        if (currentUser && currentUser.session_token) {
-                            params += '&session_token=' + currentUser.session_token;
-                        }
-
-                        // Jason's method to make it work.  He doesn't check for bad response.
-                        // I'll look into angularJS's $location to fix this.
-                        $window.location.href= INSTANCE_URL.url + '/system/service_report?' + params;
-                    }
-                };
-            }
-        };
-    }]);*/
