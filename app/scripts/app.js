@@ -98,31 +98,6 @@ angular
         };
     })
 
-    // some tabs allowed for root admin only
-
-    .factory('checkRootAdminService', function ($q, UserDataService, $location) {
-
-        return {
-
-            checkRootAdmin: function () {
-
-                var deferred = $q.defer();
-                var currentUser = UserDataService.getCurrentUser();
-
-                if (currentUser && currentUser.is_sys_admin && currentUser.is_root_admin) {
-                    // admin
-                    deferred.resolve();
-                } else {
-                    // not admin
-                    $location.url('/launchpad');
-                    deferred.reject();
-                }
-
-                return deferred.promise;
-            }
-        };
-    })
-
     .factory('allowAdminAccess', function (SystemConfigDataService) {
 
         return {
