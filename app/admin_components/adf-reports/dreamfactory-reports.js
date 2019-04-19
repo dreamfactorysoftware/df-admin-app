@@ -67,43 +67,76 @@ angular.module('dfReports', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
             $scope.apiData = null;
 
-            $scope.loadTabData = function () {
+            $scope.loadTabData = function(init) {
 
                 $scope.dataLoading = true;
 
-                var apis = ['service_report'];
+                var apis, newApiData;
 
-                dfApplicationData.getApiData(apis).then(
+                var errorFunc = function (error) {
+                    var msg = 'To use the Reports tab you must be Root Admin and have GOLD license.';
+
+                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                        $location.url('/home');
+                    }
+
+                    var messageOptions = {
+                        module: 'Reports',
+                        provider: 'dreamfactory',
+                        type: 'error',
+                        message: msg
+                    };
+                    dfNotify.warn(messageOptions);
+                };
+
+                // first get system data to decide whether to load other data
+                dfApplicationData.getApiData(['system']).then(
                     function (response) {
-                        var newApiData = {};
-                        apis.forEach(function (value, index) {
-                            newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                        angular.forEach(response[0].resource, function (value) {
+                            if (value.name === 'service_reports') {
+                                $scope.reportsEnabled = true;
+                            }
                         });
-                        $scope.apiData = newApiData;
-                    },
-                    function (error) {
-                        var msg = 'To use the Reports tab you must be Root Admin and have GOLD license.';
+                        if (!$scope.reportsEnabled) {
+                            // reports not enabled, disable UI
+                            $scope.subscription_required = true;
+                        } else {
+                            // reports enabled, load other data
+                            var apis = ['service_report'];
 
-                        if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                            $location.url('/home');
+                            dfApplicationData.getApiData(apis).then(
+                                function (response) {
+                                    var newApiData = {};
+                                    apis.forEach(function (value, index) {
+                                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                                    });
+                                    $scope.apiData = newApiData;
+                                    if (init) {
+                                        $scope.$broadcast('toolbar:paginate:service_report:load');
+                                    }
+                                },
+                                // error getting other data
+                                errorFunc
+                            );
                         }
-
+                    },
+                    // error getting system data
+                    function (error) {
                         var messageOptions = {
                             module: 'Reports',
                             provider: 'dreamfactory',
                             type: 'error',
-                            message: msg
+                            message: 'There was an error loading data for the Reports tab. Please try refreshing your browser and logging in again.'
                         };
+                        $location.url('/home');
                         dfNotify.error(messageOptions);
                     }
-                ).finally(
-                    function () {
-                        $scope.dataLoading = false;
-                    }
-                );
+                ).finally(function () {
+                    $scope.dataLoading = false;
+                });
             };
 
-            $scope.loadTabData();
+            $scope.loadTabData(true);
         }])
 
     .directive('dfManageServiceReports', ['$rootScope', 'MOD_REPORT_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, MOD_REPORT_ASSET_PATH, dfApplicationData, dfNotify, $location) {

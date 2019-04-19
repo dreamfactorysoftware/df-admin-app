@@ -185,6 +185,16 @@ angular.module('dreamfactoryApp')
 
             // PRIVATE API
 
+            function isCurrentUserRootAdmin() {
+                return $scope.currentUser.hasOwnProperty('is_root_admin') && $scope.currentUser['is_sys_admin'] && $scope.currentUser['is_root_admin'];
+            }
+
+            function isGoldLicense() {
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+
+                return systemConfig.hasOwnProperty('platform') && systemConfig.platform.license === 'GOLD';
+            }
+
             $scope._setComponentLinks = function (isAdmin) {
 
                 var links = angular.copy(navLinks);
@@ -197,9 +207,9 @@ angular.module('dreamfactoryApp')
                     $scope.componentNavOptions = {
                         links: Object.values(links)
                     };
-                } else if (isAdmin && $scope.currentUser.role_id) {
+                } else if ($scope.currentUser.role_id) {
                     $scope._setAccessibleLinks(links);
-                } else if($scope.currentUser.hasOwnProperty('is_root_admin') && $scope.currentUser['is_root_admin']){
+                } else if(!isGoldLicense() || isCurrentUserRootAdmin()){
                     links['reports'] = {
                         name: 'reports',
                         label: 'Reports',
