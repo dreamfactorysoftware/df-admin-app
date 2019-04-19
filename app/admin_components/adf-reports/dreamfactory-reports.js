@@ -93,7 +93,7 @@ angular.module('dfReports', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 dfApplicationData.getApiData(['system']).then(
                     function (response) {
                         angular.forEach(response[0].resource, function (value) {
-                            if (value.name === 'service_reports') {
+                            if (value.name === 'service_report') {
                                 $scope.reportsEnabled = true;
                             }
                         });
