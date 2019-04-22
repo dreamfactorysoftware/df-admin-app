@@ -495,8 +495,8 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             templateUrl: MOD_ADMIN_ASSET_PATH + 'views/df-access-by-tabs.html',
             link: function (scope, elem, attrs) {
                 var currentUser = UserDataService.getCurrentUser();
-                scope.subscription_required = SystemConfigDataService.getSystemConfig().platform.license !== 'GOLD';
                 scope.isRootAdmin = currentUser.is_root_admin === true;
+                scope.subscription_required = SystemConfigDataService.getSystemConfig().platform.license !== 'GOLD';
                 scope.description = "Restricted admin. ";
 
                 if(scope.newAdmin){
