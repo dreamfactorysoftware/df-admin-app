@@ -258,16 +258,22 @@ angular.module('dreamfactoryApp')
                 $http.get(INSTANCE_URL.url + '/system/role/' + $scope.currentUser.role_id + '?related=role_service_access_by_role_id&accessible_tabs=true').then(
                     // success method
                     function (result) {
-                        var accessibleTabs = result.data['accessible_tabs'];
+                        if (result && result.data.hasOwnProperty('accessible_tabs')) {
+                            var accessibleTabs = result.data['accessible_tabs'];
 
-                        var schemaDataIndex = accessibleTabs.indexOf('schema/data');
-                        if (schemaDataIndex !== -1) {
-                            accessibleTabs = splitSchemaDataTab(accessibleTabs, schemaDataIndex);
+                            var schemaDataIndex = accessibleTabs.indexOf('schema/data');
+                            if (schemaDataIndex !== -1) {
+                                accessibleTabs = splitSchemaDataTab(accessibleTabs, schemaDataIndex);
+                            }
+
+                            $scope.componentNavOptions = {
+                                links: getAccessibleLinks(tabsLinks, accessibleTabs)
+                            };
+                        } else {
+                            $scope.componentNavOptions = {
+                                links: Object.values(tabsLinks)
+                            };
                         }
-
-                        $scope.componentNavOptions = {
-                            links: getAccessibleLinks(tabsLinks, accessibleTabs)
-                        };
                     },
                     // failure method
                     function (result) {
