@@ -399,6 +399,9 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             function (result) {
                                 if(result.data.user_to_app_to_role_by_user_id.length > 0) {
                                     scope.adminRoleId = result.data.user_to_app_to_role_by_user_id[0].role_id;
+                                } else {
+                                    scope.adminRoleId = null;
+                                    scope.widgetDescription = "Restricted admin. An auto-generated role will be created for this admin.";
                                 }
                             },
                             // failure method
@@ -512,13 +515,9 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             templateUrl: MOD_ADMIN_ASSET_PATH + 'views/df-access-by-tabs.html',
             link: function (scope, elem, attrs) {
                 var currentUser = UserDataService.getCurrentUser();
-                scope.isRootAdmin = currentUser.is_root_admin === true;
                 scope.subscription_required = SystemConfigDataService.getSystemConfig().platform.license !== 'GOLD';
-                scope.description = "Restricted admin. ";
-
-                if(scope.newAdmin){
-                    scope.description += "An auto-generated role will be created for this admin.";
-                }
+                scope.isRootAdmin = currentUser.is_root_admin;
+                scope.widgetDescription = "Restricted admin. An auto-generated role will be created for this admin.";
 
                 scope.accessByTabs = [
                     {name: 'apps', title: "Apps", checked: true},
@@ -560,7 +559,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 var watchAccessTabsData = scope.$watch('adminRoleId', function (newValue, oldValue) {
 
                     if (newValue) {
-                        scope.description = "Restricted admin. Role id: " + newValue;
+                        scope.widgetDescription = "Restricted admin. Role id: " + newValue;
 
                         // get role data where accessible tabs are
                         $http.get(INSTANCE_URL.url + '/system/role/' + newValue + '/?accessible_tabs=true').then(
