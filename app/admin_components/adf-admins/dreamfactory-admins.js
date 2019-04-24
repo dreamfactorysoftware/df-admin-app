@@ -43,8 +43,8 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
     }])
 
-    .controller('AdminsCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location',
-        function($rootScope, $scope, dfApplicationData, dfNotify, $location) {
+    .controller('AdminsCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location', 'SystemConfigDataService',
+        function($rootScope, $scope, dfApplicationData, dfNotify, $location, SystemConfigDataService) {
 
             $scope.$parent.title = 'Admins';
 
@@ -72,6 +72,23 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
             $scope.apiData = null;
 
+            $scope.rootAdminCheck = function (adminApiData) {
+                if(SystemConfigDataService.getSystemConfig().platform.license === 'GOLD') {
+                    var rootAdminExists = adminApiData.admin.some(function (adminData) {
+                        return adminData.hasOwnProperty('is_root_admin') && adminData.is_root_admin
+                    });
+                    if (!rootAdminExists) {
+                        var messageOptions = {
+                            module: 'Admins',
+                            provider: 'dreamfactory',
+                            type: 'error',
+                            message: 'There is no root administrator selected. Some functionality might not work. Use df:root_admin command to choose one.'
+                        };
+                        dfNotify.error(messageOptions);
+                    }
+                }
+            };
+
             $scope.loadTabData = function () {
 
                 $scope.dataLoading = true;
@@ -85,6 +102,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             newApiData[value] = response[index].resource ? response[index].resource : response[index];
                         });
                         $scope.apiData = newApiData;
+                        $scope.rootAdminCheck($scope.apiData);
                     },
                     function (error) {
                         var msg = 'To use the Admins tab your role must allow GET access to system/admin/*. To create, update, or delete admins you need POST, PUT, DELETE access to /system/admin/*.';
