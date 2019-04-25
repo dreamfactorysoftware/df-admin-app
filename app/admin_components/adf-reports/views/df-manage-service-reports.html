@@ -1,13 +1,13 @@
 <div>
 
     <!-- Service reportsListing -->
-    <div>
+    <div data-ng-hide="!reportsEnabled">
 
         <!-- Section Header -->
         <df-section-header data-title="'Manage Service Reports'"></df-section-header>
 
         <!-- ToolBar -->
-        <df-section-toolbar data-ng-show="serviceReports.length > 0">
+        <df-section-toolbar>
             <div class="btn-toolbar pull-left" role="toolbar" aria-label="Toolbar with button groups">
                 <div class="btn-group" role="group" aria-label="Third group">
                     <df-toolbar-paginate data-api="'service_report'" ></df-toolbar-paginate>
@@ -63,5 +63,9 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div data-ng-if="subscription_required">
+        <br/><h4>This feature will be available for root admin and requires a DreamFactory GOLD product subscription.</h4> Email <a href="mailto:sales@dreamfactory.com" >sales@dreamfactory.com</a> or call +1-415-612-8958 for pricing information.
     </div>
 </div>
