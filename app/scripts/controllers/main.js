@@ -189,12 +189,6 @@ angular.module('dreamfactoryApp')
                 return $scope.currentUser.hasOwnProperty('is_root_admin') && $scope.currentUser['is_sys_admin'] && $scope.currentUser['is_root_admin'];
             }
 
-            function isGoldLicense() {
-                var systemConfig = SystemConfigDataService.getSystemConfig();
-
-                return systemConfig.hasOwnProperty('platform') && systemConfig.platform.license === 'GOLD';
-            }
-
             $scope._setComponentLinks = function (isAdmin) {
 
                 var links = angular.copy(navLinks);
@@ -209,7 +203,7 @@ angular.module('dreamfactoryApp')
                     };
                 } else if ($scope.currentUser.role_id) {
                     $scope._setAccessibleLinks(links);
-                } else if(!isGoldLicense() || isCurrentUserRootAdmin()){
+                } else if(!dfApplicationData.isGoldLicense() || isCurrentUserRootAdmin()){
                     links['reports'] = {
                         name: 'reports',
                         label: 'Reports',
@@ -218,9 +212,12 @@ angular.module('dreamfactoryApp')
                     $scope.componentNavOptions = {
                         links: Object.values(links)
                     };
-                }else {
+                } else if(dfApplicationData.isGoldLicense()){
+                    // Admins tab available only for root admin
+                    delete links.admins;
+                    $scope.doesRootAdminExist();
                     $scope.componentNavOptions = {
-                        links: Object.values(navLinks)
+                        links: Object.values(links)
                     };
                 }
             };
@@ -300,6 +297,21 @@ angular.module('dreamfactoryApp')
                         console.error(result);
                     }
                 );
+            };
+
+            // Does rootAdmin exist [Gold License]
+            $scope.doesRootAdminExist = function () {
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+                var rootAdminExists = systemConfig.hasOwnProperty('platform') && systemConfig.platform.hasOwnProperty('root_admin_exists') && systemConfig.platform.root_admin_exists;
+                if (!rootAdminExists) {
+                    var messageOptions = {
+                        module: 'Admins',
+                        provider: 'dreamfactory',
+                        type: 'error',
+                        message: 'There is no root administrator selected. Some functionality might not work. Use df:root_admin command to choose one.'
+                    };
+                    dfNotify.error(messageOptions);
+                }
             };
 
         // Sets links for navigation

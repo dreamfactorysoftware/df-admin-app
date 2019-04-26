@@ -72,24 +72,6 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             // load data
 
             $scope.apiData = null;
-
-            $scope.rootAdminCheck = function (adminApiData) {
-                if(SystemConfigDataService.getSystemConfig().platform.license === 'GOLD') {
-                    var rootAdminExists = adminApiData.admin.some(function (adminData) {
-                        return adminData.hasOwnProperty('is_root_admin') && adminData.is_root_admin
-                    });
-                    if (!rootAdminExists) {
-                        var messageOptions = {
-                            module: 'Admins',
-                            provider: 'dreamfactory',
-                            type: 'error',
-                            message: 'There is no root administrator selected. Some functionality might not work. Use df:root_admin command to choose one.'
-                        };
-                        dfNotify.error(messageOptions);
-                    }
-                }
-            };
-
             $scope.loadTabData = function () {
 
                 $scope.dataLoading = true;
@@ -103,14 +85,9 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             newApiData[value] = response[index].resource ? response[index].resource : response[index];
                         });
                         $scope.apiData = newApiData;
-                        $scope.rootAdminCheck($scope.apiData);
                     },
                     function (error) {
                         var msg = 'To use the Admins tab your role must allow GET access to system/admin/*. To create, update, or delete admins you need POST, PUT, DELETE access to /system/admin/*.';
-
-                        if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                            $location.url('/home');
-                        }
 
                         var messageOptions = {
                             module: 'Admins',
@@ -118,6 +95,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             type: 'error',
                             message: msg
                         };
+                        $location.url('/home');
                         dfNotify.error(messageOptions);
                     }
                 ).finally(
@@ -508,7 +486,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         };
     }])
 
-    .directive('dfAccessByTabs', ['INSTANCE_URL', 'MOD_ADMIN_ASSET_PATH', '$http', 'SystemConfigDataService', 'UserDataService', function (INSTANCE_URL, MOD_ADMIN_ASSET_PATH, $http, SystemConfigDataService, UserDataService) {
+    .directive('dfAccessByTabs', ['INSTANCE_URL', 'MOD_ADMIN_ASSET_PATH', '$http', 'SystemConfigDataService', 'UserDataService', 'dfApplicationData', function (INSTANCE_URL, MOD_ADMIN_ASSET_PATH, $http, SystemConfigDataService, UserDataService, dfApplicationData) {
 
         return {
             restrict: 'E',
@@ -516,13 +494,12 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             templateUrl: MOD_ADMIN_ASSET_PATH + 'views/df-access-by-tabs.html',
             link: function (scope, elem, attrs) {
                 var currentUser = UserDataService.getCurrentUser();
-                scope.subscription_required = SystemConfigDataService.getSystemConfig().platform.license !== 'GOLD';
+                scope.subscription_required = !dfApplicationData.isGoldLicense();
                 scope.isRootAdmin = currentUser.is_root_admin;
                 scope.widgetDescription = "Restricted admin. An auto-generated role will be created for this admin.";
 
                 scope.accessByTabs = [
                     {name: 'apps', title: "Apps", checked: true},
-                    {name: 'admins', title: "Admins", checked: true},
                     {name: 'users', title: "Users", checked: true},
                     {name: 'services', title: "Services", checked: true},
                     {name: 'apidocs', title: "API Docs", checked: true},

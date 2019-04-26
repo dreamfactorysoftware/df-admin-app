@@ -288,12 +288,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         },
 
                         function (reject) {
-
+                            var msg = reject.data.message;
                             var messageOptions = {
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject
+                                message: msg ? msg : reject
 
                             };
 
@@ -360,6 +360,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         },
 
                         function (reject) {
+                            var msg = reject.data.message;
+
                             if (scope.role.record.role_adldap_by_role_id && scope.role.record.role_adldap_by_role_id.length > 0) {
                                 scope.role.record.dn = scope.role.record.role_adldap_by_role_id[0].dn;
                             }
@@ -367,7 +369,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject
+                                message: msg ? msg : reject
                             };
 
                             dfNotify.error(messageOptions);
@@ -404,12 +406,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         },
 
                         function (reject) {
-
+                            var msg = reject.data.message;
                             var messageOptions = {
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject
+                                message: msg ? msg : reject
                             };
 
                             dfNotify.error(messageOptions);
@@ -979,11 +981,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         function (reject) {
 
                             // notify success
+                            var msg = reject.data.message;
                             var messageOptions = {
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject
+                                message: msg ? msg : reject
                             };
 
                             dfNotify.error(messageOptions);
@@ -1055,12 +1058,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         },
 
                         function (reject) {
-
+                            var msg = reject.data.message;
                             var messageOptions = {
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                message: reject
+                                message: msg ? msg : reject
                             };
 
                             dfNotify.error(messageOptions);
