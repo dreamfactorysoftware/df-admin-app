@@ -9779,6 +9779,11 @@ body .df-sidebar-nav .nav-pills li.active:hover a {
   padding-right: 0 !important;
 }
 
+/* line 129, partials/themes/matan-light/_bootswatch_overrides.scss */
+.col-md-2.df-menu-icon, .col-md-2.df-sidebar-nav {
+  padding-left: 0px;
+}
+
 /* line 9, partials/_base.scss */
 html {
   height: 100%;
