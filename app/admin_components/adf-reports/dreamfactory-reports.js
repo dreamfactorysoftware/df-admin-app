@@ -76,16 +76,14 @@ angular.module('dfReports', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 var errorFunc = function (error) {
                     var msg = 'To use the Reports tab you must be Root Admin and have GOLD license.';
 
-                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                        $location.url('/home');
-                    }
-
                     var messageOptions = {
                         module: 'Reports',
                         provider: 'dreamfactory',
                         type: 'error',
                         message: msg
                     };
+
+                    $location.url('/home');
                     dfNotify.warn(messageOptions);
                 };
 

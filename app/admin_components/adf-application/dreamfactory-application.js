@@ -134,7 +134,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     xhr = new ActiveXObject("Microsoft.XMLHTTP");
                 }
 
-                xhr.open("GET", INSTANCE_URL.url + '/system/' + api, false);
+                var url = INSTANCE_URL.url + '/system/' + (api === 'system' ? '' : api);
+                xhr.open("GET", url, false);
                 xhr.setRequestHeader("X-DreamFactory-API-Key", "6498a8ad1beb9d84d63035c5d1120c007fad6de706734db9689f8996707e0f7d");
                 if (currentUser && currentUser.session_token) {
                     xhr.setRequestHeader("X-DreamFactory-Session-Token", currentUser.session_token);
@@ -153,6 +154,20 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             }
 
             return dfApplicationObj.apis[api];
+        }
+
+        function _isGoldLicense() {
+            var systemList = _getApiDataSync('system');
+            var limitsEnabled = false;
+            var serviceReportsEnabled = false;
+            angular.forEach(systemList.resource, function (value) {
+                if (value.name === 'limit') {
+                    limitsEnabled = true;
+                } else if (value.name === 'service_report') {
+                    serviceReportsEnabled = true;
+                }
+            });
+            return limitsEnabled && serviceReportsEnabled
         }
 
         // Resets the dfApplicationObj to initial state
@@ -606,6 +621,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             getApiDataSync: function(api, forceRefresh) {
                 return _getApiDataSync(api, forceRefresh);
+            },
+
+            isGoldLicense: function() {
+                return _isGoldLicense();
             }
         };
     }])
