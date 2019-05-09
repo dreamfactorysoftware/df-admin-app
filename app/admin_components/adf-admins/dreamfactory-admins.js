@@ -86,7 +86,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         $scope.apiData = newApiData;
                     },
                     function (error) {
-                        var msg = 'To use the Admins tab your role must allow GET access to system/admin/*. To create, update, or delete admins you need POST, PUT, DELETE access to /system/admin/*.';
+                        var msg = 'There was an error loading data for the Admins tab. Please try refreshing your browser and logging in again.';
 
                         var messageOptions = {
                             module: 'Admins',
