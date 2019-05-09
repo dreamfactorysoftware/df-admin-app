@@ -32,7 +32,7 @@
             <div>
                 <div class="row">
                     <div class="col-xs-12">
-                        <div class="panel panel-default" style="overflow-x: scroll">
+                        <div class="panel panel-default">
                             <table class="table table-responsive table-bordered table-hover table-condensed">
                                 <thead>
                                 <th data-ng-class="order.orderBy === field.name ? 'df-th-selected' : ''"
@@ -48,13 +48,53 @@
                                 </thead>
                                 <tbody>
                                 <tr data-ng-repeat="obj in serviceReports | orderObjectBy:order.orderBy:order.orderByReverse" class="repeated-item" class="repeated-item" data-ng-class="obj.__dfUI.selected ? 'danger' : ''" style="cursor: auto">
-                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.id}}</td>
-                                    <td id="repotrs_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.created_date}} UTC</td><p>{{obj.record.created_at}}</p>
-                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.service_id}}</td>
-									<td id="reports_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.service_name}}</td>
-									<td id="reports_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.user_email}}</td>
-                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.action}}</td>
-                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">{{obj.record.request_verb}}</td>
+                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>
+                                                {{obj.record.id}}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td id="repotrs_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>
+                                                {{obj.record.created_date}} UTC
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>
+                                                {{obj.record.service_id}}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>
+                                                {{obj.record.service_name}}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>
+                                                {{obj.record.user_email}}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>{{obj.record.action}}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>{{obj.record.request_verb}}
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>

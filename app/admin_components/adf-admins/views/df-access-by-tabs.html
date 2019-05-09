@@ -1,16 +1,16 @@
-<div class="panel" style="box-shadow: none;">
+<div class="panel">
     <div>
         <a data-toggle="collapse" style="text-decoration: none; cursor: pointer" data-target="#select-access-tabs-body">
-            <h4 class="panel-title">Access by tabs</h4>
+            <h4>Access by tabs</h4>
         </a>
     </div>
-    <div id="select-access-tabs-body" class="panel-collapse collapse" ng-class="{'in': !subscription_required}">
+    <div id="select-access-tabs-body" class="panel-collapse collapse" ng-class="{'in': !subscription_required}" style="overflow: hidden; margin-left: -20px; margin-right: -20px; padding-right: 20px; padding-left: 20px">
         <div data-ng-if="!subscription_required">
-            <div class="alert alert-info" style="margin-top: 20px">
+            <div class="alert alert-info" style="margin-top: 10px">
                 <div class="fa fa-info-circle"></div>
                 {{ widgetDescription }}
             </div>
-            <div class="panel-body" style="padding: 0px;">
+            <div>
                 <div class="form-group">
 
                     <div class="checkbox" style="margin-bottom: 20px">
@@ -20,7 +20,7 @@
                             Select all
                         </label>
                     </div>
-                    <div class="checkbox row col-sm-6 no-gutter" ng-repeat="tab in accessByTabs track by $index">
+                    <div class="checkbox col-sm-6 no-gutter" ng-repeat="tab in accessByTabs track by $index">
                         <label>
                             <input type="checkbox" ng-model="tab.checked" ng-change="selectTab(tab)"/>
                             {{tab.title}}
@@ -40,5 +40,3 @@
     <hr/>
 
 </div>
-
-
