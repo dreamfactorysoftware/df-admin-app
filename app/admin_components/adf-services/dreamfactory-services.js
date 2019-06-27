@@ -851,6 +851,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         "label": "MQTT Client",
                         "description": "MQTT Client based on Mosquitto.",
                         "group": "IoT"
+                    }, {
+                        "name": "mysql",
+                        "label": "MySQL",
+                        "description": "Database service supporting MySLQ connections.",
+                        "group": "Database"
                     }];
 
                     var goldServices = [{
