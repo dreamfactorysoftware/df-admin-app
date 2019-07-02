@@ -872,12 +872,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         "label": "Python",
                         "description": "Service that allows client-callable scripts utilizing the system scripting.",
                         "group": "Script"
-                    }, {
+                    }, /*{
                         "name": "python3",
                         "label": "Python3",
                         "description": "Service that allows client-callable scripts utilizing the system scripting.",
                         "group": "Script"
-                    }, {
+                    },*/ {
                         "name": "v8js",
                         "label": "V8js",
                         "description": "Service that allows client-callable scripts utilizing the system scripting.",
