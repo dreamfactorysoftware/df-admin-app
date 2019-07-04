@@ -10412,7 +10412,7 @@ body {
   z-index: 10001;
 }
 
-/* line 39, styles.scss */
+/* line 40, styles.scss */
 [data-ng-click] {
   cursor: pointer;
 }
