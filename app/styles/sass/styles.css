@@ -9939,11 +9939,16 @@ body {
 }
 
 /* line 171, partials/_base.scss */
+.checkbox input, i {
+  margin-top: 4px !important;
+}
+
+/* line 175, partials/_base.scss */
 .table tr {
   cursor: pointer;
 }
 
-/* line 175, partials/_base.scss */
+/* line 179, partials/_base.scss */
 .fa-clipboard {
   cursor: pointer;
 }
