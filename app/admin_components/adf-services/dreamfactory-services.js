@@ -363,6 +363,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
             },
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-details.html',
             link: function (scope, elem, attrs) {
+                scope.isInfoTab = true;
 
                 var ServiceDetails = function (service) {
 
@@ -614,6 +615,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                 scope.refreshServiceConfigEditor = function() {
 
+                    $('#config-tab').tab('show');
+                    scope.isInfoTab = false;
+
                     var editor = scope.serviceConfigEditorObj.editor;
                     if (editor) {
                         editor.renderer.updateText();
@@ -622,7 +626,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     }
                 };
 
+                scope.refreshServiceInfoEditor = function() {
+                    scope.isInfoTab = true;
+                };
+
                 scope.refreshServiceDefEditor = function() {
+                    scope.isInfoTab = false;
 
                     var editor = scope.serviceDefEditorObj.editor;
                     if (editor) {
