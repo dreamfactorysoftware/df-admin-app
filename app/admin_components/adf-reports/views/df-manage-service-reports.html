@@ -1,0 +1,111 @@
+<div>
+
+    <!-- Service reportsListing -->
+    <div data-ng-hide="!reportsEnabled">
+
+        <!-- Section Header -->
+        <df-section-header data-title="'Manage Service Reports'"></df-section-header>
+
+        <!-- ToolBar -->
+        <df-section-toolbar>
+            <div class="btn-toolbar pull-left" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <df-toolbar-paginate data-api="'service_report'" ></df-toolbar-paginate>
+                </div>
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <input type="text" data-ng-model="$parent.filterText" data-ng-change="changeFilter($parent.filterText)" class="df-search-box" placeholder="Search">
+                </div>
+            </div>
+            <div style="clear: both"></div>
+        </df-section-toolbar>
+
+        <div data-ng-show="serviceReports.length === 0 && !filterText">
+            <df-empty-section></df-empty-section>
+        </div>
+
+        <div data-ng-show="serviceReports.length === 0 && filterText">
+            <df-empty-search-result></df-empty-search-result>
+        </div>
+
+        <div data-ng-show="serviceReports.length > 0">
+
+            <div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <table class="table table-responsive table-bordered table-hover table-condensed">
+                                <thead>
+                                <th data-ng-class="order.orderBy === field.name ? 'df-th-selected' : ''"
+                                    data-ng-click="orderOnSelect(field)"
+                                    data-ng-repeat="field in fields">
+
+                                    <span class="df-th-text" style="white-space: nowrap">{{field.label}}
+                                        <i style="margin-left: 5px;" data-ng-if="order.orderBy === field.name"
+                                           class="fa"
+                                           data-ng-class="order.orderBy === field.name && order.orderByReverse ? 'fa-caret-down' : 'fa-caret-up'"></i>
+                                    </span>
+                                </th>
+                                </thead>
+                                <tbody>
+                                <tr data-ng-repeat="obj in serviceReports | orderObjectBy:order.orderBy:order.orderByReverse" class="repeated-item" class="repeated-item" data-ng-class="obj.__dfUI.selected ? 'danger' : ''" style="cursor: auto">
+                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>
+                                                {{obj.record.id}}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td id="repotrs_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>
+                                                {{obj.record.created_date}} UTC
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>
+                                                {{obj.record.service_id}}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>
+                                                {{obj.record.service_name}}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>
+                                                {{obj.record.user_email}}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>{{obj.record.action}}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td id="reports_table_row_{{$index}}_{{obj.record.id}}">
+                                        <div class="cell-content">
+                                            <div>{{obj.record.request_verb}}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div data-ng-if="subscription_required">
+        <br/><h4>This feature will be available for root admin and requires a DreamFactory GOLD product subscription.</h4> Email <a href="mailto:sales@dreamfactory.com" >sales@dreamfactory.com</a> or call +1-415-612-8958 for pricing information.
+    </div>
+</div>
