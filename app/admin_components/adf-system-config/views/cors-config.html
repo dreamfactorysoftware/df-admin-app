@@ -3,7 +3,7 @@
 
     <div class="row">
         <div class="col-sm-4 col-md-3">
-            <select id="select-cors-host" class="form-control input-sm" data-ng-model="$parent.selectedCorsEntry" data-ng-options="entry as entry.record.path for entry in corsEntries" data-ng-change="changeCorsEntry()">
+            <select id="select-cors-host" class="form-control input-sm" data-ng-model="selectedCorsEntry" data-ng-options="entry as entry.record.path for entry in corsEntries" data-ng-change="changeCorsEntry()">
                 <option value="">-- Select CORS Entry --</option>
             </select>
         </div>
