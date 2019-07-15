@@ -9406,29 +9406,34 @@ html body .form-controls .btn-dark {
 }
 
 /* line 107, partials/themes/matan-light/_tables_override.scss */
+.table {
+  width: 95%;
+}
+
+/* line 111, partials/themes/matan-light/_tables_override.scss */
 div.panel .table, table.table, table.table.table-striped {
   background-color: #F7F9FA;
 }
-/* line 110, partials/themes/matan-light/_tables_override.scss */
+/* line 114, partials/themes/matan-light/_tables_override.scss */
 div.panel .table > thead, div.panel .table > thead tr, table.table > thead, table.table > thead tr, table.table.table-striped > thead, table.table.table-striped > thead tr {
   background-color: #1d3d56;
   color: #ffffff;
   height: 38px;
 }
-/* line 115, partials/themes/matan-light/_tables_override.scss */
+/* line 119, partials/themes/matan-light/_tables_override.scss */
 div.panel .table > thead th, div.panel .table > thead tr th, table.table > thead th, table.table > thead tr th, table.table.table-striped > thead th, table.table.table-striped > thead tr th {
   vertical-align: middle;
 }
-/* line 118, partials/themes/matan-light/_tables_override.scss */
+/* line 122, partials/themes/matan-light/_tables_override.scss */
 div.panel .table > thead th > *, div.panel .table > thead tr th > *, table.table > thead th > *, table.table > thead tr th > *, table.table.table-striped > thead th > *, table.table.table-striped > thead tr th > * {
   padding-bottom: 3px;
   padding-left: 5px;
 }
-/* line 122, partials/themes/matan-light/_tables_override.scss */
+/* line 126, partials/themes/matan-light/_tables_override.scss */
 div.panel .table > thead th button, div.panel .table > thead tr th button, table.table > thead th button, table.table > thead tr th button, table.table.table-striped > thead th button, table.table.table-striped > thead tr th button {
   color: #ffffff;
 }
-/* line 129, partials/themes/matan-light/_tables_override.scss */
+/* line 133, partials/themes/matan-light/_tables_override.scss */
 div.panel .table tbody.tbody-transparent .cell-content, table.table tbody.tbody-transparent .cell-content, table.table.table-striped tbody.tbody-transparent .cell-content {
   background-color: transparent;
   box-shadow: none;
@@ -9436,17 +9441,17 @@ div.panel .table tbody.tbody-transparent .cell-content, table.table tbody.tbody-
   border-bottom-left-radius: 0px !important;
   border-bottom-right-radius: 0px !important;
 }
-/* line 141, partials/themes/matan-light/_tables_override.scss */
+/* line 145, partials/themes/matan-light/_tables_override.scss */
 div.panel .table tbody > tr > td:first-child > .cell-content, table.table tbody > tr > td:first-child > .cell-content, table.table.table-striped tbody > tr > td:first-child > .cell-content {
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
 }
-/* line 147, partials/themes/matan-light/_tables_override.scss */
+/* line 151, partials/themes/matan-light/_tables_override.scss */
 div.panel .table tbody > tr > td:last-child > .cell-content, table.table tbody > tr > td:last-child > .cell-content, table.table.table-striped tbody > tr > td:last-child > .cell-content {
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
 }
-/* line 152, partials/themes/matan-light/_tables_override.scss */
+/* line 156, partials/themes/matan-light/_tables_override.scss */
 div.panel .table tbody > tr td, table.table tbody > tr td, table.table.table-striped tbody > tr td {
   padding: 0px;
   border: 0px;
@@ -9455,7 +9460,7 @@ div.panel .table tbody > tr td, table.table tbody > tr td, table.table.table-str
   height: 58px;
   min-width: 80px;
 }
-/* line 160, partials/themes/matan-light/_tables_override.scss */
+/* line 164, partials/themes/matan-light/_tables_override.scss */
 div.panel .table tbody > tr td .cell-content, table.table tbody > tr td .cell-content, table.table.table-striped tbody > tr td .cell-content {
   margin-top: 3px;
   margin-bottom: 3px;
@@ -9469,28 +9474,28 @@ div.panel .table tbody > tr td .cell-content, table.table tbody > tr td .cell-co
   height: 92%;
   box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.1);
 }
-/* line 173, partials/themes/matan-light/_tables_override.scss */
+/* line 177, partials/themes/matan-light/_tables_override.scss */
 div.panel .table tbody > tr td .cell-content input, div.panel .table tbody > tr td .cell-content i, table.table tbody > tr td .cell-content input, table.table tbody > tr td .cell-content i, table.table.table-striped tbody > tr td .cell-content input, table.table.table-striped tbody > tr td .cell-content i {
   margin-top: 0px;
   padding-top: 0px;
   vertical-align: top;
 }
-/* line 179, partials/themes/matan-light/_tables_override.scss */
+/* line 183, partials/themes/matan-light/_tables_override.scss */
 div.panel .table tbody > tr td .cell-content > *, table.table tbody > tr td .cell-content > *, table.table.table-striped tbody > tr td .cell-content > * {
   display: table-cell;
   vertical-align: top;
   padding-top: 8px;
   padding-bottom: 16px;
 }
-/* line 186, partials/themes/matan-light/_tables_override.scss */
+/* line 190, partials/themes/matan-light/_tables_override.scss */
 div.panel .table tbody > tr td .cell-content > *:first-child, table.table tbody > tr td .cell-content > *:first-child, table.table.table-striped tbody > tr td .cell-content > *:first-child {
   padding-left: 13px;
 }
-/* line 190, partials/themes/matan-light/_tables_override.scss */
+/* line 194, partials/themes/matan-light/_tables_override.scss */
 div.panel .table tbody > tr td .cell-content .fa-check, table.table tbody > tr td .cell-content .fa-check, table.table.table-striped tbody > tr td .cell-content .fa-check {
   color: #22bca8;
 }
-/* line 194, partials/themes/matan-light/_tables_override.scss */
+/* line 198, partials/themes/matan-light/_tables_override.scss */
 div.panel .table tbody > tr td .cell-content .fa-times, table.table tbody > tr td .cell-content .fa-times, table.table.table-striped tbody > tr td .cell-content .fa-times {
   color: #f2526a;
 }
