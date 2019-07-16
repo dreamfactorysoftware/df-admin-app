@@ -10,8 +10,8 @@
 angular.module('dreamfactoryApp')
 
     // MainCtrl is the parent controller of everything.  Checks routing and deals with navs
-    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', 'dfApplicationData', 'dfNotify', 'dfIconService', 'allowAdminAccess', '$animate',
-        function ($scope, UserDataService, SystemConfigDataService, $location, dfApplicationData, dfNotify, dfIconService, allowAdminAccess, $animate) {
+    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', 'dfApplicationData', 'dfNotify', 'dfIconService', 'allowAdminAccess', '$animate','$http', 'INSTANCE_URL',
+        function ($scope, UserDataService, SystemConfigDataService, $location, dfApplicationData, dfNotify, dfIconService, allowAdminAccess, $animate, $http, INSTANCE_URL) {
 
             // workaround for issue that causes flickering when loading schema tab
             // https://github.com/angular/angular.js/issues/14015
@@ -109,86 +109,85 @@ angular.module('dreamfactoryApp')
             // View options
             $scope.showAdminComponentNav = false;
 
-            var navLinks = [
+            var navLinks = {
 
-                {
+                home: {
                     name: 'home',
                     label: 'Home',
                     path: '/home'
                 },
-                {
+                apps: {
                     name: 'apps',
                     label: 'Apps',
                     path: '/apps'
                 },
-                {
+                admins: {
                     name: 'admins',
                     label: 'Admins',
                     path: '/admins'
                 },
-                {
+                users: {
                     name: 'users',
                     label: 'Users',
                     path: '/users'
                 },
-                {
+                roles: {
                     name: 'roles',
                     label: 'Roles',
                     path: '/roles'
                 },
-                {
+                services: {
                     name: 'services',
                     label: 'Services',
                     path: '/services'
                 },
-                {
+                apidocs: {
                     name: 'apidocs',
                     label: 'API Docs',
                     path: '/apidocs'
                 },
-                {
+                schema: {
                     name: 'schema',
                     label: 'Schema',
                     path: '/schema'
                 },
-                {
+                data: {
                     name: 'data',
                     label: 'Data',
                     path: '/data'
                 },
-                {
+                files: {
                     name: 'file-manager',
                     label: 'Files',
                     path: '/file-manager'
                 },
-                {
+                scripts: {
                     name: 'scripts',
                     label: 'Scripts',
                     path: '/scripts'
                 },
-                {
+                config: {
                     name: 'config',
                     label: 'Config',
                     path: '/config'
                 },
-                {
+                packages: {
                     name: 'package-manager',
                     label: 'Packages',
                     path: '/package-manager'
                 },
-                {
+                limits: {
                     name: 'limit',
                     label: 'Limits',
                     path: '/limits'
                 }
-            ];
-
-            $scope.componentNavOptions = {
-
-                links: navLinks
-            };
+        };
 
             // PRIVATE API
+
+            function isCurrentUserRootAdmin() {
+                return $scope.currentUser.hasOwnProperty('is_root_admin') && $scope.currentUser['is_sys_admin'] && $scope.currentUser['is_root_admin'];
+            }
 
             $scope._setComponentLinks = function (isAdmin) {
 
@@ -196,15 +195,123 @@ angular.module('dreamfactoryApp')
 
                 if (!isAdmin) {
                     // remove admins, roles, limits for non-admins
-                    links.splice(2, 1);
-                    links.splice(3, 1);
-                    links.splice(11, 1);
+                    delete links.admins;
+                    delete links.roles;
+                    delete links.limits;
+                    $scope.componentNavOptions = {
+                        links: Object.values(links)
+                    };
+                } else if ($scope.currentUser.role_id) {
+                    $scope._setAccessibleLinks(links);
+                } else if(!dfApplicationData.isGoldLicense() || isCurrentUserRootAdmin()){
+                    links['reports'] = {
+                        name: 'reports',
+                        label: 'Reports',
+                        path: '/reports'
+                    };
+                    $scope.componentNavOptions = {
+                        links: Object.values(links)
+                    };
+                } else if(dfApplicationData.isGoldLicense()){
+                    // Admins tab available only for root admin
+                    delete links.admins;
+                    $scope.doesRootAdminExist();
+                    $scope.componentNavOptions = {
+                        links: Object.values(links)
+                    };
+                }
+            };
+
+            function splitSchemaDataTab(accessibleTabs, schemaDataIndex) {
+                var schemaDataArr = accessibleTabs[schemaDataIndex].split('/');
+                accessibleTabs.splice(schemaDataIndex, 1, schemaDataArr[0], schemaDataArr[1]);
+                return accessibleTabs;
+            }
+
+            function getConfigTabInsertIndex(accessibleLinks, tabsLinks) {
+                var scriptsTabIndex = accessibleLinks.indexOf(tabsLinks['scripts']);
+                var packagesTabIndex = accessibleLinks.indexOf(tabsLinks['packages']);
+                var hasNearbyTabs = scriptsTabIndex !== -1 || packagesTabIndex !== -1;
+                if (!hasNearbyTabs) return accessibleLinks.length;
+                else return scriptsTabIndex !== -1 ? scriptsTabIndex + 1 : packagesTabIndex;
+            }
+
+            function addDefaultTab(accessibleLinks, tabsLinks, tabName) {
+                switch (tabName) {
+                    case("home"): {
+                        accessibleLinks.unshift(tabsLinks[tabName]);
+                        break;
+                    }
+                    case("config"): {
+                        if (accessibleLinks.indexOf(tabsLinks[tabName]) === -1) {
+                            // push config link exactly between scripts and packages
+                            accessibleLinks.splice(getConfigTabInsertIndex(accessibleLinks, tabsLinks), 0, tabsLinks[tabName]);
+                        }
+                        break;
+                    }
                 }
 
-                $scope.componentNavOptions = {
+                return accessibleLinks;
+            }
 
-                    links: links
-                };
+            function getAccessibleLinks(tabsLinks, accessibleTabs) {
+                // home and config tabs are visible by default
+                var accessibleLinks = addDefaultTab([], tabsLinks, "home");
+                accessibleTabs.forEach(function (tab) {
+                    accessibleLinks.push(tabsLinks[tab]);
+                });
+                accessibleLinks = addDefaultTab(accessibleLinks, tabsLinks, "config");
+                return accessibleLinks;
+            }
+
+            // set accessible links by role [restricted admin]
+            $scope._setAccessibleLinks = function (tabsLinks) {
+
+                // Roles tab is not allowed for restricted admins by default
+                delete tabsLinks.roles;
+
+                $http.get(INSTANCE_URL.url + '/system/role/' + $scope.currentUser.role_id + '?related=role_service_access_by_role_id&accessible_tabs=true').then(
+                    // success method
+                    function (result) {
+                        if (result && result.data.hasOwnProperty('accessible_tabs')) {
+                            var accessibleTabs = result.data['accessible_tabs'];
+
+                            var schemaDataIndex = accessibleTabs.indexOf('schema/data');
+                            if (schemaDataIndex !== -1) {
+                                accessibleTabs = splitSchemaDataTab(accessibleTabs, schemaDataIndex);
+                            }
+
+                            $scope.componentNavOptions = {
+                                links: getAccessibleLinks(tabsLinks, accessibleTabs)
+                            };
+                        } else {
+                            $scope.componentNavOptions = {
+                                links: Object.values(tabsLinks)
+                            };
+                        }
+                    },
+                    // failure method
+                    function (result) {
+                        UserDataService.unsetCurrentUser();
+                        $location.url("/login");
+                        console.error(result);
+                    }
+                );
+            };
+
+            // Does rootAdmin exist [Gold License]
+            $scope.doesRootAdminExist = function () {
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+                var rootAdminExists = systemConfig.hasOwnProperty('platform') && systemConfig.platform.hasOwnProperty('root_admin_exists') && systemConfig.platform.root_admin_exists;
+                if (!rootAdminExists) {
+                    var messageOptions = {
+                        module: 'Admins',
+                        provider: 'dreamfactory',
+                        type: 'error',
+                        message: 'There is no root administrator selected. Some functionality might not work. Use df:root_admin command to choose one.'
+                    };
+                    dfNotify.error(messageOptions);
+                }
             };
 
         // Sets links for navigation
@@ -350,6 +457,7 @@ angular.module('dreamfactoryApp')
                 case '/config':
                 case '/package-manager':
                 case '/limits':
+                case '/reports':
                     $scope.showAdminComponentNav = true;
                     break;
                 default:
