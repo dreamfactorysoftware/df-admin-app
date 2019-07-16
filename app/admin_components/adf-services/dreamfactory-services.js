@@ -718,7 +718,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
             }
         };
     }])
-    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'SystemConfigDataService', function (MOD_SERVICES_ASSET_PATH, SystemConfigDataService) {
+    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'SystemConfigDataService' , 'dfNotify', function (MOD_SERVICES_ASSET_PATH, SystemConfigDataService, dfNotify) {
 
         return {
             restrict: 'E',
@@ -764,6 +764,20 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         })[0] || {};
 
                         scope.serviceConfig.dsn = foundValue.dsn;
+                    }
+                };
+
+                scope.validateServiceName = function () {
+                    var isNameValid = scope.serviceInfo.name.match(/^[a-z0-9_-]+$/);
+                    if(!isNameValid || isNameValid.length === 0) {
+                        var msg = 'Be sure that service name is in lowercase and alphanumeric. It should only contain letters, numbers, underscores and dashes.';
+                        var messageOptions = {
+                            module: 'Services',
+                            provider: 'dreamfactory',
+                            type: 'warning',
+                            message: msg
+                        };
+                        dfNotify.warn(messageOptions);
                     }
                 };
 
@@ -1084,7 +1098,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     },
                     name: {
                         title: 'Name ',
-                        text: 'Select a name for making API requests, such as \'db\' in /api/v2/db.'
+                        text: 'Select a name for making API requests, such as \'db\' in /api/v2/db. It should be lowercase and alphanumeric.'
                     },
                     label: {
                         title: 'Label ',
