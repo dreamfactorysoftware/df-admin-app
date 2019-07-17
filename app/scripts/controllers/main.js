@@ -391,30 +391,10 @@ angular.module('dreamfactoryApp')
                     links.push('register');
                 }
 
-                // Not logged in. Hide chat.
-                Comm100API.showChat(false);
             }
             else {
                 // We have a current user. Set name in menu button. Have to set this explicitly.
                 $scope.setTopLevelLinkValue('user', 'label', newValue.name);
-                if (newValue.is_sys_admin) {
-                    // Enable/disable chat for admins. Default to enabled in case nothing is set in db or there's an error.
-                    var chatEnabled = true;
-                    dfApplicationData.getApiData(['custom']).then(
-                        function (response) {
-                            var custom = response[0].resource.filter(function (obj) {
-                                return (obj.name === 'chat');
-                            });
-                            if (custom.length > 0) {
-                                chatEnabled = Boolean(custom[0].value);
-                            }
-                        }
-                    ).finally(
-                        function () {
-                            Comm100API.showChat(chatEnabled);
-                        }
-                    );
-                }
                 links.push('user');
             }
 

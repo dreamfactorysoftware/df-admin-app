@@ -110,16 +110,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                         }
                     );
                 }
-                if (!checkData || $scope.apiData.custom) {
-                    links.push (
-                        {
-                            name: 'live-chat',
-                            label: 'Live Chat',
-                            path: 'live-chat',
-                            active: links.length === 0
-                        }
-                    );
-                }
                 return links;
             };
 
@@ -170,10 +160,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     'For example, you can use Lookup Keys in Email Templates, as parameters in external REST Services, and in the username and password fields to connect ' +
                     'to a SQL or NoSQL database. Mark any Lookup Key as private to securely encrypt the key value on the server and hide it in the user interface.' +
                     '<span style="color: red;">  Note that Lookup Keys for REST service configuration and credentials must be private.</span>'
-                },
-                chatConfig: {
-                    title: 'Live Chat',
-                    text: 'Enable or disable live chat with the DreamFactory product support team. This setting applies to all admin users on this DreamFactory instance.'
                 }
             };
 
@@ -1309,101 +1295,6 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 }
             };
         }])
-
-    .directive('dreamfactoryLiveChatConfig', ['MODSYSCONFIG_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfApplicationData', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, INSTANCE_URL, $http, dfApplicationData, dfNotify) {
-
-        return {
-            restrict: 'E',
-            scope: false,
-            templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/live-chat-config.html',
-            link: function (scope, elem, attrs) {
-
-                scope.saveChatConfig = function () {
-
-                    var func, data;
-                    // POST to create, PUT to update.
-                    if (!scope.hasChatConfig) {
-                        func = $http.post;
-                    } else {
-                        func = $http.put;
-                    }
-                    // There could be other name/value pairs. Only change the chat setting.
-                    data = {"name": "chat", "value": scope.chatEnabled};
-                    func(INSTANCE_URL.url + '/system/custom', {"resource":[data]})
-                        .then(function () {
-
-                            // next time use PUT
-                            scope.hasChatConfig = true;
-
-                            var messageOptions = {
-                                module: 'Live Chat',
-                                type: 'success',
-                                provider: 'dreamfactory',
-                                message: 'Live chat config updated.'
-                            };
-
-                            dfNotify.success(messageOptions);
-                        }, function (reject) {
-
-                            var messageOptions = {
-                                module: 'Api Error',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-                            };
-
-                            dfNotify.error(messageOptions);
-                        })
-                        .finally(function () {
-
-                            Comm100API.showChat(scope.chatEnabled);
-                            // scope.chatEnabled tracks the state while on the Config tab
-                            dfApplicationData.deleteApiDataFromCache('custom');
-                        });
-                };
-
-                // The purpose of this watcher is to init scope.chatEnabled and
-                // scope.hasChatConfig after /system/custom is loaded.
-                //
-                // scope.chatEnabled is the model value that stores the checkbox state
-                // while on the config tab. scope.hasChatConfig is used to select POST
-                // or PUT when changing the value.
-                //
-                // When an admin user logs in the watcher for currentUser will do a GET on
-                // /system/custom to determine whether or not to show the chat UI. If the
-                // admin then clicks the Config tab, it loads /system/custom as part of the
-                // normal tab data loading mechanism. The data is returned from cache since
-                // it was already loaded at login.
-                //
-                // When you change the value the dfApplicationData cache is cleared. The chat
-                // visibility will be maintained at the last saved value. Reloading the app,
-                // logging in again, or selecting the Config tab again will reload /system/custom
-                // from the server.
-
-                var watchCustom = scope.$watchCollection('apiData.custom', function (newValue, oldValue) {
-
-                    if (newValue) {
-
-                        // Enable/disable chat. Default to enabled in case nothing is set in db or there's an error.
-                        var chatEnabled = true;
-                        var custom = newValue.filter(function(obj) {
-                            return (obj.name === 'chat');
-                        });
-                        if (custom.length > 0) {
-                            chatEnabled = Boolean(custom[0].value);
-                        }
-                        scope.hasChatConfig = (custom.length > 0);
-                        scope.chatEnabled = chatEnabled;
-                    }
-                });
-
-                scope.$on('$destroy', function (e) {
-
-                    watchCustom();
-                });
-            }
-        };
-    }])
 
     .service('SystemConfigEventsService', [function () {
 
