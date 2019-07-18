@@ -110,7 +110,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
         $scope.loadTabData(true);
     }])
 
-    .directive('dfRoleDetails', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$q', 'SystemConfigDataService', 'dfSystemData', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, $q, SystemConfigDataService, dfSystemData) {
+    .directive('dfRoleDetails', ['MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$q', 'SystemConfigDataService', 'dfSystemData', '$timeout', function (MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, $q, SystemConfigDataService, dfSystemData, $timeout) {
 
         return {
 
@@ -150,6 +150,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 scope.basicInfoError = false;
 
                 scope.role = null;
+                scope.isBasicTab = true;
 
                 // Is this going to be a new Role
                 if (scope.newRole) {
@@ -213,6 +214,18 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope._prepareRoleLookUpKeysData();
                 };
 
+                scope.refreshRoleEditor = function ($event) {
+                    scope.isBasicTab = $event.target.id === 'basic-tab';
+                };
+
+                scope.refreshRoleAccessEditor = function () {
+
+                    // click Access tab
+                    $timeout(function () {
+                        angular.element('#access-tab').trigger('click');
+                    });
+                };
+
                 scope.closeEditor = function () {
 
                     // same object as currentEditRole used in ng-show
@@ -221,7 +234,10 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.role = new Role();
 
                     // reset tabs
-                    angular.element('#basic-tab').trigger('click');
+                    $timeout(function () {
+                        angular.element('#basic-tab').trigger('click');
+                    });
+
 
                     // reset errors
                     scope.lookupKeysError = false;
