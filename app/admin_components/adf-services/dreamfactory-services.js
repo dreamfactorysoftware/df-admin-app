@@ -351,7 +351,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
         };
     }])
 
-    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService) {
+    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$timeout', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, $timeout) {
 
         return {
 
@@ -468,7 +468,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     scope.serviceDetails = new ServiceDetails();
 
                     // reset tabs
-                    angular.element('#info-tab').trigger('click');
+                    $timeout(function(){
+                        angular.element('#info-tab').trigger('click');
+                    });
 
                     // force to manage view
                     scope.$emit('sidebar-nav:view:reset');
