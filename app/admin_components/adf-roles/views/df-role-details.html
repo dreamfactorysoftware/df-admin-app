@@ -6,15 +6,15 @@
     <form class="df-inputs-width" data-ng-submit="saveRole()" novalidate>
 
         <ul class="nav nav-tabs" data-role="tablist">
-            <li class="active"><a showtab href="#basic" id="basic-tab" data-ng-class="basicInfoError ? 'df-tab-has-error' : ''">Basic</a></li>
+            <li class="active"><a showtab href="#basic" id="basic-tab" ng-click="refreshRoleEditor($event)" data-ng-class="basicInfoError ? 'df-tab-has-error' : ''">Basic</a></li>
             <li class="vert-nav-divider">
                 |
             </li>
-            <li><a showtab href="#access" id="access-tab">Access</a></li>
+            <li><a showtab href="#access" id="access-tab" ng-click="refreshRoleEditor($event)">Access</a></li>
             <li class="vert-nav-divider">
                 |
             </li>
-            <li><a showtab href="#lookupkeys" id="lookupkeys-tab" data-ng-class="lookupKeysError ? 'df-tab-has-error' : ''">Lookup Keys</a></li>
+            <li><a showtab href="#lookupkeys" id="lookupkeys-tab" ng-click="refreshRoleEditor($event)" data-ng-class="lookupKeysError ? 'df-tab-has-error' : ''">Lookup Keys</a></li>
         </ul>
 
         <div class="tab-content" style="margin-top: 20px">
@@ -65,7 +65,10 @@
         <div class="form-group form-controls">
             <div>
                 <button id="roles_details_cancel" type="button" class="btn btn-default" data-ng-click="cancelEditor()">Cancel</button>
-                <input id="roles_details_save" class="btn btn-default btn-primary" type="submit" value="Save" />
+                <input ng-if="!isBasicTab" id="roles_details_save" class="btn btn-default btn-primary" type="submit" value="Save" />
+                <a ng-click="refreshRoleAccessEditor()"
+                   data-ng-if="isBasicTab"
+                   class="btn btn-default btn-primary">Next ></a>
             </div>
         </div>
     </form>
