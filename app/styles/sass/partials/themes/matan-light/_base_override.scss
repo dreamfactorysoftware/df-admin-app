@@ -1,0 +1,184 @@
+html {
+  body {
+
+    .df-service-access {
+      min-width: $screen-md-min;
+
+      .df-service-access-heading {
+        border-radius: 4px;
+        box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.1);
+        background-color: #1d3d56;
+        color: #ffffff;
+        height: 38px;
+        line-height: 38px;
+        vertical-align: middle;
+        font-weight: bold;
+        padding-left: 20px;
+        width: calc(99% - (#{ $add-rows-btn-width } + 20px + 20px));
+        float: left;
+
+        i {
+          color: #ffffff;
+        }
+      }
+
+      .add-rows-btn {
+        float: right;
+        margin-right: 20px;
+      }
+
+      .df-sa-columns {
+        color: #2b5172;
+
+        label {
+          margin-top: 10px;
+          padding-left: 18px;
+        }
+      }
+
+      .df-service-access-body {
+        padding-left: 0px;
+        padding-right: 0px;
+      }
+    }
+
+
+    .df-empty-section-row {
+      .df-empty-section-body {
+        > * {
+          width: 100%;
+          max-width: 491px;
+          text-align: center;
+          margin: auto;
+        }
+
+        h1 {
+          font-size: 20px;
+          font-weight: bold;
+          line-height: 1.4;
+          color: #1d3d56;
+          margin-bottom: 20px;
+        }
+
+        p {
+          line-height: 1.71;
+          color: #2b5172;
+        }
+
+        .btn-success {
+          height: 55px;
+          width: 474px;
+          border-radius: 42.5px;
+          box-shadow: 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+          background-image: linear-gradient(to right, #1717ad, #0a0a75);
+          border: none;
+          margin: auto;
+          margin-top: 25px;
+        }
+      }
+    }
+
+    .full-color-bg {
+      background-image: none;
+      background-color: rgba(236, 239, 242, 0.4);
+
+    }
+
+    .help-container {
+      .help-box {
+        box-shadow: 0 6px 18px -10px rgba(0, 0, 0, 0.2), 0 0 5px 0 rgba(0, 0, 0, 0.1);
+        min-width: 260px;
+
+        .panel-heading, .panel-body {
+          background-color: #FFFFFF;
+          color: $text-color;
+        }
+
+        .panel-heading {
+          font-weight: bold;
+          border-bottom: none;
+        }
+
+        .panel-body {
+          padding-top: 0px;
+        }
+      }
+    }
+
+    .df-section {
+      background-color: $df-section-background;
+      padding-left: 30px;
+
+      a.hiperlinkable {
+        color: #119add;
+        text-decoration: underline;
+      }
+    }
+
+    .df-section-header {
+
+      text-align: left;
+
+      background: $df-section-background;
+      padding: 0px;
+      margin-top: 27px;
+      margin-bottom: 15px;
+
+      h4 {
+        color: $df-headers-color;
+        margin: 0;
+        font-weight: bold;
+        font-size: 16px;
+      }
+    }
+
+    .df-section-toolbar {
+      .well {
+        padding: 0px;
+        min-height: auto;
+        float: right;
+        margin-bottom: 27px;
+
+        * {
+          font-size: 14px;
+          text-shadow: none;
+        }
+
+        > * {
+          //float: right!important;
+          //clear: both;
+        }
+
+        .btn-group {
+          float: left!important;
+        }
+
+        .df-download-sdk {
+
+          button {
+            padding-left: 0px;
+          }
+        }
+
+        .left-arrow, .right-arrow {
+          padding-left: 0px;
+          padding-right: 0px;
+
+          i {
+            width: auto;
+          }
+        }
+
+      }
+    }
+  }
+}
+
+.pointerize {
+  cursor: pointer!important;
+}
+
+#scripting-bc-nav {
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+  background-color: white;
+}

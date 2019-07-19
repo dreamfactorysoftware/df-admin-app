@@ -1,0 +1,28 @@
+.df-auth-banner-container, .df-auth-container {
+  height: 25%;
+  background-color: #FFFFFF;
+}
+
+.df-auth-container {
+  margin-top: calc(30px + 5vw)!important;
+  padding: 0px 20px 20px;
+  box-shadow: 0 30px 30px -20px rgba(0, 0, 0, 0.2);
+  border-radius: 7px!important;
+
+  .df-auth-panel {
+    margin: auto;
+    max-width: 600px;
+
+    .panel-title {
+      color: $df-headers-color;
+    }
+  }
+
+  .df-auth-panel, .panel-default, .panel-heading{
+    background-color: #FFFFFF;
+
+    a {
+      color: #7490a9;;
+    }
+  }
+}

@@ -2,7 +2,7 @@
 
     <div class="well well-sm">
         <div class="row">
-            <div class="col-xs-2">
+            <div class="col-xs-2 form-controls">
                 <button type="button" class="btn btn-default btn-sm" data-ng-click="menuBack()"
                         data-ng-disabled="menuPathArr.length === 0">Back
                 </button>
@@ -102,11 +102,11 @@
                             <option value="">-- None --</option>
                         </select>
                     </div>
-                    <div class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab' || selections.service.type === 'bitbucket')">
+                    <div class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab' || selections.service.type === 'bitbucket' || selections.service.type === 'bitbucket2')">
                         <span>Repository: </span>
                         <input id="selected_service_repo" class="form-control input-sm" data-ng-model="currentScriptObj.scm_repository" />
                     </div>
-                    <div class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab' || selections.service.type === 'bitbucket')">
+                    <div class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab' || selections.service.type === 'bitbucket' || selections.service.type === 'bitbucket2')">
                         <span>Branch/Tag: </span>
                         <input id="selected_service_ref" class="form-control input-sm" data-ng-model="currentScriptObj.scm_reference" />
                     </div>

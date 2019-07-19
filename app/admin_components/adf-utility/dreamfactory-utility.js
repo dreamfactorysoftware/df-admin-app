@@ -241,7 +241,7 @@ angular.module('dfUtility', ['dfApplication'])
 
             scope: false,
 
-            template: '<h1 id="component_title" class="df-component-nav-title pull-left">{{$parent.title}}</h1>'
+            template: '<i class="pull-left notify fa fa-fw fa-{{$parent.titleIcon}} df-menu-icon"></i>'
         }
     }])
 
@@ -289,6 +289,7 @@ angular.module('dfUtility', ['dfApplication'])
                         case '/apidocs':
                         case '/downloads':
                         case '/limits':
+                        case '/reports':
                             scope.activeLink = 'admin';
                             break;
 
@@ -617,6 +618,7 @@ angular.module('dfUtility', ['dfApplication'])
                         case '/roles':
                         case '/services':
                         case '/config':
+                        case '/reports':
 
                             var _elem = $(document).find('#sidebar-open');
 
@@ -746,55 +748,59 @@ angular.module('dfUtility', ['dfApplication'])
 
             var setSize = function () {
 
+                setTimeout(function(){
 
-                var _elem = $(elem),
-                    winHeight = $(window).height(),
-                    winWidth = $(window).width();
+                    var _elem = $(elem),
+                        winHeight = $(document).height(),
+                        winWidth = $(document).width();
 
-                // If this is the swagger iframe
-                if (_elem.is('#apidocs')) {
+                    // If this is the swagger iframe
+                    if (_elem.is('#apidocs')) {
 
-                    _elem.attr('height', winHeight - 25 + 'px');
-                }
-                // If this is the swagger iframe
-                else if (_elem.is('#file-manager')) {
+                        _elem.attr('height', winHeight - 25 + 'px');
+                    }
+                    // If this is the swagger iframe
+                    else if (_elem.is('#file-manager')) {
 
-                    _elem.attr('height', winHeight - 130 + 'px');
-                    $rootScope.$emit('filemanager:sized');
-                }
-                else if (_elem.is('#scripting-sidebar-list')) {
+                        _elem.attr('height', winHeight - 130 + 'px');
+                        $rootScope.$emit('filemanager:sized');
+                    }
+                    else if (_elem.is('#scripting-sidebar-list')) {
 
-                    _elem.css('height', winHeight - 280 + 'px');
-                }
+                        _elem.css('height', winHeight - 280 + 'px');
+                    }
 
-                // if this is the scripting ide
-                else if (_elem.attr('id') === 'ide') {
+                    // if this is the scripting ide
+                    else if (_elem.attr('id') === 'ide') {
 
-                    _elem.css({
-                        height: winHeight - 280 + 'px'
-                    });
-                }
-
-                else if (_elem.hasClass('package-export-table')) {
-
-                    _elem.css({
-                        height: winHeight - 600
-                    });
-                }
-
-                // else
-                else {
-                    if (winWidth >= 992) {
-                        $(elem).css({
-                            height:  winHeight - 120
+                        _elem.css({
+                            height: winHeight - 280 + 'px'
                         });
                     }
+
+                    else if (_elem.hasClass('package-export-table')) {
+
+                        _elem.css({
+                            height: winHeight - 600
+                        });
+                    }
+
+                    // else
                     else {
-                        $(elem).css({
-                            height: 'auto'
-                        });
+                        if (winWidth >= 992) {
+                            $(elem).css({
+                                height:  winHeight - 120
+                            });
+                        }
+                        else {
+                            $(elem).css({
+                                height: 'auto'
+                            });
+                        }
                     }
-                }
+                }, 10)
+
+
             };
 
             // Respond to swagger loaded
@@ -1807,6 +1813,8 @@ angular.module('dfUtility', ['dfApplication'])
                     if (newValue) {
                         if (newValue === 'nodejs' || newValue === 'v8js') {
                             newValue = 'javascript';
+                        } else if(newValue === 'python3') {
+                            newValue = 'python';
                         }
                         scope._setEditorMode(newValue);
                     }
@@ -2107,6 +2115,20 @@ angular.module('dfUtility', ['dfApplication'])
                     if(!filterText) return '';
 
                     var arr = [ "first_name", "last_name", "name", "email" ];
+
+                    if ($location.path().includes('reports')) {
+                        arr = ["id", "service_id", "service_name", "user_email", "action", "request_verb"];
+
+                        return arr.map(function (item) {
+                            if (item.includes('id')) {
+                                return !Number.isNaN(parseInt(filterText)) ? '(' + item + ' like ' + parseInt(filterText) + ')' : ''
+                            } else {
+                                return '(' + item + ' like "%' + filterText + '%")'
+                            }
+                        }).filter(function (filter) {
+                            return typeof filter === 'string' && filter.length > 0
+                        }).join(' or ')
+                    }
 
                     return arr.map(function(item) {
                         return '(' + item + ' like "%' + filterText + '%")'

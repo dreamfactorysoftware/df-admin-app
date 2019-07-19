@@ -30,9 +30,10 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         return { record: {}, recordCopy: {} };
     }])
 
-    .controller('LimitCtl', ['$rootScope', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function ($rootScope, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {
+    .controller('LimitCtl', ['$rootScope', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService' , '$location', function ($rootScope, $scope, $http, dfApplicationData, dfNotify, dfObjectService, $location) {
 
         $scope.$parent.title = 'Limits';
+        $scope.$parent.titleIcon = 'minus-circle';
 
         // Set module links
         $scope.links = [
@@ -204,6 +205,7 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
                     type: 'error',
                     message: 'There was an error loading data for the Limits tab. Please try refreshing your browser and logging in again.'
                 };
+                $location.url('/home');
                 dfNotify.error(messageOptions);
             };
 

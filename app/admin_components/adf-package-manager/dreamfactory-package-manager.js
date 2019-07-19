@@ -71,6 +71,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
     .controller('PackageCtrl', ['$scope', '$rootScope', 'dfApplicationData', 'dfNotify', '$location', function($scope, $rootScope, dfApplicationData, dfNotify, $location) {
 
         $scope.$parent.title = 'Packages';
+        $scope.$parent.titleIcon = 'plus-square';
 
         // load data
 
@@ -87,45 +88,61 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
             // the storage service must be in service_list, meaning user has access to it, for this to work
             var secondaryApis = ['app'];
 
-            // force refresh to always load from server
-            dfApplicationData.getApiData(primaryApis, true).then(
+            var errorFunc = function (error) {
+                var msg = 'There was an error loading data for the Packages tab. Please try refreshing your browser and logging in again.';
+                if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                    msg = 'To use the Packages tab your role must allow GET and POST access to system/package.';
+                    $location.url('/home');
+                }
+                var messageOptions = {
+                    module: 'Packages',
+                    provider: 'dreamfactory',
+                    type: 'error',
+                    message: msg
+                };
+                dfNotify.error(messageOptions);
+                $scope.dataLoading = false;
+            };
+
+            // first get system data to decide whether to load other data
+            dfApplicationData.getApiData(['system']).then(
                 function (response) {
-                    var newApiData = {};
-                    primaryApis.forEach(function(value, index) {
-                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                    angular.forEach(response[0].resource, function (value) {
+                        if (value.name === 'event_script') {
+                            $scope.eventScriptEnabled = true;
+                        }
                     });
                     // force refresh to always load from server
-                    dfApplicationData.getApiData(secondaryApis, true).then(
+                    dfApplicationData.getApiData(primaryApis, true).then(
                         function (response) {
-                            secondaryApis.forEach(function(value, index) {
+                            var newApiData = {};
+                            primaryApis.forEach(function(value, index) {
                                 newApiData[value] = response[index].resource ? response[index].resource : response[index];
                             });
+                            // force refresh to always load from server
+                            dfApplicationData.getApiData(secondaryApis, true).then(
+                                function (response) {
+                                    secondaryApis.forEach(function(value, index) {
+                                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                                    });
+                                },
+                                function (error) {
+                                    newApiData.app = [];
+                                }
+                            ).finally(function () {
+                                // all done
+                                $scope.apiData = newApiData;
+                                $scope.dataLoading = false;
+                            });
                         },
-                        function (error) {
-                            newApiData.app = [];
-                        }
-                    ).finally(function () {
-                        // all done
-                        $scope.apiData = newApiData;
-                        $scope.dataLoading = false;
-                    });
+                        errorFunc
+                    );
                 },
-                function (error) {
-                    var msg = 'There was an error loading data for the Packages tab. Please try refreshing your browser and logging in again.';
-                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                        msg = 'To use the Packages tab your role must allow GET and POST access to system/package.';
-                        $location.url('/home');
-                    }
-                    var messageOptions = {
-                        module: 'Packages',
-                        provider: 'dreamfactory',
-                        type: 'error',
-                        message: msg
-                    };
-                    dfNotify.error(messageOptions);
-                    $scope.dataLoading = false;
-                }
-            );
+                // error getting system data
+                errorFunc
+            ).finally(function () {
+                $scope.dataLoading = false;
+            });
         };
 
         $scope.loadTabData();

@@ -49,6 +49,7 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             };
 
             $scope.$parent.title = 'Home';
+            $scope.$parent.titleIcon = 'home';
 
             // Set module links
 
@@ -58,25 +59,29 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 {
                     name: 'welcome-home',
                     label: 'Welcome',
-                    href: "//www.dreamfactory.com/in_product_v2/welcome.html",
+                    // href: "//www.dreamfactory.com/in_product_v2/welcome.html",
+                    template: 'admin_components/adf-home/views/welcome.html',
                     attributes: []
                 },
                 {
                     name: 'quickstart-home',
                     label: 'Quickstart',
-                    href: "//www.dreamfactory.com/in_product_v2/quickstart.html",
+                    // href: "//www.dreamfactory.com/in_product_v2/quickstart.html",
+                    template: 'admin_components/adf-home/views/quickstart.html',
                     attributes: []
                 },
                 {
                     name: 'resource-home',
                     label: 'Resources',
-                    href: "//www.dreamfactory.com/in_product_v2/resources.html",
+                    // href: "//www.dreamfactory.com/in_product_v2/resources.html",
+                    template: 'admin_components/adf-home/views/resources.html',
                     attributes: []
                 },
                 {
                     name: 'download-home',
                     label: 'Download',
-                    href: "//www.dreamfactory.com/in_product_v2/downloads.html",
+                    // href: "//www.dreamfactory.com/in_product_v2/downloads.html",
+                    template: 'admin_components/adf-home/views/download.html',
                     attributes: []
                 }
             ];
@@ -95,5 +100,4 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     link.label = link.name;
                 }
             });
-        }]);
-
+        }])

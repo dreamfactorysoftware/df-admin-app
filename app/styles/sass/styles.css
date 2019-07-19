@@ -6,6 +6,7 @@
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 @import url(font-awesome.min.css);
+@import url(lato.css);
 /* line 9, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_normalize.scss */
 html {
   font-family: sans-serif;
@@ -1718,11 +1719,11 @@ html {
 
 /* line 27, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_scaffolding.scss */
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Lato", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.428571429;
-  color: #555555;
-  background-color: #fff;
+  color: #1d3d56;
+  background-color: #ffffff;
 }
 
 /* line 36, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_scaffolding.scss */
@@ -1737,12 +1738,12 @@ textarea {
 
 /* line 48, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_scaffolding.scss */
 a {
-  color: #2FA4E7;
+  color: #1d3d56;
   text-decoration: none;
 }
 /* line 52, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_scaffolding.scss */
 a:hover, a:focus {
-  color: #157ab5;
+  color: #0a141d;
   text-decoration: underline;
 }
 /* line 58, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_scaffolding.scss */
@@ -1777,7 +1778,7 @@ img {
 .img-thumbnail {
   padding: 4px;
   line-height: 1.428571429;
-  background-color: #fff;
+  background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 4px;
   -webkit-transition: all 0.2s ease-in-out;
@@ -1831,10 +1832,10 @@ hr {
 /* line 9, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_type.scss */
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Lato", Helvetica, Arial, sans-serif;
   font-weight: 500;
   line-height: 1.2;
-  color: #317EAC;
+  color: #2e2ea3;
 }
 /* line 16, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_type.scss */
 h1 small,
@@ -2350,8 +2351,8 @@ pre code {
 .container {
   margin-right: auto;
   margin-left: auto;
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 /* line 14, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_clearfix.scss */
 .container:before, .container:after {
@@ -2365,19 +2366,19 @@ pre code {
 @media (min-width: 768px) {
   /* line 10, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_grid.scss */
   .container {
-    width: 750px;
+    width: 780px;
   }
 }
 @media (min-width: 992px) {
   /* line 10, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_grid.scss */
   .container {
-    width: 970px;
+    width: 1000px;
   }
 }
 @media (min-width: 1200px) {
   /* line 10, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_grid.scss */
   .container {
-    width: 1170px;
+    width: 1200px;
   }
 }
 
@@ -2385,8 +2386,8 @@ pre code {
 .container-fluid {
   margin-right: auto;
   margin-left: auto;
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 /* line 14, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_clearfix.scss */
 .container-fluid:before, .container-fluid:after {
@@ -2400,8 +2401,8 @@ pre code {
 
 /* line 39, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_grid.scss */
 .row {
-  margin-left: -15px;
-  margin-right: -15px;
+  margin-left: -30px;
+  margin-right: -30px;
 }
 /* line 14, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_clearfix.scss */
 .row:before, .row:after {
@@ -2417,8 +2418,8 @@ pre code {
 .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
   position: relative;
   min-height: 1px;
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 
 /* line 27, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_grid-framework.scss */
@@ -3498,12 +3499,12 @@ th {
   padding: 8px;
   line-height: 1.428571429;
   vertical-align: top;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid transparent;
 }
 /* line 41, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_tables.scss */
 .table > thead > tr > th {
   vertical-align: bottom;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid transparent;
 }
 /* line 50, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_tables.scss */
 .table > caption + thead > tr:first-child > th,
@@ -3516,11 +3517,11 @@ th {
 }
 /* line 57, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_tables.scss */
 .table > tbody + tbody {
-  border-top: 2px solid #ddd;
+  border-top: 2px solid transparent;
 }
 /* line 62, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_tables.scss */
 .table .table {
-  background-color: #fff;
+  background-color: #ffffff;
 }
 
 /* line 75, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_tables.scss */
@@ -3535,7 +3536,7 @@ th {
 
 /* line 88, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_tables.scss */
 .table-bordered {
-  border: 1px solid #ddd;
+  border: 1px solid transparent;
 }
 /* line 94, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_tables.scss */
 .table-bordered > thead > tr > th,
@@ -3544,7 +3545,7 @@ th {
 .table-bordered > tbody > tr > td,
 .table-bordered > tfoot > tr > th,
 .table-bordered > tfoot > tr > td {
-  border: 1px solid #ddd;
+  border: 1px solid transparent;
 }
 /* line 101, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_tables.scss */
 .table-bordered > thead > tr > th,
@@ -3689,7 +3690,7 @@ table th[class*="col-"] {
     margin-bottom: 15px;
     overflow-y: hidden;
     -ms-overflow-style: -ms-autohiding-scrollbar;
-    border: 1px solid #ddd;
+    border: 1px solid transparent;
   }
   /* line 183, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_tables.scss */
   .table-responsive > .table {
@@ -3751,7 +3752,7 @@ legend {
   margin-bottom: 20px;
   font-size: 21px;
   line-height: inherit;
-  color: #555555;
+  color: #1d3d56;
   border: 0;
   border-bottom: 1px solid #e5e5e5;
 }
@@ -3810,7 +3811,7 @@ output {
   padding-top: 9px;
   font-size: 14px;
   line-height: 1.428571429;
-  color: #555555;
+  color: #1d3d56;
 }
 
 /* line 114, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_forms.scss */
@@ -3821,7 +3822,7 @@ output {
   padding: 8px 12px;
   font-size: 14px;
   line-height: 1.428571429;
-  color: #555555;
+  color: #1d3d56;
   background-color: #fff;
   background-image: none;
   border: 1px solid #ccc;
@@ -4294,7 +4295,7 @@ select[multiple].input-lg,
   display: block;
   margin-top: 5px;
   margin-bottom: 10px;
-  color: #959595;
+  color: #3d81b5;
 }
 
 @media (min-width: 768px) {
@@ -4375,8 +4376,8 @@ select[multiple].input-lg,
 }
 /* line 575, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_forms.scss */
 .form-horizontal .form-group {
-  margin-left: -15px;
-  margin-right: -15px;
+  margin-left: -30px;
+  margin-right: -30px;
 }
 /* line 14, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_clearfix.scss */
 .form-horizontal .form-group:before, .form-horizontal .form-group:after {
@@ -4397,7 +4398,7 @@ select[multiple].input-lg,
 }
 /* line 593, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_forms.scss */
 .form-horizontal .has-feedback .form-control-feedback {
-  right: 15px;
+  right: 30px;
 }
 @media (min-width: 768px) {
   /* line 603, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_forms.scss */
@@ -4442,7 +4443,7 @@ select[multiple].input-lg,
 }
 /* line 32, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_buttons.scss */
 .btn:hover, .btn:focus, .btn.focus {
-  color: #555555;
+  color: #1d3d56;
   text-decoration: none;
 }
 /* line 39, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_buttons.scss */
@@ -4468,31 +4469,31 @@ a.btn.disabled, fieldset[disabled] a.btn {
 
 /* line 68, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_buttons.scss */
 .btn-default {
-  color: #555555;
+  color: #1d3d56;
   background-color: #fff;
   border-color: rgba(0, 0, 0, 0.1);
 }
 /* line 11, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 .btn-default:focus, .btn-default.focus {
-  color: #555555;
+  color: #1d3d56;
   background-color: #e6e6e6;
   border-color: rgba(0, 0, 0, 0.1);
 }
 /* line 17, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 .btn-default:hover {
-  color: #555555;
+  color: #1d3d56;
   background-color: #e6e6e6;
   border-color: rgba(0, 0, 0, 0.1);
 }
 /* line 22, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 .btn-default:active, .btn-default.active, .open > .btn-default.dropdown-toggle {
-  color: #555555;
+  color: #1d3d56;
   background-color: #e6e6e6;
   border-color: rgba(0, 0, 0, 0.1);
 }
 /* line 29, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 .btn-default:active:hover, .btn-default:active:focus, .btn-default:active.focus, .btn-default.active:hover, .btn-default.active:focus, .btn-default.active.focus, .open > .btn-default.dropdown-toggle:hover, .open > .btn-default.dropdown-toggle:focus, .open > .btn-default.dropdown-toggle.focus {
-  color: #555555;
+  color: #1d3d56;
   background-color: #d4d4d4;
   border-color: rgba(0, 0, 0, 0.1);
 }
@@ -4508,7 +4509,7 @@ a.btn.disabled, fieldset[disabled] a.btn {
 /* line 53, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 .btn-default .badge {
   color: #fff;
-  background-color: #555555;
+  background-color: #1d3d56;
 }
 
 /* line 71, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_buttons.scss */
@@ -4738,7 +4739,7 @@ a.btn.disabled, fieldset[disabled] a.btn {
 
 /* line 96, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_buttons.scss */
 .btn-link {
-  color: #2FA4E7;
+  color: #1d3d56;
   font-weight: normal;
   border-radius: 0;
 }
@@ -4754,7 +4755,7 @@ a.btn.disabled, fieldset[disabled] a.btn {
 }
 /* line 115, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_buttons.scss */
 .btn-link:hover, .btn-link:focus {
-  color: #157ab5;
+  color: #0a141d;
   text-decoration: underline;
   background-color: transparent;
 }
@@ -5321,7 +5322,7 @@ tbody.collapse.in {
   font-size: 14px;
   font-weight: normal;
   line-height: 1;
-  color: #555555;
+  color: #1d3d56;
   text-align: center;
   background-color: #eeeeee;
   border: 1px solid #ccc;
@@ -5458,7 +5459,7 @@ tbody.collapse.in {
 /* line 46, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navs.scss */
 .nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
   background-color: #eeeeee;
-  border-color: #2FA4E7;
+  border-color: #1d3d56;
 }
 /* line 59, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navs.scss */
 .nav .nav-divider {
@@ -5495,7 +5496,7 @@ tbody.collapse.in {
 /* line 96, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navs.scss */
 .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
   color: #555555;
-  background-color: #fff;
+  background-color: #ffffff;
   border: 1px solid #ddd;
   border-bottom-color: transparent;
   cursor: default;
@@ -5515,8 +5516,8 @@ tbody.collapse.in {
 }
 /* line 131, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navs.scss */
 .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
-  color: #fff;
-  background-color: #2FA4E7;
+  color: #5b5bd9;
+  background-color: transparent;
 }
 
 /* line 144, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navs.scss */
@@ -5588,7 +5589,7 @@ tbody.collapse.in {
   .nav-tabs.nav-justified > .active > a:hover,
   .nav-tabs-justified > .active > a:focus,
   .nav-tabs.nav-justified > .active > a:focus {
-    border-bottom-color: #fff;
+    border-bottom-color: #ffffff;
   }
 }
 
@@ -5650,8 +5651,8 @@ tbody.collapse.in {
 /* line 50, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-collapse {
   overflow-x: visible;
-  padding-right: 15px;
-  padding-left: 15px;
+  padding-right: 30px;
+  padding-left: 30px;
   border-top: 1px solid transparent;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
   -webkit-overflow-scrolling: touch;
@@ -5712,8 +5713,8 @@ tbody.collapse.in {
 .container > .navbar-collapse,
 .container-fluid > .navbar-header,
 .container-fluid > .navbar-collapse {
-  margin-right: -15px;
-  margin-left: -15px;
+  margin-right: -30px;
+  margin-left: -30px;
 }
 @media (min-width: 768px) {
   /* line 108, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
@@ -5770,7 +5771,7 @@ tbody.collapse.in {
 /* line 163, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-brand {
   float: left;
-  padding: 15px 15px;
+  padding: 15px 30px;
   font-size: 18px;
   line-height: 20px;
   height: 50px;
@@ -5786,7 +5787,7 @@ tbody.collapse.in {
 @media (min-width: 768px) {
   /* line 180, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
   .navbar > .container .navbar-brand, .navbar > .container-fluid .navbar-brand {
-    margin-left: -15px;
+    margin-left: -30px;
   }
 }
 
@@ -5794,7 +5795,7 @@ tbody.collapse.in {
 .navbar-toggle {
   position: relative;
   float: right;
-  margin-right: 15px;
+  margin-right: 30px;
   padding: 9px 10px;
   margin-top: 8px;
   margin-bottom: 8px;
@@ -5827,7 +5828,7 @@ tbody.collapse.in {
 
 /* line 232, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-nav {
-  margin: 7.5px -15px;
+  margin: 7.5px -30px;
 }
 /* line 235, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-nav > li > a {
@@ -5879,9 +5880,9 @@ tbody.collapse.in {
 
 /* line 286, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-form {
-  margin-left: -15px;
-  margin-right: -15px;
-  padding: 10px 15px;
+  margin-left: -30px;
+  margin-right: -30px;
+  padding: 10px 30px;
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
   -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -6015,8 +6016,8 @@ tbody.collapse.in {
   /* line 359, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
   .navbar-text {
     float: left;
-    margin-left: 15px;
-    margin-right: 15px;
+    margin-left: 30px;
+    margin-right: 30px;
   }
 }
 
@@ -6029,7 +6030,7 @@ tbody.collapse.in {
   /* line 382, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
   .navbar-right {
     float: right !important;
-    margin-right: -15px;
+    margin-right: -30px;
   }
   /* line 386, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
   .navbar-right ~ .navbar-right {
@@ -6038,12 +6039,12 @@ tbody.collapse.in {
 }
 /* line 397, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default {
-  background-color: #222;
-  border-color: #111111;
+  background-color: #ffffff;
+  border-color: #eeeeee;
 }
 /* line 401, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .navbar-brand {
-  color: #fff;
+  color: #1d3d56;
 }
 /* line 403, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
@@ -6056,17 +6057,17 @@ tbody.collapse.in {
 }
 /* line 415, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .navbar-nav > li > a {
-  color: #fff;
+  color: #1d3d56;
 }
 /* line 418, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
-  color: #fff;
-  background-color: #090909;
+  color: #1d3d56;
+  background-color: #f7f9fa;
 }
 /* line 425, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
-  color: #fff;
-  background-color: #2FA4E7;
+  color: #5b5bd9;
+  background-color: rgba(91, 91, 217, 0.2);
 }
 /* line 433, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .navbar-nav > .disabled > a, .navbar-default .navbar-nav > .disabled > a:hover, .navbar-default .navbar-nav > .disabled > a:focus {
@@ -6075,11 +6076,11 @@ tbody.collapse.in {
 }
 /* line 442, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .navbar-toggle {
-  border-color: #090909;
+  border-color: #e6e6e6;
 }
 /* line 444, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
-  background-color: #090909;
+  background-color: #e6e6e6;
 }
 /* line 448, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .navbar-toggle .icon-bar {
@@ -6088,27 +6089,27 @@ tbody.collapse.in {
 /* line 453, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .navbar-collapse,
 .navbar-default .navbar-form {
-  border-color: #111111;
+  border-color: #eeeeee;
 }
 /* line 462, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {
-  background-color: #2FA4E7;
-  color: #fff;
+  background-color: rgba(91, 91, 217, 0.2);
+  color: #5b5bd9;
 }
 @media (max-width: 767px) {
   /* line 473, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
   .navbar-default .navbar-nav .open .dropdown-menu > li > a {
-    color: #fff;
+    color: #1d3d56;
   }
   /* line 475, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
   .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
-    color: #fff;
-    background-color: #090909;
+    color: #1d3d56;
+    background-color: #f7f9fa;
   }
   /* line 482, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
   .navbar-default .navbar-nav .open .dropdown-menu > .active > a, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
-    color: #fff;
-    background-color: #2FA4E7;
+    color: #5b5bd9;
+    background-color: rgba(91, 91, 217, 0.2);
   }
   /* line 490, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
   .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a, .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:focus {
@@ -6118,19 +6119,19 @@ tbody.collapse.in {
 }
 /* line 506, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .navbar-link {
-  color: #fff;
+  color: #1d3d56;
 }
 /* line 508, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .navbar-link:hover {
-  color: #fff;
+  color: #1d3d56;
 }
 /* line 513, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .btn-link {
-  color: #fff;
+  color: #1d3d56;
 }
 /* line 515, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .btn-link:hover, .navbar-default .btn-link:focus {
-  color: #fff;
+  color: #1d3d56;
 }
 /* line 521, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_navbar.scss */
 .navbar-default .btn-link[disabled]:hover, .navbar-default .btn-link[disabled]:focus, fieldset[disabled] .navbar-default .btn-link:hover, fieldset[disabled] .navbar-default .btn-link:focus {
@@ -6288,7 +6289,7 @@ tbody.collapse.in {
   padding: 8px 12px;
   line-height: 1.428571429;
   text-decoration: none;
-  color: #2FA4E7;
+  color: #1d3d56;
   background-color: #fff;
   border: 1px solid #ddd;
   margin-left: -1px;
@@ -6311,7 +6312,7 @@ tbody.collapse.in {
 .pagination > li > span:hover,
 .pagination > li > span:focus {
   z-index: 2;
-  color: #157ab5;
+  color: #0a141d;
   background-color: #eeeeee;
   border-color: #ddd;
 }
@@ -6549,7 +6550,7 @@ a.label:hover, a.label:focus {
 }
 /* line 41, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_badges.scss */
 .list-group-item.active > .badge, .nav-pills > .active > a > .badge {
-  color: #2FA4E7;
+  color: #1d3d56;
   background-color: #fff;
 }
 /* line 47, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_badges.scss */
@@ -6598,8 +6599,8 @@ a.badge:hover, a.badge:focus {
 /* line 28, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_jumbotron.scss */
 .container .jumbotron, .container-fluid .jumbotron {
   border-radius: 6px;
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 /* line 35, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_jumbotron.scss */
 .jumbotron .container {
@@ -6629,7 +6630,7 @@ a.badge:hover, a.badge:focus {
   padding: 4px;
   margin-bottom: 20px;
   line-height: 1.428571429;
-  background-color: #fff;
+  background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 4px;
   -webkit-transition: border 0.2s ease-in-out;
@@ -6648,14 +6649,14 @@ a.badge:hover, a.badge:focus {
 /* line 27, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_thumbnails.scss */
 .thumbnail .caption {
   padding: 9px;
-  color: #555555;
+  color: #1d3d56;
 }
 
 /* line 34, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_thumbnails.scss */
 a.thumbnail:hover,
 a.thumbnail:focus,
 a.thumbnail.active {
-  border-color: #2FA4E7;
+  border-color: #1d3d56;
 }
 
 /* line 9, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_alerts.scss */
@@ -6715,17 +6716,17 @@ a.thumbnail.active {
 
 /* line 63, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_alerts.scss */
 .alert-info {
-  background-color: #d9edf7;
-  border-color: #bce8f1;
-  color: #3a87ad;
+  background-color: #ffffff;
+  border-color: #ffffff;
+  color: #163b5a;
 }
 /* line 8, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_alerts.scss */
 .alert-info hr {
-  border-top-color: #a6e1ec;
+  border-top-color: #f2f2f2;
 }
 /* line 11, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_alerts.scss */
 .alert-info .alert-link {
-  color: #2d6987;
+  color: #0c2031;
 }
 
 /* line 67, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_alerts.scss */
@@ -7172,7 +7173,7 @@ button.list-group-item-danger.active:focus {
   margin-bottom: 20px;
   background-color: #fff;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: 5px;
   -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
@@ -7195,8 +7196,8 @@ button.list-group-item-danger.active:focus {
 .panel-heading {
   padding: 10px 15px;
   border-bottom: 1px solid transparent;
-  border-top-right-radius: 3px;
-  border-top-left-radius: 3px;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
 }
 /* line 27, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel-heading > .dropdown .dropdown-toggle {
@@ -7224,8 +7225,8 @@ button.list-group-item-danger.active:focus {
   padding: 10px 15px;
   background-color: #f5f5f5;
   border-top: 1px solid #ddd;
-  border-bottom-right-radius: 3px;
-  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
 }
 
 /* line 63, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
@@ -7243,15 +7244,15 @@ button.list-group-item-danger.active:focus {
 .panel > .list-group:first-child .list-group-item:first-child,
 .panel > .panel-collapse > .list-group:first-child .list-group-item:first-child {
   border-top: 0;
-  border-top-right-radius: 3px;
-  border-top-left-radius: 3px;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
 }
 /* line 82, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel > .list-group:last-child .list-group-item:last-child,
 .panel > .panel-collapse > .list-group:last-child .list-group-item:last-child {
   border-bottom: 0;
-  border-bottom-right-radius: 3px;
-  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
 }
 /* line 89, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel > .panel-heading + .panel-collapse > .list-group .list-group-item:first-child {
@@ -7285,16 +7286,16 @@ button.list-group-item-danger.active:focus {
 /* line 121, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel > .table:first-child,
 .panel > .table-responsive:first-child > .table:first-child {
-  border-top-right-radius: 3px;
-  border-top-left-radius: 3px;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
 }
 /* line 127, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel > .table:first-child > thead:first-child > tr:first-child,
 .panel > .table:first-child > tbody:first-child > tr:first-child,
 .panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child,
 .panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child {
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 }
 /* line 131, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel > .table:first-child > thead:first-child > tr:first-child td:first-child,
@@ -7305,7 +7306,7 @@ button.list-group-item-danger.active:focus {
 .panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child th:first-child,
 .panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child td:first-child,
 .panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child th:first-child {
-  border-top-left-radius: 3px;
+  border-top-left-radius: 4px;
 }
 /* line 135, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel > .table:first-child > thead:first-child > tr:first-child td:last-child,
@@ -7316,21 +7317,21 @@ button.list-group-item-danger.active:focus {
 .panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child th:last-child,
 .panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child td:last-child,
 .panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child th:last-child {
-  border-top-right-radius: 3px;
+  border-top-right-radius: 4px;
 }
 /* line 143, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel > .table:last-child,
 .panel > .table-responsive:last-child > .table:last-child {
-  border-bottom-right-radius: 3px;
-  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
 }
 /* line 149, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel > .table:last-child > tbody:last-child > tr:last-child,
 .panel > .table:last-child > tfoot:last-child > tr:last-child,
 .panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child,
 .panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child {
-  border-bottom-left-radius: 3px;
-  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 /* line 153, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel > .table:last-child > tbody:last-child > tr:last-child td:first-child,
@@ -7341,7 +7342,7 @@ button.list-group-item-danger.active:focus {
 .panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child th:first-child,
 .panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child td:first-child,
 .panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child th:first-child {
-  border-bottom-left-radius: 3px;
+  border-bottom-left-radius: 4px;
 }
 /* line 157, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel > .table:last-child > tbody:last-child > tr:last-child td:last-child,
@@ -7352,14 +7353,14 @@ button.list-group-item-danger.active:focus {
 .panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child th:last-child,
 .panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child td:last-child,
 .panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child th:last-child {
-  border-bottom-right-radius: 3px;
+  border-bottom-right-radius: 4px;
 }
 /* line 164, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel > .panel-body + .table,
 .panel > .panel-body + .table-responsive,
 .panel > .table + .panel-body,
 .panel > .table-responsive + .panel-body {
-  border-top: 1px solid #ddd;
+  border-top: 1px solid transparent;
 }
 /* line 170, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel > .table > tbody:first-child > tr:first-child th,
@@ -7436,7 +7437,7 @@ button.list-group-item-danger.active:focus {
 /* line 226, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel-group .panel {
   margin-bottom: 0;
-  border-radius: 4px;
+  border-radius: 5px;
 }
 /* line 230, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_panels.scss */
 .panel-group .panel + .panel {
@@ -7466,7 +7467,7 @@ button.list-group-item-danger.active:focus {
 }
 /* line 6, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_panels.scss */
 .panel-default > .panel-heading {
-  color: #555555;
+  color: #1d3d56;
   background-color: #f5f5f5;
   border-color: #ddd;
 }
@@ -7477,7 +7478,7 @@ button.list-group-item-danger.active:focus {
 /* line 14, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_panels.scss */
 .panel-default > .panel-heading .badge {
   color: #f5f5f5;
-  background-color: #555555;
+  background-color: #1d3d56;
 }
 /* line 20, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_panels.scss */
 .panel-default > .panel-footer + .panel-collapse > .panel-body {
@@ -7642,8 +7643,8 @@ button.list-group-item-danger.active:focus {
   min-height: 20px;
   padding: 19px;
   margin-bottom: 20px;
-  background-color: #f5f5f5;
-  border: 1px solid #e3e3e3;
+  background-color: #F7F9FA;
+  border: 1px solid #F7F9FA;
   border-radius: 4px;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
@@ -7878,7 +7879,7 @@ button.close {
   position: absolute;
   z-index: 1070;
   display: block;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Lato", Helvetica, Arial, sans-serif;
   font-style: normal;
   font-weight: normal;
   letter-spacing: normal;
@@ -8016,7 +8017,7 @@ button.close {
   display: none;
   max-width: 276px;
   padding: 1px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Lato", Helvetica, Arial, sans-serif;
   font-style: normal;
   font-weight: normal;
   letter-spacing: normal;
@@ -8789,25 +8790,17 @@ button.close {
     display: none !important;
   }
 }
-/* line 14, partials/themes/cerulean/_bootswatch.scss */
+/* line 14, partials/themes/matan-light/_bootswatch.scss */
 .navbar-default {
-  background-image: -webkit-linear-gradient(#363636, #222 60%, #181818);
-  background-image: -o-linear-gradient(#363636, #222 60%, #181818);
-  background-image: linear-gradient(#363636, #222 60%, #181818);
-  background-repeat: no-repeat;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF363636', endColorstr='#FF181818', GradientType=0);
+  background-color: #ffffff;
   filter: none;
-  border-bottom: 1px solid #090909;
-  filter: none;
-  -webkit-box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
-  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
 }
-/* line 19, partials/themes/cerulean/_bootswatch.scss */
+/* line 19, partials/themes/matan-light/_bootswatch.scss */
 .navbar-default .badge {
   background-color: #fff;
-  color: #222;
+  color: #ffffff;
 }
-/* line 25, partials/themes/cerulean/_bootswatch.scss */
+/* line 25, partials/themes/matan-light/_bootswatch.scss */
 .navbar-inverse {
   background-image: -webkit-linear-gradient(#04519b, #044687 60%, #033769);
   background-image: -o-linear-gradient(#04519b, #044687 60%, #033769);
@@ -8817,36 +8810,36 @@ button.close {
   filter: none;
   border-bottom: 1px solid #022241;
 }
-/* line 30, partials/themes/cerulean/_bootswatch.scss */
+/* line 30, partials/themes/matan-light/_bootswatch.scss */
 .navbar-inverse .badge {
   background-color: #fff;
   color: #033C73;
 }
-/* line 36, partials/themes/cerulean/_bootswatch.scss */
+/* line 36, partials/themes/matan-light/_bootswatch.scss */
 .navbar .navbar-nav > li > a, .navbar-brand {
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 767px) {
-  /* line 46, partials/themes/cerulean/_bootswatch.scss */
+  /* line 46, partials/themes/matan-light/_bootswatch.scss */
   .navbar .dropdown-header {
     color: #fff;
   }
-  /* line 51, partials/themes/cerulean/_bootswatch.scss */
+  /* line 51, partials/themes/matan-light/_bootswatch.scss */
   .navbar .dropdown-menu a {
     color: #fff;
   }
 }
-/* line 60, partials/themes/cerulean/_bootswatch.scss */
+/* line 60, partials/themes/matan-light/_bootswatch.scss */
 .btn {
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
 }
-/* line 64, partials/themes/cerulean/_bootswatch.scss */
+/* line 64, partials/themes/matan-light/_bootswatch.scss */
 .btn .caret {
   border-top-color: #fff;
 }
 
-/* line 69, partials/themes/cerulean/_bootswatch.scss */
+/* line 69, partials/themes/matan-light/_bootswatch.scss */
 .btn-default {
   background-image: -webkit-linear-gradient(white, #fff 60%, whitesmoke);
   background-image: -o-linear-gradient(white, #fff 60%, whitesmoke);
@@ -8856,16 +8849,16 @@ button.close {
   filter: none;
   border-bottom: 1px solid #e6e6e6;
 }
-/* line 73, partials/themes/cerulean/_bootswatch.scss */
+/* line 73, partials/themes/matan-light/_bootswatch.scss */
 .btn-default:hover {
-  color: #555555;
+  color: #1d3d56;
 }
-/* line 77, partials/themes/cerulean/_bootswatch.scss */
+/* line 77, partials/themes/matan-light/_bootswatch.scss */
 .btn-default .caret {
-  border-top-color: #555555;
+  border-top-color: #1d3d56;
 }
 
-/* line 82, partials/themes/cerulean/_bootswatch.scss */
+/* line 82, partials/themes/matan-light/_bootswatch.scss */
 .btn-default {
   background-image: -webkit-linear-gradient(white, #fff 60%, whitesmoke);
   background-image: -o-linear-gradient(white, #fff 60%, whitesmoke);
@@ -8876,7 +8869,7 @@ button.close {
   border-bottom: 1px solid #e6e6e6;
 }
 
-/* line 86, partials/themes/cerulean/_bootswatch.scss */
+/* line 86, partials/themes/matan-light/_bootswatch.scss */
 .btn-primary {
   background-image: -webkit-linear-gradient(#54b4eb, #2FA4E7 60%, #1d9ce5);
   background-image: -o-linear-gradient(#54b4eb, #2FA4E7 60%, #1d9ce5);
@@ -8887,7 +8880,7 @@ button.close {
   border-bottom: 1px solid #178acc;
 }
 
-/* line 90, partials/themes/cerulean/_bootswatch.scss */
+/* line 90, partials/themes/matan-light/_bootswatch.scss */
 .btn-success {
   background-image: -webkit-linear-gradient(#88c149, #73A839 60%, #699934);
   background-image: -o-linear-gradient(#88c149, #73A839 60%, #699934);
@@ -8898,7 +8891,7 @@ button.close {
   border-bottom: 1px solid #59822c;
 }
 
-/* line 94, partials/themes/cerulean/_bootswatch.scss */
+/* line 94, partials/themes/matan-light/_bootswatch.scss */
 .btn-info {
   background-image: -webkit-linear-gradient(#04519b, #033C73 60%, #02325f);
   background-image: -o-linear-gradient(#04519b, #033C73 60%, #02325f);
@@ -8909,7 +8902,7 @@ button.close {
   border-bottom: 1px solid #022241;
 }
 
-/* line 98, partials/themes/cerulean/_bootswatch.scss */
+/* line 98, partials/themes/matan-light/_bootswatch.scss */
 .btn-warning {
   background-image: -webkit-linear-gradient(#ff6707, #DD5600 60%, #c94e00);
   background-image: -o-linear-gradient(#ff6707, #DD5600 60%, #c94e00);
@@ -8920,7 +8913,7 @@ button.close {
   border-bottom: 1px solid #aa4200;
 }
 
-/* line 102, partials/themes/cerulean/_bootswatch.scss */
+/* line 102, partials/themes/matan-light/_bootswatch.scss */
 .btn-danger {
   background-image: -webkit-linear-gradient(#e12b31, #C71C22 60%, #b5191f);
   background-image: -o-linear-gradient(#e12b31, #C71C22 60%, #b5191f);
@@ -8931,7 +8924,7 @@ button.close {
   border-bottom: 1px solid #9a161a;
 }
 
-/* line 126, partials/themes/cerulean/_bootswatch.scss */
+/* line 126, partials/themes/matan-light/_bootswatch.scss */
 .panel-primary .panel-heading,
 .panel-primary .panel-title,
 .panel-success .panel-heading,
@@ -8944,7 +8937,7 @@ button.close {
 .panel-info .panel-title {
   color: #fff;
 }
-/* line 131, partials/themes/cerulean/_bootswatch.scss */
+/* line 131, partials/themes/matan-light/_bootswatch.scss */
 .panel-primary > .panel-heading .badge,
 .panel-success > .panel-heading .badge,
 .panel-warning > .panel-heading .badge,
@@ -8953,9 +8946,847 @@ button.close {
   background-color: #fff;
 }
 
-/* line 3, partials/themes/cerulean/_bootswatch_overrides.scss */
+/* line 7, partials/themes/matan-light/_homepage.scss */
+.main-page .banner {
+  border-radius: 2px;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+}
+/* line 12, partials/themes/matan-light/_homepage.scss */
+.main-page .banner p {
+  line-height: 1.7;
+}
+/* line 16, partials/themes/matan-light/_homepage.scss */
+.main-page .banner.outligned {
+  border-radius: 4px;
+  box-shadow: 0 6px 10px -5px rgba(0, 0, 0, 0.2);
+}
+/* line 22, partials/themes/matan-light/_homepage.scss */
+.main-page .examples-heading {
+  font-weight: bold;
+  margin-bottom: 18px;
+}
+/* line 27, partials/themes/matan-light/_homepage.scss */
+.main-page .examples-subheading {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+/* line 32, partials/themes/matan-light/_homepage.scss */
+.main-page .example-item-container {
+  margin-bottom: 56px;
+}
+@media (max-width: 617px) {
+  /* line 32, partials/themes/matan-light/_homepage.scss */
+  .main-page .example-item-container {
+    font-size: 11px;
+  }
+}
+/* line 38, partials/themes/matan-light/_homepage.scss */
+.main-page .example-item-container a {
+  text-decoration: none;
+}
+/* line 42, partials/themes/matan-light/_homepage.scss */
+.main-page .example-item-container .example-item {
+  width: 100px;
+  height: 100px;
+  margin: auto;
+  padding-top: 23px;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+/* line 50, partials/themes/matan-light/_homepage.scss */
+.main-page .example-item-container .example-item img {
+  width: 50px;
+}
+/* line 55, partials/themes/matan-light/_homepage.scss */
+.main-page .example-item-container .example-item-name {
+  font-weight: 300;
+  color: #2b5172;
+}
+/* line 61, partials/themes/matan-light/_homepage.scss */
+.main-page .df-section {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+@media (min-width: 992px) {
+  /* line 70, partials/themes/matan-light/_homepage.scss */
+  .main-page .grid-24.col-md-24 {
+    width: 100%;
+  }
+  /* line 74, partials/themes/matan-light/_homepage.scss */
+  .main-page .grid-24.col-md-22 {
+    width: 91.6666666667%;
+  }
+  /* line 78, partials/themes/matan-light/_homepage.scss */
+  .main-page .grid-24.col-md-offset-1 {
+    margin-left: 4.1666666667%;
+  }
+}
+@media (min-width: 1200px) {
+  /* line 84, partials/themes/matan-light/_homepage.scss */
+  .main-page .grid-24.col-lg-22 {
+    width: 91.6666666667%;
+  }
+  /* line 88, partials/themes/matan-light/_homepage.scss */
+  .main-page .grid-24.col-lg-offset-1 {
+    margin-left: 4.1666666667%;
+  }
+}
+/* line 95, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .bdivider {
+  margin-top: 40px;
+}
+/* line 99, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .first-banner {
+  margin-top: 30px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+/* line 105, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .first-banner .first-banner-container {
+  padding-top: 15px;
+  padding-bottom: 25px;
+}
+/* line 111, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .first-banner .first-banner-container > div {
+  display: inline-block;
+  padding-top: 10px;
+  padding-bottom: 20px;
+}
+/* line 116, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .first-banner .first-banner-container > div h4 {
+  font-weight: bold;
+  color: #2e2ea3;
+  font-size: 14px;
+}
+/* line 121, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .first-banner .first-banner-container > div h4 i.fa {
+  color: #faa20c;
+}
+/* line 129, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .second-banner {
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-top: 30px;
+}
+/* line 135, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .second-banner .second-banner-container {
+  padding-right: 0px;
+  padding-left: 0px;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.75;
+  letter-spacing: normal;
+  font-size: 15px;
+}
+/* line 146, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .second-banner .second-banner-container h3 {
+  margin-top: 0px;
+  color: #2e2ea3;
+  font-size: 25px;
+  font-weight: bold;
+  margin-bottom: 0px;
+  padding-bottom: 10px;
+}
+/* line 155, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .second-banner .second-banner-container p {
+  padding-bottom: 20px;
+}
+/* line 160, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .second-banner .df-mac-preview {
+  width: 80%;
+  display: block;
+  position: relative;
+}
+/* line 165, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .second-banner .df-mac-preview img {
+  width: 100%;
+}
+/* line 169, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .second-banner .df-mac-preview .df-mac-preview-overlay {
+  width: 100%;
+  height: 60%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 20;
+}
+/* line 178, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .second-banner .df-mac-preview .df-mac-preview-overlay.blured {
+  opacity: 0.8;
+  background-color: #ffffff;
+}
+/* line 183, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .second-banner .df-mac-preview .df-mac-preview-overlay.circle {
+  width: calc(2vw + 30px);
+  height: calc(2vw + 30px);
+  line-height: calc(2vw + 30px);
+  left: calc(50% - (2vw + 30px) / 2);
+  top: calc(32% - (2vw + 30px) / 2);
+  border-radius: 50%;
+  border: 1px #5b5bd9 solid;
+  text-align: center;
+}
+/* line 193, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .second-banner .df-mac-preview .df-mac-preview-overlay.circle .fa-play {
+  vertical-align: middle;
+  font-size: calc(1vw + 10px);
+  margin-left: 9%;
+  color: #5b5bd9;
+}
+/* line 201, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .second-banner .df-mac-preview .df-mac-preview-overlay.text {
+  text-align: center;
+  font-size: 14px;
+}
+/* line 205, partials/themes/matan-light/_homepage.scss */
+.main-page #welcomePage .second-banner .df-mac-preview .df-mac-preview-overlay.text > div {
+  display: block;
+  margin-top: calc(30% + (1vw / 3) + 3px);
+  color: #0a0a75;
+}
+/* line 218, partials/themes/matan-light/_homepage.scss */
+.main-page #downloadPage h4 {
+  font-size: 16px;
+  font-weight: normal;
+  margin-bottom: 20px;
+}
+/* line 224, partials/themes/matan-light/_homepage.scss */
+.main-page #downloadPage p {
+  font-size: 16px;
+  line-height: 1.75;
+  margin-bottom: 50px;
+}
+/* line 231, partials/themes/matan-light/_homepage.scss */
+.main-page .resource-link {
+  display: inline-block;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-top: 2px;
+  padding-bottom: 3px;
+  margin-bottom: 10px;
+  line-height: 1.75;
+  letter-spacing: normal;
+  font-size: 15px;
+}
+/* line 242, partials/themes/matan-light/_homepage.scss */
+.main-page .resource-link a {
+  color: #1d3d56;
+  text-decoration: none;
+}
+/* line 247, partials/themes/matan-light/_homepage.scss */
+.main-page .resource-link:hover, .main-page .resource-link a:hover {
+  text-decoration: none;
+  color: #1d3d56;
+  opacity: 0.88;
+}
+
+/* line 7, partials/themes/matan-light/_forms.scss */
+html body .list-group-item button.dropdown-toggle, html body .list-group-item .dropdown-menu, html body table button.dropdown-toggle, html body table .dropdown-menu, html body .form-group button.dropdown-toggle, html body .form-group .dropdown-menu {
+  background-color: #ffffff;
+  border: 1px solid #cfd9e2;
+  border-radius: 4px;
+}
+/* line 16, partials/themes/matan-light/_forms.scss */
+html body form.df-inputs-width .df-inputs-row > input, html body form.df-inputs-width .df-inputs-row select, html body form.df-inputs-width .df-inputs-row .dropdown-toggle, html body form.df-inputs-width .df-inputs-row .dropdown-menu {
+  width: 100%;
+  max-width: 500px;
+  text-align: left;
+}
+/* line 24, partials/themes/matan-light/_forms.scss */
+html body input, html body input.form-control {
+  border: 1px solid #cfd9e2;
+}
+/* line 28, partials/themes/matan-light/_forms.scss */
+html body label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: normal;
+  padding-left: 8px;
+}
+/* line 36, partials/themes/matan-light/_forms.scss */
+html body div.checkbox, html body div.radio {
+  padding-left: 7px;
+}
+/* line 40, partials/themes/matan-light/_forms.scss */
+html body i.fa-info-circle {
+  color: #7490a9;
+}
+/* line 46, partials/themes/matan-light/_forms.scss */
+html body .form-controls .btn {
+  min-width: 80px;
+  font-size: 12px;
+}
+/* line 51, partials/themes/matan-light/_forms.scss */
+html body .form-controls .btn-default {
+  border: 1px solid #8D9CA8;
+  border-radius: 4px;
+  height: 35px;
+}
+/* line 57, partials/themes/matan-light/_forms.scss */
+html body .form-controls .btn-primary, html body .form-controls .form-group .btn-primary .btn-primary:hover, html body .form-controls .btn-default.btn-primary:hover {
+  height: 35px;
+  border-radius: 4px;
+  box-shadow: 0 13px 14px -10px rgba(0, 0, 0, 0.2), 0 0 10px 0 rgba(0, 0, 0, 0.05);
+  background-image: linear-gradient(113deg, #5a6aff, #789dff);
+  background-color: #789dff;
+  border: none;
+}
+/* line 66, partials/themes/matan-light/_forms.scss */
+html body .form-controls .btn-dark {
+  background-color: #1d3d56;
+  color: #ffffff;
+}
+
+/* line 1, partials/themes/matan-light/_alerts_override.scss */
+.alert-info {
+  line-height: 1.71;
+  border-radius: 2px;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+}
+/* line 6, partials/themes/matan-light/_alerts_override.scss */
+.alert-info .fa-info-circle {
+  color: #ffa600;
+}
+/* line 10, partials/themes/matan-light/_alerts_override.scss */
+.alert-info p {
+  word-wrap: break-word;
+}
+
+/* line 1, partials/themes/matan-light/_navs_override.scss */
+.nav-tabs li.active:after, .df-menu .df-menu-container .nav-pills > li.active:after {
+  position: absolute;
+  height: 3px;
+  margin: 0 auto;
+  content: '';
+  left: 0;
+  right: 0;
+  width: 90%;
+  color: #000;
+  background-color: #5b5bd9;
+  left: 0;
+  bottom: 14px;
+  width: 16px;
+  opacity: 0.3;
+  border-radius: 3px;
+  border: 1px solid #5b5bd9;
+  border-radius: 10px;
+}
+
+/* line 21, partials/themes/matan-light/_navs_override.scss */
+.navbar .navbar-nav > li > a, .navbar-brand {
+  text-shadow: none;
+}
+
+/* line 27, partials/themes/matan-light/_navs_override.scss */
+.navbar-default {
+  box-shadow: 0 3px 11px 0 rgba(0, 0, 0, 0.07);
+}
+
+/* line 32, partials/themes/matan-light/_navs_override.scss */
+.navbar-fixed-top .navbar-brand {
+  margin-left: 0px !important;
+  padding-left: 0px !important;
+}
+/* line 37, partials/themes/matan-light/_navs_override.scss */
+.navbar-fixed-top .navbar-right {
+  margin-right: 0px !important;
+}
+
+/* line 42, partials/themes/matan-light/_navs_override.scss */
+.nav-tabs {
+  border: none;
+  margin-left: -15px;
+}
+/* line 46, partials/themes/matan-light/_navs_override.scss */
+.nav-tabs li.vert-nav-divider {
+  padding-top: 10px;
+}
+/* line 52, partials/themes/matan-light/_navs_override.scss */
+.nav-tabs li a, .nav-tabs li a:hover, .nav-tabs li a:active, .nav-tabs li a:visited, .nav-tabs li a:focus, .nav-tabs li.active a, .nav-tabs li.active a:hover, .nav-tabs li.active a:active, .nav-tabs li.active a:visited, .nav-tabs li.active a:focus {
+  border: none;
+  background-color: transparent;
+  margin-bottom: 10px;
+}
+/* line 61, partials/themes/matan-light/_navs_override.scss */
+.nav-tabs li.active a, .nav-tabs li.active a:hover, .nav-tabs li.active a:active, .nav-tabs li.active a:visited, .nav-tabs li.active a:focus {
+  color: #5b5bd9;
+  font-weight: 900;
+}
+
+/* line 4, partials/themes/matan-light/_tables_override.scss */
+.add-rows-btn, .table-rows-extendable thead tr th:last-child .btn-group .btn, table.table.table-rows-extendable thead tr th:last-child .btn-group .btn, .add-rows-btn:hover, .table-rows-extendable thead tr th:last-child .btn-group .btn:hover, table.table.table-rows-extendable thead tr th:last-child .btn-group .btn:hover {
+  width: 53px;
+  min-width: 53px;
+  height: 38px;
+  color: #ffffff;
+  background-image: none !important;
+  border-radius: 4px !important;
+  box-shadow: 1px 9px 8px -4px rgba(0, 0, 0, 0.2) !important;
+  background-color: #5b5bd9 !important;
+}
+
+/* line 15, partials/themes/matan-light/_tables_override.scss */
+.empty-table-placeholder {
+  color: #718fab;
+  padding-left: 20px;
+}
+/* line 19, partials/themes/matan-light/_tables_override.scss */
+.empty-table-placeholder i.fa-plus {
+  border-radius: 2px;
+  box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.1);
+  background-color: #5b5bd9;
+  color: #ffffff;
+  font-size: 7px;
+  vertical-align: middle;
+  width: 26.5px;
+  height: 19px;
+  padding-top: 6px;
+}
+
+/* line 37, partials/themes/matan-light/_tables_override.scss */
+.table-rows-extendable thead tr th:last-child, table.table.table-rows-extendable thead tr th:last-child {
+  background-color: #F7F9FA;
+  border: none;
+  padding: 0px;
+  width: 58px;
+}
+/* line 43, partials/themes/matan-light/_tables_override.scss */
+.table-rows-extendable thead tr th:last-child > *, table.table.table-rows-extendable thead tr th:last-child > * {
+  padding-bottom: 0px !important;
+  float: right;
+}
+/* line 47, partials/themes/matan-light/_tables_override.scss */
+.table-rows-extendable thead tr th:last-child .btn-group, table.table.table-rows-extendable thead tr th:last-child .btn-group {
+  padding-left: 20px;
+}
+/* line 59, partials/themes/matan-light/_tables_override.scss */
+.table-rows-extendable tbody tr .btn, table.table.table-rows-extendable tbody tr .btn {
+  padding-left: 0px;
+}
+/* line 63, partials/themes/matan-light/_tables_override.scss */
+.table-rows-extendable tbody tr .input-cell > *, table.table.table-rows-extendable tbody tr .input-cell > * {
+  padding-left: 0px !important;
+  display: block !important;
+}
+/* line 67, partials/themes/matan-light/_tables_override.scss */
+.table-rows-extendable tbody tr .input-cell > * input, .table-rows-extendable tbody tr .input-cell > * select, table.table.table-rows-extendable tbody tr .input-cell > * input, table.table.table-rows-extendable tbody tr .input-cell > * select {
+  width: 94%;
+  padding-bottom: 0px;
+}
+/* line 74, partials/themes/matan-light/_tables_override.scss */
+.table-rows-extendable tbody tr .checkbox-cell, .table-rows-extendable tbody tr .icon-cell, table.table.table-rows-extendable tbody tr .checkbox-cell, table.table.table-rows-extendable tbody tr .icon-cell {
+  padding-top: 20px !important;
+}
+/* line 79, partials/themes/matan-light/_tables_override.scss */
+.table-rows-extendable tbody tr .icon-cell button, table.table.table-rows-extendable tbody tr .icon-cell button {
+  padding-top: 0px;
+}
+/* line 83, partials/themes/matan-light/_tables_override.scss */
+.table-rows-extendable tbody tr .icon-cell i, table.table.table-rows-extendable tbody tr .icon-cell i {
+  font-size: 14px;
+  color: #183b59;
+  text-align: left;
+}
+/* line 89, partials/themes/matan-light/_tables_override.scss */
+.table-rows-extendable tbody tr .icon-cell .btn:hover, .table-rows-extendable tbody tr .icon-cell .btn:focus, .table-rows-extendable tbody tr .icon-cell .btn:active, table.table.table-rows-extendable tbody tr .icon-cell .btn:hover, table.table.table-rows-extendable tbody tr .icon-cell .btn:focus, table.table.table-rows-extendable tbody tr .icon-cell .btn:active {
+  border: none;
+  background-color: transparent;
+  outline: none;
+  box-shadow: none;
+}
+/* line 97, partials/themes/matan-light/_tables_override.scss */
+.table-rows-extendable tbody tr td:last-child, table.table.table-rows-extendable tbody tr td:last-child {
+  min-width: 0px !important;
+}
+/* line 99, partials/themes/matan-light/_tables_override.scss */
+.table-rows-extendable tbody tr td:last-child .cell-content, table.table.table-rows-extendable tbody tr td:last-child .cell-content {
+  min-width: 0px;
+}
+
+/* line 107, partials/themes/matan-light/_tables_override.scss */
+.table {
+  width: 95%;
+}
+
+/* line 111, partials/themes/matan-light/_tables_override.scss */
+div.panel .table, table.table, table.table.table-striped {
+  background-color: #F7F9FA;
+}
+/* line 114, partials/themes/matan-light/_tables_override.scss */
+div.panel .table > thead, div.panel .table > thead tr, table.table > thead, table.table > thead tr, table.table.table-striped > thead, table.table.table-striped > thead tr {
+  background-color: #1d3d56;
+  color: #ffffff;
+  height: 38px;
+}
+/* line 119, partials/themes/matan-light/_tables_override.scss */
+div.panel .table > thead th, div.panel .table > thead tr th, table.table > thead th, table.table > thead tr th, table.table.table-striped > thead th, table.table.table-striped > thead tr th {
+  vertical-align: middle;
+}
+/* line 122, partials/themes/matan-light/_tables_override.scss */
+div.panel .table > thead th > *, div.panel .table > thead tr th > *, table.table > thead th > *, table.table > thead tr th > *, table.table.table-striped > thead th > *, table.table.table-striped > thead tr th > * {
+  padding-bottom: 3px;
+  padding-left: 5px;
+}
+/* line 126, partials/themes/matan-light/_tables_override.scss */
+div.panel .table > thead th button, div.panel .table > thead tr th button, table.table > thead th button, table.table > thead tr th button, table.table.table-striped > thead th button, table.table.table-striped > thead tr th button {
+  color: #ffffff;
+}
+/* line 133, partials/themes/matan-light/_tables_override.scss */
+div.panel .table tbody.tbody-transparent .cell-content, table.table tbody.tbody-transparent .cell-content, table.table.table-striped tbody.tbody-transparent .cell-content {
+  background-color: transparent;
+  box-shadow: none;
+  border-bottom: 1px solid #cfd9e2;
+  border-bottom-left-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+}
+/* line 145, partials/themes/matan-light/_tables_override.scss */
+div.panel .table tbody > tr > td:first-child > .cell-content, table.table tbody > tr > td:first-child > .cell-content, table.table.table-striped tbody > tr > td:first-child > .cell-content {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+/* line 151, partials/themes/matan-light/_tables_override.scss */
+div.panel .table tbody > tr > td:last-child > .cell-content, table.table tbody > tr > td:last-child > .cell-content, table.table.table-striped tbody > tr > td:last-child > .cell-content {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+/* line 156, partials/themes/matan-light/_tables_override.scss */
+div.panel .table tbody > tr td, table.table tbody > tr td, table.table.table-striped tbody > tr td {
+  padding: 0px;
+  border: 0px;
+  background-color: #F7F9FA;
+  color: #2b5172;
+  height: 58px;
+  min-width: 80px;
+}
+/* line 164, partials/themes/matan-light/_tables_override.scss */
+div.panel .table tbody > tr td .cell-content, table.table tbody > tr td .cell-content, table.table.table-striped tbody > tr td .cell-content {
+  margin-top: 3px;
+  margin-bottom: 3px;
+  padding-top: 8px;
+  min-height: 58px;
+  background-color: #ffffff;
+  display: block;
+  line-height: 14px;
+  word-wrap: break-word;
+  width: 100%;
+  height: 92%;
+  box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.1);
+}
+/* line 177, partials/themes/matan-light/_tables_override.scss */
+div.panel .table tbody > tr td .cell-content input, div.panel .table tbody > tr td .cell-content i, table.table tbody > tr td .cell-content input, table.table tbody > tr td .cell-content i, table.table.table-striped tbody > tr td .cell-content input, table.table.table-striped tbody > tr td .cell-content i {
+  margin-top: 0px;
+  padding-top: 0px;
+  vertical-align: top;
+}
+/* line 183, partials/themes/matan-light/_tables_override.scss */
+div.panel .table tbody > tr td .cell-content > *, table.table tbody > tr td .cell-content > *, table.table.table-striped tbody > tr td .cell-content > * {
+  display: table-cell;
+  vertical-align: top;
+  padding-top: 8px;
+  padding-bottom: 16px;
+}
+/* line 190, partials/themes/matan-light/_tables_override.scss */
+div.panel .table tbody > tr td .cell-content > *:first-child, table.table tbody > tr td .cell-content > *:first-child, table.table.table-striped tbody > tr td .cell-content > *:first-child {
+  padding-left: 13px;
+}
+/* line 194, partials/themes/matan-light/_tables_override.scss */
+div.panel .table tbody > tr td .cell-content .fa-check, table.table tbody > tr td .cell-content .fa-check, table.table.table-striped tbody > tr td .cell-content .fa-check {
+  color: #22bca8;
+}
+/* line 198, partials/themes/matan-light/_tables_override.scss */
+div.panel .table tbody > tr td .cell-content .fa-times, table.table tbody > tr td .cell-content .fa-times, table.table.table-striped tbody > tr td .cell-content .fa-times {
+  color: #f2526a;
+}
+
+/* line 1, partials/themes/matan-light/_df-auth-module.scss */
+.df-auth-banner-container, .df-auth-container {
+  height: 25%;
+  background-color: #FFFFFF;
+}
+
+/* line 6, partials/themes/matan-light/_df-auth-module.scss */
+.df-auth-container {
+  margin-top: calc(30px + 5vw) !important;
+  padding: 0px 20px 20px;
+  box-shadow: 0 30px 30px -20px rgba(0, 0, 0, 0.2);
+  border-radius: 7px !important;
+}
+/* line 12, partials/themes/matan-light/_df-auth-module.scss */
+.df-auth-container .df-auth-panel {
+  margin: auto;
+  max-width: 600px;
+}
+/* line 16, partials/themes/matan-light/_df-auth-module.scss */
+.df-auth-container .df-auth-panel .panel-title {
+  color: #2e2ea3;
+}
+/* line 21, partials/themes/matan-light/_df-auth-module.scss */
+.df-auth-container .df-auth-panel, .df-auth-container .panel-default, .df-auth-container .panel-heading {
+  background-color: #FFFFFF;
+}
+/* line 24, partials/themes/matan-light/_df-auth-module.scss */
+.df-auth-container .df-auth-panel a, .df-auth-container .panel-default a, .df-auth-container .panel-heading a {
+  color: #7490a9;
+}
+
+/* line 4, partials/themes/matan-light/_base_override.scss */
+html body .df-service-access {
+  min-width: 992px;
+}
+/* line 7, partials/themes/matan-light/_base_override.scss */
+html body .df-service-access .df-service-access-heading {
+  border-radius: 4px;
+  box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.1);
+  background-color: #1d3d56;
+  color: #ffffff;
+  height: 38px;
+  line-height: 38px;
+  vertical-align: middle;
+  font-weight: bold;
+  padding-left: 20px;
+  width: calc(99% - (53px + 20px + 20px));
+  float: left;
+}
+/* line 20, partials/themes/matan-light/_base_override.scss */
+html body .df-service-access .df-service-access-heading i {
+  color: #ffffff;
+}
+/* line 25, partials/themes/matan-light/_base_override.scss */
+html body .df-service-access .add-rows-btn, html body .df-service-access .table-rows-extendable thead tr th:last-child .btn-group .btn, .table-rows-extendable thead tr th:last-child .btn-group html body .df-service-access .btn {
+  float: right;
+  margin-right: 20px;
+}
+/* line 30, partials/themes/matan-light/_base_override.scss */
+html body .df-service-access .df-sa-columns {
+  color: #2b5172;
+}
+/* line 33, partials/themes/matan-light/_base_override.scss */
+html body .df-service-access .df-sa-columns label {
+  margin-top: 10px;
+  padding-left: 18px;
+}
+/* line 39, partials/themes/matan-light/_base_override.scss */
+html body .df-service-access .df-service-access-body {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+/* line 48, partials/themes/matan-light/_base_override.scss */
+html body .df-empty-section-row .df-empty-section-body > * {
+  width: 100%;
+  max-width: 491px;
+  text-align: center;
+  margin: auto;
+}
+/* line 55, partials/themes/matan-light/_base_override.scss */
+html body .df-empty-section-row .df-empty-section-body h1 {
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1.4;
+  color: #1d3d56;
+  margin-bottom: 20px;
+}
+/* line 63, partials/themes/matan-light/_base_override.scss */
+html body .df-empty-section-row .df-empty-section-body p {
+  line-height: 1.71;
+  color: #2b5172;
+}
+/* line 68, partials/themes/matan-light/_base_override.scss */
+html body .df-empty-section-row .df-empty-section-body .btn-success {
+  height: 55px;
+  width: 474px;
+  border-radius: 42.5px;
+  box-shadow: 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  background-image: linear-gradient(to right, #1717ad, #0a0a75);
+  border: none;
+  margin: auto;
+  margin-top: 25px;
+}
+/* line 81, partials/themes/matan-light/_base_override.scss */
+html body .full-color-bg {
+  background-image: none;
+  background-color: rgba(236, 239, 242, 0.4);
+}
+/* line 88, partials/themes/matan-light/_base_override.scss */
+html body .help-container .help-box {
+  box-shadow: 0 6px 18px -10px rgba(0, 0, 0, 0.2), 0 0 5px 0 rgba(0, 0, 0, 0.1);
+  min-width: 260px;
+}
+/* line 92, partials/themes/matan-light/_base_override.scss */
+html body .help-container .help-box .panel-heading, html body .help-container .help-box .panel-body {
+  background-color: #FFFFFF;
+  color: #1d3d56;
+}
+/* line 97, partials/themes/matan-light/_base_override.scss */
+html body .help-container .help-box .panel-heading {
+  font-weight: bold;
+  border-bottom: none;
+}
+/* line 102, partials/themes/matan-light/_base_override.scss */
+html body .help-container .help-box .panel-body {
+  padding-top: 0px;
+}
+/* line 108, partials/themes/matan-light/_base_override.scss */
+html body .df-section {
+  background-color: #F7F9FA;
+  padding-left: 30px;
+}
+/* line 112, partials/themes/matan-light/_base_override.scss */
+html body .df-section a.hiperlinkable {
+  color: #119add;
+  text-decoration: underline;
+}
+/* line 118, partials/themes/matan-light/_base_override.scss */
+html body .df-section-header {
+  text-align: left;
+  background: #F7F9FA;
+  padding: 0px;
+  margin-top: 27px;
+  margin-bottom: 15px;
+}
+/* line 127, partials/themes/matan-light/_base_override.scss */
+html body .df-section-header h4 {
+  color: #2e2ea3;
+  margin: 0;
+  font-weight: bold;
+  font-size: 16px;
+}
+/* line 136, partials/themes/matan-light/_base_override.scss */
+html body .df-section-toolbar .well {
+  padding: 0px;
+  min-height: auto;
+  float: right;
+  margin-bottom: 27px;
+}
+/* line 142, partials/themes/matan-light/_base_override.scss */
+html body .df-section-toolbar .well * {
+  font-size: 14px;
+  text-shadow: none;
+}
+/* line 152, partials/themes/matan-light/_base_override.scss */
+html body .df-section-toolbar .well .btn-group {
+  float: left !important;
+}
+/* line 158, partials/themes/matan-light/_base_override.scss */
+html body .df-section-toolbar .well .df-download-sdk button {
+  padding-left: 0px;
+}
+/* line 163, partials/themes/matan-light/_base_override.scss */
+html body .df-section-toolbar .well .left-arrow, html body .df-section-toolbar .well .right-arrow {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+/* line 167, partials/themes/matan-light/_base_override.scss */
+html body .df-section-toolbar .well .left-arrow i, html body .df-section-toolbar .well .right-arrow i {
+  width: auto;
+}
+
+/* line 177, partials/themes/matan-light/_base_override.scss */
+.pointerize {
+  cursor: pointer !important;
+}
+
+/* line 181, partials/themes/matan-light/_base_override.scss */
+#scripting-bc-nav {
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+/* line 11, partials/themes/matan-light/_bootswatch_overrides.scss */
 .btn-primary:hover {
   color: #FFF;
+}
+
+/* line 17, partials/themes/matan-light/_bootswatch_overrides.scss */
+.df-menu {
+  margin: 0px auto !important;
+}
+/* line 23, partials/themes/matan-light/_bootswatch_overrides.scss */
+.df-menu .df-menu-container.second-nav-menu-items {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+/* line 28, partials/themes/matan-light/_bootswatch_overrides.scss */
+.df-menu .df-menu-container .df-menu-icon {
+  vertical-align: middle;
+  color: #2e2ea3;
+  padding: 10px 15px 10px 0px;
+  margin: 10px auto;
+}
+/* line 36, partials/themes/matan-light/_bootswatch_overrides.scss */
+.df-menu .df-menu-container .nav-pills li:hover {
+  background-color: #eeeeee;
+}
+/* line 40, partials/themes/matan-light/_bootswatch_overrides.scss */
+.df-menu .df-menu-container .nav-pills > li:first-child {
+  padding-left: 13px;
+  padding-right: 13px;
+}
+/* line 48, partials/themes/matan-light/_bootswatch_overrides.scss */
+.df-menu .df-menu-container .nav-pills > li a {
+  color: #7490a9;
+  margin: 10px auto;
+}
+/* line 54, partials/themes/matan-light/_bootswatch_overrides.scss */
+.df-menu .df-menu-container .nav-pills > li.active {
+  background-color: #f7f9fa;
+}
+/* line 59, partials/themes/matan-light/_bootswatch_overrides.scss */
+.df-menu .df-menu-container .nav-pills > li.active > a, .df-menu .df-menu-container .nav-pills > li.active > a:hover, .df-menu .df-menu-container .nav-pills > li.active > a:focus {
+  font-weight: bold;
+  color: #5b5bd9;
+  background-color: transparent;
+}
+
+/* line 82, partials/themes/matan-light/_bootswatch_overrides.scss */
+body .df-sidebar-nav .nav-pills li > a {
+  padding-left: 0px;
+}
+/* line 86, partials/themes/matan-light/_bootswatch_overrides.scss */
+body .df-sidebar-nav .nav-pills li > a:hover {
+  background: transparent;
+  color: #1d3d56;
+  font-weight: bold;
+}
+/* line 93, partials/themes/matan-light/_bootswatch_overrides.scss */
+body .df-sidebar-nav .nav-pills li.active a {
+  font-weight: bold;
+}
+/* line 97, partials/themes/matan-light/_bootswatch_overrides.scss */
+body .df-sidebar-nav .nav-pills li.active:hover a {
+  color: #5b5bd9;
+}
+
+/* line 105, partials/themes/matan-light/_bootswatch_overrides.scss */
+.well {
+  box-shadow: none;
+}
+
+/* line 110, partials/themes/matan-light/_bootswatch_overrides.scss */
+.well .btn-default, table .btn-default {
+  background-image: none;
+  background-color: transparent;
+  border-color: transparent;
+  opacity: 1 !important;
+}
+
+/* line 118, partials/themes/matan-light/_bootswatch_overrides.scss */
+.panel {
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+/* line 124, partials/themes/matan-light/_bootswatch_overrides.scss */
+.row-no-padding > [class*="col-"] {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* line 129, partials/themes/matan-light/_bootswatch_overrides.scss */
+.col-md-2.df-menu-icon, .col-md-2.df-sidebar-nav {
+  padding-left: 0px;
 }
 
 /* line 9, partials/_base.scss */
@@ -8998,7 +9829,6 @@ body {
 /* line 41, partials/_base.scss */
 .df-section {
   height: 100%;
-  overflow: scroll;
   padding: 0 20px 20px;
 }
 @media screen and (max-width: 992px) {
@@ -9008,25 +9838,25 @@ body {
   }
 }
 
-/* line 65, partials/_base.scss */
+/* line 64, partials/_base.scss */
 .df-section-all-round {
   border-radius: 4px;
 }
 @media screen and (max-width: 992px) {
-  /* line 65, partials/_base.scss */
+  /* line 64, partials/_base.scss */
   .df-section-all-round {
     border-radius: 3px;
   }
 }
 
-/* line 76, partials/_base.scss */
+/* line 75, partials/_base.scss */
 .df-section-3-round {
   border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
   border-top-right-radius: 3px;
 }
 
-/* line 84, partials/_base.scss */
+/* line 83, partials/_base.scss */
 .df-section-header {
   text-align: right;
   color: white;
@@ -9034,24 +9864,24 @@ body {
   padding: 10px 15px 11px;
   margin-bottom: 10px;
 }
-/* line 92, partials/_base.scss */
+/* line 91, partials/_base.scss */
 .df-section-header h4 {
   margin: 0;
   color: #eeeeee;
 }
 
-/* line 100, partials/_base.scss */
+/* line 99, partials/_base.scss */
 .df-empty-section-row {
   margin-top: 50px;
 }
 
-/* line 108, partials/_base.scss */
+/* line 107, partials/_base.scss */
 .df-btn-group {
   margin-left: 5px;
   margin-right: 5px;
 }
 
-/* line 113, partials/_base.scss */
+/* line 112, partials/_base.scss */
 .df-search-box {
   margin-left: 10px;
   padding-left: 10px;
@@ -9060,12 +9890,12 @@ body {
   height: 30px;
 }
 
-/* line 121, partials/_base.scss */
+/* line 120, partials/_base.scss */
 .df-tab-has-error {
   color: red !important;
 }
 
-/* line 125, partials/_base.scss */
+/* line 124, partials/_base.scss */
 .mask {
   position: fixed;
   top: 0;
@@ -9077,7 +9907,7 @@ body {
   display: none;
 }
 
-/* line 137, partials/_base.scss */
+/* line 136, partials/_base.scss */
 #top-bar-mask {
   position: fixed;
   top: 0;
@@ -9089,7 +9919,7 @@ body {
   display: none;
 }
 
-/* line 149, partials/_base.scss */
+/* line 148, partials/_base.scss */
 #df-copyright-footer {
   position: fixed;
   width: 100%;
@@ -9100,25 +9930,30 @@ body {
   background: #888;
 }
 
-/* line 159, partials/_base.scss */
+/* line 158, partials/_base.scss */
 .df-footer-text {
   padding: 10px;
   display: inline-block;
   font-size: 12px;
 }
 @media screen and (max-width: 992px) {
-  /* line 159, partials/_base.scss */
+  /* line 158, partials/_base.scss */
   .df-footer-text {
     font-size: 10px;
   }
 }
 
-/* line 172, partials/_base.scss */
+/* line 171, partials/_base.scss */
+.checkbox input, i {
+  margin-top: 4px !important;
+}
+
+/* line 175, partials/_base.scss */
 .table tr {
   cursor: pointer;
 }
 
-/* line 176, partials/_base.scss */
+/* line 179, partials/_base.scss */
 .fa-clipboard {
   cursor: pointer;
 }
@@ -9145,22 +9980,27 @@ body {
 }
 /* line 8, partials/_df-top-level-nav-std.scss */
 .df-top-navbar .navbar-brand {
-  padding-left: 15px;
   padding-top: 4px;
 }
-/* line 17, partials/_df-top-level-nav-std.scss */
+@media (max-width: 767px) {
+  /* line 8, partials/_df-top-level-nav-std.scss */
+  .df-top-navbar .navbar-brand {
+    padding-left: 15px !important;
+  }
+}
+/* line 20, partials/_df-top-level-nav-std.scss */
 .df-top-navbar .df-navbar-nav .notification-item:hover {
   text-decoration: underline;
 }
-/* line 21, partials/_df-top-level-nav-std.scss */
+/* line 24, partials/_df-top-level-nav-std.scss */
 .df-top-navbar .df-navbar-nav .notification-item {
   border-bottom: 1px solid #999999;
 }
-/* line 25, partials/_df-top-level-nav-std.scss */
+/* line 28, partials/_df-top-level-nav-std.scss */
 .df-top-navbar .df-navbar-nav .notification-item:last-child {
   border-bottom: none;
 }
-/* line 29, partials/_df-top-level-nav-std.scss */
+/* line 32, partials/_df-top-level-nav-std.scss */
 .df-top-navbar .df-navbar-nav .notify:after {
   position: absolute;
   top: 21%;
@@ -9569,7 +10409,7 @@ body {
   z-index: 10001;
 }
 
-/* line 38, styles.scss */
+/* line 39, styles.scss */
 [data-ng-click] {
   cursor: pointer;
 }

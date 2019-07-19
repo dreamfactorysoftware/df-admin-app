@@ -26,6 +26,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         function($rootScope, $scope, dfApplicationData, dfNotify, $location){
 
             $scope.$parent.title = 'Users';
+            $scope.$parent.titleIcon = 'users';
 
             // Set module links
             $scope.links = [

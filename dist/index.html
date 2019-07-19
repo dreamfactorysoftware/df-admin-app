@@ -1,28 +1,7 @@
-<!doctype html> <html class="no-js"> <head> <meta charset="utf-8"> <title>DreamFactory</title> <meta name="description" content=""> <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"> <meta name="apple-mobile-web-app-capable" content="yes"> <!-- Place favicon.ico and apple-touch-icon.png in the root directory --> <link rel="stylesheet" href="styles/styles.ec4de73b.css"> </head> <body ng-app="dreamfactoryApp"> <!--[if lt IE 7]>
+<!doctype html> <html class="no-js"> <head> <meta charset="utf-8"> <title>DreamFactory</title> <meta name="description" content=""> <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"> <meta name="apple-mobile-web-app-capable" content="yes"> <!-- Place favicon.ico and apple-touch-icon.png in the root directory --> <link rel="stylesheet" href="styles/styles.ab74af78.css"> </head> <body ng-app="dreamfactoryApp"> <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-    <![endif]--> <!-- Add your site or application content here --> <div id="dreamfactoryApp" data-ng-controller="MainCtrl" df-popup-login> <div id="popup-login-container"></div> <!-- Top level Nav --> <df-top-level-nav-std data-options="topLevelNavOptions"></df-top-level-nav-std> <div data-ng-if="showAdminComponentNav" style="margin: 10px auto;"> <!-- Component nav and title --> <div class="container-fluid"> <div class="row"> <div class="col-xs-12"> <df-component-title></df-component-title> <df-component-nav data-options="componentNavOptions"></df-component-nav> </div> </div> </div> </div> <!-- Rendering Context --> <div class="container-fluid"> <div class="row"> <div class="col-xs-12"> <div class="row"> <div data-ng-view=""></div> </div> </div> </div> </div> <!--<df-main-loading></df-main-loading>--> <div id="mask"></div> </div> <!--[if lt IE 9]>
+    <![endif]--> <!-- Add your site or application content here --> <div id="dreamfactoryApp" data-ng-controller="MainCtrl" df-popup-login> <div id="popup-login-container"></div> <!-- Top level Nav --> <df-top-level-nav-std data-options="topLevelNavOptions"></df-top-level-nav-std> <div data-ng-if="showAdminComponentNav" style="margin: 10px auto;" class="df-menu"> <!-- Component nav and title --> <div class="container-fluid"> <div class="row"> <div class="col-xs-12"> <div class="col-md-2 df-menu-container df-menu-icon"> <df-component-title></df-component-title> </div> <div class="col-md-10 df-menu-container second-nav-menu-items"> <df-component-nav data-options="componentNavOptions"></df-component-nav> </div> </div> </div> </div> </div> <!-- Rendering Context --> <div class="container-fluid"> <div class="row"> <div class="col-xs-12"> <div data-ng-view=""></div> </div> </div> </div> <!--<df-main-loading></df-main-loading>--> <div id="mask"></div> </div> <!--[if lt IE 9]>
     <script src="scripts/oldieshim.d41d8cd9.js"></script>
-    <![endif]--> <script src="scripts/vendor.ef0c91cf.js"></script> <script src="scripts/app.8949778b.js"></script> <!-- other deps --> <script src="vendor/ace/ace.js"></script> <script src="vendor/ace/mode-javascript.js"></script> <script src="vendor/ace/mode-json.js"></script> <script src="vendor/ace/mode-yaml.js"></script> <!--Begin Comm100 Live Chat Code--> <div id="comm100-button-219"></div> <script type="text/javascript"> var Comm100API=Comm100API||{};
-        Comm100API.status = "init";
-        Comm100API.showChat = function (bool) {
-            var sel = $("#comm100-button-219");
-            // only show/hide when absolutely necessary
-            if (bool) {
-                if (Comm100API.status === "init") {
-                    Comm100API.init();
-                } else if (Comm100API.status === "off"){
-                    sel.show();
-                }
-                Comm100API.status = "on";
-            } else {
-                if (Comm100API.status === "on") {
-                    sel.hide();
-                    Comm100API.status = "off";
-                }
-            }
-        };
-
-        Comm100API.init = function () {
-            // this is straight from comm100 web site
-            (function(t){function e(e){var a=document.createElement("script"),c=document.getElementsByTagName("script")[0];a.type="text/javascript",a.async=!0,a.src=e+t.site_id,c.parentNode.insertBefore(a,c)}t.chat_buttons=t.chat_buttons||[],t.chat_buttons.push({code_plan:219,div_id:"comm100-button-219"}),t.site_id=210217,t.main_code_plan=219,e("https://chatserver.comm100.com/livechat.ashx?siteId="),setTimeout(function(){t.loaded||e("https://hostedmax.comm100.com/chatserver/livechat.ashx?siteId=")},5e3)})(Comm100API||{})
-        } </script> <!--End Comm100 Live Chat Code--> 
+    <![endif]--> <script src="scripts/vendor.85f12eba.js"></script> <script src="scripts/app.e506f612.js"></script> <!-- other deps --> <script src="vendor/ace/ace.js"></script> <script src="vendor/ace/mode-javascript.js"></script> <script src="vendor/ace/mode-json.js"></script> <script src="vendor/ace/mode-yaml.js"></script> <script> window.intercomSettings = {
+    app_id: "ymvqkyiw"
+  }; </script> <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/ymvqkyiw';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})(); </script> 

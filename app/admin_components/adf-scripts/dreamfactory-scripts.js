@@ -44,6 +44,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
         function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify, $location) {
 
             $scope.$parent.title = 'Scripts';
+            $scope.$parent.titleIcon = 'code';
+
             $scope.scriptGitHubTarget = 'scripts';
             $scope.newScript = true;
             $scope.isEventScriptEditable = true;
@@ -97,71 +99,103 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             // Allows for building of events dynamically on the client
 
             $scope.apiData = null;
+            $scope.subscription_required = false;
 
             $scope.loadTabData = function() {
 
                 $scope.dataLoading = true;
 
-                // always load event scripts from server
-                var primaryApis = ['event_script'];
+                var errorFunc = function (error) {
+                    var messageOptions = {
+                        module: 'Limits',
+                        provider: 'dreamfactory',
+                        type: 'error',
+                        message: 'There was an error loading data for the Limits tab. Please try refreshing your browser and logging in again.'
+                    };
+                    dfNotify.error(messageOptions);
+                };
 
-                // Only load these one time as they should not change as scripts are created/deleted.
-                // service_list is used to build top level view then when you select a service it will query events
-                // for that service. We don't want to query events for all services up front becuase it's too slow.
-                var secondaryApis = ['service_list', 'script_type', 'service_link', 'environment'];
-
-                // for primaryApis force refresh to always load from server
-                dfApplicationData.getApiData(primaryApis, true).then(
+                // first get system data to decide whether to load other data
+                dfApplicationData.getApiData(['system']).then(
                     function (response) {
-                        var newApiData = {};
-                        primaryApis.forEach(function(value, index) {
-                            newApiData[value] = response[index].resource ? response[index].resource : response[index];
-                        });
-                        // loading from cache is ok for secondaryApis, unless the tab is just loaded ($scope.apiData === null)
-                        // in that case load from server to pick up any new services, tables, etc
-                        // when a script is created or deleted $scope.apiData will not be null and data comes from cache
-                        dfApplicationData.getApiData(secondaryApis, ($scope.apiData === null)).then(
-                            function (response) {
-                                secondaryApis.forEach(function(value, index) {
-                                    newApiData[value] = response[index].resource ? response[index].resource : response[index];
-                                });
-                                // all done
-                                $scope.apiData = newApiData;
-                            },
-                            function (error) {
-                                var msg = 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.';
-                                if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                                    msg = 'To use the Scripts tab your role must allow GET access to system/event_script, system/event, and system/script_type. To create, update, or delete scripts you need POST and DELETE access to /system/event_script.';
-                                    $location.url('/home');
-                                }
-                                var messageOptions = {
-                                    module: 'Scripts',
-                                    provider: 'dreamfactory',
-                                    type: 'error',
-                                    message: msg
-                                };
-                                dfNotify.error(messageOptions);
+                        angular.forEach(response[0].resource, function (value) {
+                            if (value.name === 'script_type' || value.name === 'event_script') {
+                                $scope.scriptsEnabled = true;
                             }
-                        ).finally(function () {
-                            $scope.dataLoading = false;
                         });
-                    },
-                    function (error) {
-                        var msg = 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.';
-                        if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                            msg = 'To use the Scripts tab your role must allow GET access to system/event_script, system/event, and system/script_type. To create, update, or delete scripts you need POST and DELETE access to /system/event_script.';
-                            $location.url('/home');
+                        if (!$scope.scriptsEnabled) {
+                            // scripts not enabled, disable UI
+                            $scope.subscription_required = true;
+                        } else {
+                            // scripts enabled, load other data
+
+                            // always load event scripts from server
+                            var primaryApis = ['event_script'];
+
+                            // Only load these one time as they should not change as scripts are created/deleted.
+                            // service_list is used to build top level view then when you select a service it will query events
+                            // for that service. We don't want to query events for all services up front becuase it's too slow.
+                            var secondaryApis = ['service_list', 'script_type', 'service_link', 'environment'];
+
+                            // for primaryApis force refresh to always load from server
+                            dfApplicationData.getApiData(primaryApis, true).then(
+                                function (response) {
+                                    var newApiData = {};
+                                    primaryApis.forEach(function(value, index) {
+                                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                                    });
+                                    // loading from cache is ok for secondaryApis, unless the tab is just loaded ($scope.apiData === null)
+                                    // in that case load from server to pick up any new services, tables, etc
+                                    // when a script is created or deleted $scope.apiData will not be null and data comes from cache
+                                    dfApplicationData.getApiData(secondaryApis, ($scope.apiData === null)).then(
+                                        function (response) {
+                                            secondaryApis.forEach(function(value, index) {
+                                                newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                                            });
+                                            // all done
+                                            $scope.apiData = newApiData;
+                                        },
+                                        function (error) {
+                                            var msg = 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.';
+                                            if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                                                msg = 'To use the Scripts tab your role must allow GET access to system/event_script, system/event, and system/script_type. To create, update, or delete scripts you need POST and DELETE access to /system/event_script.';
+                                                $location.url('/home');
+                                            }
+                                            var messageOptions = {
+                                                module: 'Scripts',
+                                                provider: 'dreamfactory',
+                                                type: 'error',
+                                                message: msg
+                                            };
+                                            dfNotify.error(messageOptions);
+                                        }
+                                    ).finally(function () {
+                                        $scope.dataLoading = false;
+                                    });
+                                },
+                                function (error) {
+                                    var msg = 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.';
+                                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                                        msg = 'To use the Scripts tab your role must allow GET access to system/event_script, system/event, and system/script_type. To create, update, or delete scripts you need POST and DELETE access to /system/event_script.';
+                                        $location.url('/home');
+                                    }
+                                    var messageOptions = {
+                                        module: 'Scripts',
+                                        provider: 'dreamfactory',
+                                        type: 'error',
+                                        message: msg
+                                    };
+                                    dfNotify.error(messageOptions);
+                                    $scope.dataLoading = false;
+                                }
+                            );
                         }
-                        var messageOptions = {
-                            module: 'Scripts',
-                            provider: 'dreamfactory',
-                            type: 'error',
-                            message: msg
-                        };
-                        dfNotify.error(messageOptions);
-                        $scope.dataLoading = false;
-                    }
-                );
+                    },
+                    // error getting system data
+                    errorFunc
+                ).finally(function () {
+                    $scope.dataLoading = false;
+                });
             };
 
             $scope.getRefreshEnable = function() {
@@ -170,7 +204,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 if ($scope.currentScriptObj && $scope.selections.service) {
                     type = $scope.selections.service.type;
-                    if (type === 'github' || type === 'gitlab' || type === 'bitbucket') {
+                    if (type === 'github' || type === 'gitlab' || type === 'bitbucket' || type === 'bitbucket2') {
                         if ($scope.currentScriptObj.scm_repository && $scope.currentScriptObj.scm_reference && $scope.currentScriptObj.storage_path) {
                             enable = true;
                         }
@@ -199,7 +233,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 var servicePath = $scope.currentScriptObj.storage_path;
                 var url = INSTANCE_URL.url + '/' + serviceName;
 
-                if($scope.selections.service && ($scope.selections.service.type === 'github' || $scope.selections.service.type === 'gitlab' || $scope.selections.service.type === 'bitbucket')){
+                if($scope.selections.service && ($scope.selections.service.type === 'github' || $scope.selections.service.type === 'gitlab' || $scope.selections.service.type === 'bitbucket' || $scope.selections.service.type === 'bitbucket2')){
                     var params = {
                         path: servicePath,
                         branch: serviceRef,
@@ -528,7 +562,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 // repo is allowed for bitbucket, github or gitlab, replace empty string with null
                 if ($scope.selections.service &&
-                    ($scope.selections.service.type === 'github' || $scope.selections.service.type === 'gitlab' || $scope.selections.service.type === 'bitbucket')) {
+                    ($scope.selections.service.type === 'github' || $scope.selections.service.type === 'gitlab' || $scope.selections.service.type === 'bitbucket' || $scope.selections.service.type === 'bitbucket2')) {
                     $scope.currentScriptObj.scm_repository = ($scope.currentScriptObj.scm_repository ? $scope.currentScriptObj.scm_repository : null);
                 } else {
                     $scope.currentScriptObj.scm_repository = null;
@@ -536,7 +570,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 // ref is allowed for bitbucket, github or gitlab, replace empty string with null
                 if ($scope.selections.service &&
-                    ($scope.selections.service.type === 'github' || $scope.selections.service.type === 'gitlab' || $scope.selections.service.type === 'bitbucket')) {
+                    ($scope.selections.service.type === 'github' || $scope.selections.service.type === 'gitlab' || $scope.selections.service.type === 'bitbucket' || $scope.selections.service.type === 'bitbucket2')) {
                     $scope.currentScriptObj.scm_reference = ($scope.currentScriptObj.scm_reference ? $scope.currentScriptObj.scm_reference : null);
                 }  else {
                     $scope.currentScriptObj.scm_reference = null;
@@ -839,6 +873,9 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             break;
                         case 'python':
                             fileExt = 'py';
+                            break;
+                        case 'python3':
+                            fileExt = 'python3.py';
                             break;
                         case 'v8js':
                             fileExt = 'v8.js';

@@ -1,0 +1,205 @@
+$table-rows-radius: 4px;
+$add-rows-btn-width: 53px;
+
+.add-rows-btn, .add-rows-btn:hover {
+  width: $add-rows-btn-width;
+  min-width: $add-rows-btn-width;
+  height: 38px;
+  color: #ffffff;
+  background-image: none!important;
+  border-radius: 4px!important;
+  box-shadow: 1px 9px 8px -4px rgba(0, 0, 0, 0.2)!important;
+  background-color: #5b5bd9!important;
+}
+
+.empty-table-placeholder {
+  color: #718fab;
+  padding-left: 20px;
+
+  i.fa-plus {
+    border-radius: 2px;
+    box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.1);
+    background-color: #5b5bd9;
+    color: #ffffff;
+    font-size: 7px;
+    vertical-align: middle;
+    width: 26.5px;
+    height: 19px;
+    padding-top: 6px;
+  }
+}
+
+.table-rows-extendable, table.table.table-rows-extendable {
+
+  thead {
+    tr {
+
+      th:last-child {
+        background-color: $df-section-background;
+        border: none;
+        padding: 0px;
+        width: 58px;
+
+        > * {
+          padding-bottom: 0px!important;
+          float: right;
+        }
+        .btn-group {
+          padding-left: 20px;
+          .btn {
+            @extend .add-rows-btn
+          }
+        }
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      .btn {
+        padding-left: 0px;}
+
+      .input-cell {
+        > * {
+          padding-left: 0px!important;
+          display: block!important;
+
+          input, select {
+            width: 94%;
+            padding-bottom: 0px;
+          }
+        }
+      }
+
+      .checkbox-cell, .icon-cell {
+        padding-top: 20px!important;
+      }
+
+      .icon-cell {
+        button {
+          padding-top: 0px;
+        }
+
+        i {
+          font-size: 14px;
+          color: #183b59;
+          text-align: left;
+        }
+
+        .btn:hover, .btn:focus, .btn:active {
+          border: none;
+          background-color: transparent;
+          outline: none;
+          box-shadow: none;
+        }
+      }
+
+      td:last-child {
+        min-width: 0px!important;
+        .cell-content {
+          min-width: 0px;
+        }
+      }
+    }
+  }
+}
+
+.table {
+  width: 95%;
+}
+
+div.panel .table, table.table, table.table.table-striped {
+  background-color: $df-section-background;
+
+  & > thead, & > thead tr {
+    background-color: #1d3d56;
+    color: #ffffff;
+    height: 38px;
+
+    th {
+      vertical-align: middle;
+
+      & > * {
+        padding-bottom: 3px;
+        padding-left: 5px;
+      }
+      button {
+        color: #ffffff;
+      }
+    }
+  }
+
+  tbody.tbody-transparent {
+    .cell-content {
+      background-color: transparent;
+      box-shadow: none;
+      border-bottom: 1px solid #cfd9e2;
+      border-bottom-left-radius: 0px!important;
+      border-bottom-right-radius: 0px!important;
+    }
+  }
+
+  tbody {
+    & > tr {
+
+      & > td:first-child > .cell-content {
+        border-top-left-radius: $table-rows-radius;
+        border-bottom-left-radius: $table-rows-radius;
+
+      }
+
+      & > td:last-child > .cell-content {
+        border-top-right-radius: $table-rows-radius;
+        border-bottom-right-radius: $table-rows-radius;
+      }
+
+      td {
+        padding: 0px;
+        border: 0px;
+        background-color: #F7F9FA;
+        color: #2b5172;
+        height: 58px;
+        min-width: 80px;
+
+        .cell-content {
+          margin-top: 3px;
+          margin-bottom: 3px;
+          padding-top: 8px;
+          min-height: 58px;
+          background-color: #ffffff;
+          display: block;
+          line-height: 14px;
+          word-wrap: break-word;
+          width: 100%;
+          height: 92%;
+          box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.1);
+
+          input, i {
+            margin-top: 0px;
+            padding-top: 0px;
+            vertical-align: top;
+          }
+
+          & > * {
+            display: table-cell;
+            vertical-align: top;
+            padding-top: 8px;
+            padding-bottom: 16px;
+          }
+
+          & > *:first-child {
+            padding-left: 13px;
+          }
+
+          .fa-check {
+            color: #22bca8;
+          }
+
+          .fa-times {
+            color: #f2526a;
+          }
+        }
+      }
+    }
+  }
+}

@@ -50,7 +50,7 @@ angular.module('dfHelp', [])
 
                 scope._setWidth = function () {
                     helpDiv.css({
-                        width: $(window).outerWidth() / 3
+                        width: $(window).outerWidth() / 6
                     });
                 };
 

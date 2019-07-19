@@ -25,6 +25,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
     .controller('ServicesCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, $scope, dfApplicationData, dfNotify, $location) {
 
         $scope.$parent.title = 'Services';
+        $scope.$parent.titleIcon = 'cubes';
 
         // Set module links
         $scope.links = [
@@ -350,7 +351,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
         };
     }])
 
-    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService) {
+    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$timeout', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, $timeout) {
 
         return {
 
@@ -362,6 +363,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
             },
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-details.html',
             link: function (scope, elem, attrs) {
+                scope.isInfoTab = true;
 
                 var ServiceDetails = function (service) {
 
@@ -466,7 +468,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     scope.serviceDetails = new ServiceDetails();
 
                     // reset tabs
-                    angular.element('#info-tab').trigger('click');
+                    $timeout(function(){
+                        angular.element('#info-tab').trigger('click');
+                    });
 
                     // force to manage view
                     scope.$emit('sidebar-nav:view:reset');
@@ -613,6 +617,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                 scope.refreshServiceConfigEditor = function() {
 
+                    $('#config-tab').tab('show');
+                    scope.isInfoTab = false;
+
                     var editor = scope.serviceConfigEditorObj.editor;
                     if (editor) {
                         editor.renderer.updateText();
@@ -621,7 +628,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     }
                 };
 
+                scope.refreshServiceInfoEditor = function() {
+                    scope.isInfoTab = true;
+                };
+
                 scope.refreshServiceDefEditor = function() {
+                    scope.isInfoTab = false;
 
                     var editor = scope.serviceDefEditorObj.editor;
                     if (editor) {
@@ -717,7 +729,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
             }
         };
     }])
-    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'SystemConfigDataService', function (MOD_SERVICES_ASSET_PATH, SystemConfigDataService) {
+    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'SystemConfigDataService' , 'dfNotify', function (MOD_SERVICES_ASSET_PATH, SystemConfigDataService, dfNotify) {
 
         return {
             restrict: 'E',
@@ -763,6 +775,20 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         })[0] || {};
 
                         scope.serviceConfig.dsn = foundValue.dsn;
+                    }
+                };
+
+                scope.validateServiceName = function () {
+                    var isNameValid = scope.serviceInfo.name.match(/^[a-z0-9_-]+$/);
+                    if(!isNameValid || isNameValid.length === 0) {
+                        var msg = 'Be sure that service name is in lowercase and alphanumeric. It should only contain letters, numbers, underscores and dashes.';
+                        var messageOptions = {
+                            module: 'Services',
+                            provider: 'dreamfactory',
+                            type: 'warning',
+                            message: msg
+                        };
+                        dfNotify.warn(messageOptions);
                     }
                 };
 
@@ -851,6 +877,46 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         "label": "MQTT Client",
                         "description": "MQTT Client based on Mosquitto.",
                         "group": "IoT"
+                    }, {
+                        "name": "mysql",
+                        "label": "MySQL",
+                        "description": "Database service supporting MySLQ connections.",
+                        "group": "Database"
+                    }, {
+                        "name": "nodejs",
+                        "label": "Node.js",
+                        "description": "Service that allows client-callable scripts utilizing the system scripting.",
+                        "group": "Script"
+                    }, {
+                        "name": "php",
+                        "label": "PHP",
+                        "description": "Service that allows client-callable scripts utilizing the system scripting.",
+                        "group": "Script"
+                    }, {
+                        "name": "python",
+                        "label": "Python",
+                        "description": "Service that allows client-callable scripts utilizing the system scripting.",
+                        "group": "Script"
+                    }, {
+                        "name": "python3",
+                        "label": "Python3",
+                        "description": "Service that allows client-callable scripts utilizing the system scripting.",
+                        "group": "Script"
+                    }, {
+                        "name": "v8js",
+                        "label": "V8js",
+                        "description": "Service that allows client-callable scripts utilizing the system scripting.",
+                        "group": "Script"
+                    }, {
+                        "name": "mongodb",
+                        "label": "MongoDB",
+                        "description": "Database service for MongoDB connections.",
+                        "group": "Database"
+                    }, {
+                        "name": "gridfs",
+                        "label": "GridFS",
+                        "description": "GridFS File Storage services.",
+                        "group": "File"
                     }];
 
                     var goldServices = [{
@@ -1043,7 +1109,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     },
                     name: {
                         title: 'Name ',
-                        text: 'Select a name for making API requests, such as \'db\' in /api/v2/db.'
+                        text: 'Select a name for making API requests, such as \'db\' in /api/v2/db. It should be lowercase and alphanumeric.'
                     },
                     label: {
                         title: 'Label ',
@@ -1106,7 +1172,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                     if (scope.selections.service) {
                         type = scope.selections.service.type;
-                        if (type === 'github' || type === 'gitlab' || type === 'bitbucket') {
+                        if (type === 'github' || type === 'gitlab' || type === 'bitbucket' || type === 'bitbucket2') {
                             if (scope.serviceConfig.scm_repository && scope.serviceConfig.scm_reference && scope.serviceConfig.storage_path) {
                                 enable = true;
                             }
@@ -1135,7 +1201,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     var servicePath = scope.serviceConfig.storage_path;
                     var url = INSTANCE_URL.url + '/' + serviceName;
 
-                    if(scope.selections.service && (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket')){
+                    if(scope.selections.service && (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket' || scope.selections.service.type === 'bitbucket2')){
                         var params = {
                             path: servicePath,
                             branch: serviceRef,
@@ -1321,6 +1387,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'nodejs':
                         case 'php':
                         case 'python':
+                        case 'python3':
                         case 'v8js':
                             scope.selections.service = scope.getServiceById(scope.serviceConfig.storage_service_id);
                             break;
@@ -1354,6 +1421,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                             scope.allowedConfigGitFormats = ['php'];
                             break;
                         case 'python':
+                            scope.allowedConfigFormats = '.py,.python';
+                            scope.allowedConfigGitFormats = ['py','python'];
+                            break;
+                        case 'python3':
                             scope.allowedConfigFormats = '.py,.python';
                             scope.allowedConfigGitFormats = ['py','python'];
                             break;
@@ -1469,6 +1540,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     if (type === 'nodejs' ||
                         type === 'php' ||
                         type === 'python' ||
+                        type === 'python3' ||
                         type === 'v8js') {
 
                         // if linked to a service set script content to empty
@@ -1488,7 +1560,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                         // repo is allowed for github or bitbucket, gitlab, replace empty string with null
                         if (scope.selections.service &&
-                            (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket')) {
+                            (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket' || scope.selections.service.type === 'bitbucket2')) {
                             config.scm_repository = (config.scm_repository ? config.scm_repository : null);
                         } else {
                             config.scm_repository = null;
@@ -1496,7 +1568,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                         // ref is allowed for github or bitbucket, gitlab, replace empty string with null
                         if (scope.selections.service &&
-                            (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket')) {
+                            (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket' || scope.selections.service.type === 'bitbucket2')) {
                             config.scm_reference = (config.scm_reference ? config.scm_reference : null);
                         }  else {
                             config.scm_reference = null;
@@ -1548,6 +1620,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'nodejs':
                         case 'php':
                         case 'python':
+                        case 'python3':
                         case 'v8js':
                             scope.isServiceDefEditable = true;
                             break;
@@ -1567,6 +1640,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'nodejs':
                         case 'php':
                         case 'python':
+                        case 'python3':
                         case 'v8js':
                             var content = scope.serviceDefEditorObj.editor.getValue();
                             if (content !== "") {
@@ -1631,6 +1705,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'nodejs':
                         case 'php':
                         case 'python':
+                        case 'python3':
                         case 'v8js':
                             // get content and format, if valid, otherwise use defaults
                             var doc = newValue.record.service_doc_by_service_id;

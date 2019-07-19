@@ -42,7 +42,6 @@ body {
 
   height: 100%;
   //  background : white;
-  overflow: scroll;
 
   // box-shadow: -8px 7px 15px -5px rgba(0, 0, 0, 0.3);
 
@@ -167,6 +166,10 @@ body {
     font-size: 10px;
   }
 
+}
+
+.checkbox input, i {
+  margin-top: 4px !important;
 }
 
 .table tr {

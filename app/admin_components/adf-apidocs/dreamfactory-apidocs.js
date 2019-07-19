@@ -42,6 +42,7 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
     .controller('ApiDocsCtrl', ['$scope', function($scope) {
 
         $scope.$parent.title = 'API Docs';
+        $scope.$parent.titleIcon = 'book';
 
         // Set module links
         $scope.links = [

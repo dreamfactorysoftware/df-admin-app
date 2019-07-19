@@ -35,7 +35,8 @@ angular
         'dfApiDocs',
         'dfFileManager',
         'dfPackageManager',
-        'dfLimit'
+        'dfLimit',
+        'dfReports'
     ])
 
     // each tab uses this in its resolve function to make sure user is allowed access
@@ -115,7 +116,7 @@ angular
     })
 
     // Set application version number
-    .constant('APP_VERSION', '2.16.1')
+    .constant('APP_VERSION', '3.0.0')
 
     // Set global url for this application
     .constant('INSTANCE_BASE_URL', '')

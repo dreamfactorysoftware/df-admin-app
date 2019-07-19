@@ -1,25 +1,26 @@
 // to change the theme you need to replace all occurrences of the theme name in this file
 
 // theme variable overrides, these allow variable overrides on a specific theme
-@import "partials/themes/cerulean/_variable_overrides.scss";
+@import "partials/themes/matan-light/_variable_overrides.scss";
 
 // theme variables, do not change this file
-@import "partials/themes/cerulean/_variables.scss";
+@import "partials/themes/matan-light/_variables.scss";
 
 // standard bootstrap, do not change this file
 @import "../../../bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 
 // theme bootswatch, do not change this file
-@import "partials/themes/cerulean/_bootswatch.scss";
+@import "partials/themes/matan-light/_bootswatch.scss";
 
 // theme bootswatch overrides, these allow bootswatch overrides on a specific theme
-@import "partials/themes/cerulean/_bootswatch_overrides.scss";
+@import "partials/themes/matan-light/_bootswatch_overrides.scss";
 
 // needed for filter gradient
 @import "compass";
 
 
 @import "font-awesome.min.css";
+@import "lato.css";
 
 // Custom DreamFactory SCSS
 @import "partials/_base.scss";

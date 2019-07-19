@@ -1,15 +1,15 @@
-
-<div class="panel panel-default">
-    <div class="panel-heading">
+<div class="df-service-access">
+    <div class="df-service-access-heading">
         Service Access <df-simple-help data-options="dfSimpleHelp.serviceAccess"></df-simple-help>
     </div>
-    <div class="panel-body">
 
-        <label>Assign Service Access to this Role</label>
+    <button type="button" class="btn btn-default btn-sm add-rows-btn" data-ng-click="addServiceAccess()" title="Add lookup key">
+        <i class="fa fa-plus fa-fw"></i>
+    </button>
 
-        <hr />
+    <div class="panel-body df-service-access-body">
 
-        <div class="row">
+        <div class="row df-sa-columns row-no-padding">
             <div class="col-xs-12">
                 <div class="col-xs-3">
                     <label style="margin-left: 1px">Service</label>
@@ -25,14 +25,6 @@
                 </div>
                 <div class="col-xs-1">
                     <label>Advanced Filters</label>
-                </div>
-                <div class="col-xs-1" >
-                    <label>
-                        <button id="roles_details_access_addservice" type="button" class="btn btn-default btn-sm" data-ng-click="addServiceAccess()" title="Add new service access">
-                            <i class="fa fa-plus fa-fw"></i>
-                        </button>
-                    </label>
-
                 </div>
             </div>
         </div>
