@@ -428,10 +428,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                     var field = '';
                     if(!infoData.name && !infoData.label) {
-                        field = 'name and label fields';
+                        field = 'namespace and label fields';
                     }
                     else if(!infoData.name) {
-                        field = 'name field';
+                        field = 'namespace field';
                     }
                     else {
                         field = 'label field';
@@ -1169,8 +1169,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         text: 'Select the type of service you\'re adding.'
                     },
                     name: {
-                        title: 'Name ',
-                        text: 'Select a name for making API requests, such as \'db\' in /api/v2/db. It should be lowercase and alphanumeric.'
+                        title: 'Namespace ',
+                        text: 'Select a namespace used for the API’s URI structure, such as \'db\' in /api/v2/db. It should be lowercase and alphanumeric.'
                     },
                     label: {
                         title: 'Label ',
