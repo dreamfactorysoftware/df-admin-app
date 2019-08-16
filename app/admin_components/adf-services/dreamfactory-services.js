@@ -424,7 +424,41 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 // all service types except non-creatable ones like system or user
                 scope.creatableServiceTypes = [];
 
+                function __throwApiError(infoData) {
+
+                    var field = '';
+                    if(!infoData.name && !infoData.label) {
+                        field = 'name and label fields';
+                    }
+                    else if(!infoData.name) {
+                        field = 'name field';
+                    }
+                    else {
+                        field = 'label field';
+                    }
+
+                    var msg = 'Invalid data supplied. The ' + field + ' is required.';
+                    var messageOptions = {
+                        module: 'Api Error',
+                        type: 'error',
+                        provider: 'dreamfactory',
+                        message: msg
+
+                    };
+
+                    dfNotify.error(messageOptions);
+                }
+
                 scope.saveOrUpdateService = function () {
+
+
+                    if (!scope.serviceInfo.name || !scope.serviceInfo.label) {
+                        scope.serviceInfoError = true;
+                        __throwApiError(scope.serviceInfo);
+                        return;
+                    } else {
+                        scope.serviceInfoError = false;
+                    }
 
                     if (scope.newService) {
 
@@ -488,6 +522,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     $timeout(function(){
                         angular.element('#info-tab').trigger('click');
                     });
+
+                    // reset errors
+                    scope.serviceInfoError = false;
 
                     // force to manage view
                     scope.$emit('sidebar-nav:view:reset');
@@ -761,6 +798,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                 // grouped list of service types for building service type menu
                 scope.serviceTypes = [];
+
+                scope.serviceInfoError = false;
 
                 // this will be updated by the watcher for serviceDetails when a service is loaded into the editor
                 // all user changes are applied to scope.serviceInfo
