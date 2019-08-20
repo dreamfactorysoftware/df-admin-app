@@ -64,7 +64,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
             $scope.dataLoading = true;
 
             // eventlist is loaded only as needed to improve user experience
-            var apis = ['service', 'service_link', 'service_type', 'environment'];
+            var apis = ['service', 'service_link', 'storage_service_link', 'service_type', 'environment'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -1450,6 +1450,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'python':
                         case 'python3':
                         case 'v8js':
+                        case 'excel':
                             scope.selections.service = scope.getServiceById(scope.serviceConfig.storage_service_id);
                             break;
                         default:
@@ -1640,6 +1641,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                             config.storage_path = (config.storage_path ? config.storage_path : null);
                         }  else {
                             config.storage_path = null;
+                        }
+                    }
+
+                    if (type === 'excel') {
+
+                        // storage service to link to
+                        config.storage_service_id = (scope.selections.service ? scope.selections.service.id : null);
+
+                        // path is allowed for any link service, replace empty string with null
+                        if (scope.selections.service) {
+                            config.storage_container = (config.storage_container ? config.storage_container : null);
+                        }  else {
+                            config.storage_container = null;
                         }
                     }
 
