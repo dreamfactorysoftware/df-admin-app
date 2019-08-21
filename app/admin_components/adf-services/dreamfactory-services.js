@@ -351,7 +351,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
         };
     }])
 
-    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$timeout', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, $timeout) {
+    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$timeout', '$http', 'INSTANCE_URL',
+        function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, $timeout, $http, INSTANCE_URL) {
 
         return {
 
@@ -458,6 +459,22 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     scope.serviceDetails.record = scope.prepareServiceInfo();
                     scope.serviceDetails.record.config = scope.prepareServiceConfig();
                     scope.serviceDetails.record.service_doc_by_service_id = scope.prepareServiceDefinition();
+                };
+
+                scope.clearCache = function () {
+                    $http.delete(INSTANCE_URL.url + '/system/cache/' + scope.serviceDetails.record.name)
+                        .then(function () {},
+                            function (error) {
+
+                            var messageOptions = {
+                                module: 'Api Error',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: error
+                            };
+
+                            dfNotify.error(messageOptions);
+                        });
                 };
 
                 scope.closeEditor = function () {
@@ -584,6 +601,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                                 provider: 'dreamfactory',
                                 message: 'Service updated successfully'
                             };
+
+                            if (scope.selections.saveAndClearCache) {
+                                scope.clearCache();
+                                messageOptions.message = 'Service updated successfully and cache cleared.';
+                            }
 
                             dfNotify.success(messageOptions);
 
