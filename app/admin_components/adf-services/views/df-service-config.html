@@ -33,9 +33,9 @@
                 <input id="selected_service__container_path" class="form-inline input-sm"
                        data-ng-model="serviceConfig.storage_container"/>
             </div>
-            <div>
+            <div ng-show="selections.service">
                 <label>Download a spreadsheet </label>
-                <div class="form-inline form-controls">
+                <div class="form-inline">
                     <div class="input-group">
 					<span class="input-group-btn">
 						<button class="btn btn-default"
@@ -56,9 +56,12 @@
                            file-model-2
                            accept="{{allowedSpreadsheetFormats}}"
                     />
-                    <button data-ng-show="spreadsheetUploadPath" type="button" class="btn btn-default btn-primary save-service-btn ng-scope" data-ng-click="handleSpreadsheet()">Upload Spreadsheet</button>
+                    <span class="form-controls">
+                        <button data-ng-show="spreadsheetUploadPath" type="button" class="btn btn-default btn-primary save-service-btn ng-scope" data-ng-click="handleSpreadsheet()">Upload Spreadsheet</button>
+                    </span>
                 </div>
             </div>
+        </div>
         </div>
         <div class="form-group ng-scope" data-ng-if="field.type != 'boolean' && field.name !== 'storage_service_id' && field.name !== 'storage_path' && field.name !== 'storage_container' && field.name !== 'scm_reference' && field.name !== 'scm_repository'">
             <label>{{ field.label }}</label>

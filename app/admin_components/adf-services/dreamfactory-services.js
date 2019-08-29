@@ -1315,14 +1315,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                 scope.getSpreadsheetUploadUrl = function () {
                     var storagePath = scope.serviceConfig.storage_container;
-                    if (!storagePath.startsWith('/')) {
+                    var endsWith = storagePath.endsWith('/');
+                    var startsWith = storagePath.startsWith('/');
+
+                    if (!startsWith) {
                         storagePath = '/' + storagePath;
-                    } else if (scope.serviceConfig.storage_container.endsWith('/')) {
+                    }
+                    if (!endsWith) {
                         storagePath = storagePath + '/';
                     }
-                    var url = INSTANCE_URL.url + '/' + scope.selections.service.name + storagePath;
-
-                    return url;
+                    return INSTANCE_URL.url + '/' + scope.selections.service.name + storagePath;
                 };
 
                 scope.getRefreshEnable = function() {
