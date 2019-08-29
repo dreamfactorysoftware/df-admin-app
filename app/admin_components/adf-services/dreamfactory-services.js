@@ -351,7 +351,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
         };
     }])
 
-    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$timeout', function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, $timeout) {
+    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$timeout', '$http', 'INSTANCE_URL',
+        function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, $timeout, $http, INSTANCE_URL) {
 
         return {
 
@@ -423,7 +424,41 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 // all service types except non-creatable ones like system or user
                 scope.creatableServiceTypes = [];
 
+                function __throwApiError(infoData) {
+
+                    var field = '';
+                    if(!infoData.name && !infoData.label) {
+                        field = 'namespace and label fields';
+                    }
+                    else if(!infoData.name) {
+                        field = 'namespace field';
+                    }
+                    else {
+                        field = 'label field';
+                    }
+
+                    var msg = 'Invalid data supplied. The ' + field + ' is required.';
+                    var messageOptions = {
+                        module: 'Api Error',
+                        type: 'error',
+                        provider: 'dreamfactory',
+                        message: msg
+
+                    };
+
+                    dfNotify.error(messageOptions);
+                }
+
                 scope.saveOrUpdateService = function () {
+
+
+                    if (!scope.serviceInfo.name || !scope.serviceInfo.label) {
+                        scope.serviceInfoError = true;
+                        __throwApiError(scope.serviceInfo);
+                        return;
+                    } else {
+                        scope.serviceInfoError = false;
+                    }
 
                     if (scope.newService) {
 
@@ -460,6 +495,22 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     scope.serviceDetails.record.service_doc_by_service_id = scope.prepareServiceDefinition();
                 };
 
+                scope.clearCache = function () {
+                    $http.delete(INSTANCE_URL.url + '/system/cache/' + scope.serviceDetails.record.name)
+                        .then(function () {},
+                            function (error) {
+
+                            var messageOptions = {
+                                module: 'Api Error',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: error
+                            };
+
+                            dfNotify.error(messageOptions);
+                        });
+                };
+
                 scope.closeEditor = function () {
 
                     // same object as currentEditService used in ng-show
@@ -471,6 +522,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     $timeout(function(){
                         angular.element('#info-tab').trigger('click');
                     });
+
+                    // reset errors
+                    scope.serviceInfoError = false;
 
                     // force to manage view
                     scope.$emit('sidebar-nav:view:reset');
@@ -584,6 +638,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                                 provider: 'dreamfactory',
                                 message: 'Service updated successfully'
                             };
+
+                            if (scope.selections.saveAndClearCache) {
+                                scope.clearCache();
+                                messageOptions.message = 'Service updated successfully and cache cleared.';
+                            }
 
                             dfNotify.success(messageOptions);
 
@@ -739,6 +798,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                 // grouped list of service types for building service type menu
                 scope.serviceTypes = [];
+
+                scope.serviceInfoError = false;
 
                 // this will be updated by the watcher for serviceDetails when a service is loaded into the editor
                 // all user changes are applied to scope.serviceInfo
@@ -1108,8 +1169,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         text: 'Select the type of service you\'re adding.'
                     },
                     name: {
-                        title: 'Name ',
-                        text: 'Select a name for making API requests, such as \'db\' in /api/v2/db. It should be lowercase and alphanumeric.'
+                        title: 'Namespace ',
+                        text: 'Select a namespace used for the API’s URI structure, such as \'db\' in /api/v2/db. It should be lowercase and alphanumeric.'
                     },
                     label: {
                         title: 'Label ',

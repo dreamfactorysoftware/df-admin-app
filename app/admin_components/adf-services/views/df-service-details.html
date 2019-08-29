@@ -6,7 +6,7 @@
     <form class="df-inputs-width" data-ng-submit="saveOrUpdateService(saveAndClose)" autocomplete="off">
 
         <ul class="nav nav-tabs" data-role="tablist">
-            <li class="active"><a showtab href="#info" id="info-tab" ng-click="refreshServiceInfoEditor()">Info</a></li>
+            <li class="active"><a showtab href="#info" id="info-tab" ng-click="refreshServiceInfoEditor()" data-ng-class="serviceInfoError ? 'df-tab-has-error' : ''">Info</a></li>
             <li class="vert-nav-divider">
                 |
             </li>
@@ -53,6 +53,12 @@
                        type="submit"
                        value="Save and Close"
                        data-ng-click="selections.saveAndClose=true"/>
+                <input data-ng-if="!newService && !isInfoTab && selectedSchema && selectedSchema.config_schema"
+                       id="services_details_save_clear_cache"
+                       class="btn btn-default btn-primary save-service-btn"
+                       type="submit"
+                       value="Save and Clear Cache"
+                       data-ng-click="selections.saveAndClearCache=true"/>
                 <button data-ng-if="selectedSchema && selectedSchema.config_schema"
                         id="services_details_cancel"
                         type="button"
