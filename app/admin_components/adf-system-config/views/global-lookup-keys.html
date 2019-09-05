@@ -4,7 +4,7 @@
     <div class="row">
 
         <div class="col-sm-4 col-md-3">
-            <select id="select-global-lookup" class="form-control input-sm" data-ng-model="$parent.selectedLookup"
+            <select id="select-global-lookup" class="form-control input-sm" data-ng-model="selectedLookup"
                     data-ng-options="lookup as lookup.record.name for lookup in globalLookups"
                     data-ng-change="changeLookup()">
                 <option value="">-- Select Lookup Key --</option>
