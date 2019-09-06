@@ -1314,7 +1314,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 };
 
                 scope.getSpreadsheetUploadUrl = function () {
-                    var storagePath = scope.serviceConfig.storage_container;
+                    var storagePath = scope.serviceConfig.storage_container || '/';
                     var endsWith = storagePath.endsWith('/');
                     var startsWith = storagePath.startsWith('/');
 

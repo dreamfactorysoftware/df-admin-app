@@ -16,9 +16,7 @@
             </div>
         </div>
 
-
-        <div class="form-group ng-scope"
-             data-ng-if="selectedSchema.name === 'excel' && field.type == 'integer' && field.name === 'storage_service_id'">
+        <div class="form-group ng-scope" data-ng-if="field.name === 'storage_container'">
             <div class="form-group">
                 <label>Storage Service </label>
                 <select id="selected_storage_service" class="input-sm"
@@ -62,7 +60,7 @@
                 </div>
             </div>
         </div>
-        </div>
+
         <div class="form-group ng-scope" data-ng-if="field.type != 'boolean' && field.name !== 'storage_service_id' && field.name !== 'storage_path' && field.name !== 'storage_container' && field.name !== 'scm_reference' && field.name !== 'scm_repository'">
             <label>{{ field.label }}</label>
             <df-simple-help data-options="field" data-ng-if="field.description"></df-simple-help>
@@ -112,7 +110,7 @@
             </div>
         </div>
 
-        <input class="form-control" data-ng-if="field.type == 'string' && field.name !== 'storage_path'&& field.name !== 'storage_container' && field.name !== 'scm_reference' && field.name !== 'scm_repository'"
+        <input class="form-control" data-ng-if="field.type == 'string' && field.name !== 'storage_path' && field.name !== 'storage_container' && field.name !== 'scm_reference' && field.name !== 'scm_repository'"
                id="services_details_config_string_{{$index}}"
                data-ng-model="serviceConfig[field.name]"
                type="text" data-ng-required="field.required"/>
@@ -157,7 +155,7 @@
         </select>
 
         <df-file-certificate data-ng-if="field.type == 'file_certificate'"
-                           data-selected="serviceConfig[field.name]">
+                             data-selected="serviceConfig[field.name]">
         </df-file-certificate>
 
         <df-multi-picklist data-ng-if="field.type == 'multi_picklist'"
