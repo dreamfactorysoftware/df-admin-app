@@ -31,6 +31,16 @@ Then to rebuild dist folder:
 grunt build
 ```
 
+Or you can simply run a development mode using Docker:
+```
+docker-compose up
+```
+
+To build with Docker:
+```
+docker-compose run --rm web-dev bash -c "grunt build --force && chmod -R a+rwX ."
+```
+
 The final compiled CSS will be written to `app/styles/styles.css`.
 
 ## Building a release version

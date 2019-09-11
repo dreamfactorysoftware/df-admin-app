@@ -1,0 +1,10 @@
+FROM node
+
+COPY . /app
+
+WORKDIR /app
+
+RUN npm install -g bower
+RUN npm install -g grunt-cli
+
+CMD npm install && bower --allow-root install && grunt serve --force
