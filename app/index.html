@@ -132,13 +132,48 @@
     <script src="vendor/ace/mode-yaml.js"></script>
 
 <script>
+  setTimeout(function(){
 
-  window.intercomSettings = {
-    app_id: "ymvqkyiw"
-  };
+      var _updateIntercom = function(userData) {
+          var host = $body.injector().get("$location").host();
+
+          var intercomData = {
+              email: userData.email,
+              name: userData.name,
+              firstName: userData.first_name,
+              lastName: userData.last_name,
+              host: host,
+          }
+
+          window.Intercom('update', intercomData);
+      }
+
+      var $body = angular.element(document.body),
+          es = $body.injector().get("UserEventsService").login,
+          $rootScope = $body.scope().$root
+
+      // Handle a case when user has logged in and so update the widget with user data
+      $rootScope.$on(es.loginSuccess, function (e, userData) {
+          _updateIntercom(userData);
+      });
+
+      // Handle a case when user is not logged in. Just show the widget
+      window.Intercom('boot', {
+          app_id: "ymvqkyiw",
+      });
+
+      // Handle a case when user is logged in and reloads the page
+      var currentUser = $body.injector().get("UserDataService").getCurrentUser();
+      if (currentUser) {
+          _updateIntercom(currentUser);
+      }
+  }, 1000)
+
+
 </script>
 
-<script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/ymvqkyiw';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
+<script>
+    (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/ymvqkyiw';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
 </script>
 
   </body>
