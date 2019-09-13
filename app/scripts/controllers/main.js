@@ -27,20 +27,12 @@ angular.module('dreamfactoryApp')
             $scope.topLevelLinks = [
 
                 {
-                    path: 'https://www.dreamfactory.com/products',
+                    path: 'https://genie.dreamfactory.com/pricing',
                     target: '_blank',
-                    label: 'Upgrade',
+                    label: 'Subscribe',
                     name: 'upgrade',
                     icon: dfIconService().upgrade,
-                    show: false
-                },
-                {
-                    path: 'http://www.dreamfactory.com/support',
-                    target: '_blank',
-                    label: 'Support',
-                    name: 'support',
-                    icon: dfIconService().support,
-                    show: false
+                    show: true
                 },
                 {
                     path: '#/launchpad',
@@ -379,7 +371,9 @@ angular.module('dreamfactoryApp')
                     links.push("launchpad");
                 }
 
-                if (systemConfig.hasOwnProperty('platform') && systemConfig.platform.license == 'OPEN SOURCE'){
+                // Temporarily commenting this to hot fix subscribe link
+                // if (systemConfig.hasOwnProperty('platform') && systemConfig.platform.license == 'OPEN SOURCE'){
+                if (systemConfig.hasOwnProperty('platform')){
                     links.push("upgrade");
                 }
             }
