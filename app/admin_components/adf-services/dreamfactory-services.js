@@ -1206,7 +1206,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 scope.isArray = angular.isArray;
                 scope.disableServiceLinkRefresh = true;
                 scope.uploadSpreadsheet = null;
-                scope.allowedSpreadsheetFormats = '.csv,.xlsx,.XLS';
                 scope.spreadsheetUploadPath = null;
 
                 scope.selections = {

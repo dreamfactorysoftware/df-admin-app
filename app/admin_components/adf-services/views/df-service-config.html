@@ -32,7 +32,7 @@
                        data-ng-model="serviceConfig.storage_container"/>
             </div>
             <div ng-show="selections.service">
-                <label>Download a spreadsheet </label>
+                <label>Upload a spreadsheet </label>
                 <div class="form-inline">
                     <div class="input-group">
 					<span class="input-group-btn">
@@ -43,7 +43,7 @@
                             Browse
                         </button>
 					</span>
-                        <input type="text" size="80" class="form-control" data-ng-model="spreadsheetUploadPath" placeholder="Choose a spreadsheet or enter URL to a spreadsheet">
+                        <input type="text" size="80" class="form-control" data-ng-model="spreadsheetUploadPath" placeholder="Choose a spreadsheet">
                     </div>
                     <input style="display: none;"
                            type="file"
@@ -52,7 +52,6 @@
                            data-ng-model="uploadSpreadsheet"
                            data-file-model="uploadSpreadsheet"
                            file-model-2
-                           accept="{{allowedSpreadsheetFormats}}"
                     />
                     <span class="form-controls">
                         <button data-ng-show="spreadsheetUploadPath" type="button" class="btn btn-default btn-primary save-service-btn ng-scope" data-ng-click="handleSpreadsheet()">Upload Spreadsheet</button>
