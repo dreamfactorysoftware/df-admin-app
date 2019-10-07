@@ -38,11 +38,11 @@
                             data-ng-change="resetServiceLink()">
                         <option value="">-- None --</option>
                     </select>
-                    <span class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab' || selections.service.type === 'bitbucket' || selections.service.type === 'bitbucket2')">
+                    <span class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab' || selections.service.type === 'bitbucket')">
                         <span>Repository: </span>
                         <input size="10" id="selected_service_repo" class="form-inline input-sm" data-ng-model="serviceConfig.scm_repository" />
                     </span>
-                    <span class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab' || selections.service.type === 'bitbucket' || selections.service.type === 'bitbucket2')">
+                    <span class="form-group" ng-show="selections.service && (selections.service.type === 'github' || selections.service.type === 'gitlab' || selections.service.type === 'bitbucket')">
                         <span>Branch/Tag: </span>
                         <input size="10" id="selected_service_ref" class="form-inline input-sm" data-ng-model="serviceConfig.scm_reference" />
                     </span>
