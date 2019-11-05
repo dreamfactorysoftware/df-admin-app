@@ -16,8 +16,51 @@
             </div>
         </div>
 
+        <div class="form-group ng-scope" data-ng-if="field.name === 'storage_container'">
+            <div class="form-group">
+                <label>Storage Service </label>
+                <select id="selected_storage_service" class="input-sm"
+                        data-ng-model="selections.service"
+                        data-ng-options="item as item.label for item in apiData['storage_service_link'] track by item.id"
+                        data-ng-change="resetServiceLink()">
+                    <option value="">-- None --</option>
+                </select>
+            </div>
+            <div class="form-group" ng-show="selections.service">
+                <label>Storage Container Path </label>
+                <input id="selected_service__container_path" class="form-inline input-sm"
+                       data-ng-model="serviceConfig.storage_container"/>
+            </div>
+            <div ng-show="selections.service">
+                <label>Upload a spreadsheet </label>
+                <div class="form-inline">
+                    <div class="input-group">
+					<span class="input-group-btn">
+						<button class="btn btn-default"
+                                type="button"
+                                data-ng-click="browseFileSystem()"
+                        >
+                            Browse
+                        </button>
+					</span>
+                        <input type="text" size="80" class="form-control" data-ng-model="spreadsheetUploadPath" placeholder="Choose a spreadsheet" readonly>
+                    </div>
+                    <input style="display: none;"
+                           type="file"
+                           class="btn btn-default"
+                           id="spreadsheetSelect"
+                           data-ng-model="uploadSpreadsheet"
+                           data-file-model="uploadSpreadsheet"
+                           file-model-2
+                    />
+                    <span class="form-controls">
+                        <button data-ng-show="spreadsheetUploadPath" type="button" class="btn btn-default btn-primary save-service-btn ng-scope" data-ng-click="handleSpreadsheet()">Upload Spreadsheet</button>
+                    </span>
+                </div>
+            </div>
+        </div>
 
-        <div class="form-group ng-scope" data-ng-if="field.type != 'boolean' && field.name !== 'storage_service_id' && field.name !== 'storage_path' && field.name !== 'scm_reference' && field.name !== 'scm_repository'">
+        <div class="form-group ng-scope" data-ng-if="field.type != 'boolean' && field.name !== 'storage_service_id' && field.name !== 'storage_path' && field.name !== 'storage_container' && field.name !== 'scm_reference' && field.name !== 'scm_repository'">
             <label>{{ field.label }}</label>
             <df-simple-help data-options="field" data-ng-if="field.description"></df-simple-help>
 
@@ -66,7 +109,7 @@
             </div>
         </div>
 
-        <input class="form-control" data-ng-if="field.type == 'string' && field.name !== 'storage_path' && field.name !== 'scm_reference' && field.name !== 'scm_repository'"
+        <input class="form-control" data-ng-if="field.type == 'string' && field.name !== 'storage_path' && field.name !== 'storage_container' && field.name !== 'scm_reference' && field.name !== 'scm_repository'"
                id="services_details_config_string_{{$index}}"
                data-ng-model="serviceConfig[field.name]"
                type="text" data-ng-required="field.required"/>
@@ -111,7 +154,7 @@
         </select>
 
         <df-file-certificate data-ng-if="field.type == 'file_certificate'"
-                           data-selected="serviceConfig[field.name]">
+                             data-selected="serviceConfig[field.name]">
         </df-file-certificate>
 
         <df-multi-picklist data-ng-if="field.type == 'multi_picklist'"

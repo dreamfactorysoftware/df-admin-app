@@ -79,6 +79,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         params['api'] = 'event';
                         break;
                     case 'service_link':
+                    case 'storage_service_link':
                     case 'service_list':
                     case 'service_type_list':
                         // for this call use /api/v2 not /api/v2/system
@@ -90,7 +91,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }
                 dfSystemData.resource(options).get(params).$promise.then(
                     function (response) {
-                        if (api === 'service_link' || api === 'service_list') {
+                        if (api === 'service_link' || api === 'service_list' || api === 'storage_service_link') {
                             // add resource wrapper for consistency at higher levels
                             dfApplicationObj.apis[api] = {"resource": response.services};
                         } else if (api === 'service_type_list') {
@@ -302,6 +303,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     },
                     service_link: {
                         group:"source control,file"
+                    },
+                    storage_service_link: {
+                        group:"file"
                     },
                     service_list: {
                     },

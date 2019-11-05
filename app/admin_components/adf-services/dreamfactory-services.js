@@ -64,7 +64,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
             $scope.dataLoading = true;
 
             // eventlist is loaded only as needed to improve user experience
-            var apis = ['service', 'service_link', 'service_type', 'environment'];
+            var apis = ['service', 'service_link', 'storage_service_link', 'service_type', 'environment'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -1184,7 +1184,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
             }
         };
     }])
-    .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfObjectService', '$compile', '$rootScope', 'dfNotify', '$http', 'INSTANCE_URL', function (MOD_SERVICES_ASSET_PATH, dfApplicationData, dfObjectService, $compile, $rootScope, dfNotify, $http, INSTANCE_URL) {
+    .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfObjectService', '$compile', '$rootScope', 'dfNotify', '$http', 'INSTANCE_URL', 'UserDataService', function (MOD_SERVICES_ASSET_PATH, dfApplicationData, dfObjectService, $compile, $rootScope, dfNotify, $http, INSTANCE_URL, UserDataService) {
 
 
         return {
@@ -1192,7 +1192,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
             scope: false,
             templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-config.html',
             link: function (scope, elem, attrs) {
-
                 // this will be updated by the watcher for serviceDetails when a service is loaded into the editor
                 // all user changes are applied to scope.serviceConfig
                 // prepareServiceConfig copies the settings back to serviceDetails.record
@@ -1206,6 +1205,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 scope.serviceConfigEditorObj={'editor': null};
                 scope.isArray = angular.isArray;
                 scope.disableServiceLinkRefresh = true;
+                scope.uploadSpreadsheet = null;
+                scope.spreadsheetUploadPath = null;
+
                 scope.selections = {
                     "service": null
                 };
@@ -1225,6 +1227,103 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         reader.onerror = function (evt) {
                         };
                     }
+                };
+
+                scope.browseFileSystem = function () {
+                    scope.spreadsheetUploadClear();
+
+                    var field = angular.element('#spreadsheetSelect');
+                    if (field) {
+                        field.bind('change', function (event) {
+                            var file = event.target.files[0];
+                            scope.uploadSpreadsheet = file ? file : undefined;
+                            scope.$apply();
+                        });
+                    }
+                    field.trigger('click');
+                };
+
+                scope.handleSpreadsheet = function () {
+                    var file = scope.uploadSpreadsheet;
+                    if (file === undefined || file === null) {
+                        file = scope.spreadsheetUploadPath;
+                    }
+
+                    if (file) {
+
+                        var currentUser = UserDataService.getCurrentUser();
+
+                        // unset content type, it'll get set later
+
+                        $http({
+                            method: 'POST',
+                            url: scope.getSpreadsheetUploadUrl(),
+                            headers: {
+                                'X-DreamFactory-Session-Token': currentUser.session_token,
+                                'Content-Type': undefined
+                            },
+                            data: {
+                                files: file,
+                                import_url: file
+                            },
+                            transformRequest: function (data) {
+
+                                var formData = new FormData();
+
+                                angular.forEach(data, function (value, key) {
+                                    formData.append(key, value);
+                                });
+
+                                return formData;
+                            }
+                        }).then(function (result) {
+
+                            if (result && result.data && result.data.resource) {
+
+                                var messageOptions = {
+                                    module: 'Services',
+                                    provider: 'dreamfactory',
+                                    type: 'success',
+                                    message: 'Spreadsheet was uploaded successfully.'
+                                };
+
+                                dfNotify.success(messageOptions);
+
+                                scope.spreadsheetUploadClear();
+                            }
+                        }, function (reject) {
+
+                            var messageOptions = {
+                                module: 'Services',
+                                provider: 'dreamfactory',
+                                type: 'error',
+                                message: reject
+                            };
+
+                            dfNotify.error(messageOptions);
+                        });
+                    }
+                };
+
+                scope.spreadsheetUploadClear = function () {
+
+                    scope.uploadSpreadsheet = null;
+                    angular.element('#spreadsheetSelect').val('');
+                    scope.spreadsheetUploadPath = null;
+                };
+
+                scope.getSpreadsheetUploadUrl = function () {
+                    var storagePath = scope.serviceConfig.storage_container || '/';
+                    var endsWith = storagePath.endsWith('/');
+                    var startsWith = storagePath.startsWith('/');
+
+                    if (!startsWith) {
+                        storagePath = '/' + storagePath;
+                    }
+                    if (!endsWith) {
+                        storagePath = storagePath + '/';
+                    }
+                    return INSTANCE_URL.url + '/' + scope.selections.service.name + storagePath;
                 };
 
                 scope.getRefreshEnable = function() {
@@ -1450,6 +1549,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'python':
                         case 'python3':
                         case 'v8js':
+                        case 'excel':
                             scope.selections.service = scope.getServiceById(scope.serviceConfig.storage_service_id);
                             break;
                         default:
@@ -1583,6 +1683,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     }
                 });
 
+                var watchUploadSpreadsheet = scope.$watch('uploadSpreadsheet', function (n, o) {
+
+                    if (!n) return;
+
+                    scope.spreadsheetUploadPath = n.name;
+                });
 
                 scope.$on('$destroy', function (e) {
 
@@ -1591,6 +1697,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     watchEventList();
                     watchConfig();
                     watchSelections();
+                    watchUploadSpreadsheet();
                 });
 
                 scope.prepareServiceConfig = function () {
@@ -1640,6 +1747,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                             config.storage_path = (config.storage_path ? config.storage_path : null);
                         }  else {
                             config.storage_path = null;
+                        }
+                    }
+
+                    if (type === 'excel') {
+
+                        // storage service to link to
+                        config.storage_service_id = (scope.selections.service ? scope.selections.service.id : null);
+
+                        // path is allowed for any link service, replace empty string with null
+                        if (scope.selections.service) {
+                            config.storage_container = (config.storage_container ? config.storage_container : null);
+                        }  else {
+                            config.storage_container = null;
                         }
                     }
 
