@@ -753,7 +753,7 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
         };
     }])
 
-    .directive('schedulerTaskConfig', ['MOD_SCHEDULER_ASSET_PATH', function (MOD_SCHEDULER_ASSET_PATH) {
+    .directive('schedulerTaskConfig', ['MOD_SCHEDULER_ASSET_PATH', 'INSTANCE_URL', '$http', 'dfNotify', function (MOD_SCHEDULER_ASSET_PATH, INSTANCE_URL, $http, dfNotify) {
 
         return {
             restrict: 'E',
@@ -786,6 +786,14 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                     document.getElementById('task_verb_picker').click();
                 };
 
+                // PRIVATE
+
+                scope._getComponents = function () {
+
+                    var name = scope.task.record.service.name;
+                    return $http.get(INSTANCE_URL.url + '/' + name + '/?as_access_list=true');
+                };
+
                 // WATCHERS
 
                 var watchTaskService = scope.$watch('task.record.service', function (newValue, oldValue) {
@@ -793,8 +801,39 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                     if (!newValue) {
                         return false;
                     }
+
+                    console.log(scope.task);
                     scope.task.record.service_id = newValue.id;
                     scope.task.record.service_name = newValue.name;
+
+                    var components = ['', '*'];
+
+                    scope._getComponents().then(
+
+                        function (result) {
+
+                            components = result.data.resource;
+                        },
+
+                        function (reject) {
+
+                            scope.task.__dfUI.hasError = true;
+                            scope.task.record.component = null;
+
+                            var messageOptions = {
+                                module: 'Scheduler',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            };
+
+                            dfNotify.error(messageOptions);
+                        }
+                    ).finally(
+                        function () {
+                            scope.task.record.service.components = components;
+                        }
+                    );
                 });
 
                 var watchServiceData = scope.$watchCollection('apiData.service_list', function (newValue, oldValue) {
