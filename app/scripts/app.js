@@ -36,7 +36,8 @@ angular
         'dfFileManager',
         'dfPackageManager',
         'dfLimit',
-        'dfReports'
+        'dfReports',
+        'dfScheduler'
     ])
 
     // each tab uses this in its resolve function to make sure user is allowed access
@@ -119,7 +120,7 @@ angular
     .constant('APP_VERSION', '3.1.0')
 
     // Set global url for this application
-    .constant('INSTANCE_BASE_URL', '')
+    .constant('INSTANCE_BASE_URL', 'http://localhost')
 
     // Make prefix configurable
     .constant('INSTANCE_API_PREFIX', '/api/v2')
