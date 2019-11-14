@@ -771,9 +771,6 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
 
                 scope.taskPayloadEditorObj = {"editor": null};
                 scope.taskPayloadUpdateCounter = 0;
-                if (scope.newTask) {
-                    scope.task.record.verb = 'GET';
-                }
 
                 scope._toggleVerbState = function (nameStr, event) {
                     if (event !== undefined) {

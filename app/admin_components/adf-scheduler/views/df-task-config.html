@@ -34,7 +34,7 @@
                     <div class="btn-group dropdown">
                         <button type="button" id="task_verb_picker" class="btn btn-default dropdown-toggle"
                                 data-toggle="dropdown" style="padding-left: 12px">
-                            {{task.record.verb}} <span class="caret"></span>
+                            {{task.record.verb || 'GET'}} <span class="caret"></span>
                         </button>
                         <div style="padding: 0" class="dropdown-menu list-group" role="menu">
                             <a class="list-group-item" data-ng-click="_toggleVerbState(verb.name, $event)"
