@@ -11,6 +11,9 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                     templateUrl: MOD_SCHEDULER_ASSET_PATH + 'views/main.html',
                     controller: 'SchedulerCtrl',
                     resolve: {
+                        checkAdmin:['checkAdminService', function (checkAdminService) {
+                            return checkAdminService.checkAdmin();
+                        }],
                         checkUser: ['checkUserService', function (checkUserService) {
                             return checkUserService.checkUser();
                         }]
