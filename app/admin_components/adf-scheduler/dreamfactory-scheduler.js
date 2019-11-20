@@ -519,6 +519,12 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                     } else {
                         scope.basicInfoError = false;
                     }
+
+                    scope.prepareTaskPayload();
+                };
+
+                scope.prepareTaskPayload = function () {
+                    scope.task.record.payload = scope.taskPayloadEditorObj.editor.getValue();
                 };
 
                 scope.refreshTaskEditor = function ($event) {
@@ -802,7 +808,6 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                         return false;
                     }
 
-                    console.log(scope.task);
                     scope.task.record.service_id = newValue.id;
                     scope.task.record.service_name = newValue.name;
 
