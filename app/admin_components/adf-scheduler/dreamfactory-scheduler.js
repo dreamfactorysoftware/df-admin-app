@@ -452,6 +452,7 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                         component: null,
                         id: null,
                         verb_mask: 1,
+                        verb: 'GET',
                         frequency: 1
                     };
 
@@ -523,11 +524,27 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                         scope.basicInfoError = false;
                     }
 
-                    scope.prepareTaskPayload();
+                    if (!scope.task.record.service_id || !scope.task.record.service) {
+                        scope.noServiceIdError = true;
+                        var msg = "Service is required.";
+                        var messageOptions = {
+                            module: 'Api Error',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: msg
+                        };
+
+                        dfNotify.error(messageOptions);
+                        return;
+                    }
+
+                        scope.prepareTaskPayload();
                 };
 
                 scope.prepareTaskPayload = function () {
-                    scope.task.record.payload = scope.taskPayloadEditorObj.editor.getValue();
+                    if(scope.task.record.verb !== 'GET'){
+                        scope.task.record.payload = scope.taskPayloadEditorObj.editor.getValue();
+                    }
                 };
 
                 scope.refreshTaskEditor = function ($event) {
@@ -807,8 +824,12 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
 
                 var watchTaskService = scope.$watch('task.record.service', function (newValue, oldValue) {
 
-                    if (!newValue) {
+                    if (!newValue && !scope.task) {
                         return false;
+                    } else if (!newValue) {
+                        scope.task.record.service_id = null;
+                        scope.task.record.service_name = null;
+                        return;
                     }
 
                     scope.task.record.service_id = newValue.id;

@@ -1,6 +1,6 @@
 <div>
     <div class="form-group ng-scope">
-        <div class="form-group btn-group" role="group" aria-label="">
+        <div class="form-group btn-group" data-ng-class="noServiceIdError ? 'df-tab-has-error' : ''" role="group" aria-label="">
             <label for="tasks_details_config_{{$parent.$index}}">Service</label>
             <select class="form-control input-sm"
                     id="tasks_details_config_{{$parent.$index}}"
