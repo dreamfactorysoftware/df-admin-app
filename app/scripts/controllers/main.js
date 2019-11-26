@@ -180,6 +180,11 @@ angular.module('dreamfactoryApp')
                     name: 'limit',
                     label: 'Limits',
                     path: '/limits'
+                },
+                scheduler: {
+                    name: 'scheduler',
+                    label: 'Scheduler',
+                    path: '/scheduler'
                 }
         };
 
@@ -438,6 +443,7 @@ angular.module('dreamfactoryApp')
                 case '/package-manager':
                 case '/limits':
                 case '/reports':
+                case '/scheduler':
                     $scope.showAdminComponentNav = true;
                     break;
                 default:

@@ -338,6 +338,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         include_count: true,
                         limit: limit
                     },
+                    scheduler: {
+                        include_count: true,
+                        limit: limit
+                    },
                 }
             };
         }

@@ -508,7 +508,8 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     {name: 'scripts', title: "Scripts", checked: true},
                     {name: 'config', title: "Config", checked: true},
                     {name: 'packages', title: "Packages", checked: true},
-                    {name: 'limits', title: "Limits", checked: true}
+                    {name: 'limits', title: "Limits", checked: true},
+                    {name: 'scheduler', title: "Scheduler", checked: true}
                 ];
                 scope.areAllTabsSelected = true;
 
