@@ -6,9 +6,11 @@
         <df-section-header data-title="'Manage Tasks'"></df-section-header>
 
         <df-section-toolbar>
-            <df-toolbar-paginate data-api="'scheduler'" ></df-toolbar-paginate>
+            <df-toolbar-paginate data-api="'scheduler'"></df-toolbar-paginate>
             <div class="btn-group btn-group-sm hidden-xs df-btn-group">
-                <button class="btn btn-default" data-ng-click="deleteSelectedTasks()" data-ng-disabled="selectedTasks.length === 0" title="Delete selected tasks"><i class="fa fa-fw fa-trash"></i></button>
+                <button class="btn btn-default" data-ng-click="deleteSelectedTasks()"
+                        data-ng-disabled="selectedTasks.length === 0" title="Delete selected tasks"><i
+                        class="fa fa-fw fa-trash"></i></button>
             </div>
             <div style="clear: both"></div>
         </df-section-toolbar>
@@ -39,7 +41,9 @@
                         </th>
                         </thead>
                         <tbody>
-                        <tr data-ng-repeat="obj in tasks | orderObjectBy:order.orderBy:order.orderByReverse" class="repeated-item" class="repeated-item" data-ng-class="obj.__dfUI.selected ? 'danger' : ''">
+                        <tr data-ng-repeat="obj in tasks | orderObjectBy:order.orderBy:order.orderByReverse"
+                            class="repeated-item" class="repeated-item"
+                            data-ng-class="obj.__dfUI.selected ? 'danger' : ''">
                             <td style="width: 80px;">
                                 <div class="cell-content">
                                     <div class="checkbox" style="margin: 0">
@@ -68,6 +72,15 @@
                                     </span>
                                     </div>
 
+                                    <div ng-switch-when="has_log">
+                                    <span ng-if="value == true" data-ng-class="value ? 'df-tab-has-error' : ''">
+                                                <i class="fa fa-warning" ng-></i>
+                                    </span>
+                                        <span ng-if="value == false">
+                                                -
+                                    </span>
+                                    </div>
+
                                     <div ng-switch-default>
                                         {{value}}
                                     </div>
@@ -84,7 +97,8 @@
 
     <!-- Edit Role -->
     <div data-ng-show="currentEditTask">
-        <df-task-details data-task-data="currentEditTask" data-new-task="false" data-api-data="apiData"></df-task-details>
+        <df-task-details data-task-data="currentEditTask" data-new-task="false"
+                         data-api-data="apiData"></df-task-details>
     </div>
 
 </div>
