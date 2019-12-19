@@ -785,11 +785,11 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                     },
                     config: {
                         title: 'Scheduler Task Config',
-                        text: 'This section is responsible for scheduler task config: service, component, method, frequency, payload.'
+                        text: 'Use this interface to configure scheduled calls for an API endpoint.'
                     },
                     log: {
                         title: 'Scheduler Task Log',
-                        text: 'This section is responsible for showing scheduler task error log.'
+                        text: 'This interface displays the scheduler task error log.'
                     }
                 };
             }
