@@ -58,6 +58,9 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
             $scope.$broadcast('toolbar:paginate:scheduler:destroy');
         });
 
+        $scope.schedulerEnabled = false;
+        $scope.subscription_required = false;
+
         // load data
 
         $scope.apiData = null;
@@ -66,34 +69,55 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
 
             $scope.dataLoading = true;
 
-            // eventlist is loaded only as needed to improve user experience
-            var apis = ['scheduler', 'service_list'];
+            var errorFunc = function (error) {
+                var msg = 'There was an error loading data for the Scheduler tab. Please try refreshing your browser and logging in again.';
+                if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
+                    msg = 'To use the Scheduler tab your role must allow GET access to system/scheduler. To create, update, or delete scheduled tasks you need POST, PUT, DELETE access to /system/scheduler and/or /system/scheduler/*.';
+                    $location.url('/home');
+                }
+                var messageOptions = {
+                    module: 'Scheduler',
+                    provider: 'dreamfactory',
+                    type: 'error',
+                    message: msg
+                };
+                dfNotify.error(messageOptions);
+            };
 
-            dfApplicationData.getApiData(apis).then(
+            // first get system data to decide whether to load other data
+            dfApplicationData.getApiData(['system']).then(
                 function (response) {
-                    var newApiData = {};
-                    apis.forEach(function (value, index) {
-                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                    angular.forEach(response[0].resource, function (value) {
+                        if (value.name === 'scheduler') {
+                            $scope.schedulerEnabled = true;
+                        }
                     });
-                    $scope.apiData = newApiData;
-                    if (init) {
-                        $scope.$broadcast('toolbar:paginate:scheduler:load');
+                    if (!$scope.schedulerEnabled) {
+                        // scheduler not enabled, disable UI
+                        $scope.subscription_required = true;
+                        /* Disable ability to navigate to create */
+                        $scope.links[1].path = $scope.links[0].path;
+                    } else {
+                        // eventlist is loaded only as needed to improve user experience
+                        var apis = ['scheduler', 'service_list'];
+
+                        dfApplicationData.getApiData(apis).then(
+                            function (response) {
+                                var newApiData = {};
+                                apis.forEach(function (value, index) {
+                                    newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                                });
+                                $scope.apiData = newApiData;
+                                if (init) {
+                                    $scope.$broadcast('toolbar:paginate:scheduler:load');
+                                }
+                            },
+                            errorFunc
+                        );
                     }
                 },
-                function (error) {
-                    var msg = 'There was an error loading data for the Scheduler tab. Please try refreshing your browser and logging in again.';
-                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                        msg = 'To use the Scheduler tab your role must allow GET access to system/scheduler. To create, update, or delete scheduled tasks you need POST, PUT, DELETE access to /system/scheduler and/or /system/scheduler/*.';
-                        $location.url('/home');
-                    }
-                    var messageOptions = {
-                        module: 'Scheduler',
-                        provider: 'dreamfactory',
-                        type: 'error',
-                        message: msg
-                    };
-                    dfNotify.error(messageOptions);
-                }
+                // error getting system data
+                errorFunc
             ).finally(function () {
                 $scope.dataLoading = false;
             });
@@ -111,13 +135,14 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
             templateUrl: MOD_SCHEDULER_ASSET_PATH + 'views/df-manage-tasks.html',
             link: function (scope, elem, attrs) {
 
-                angular.forEach(scope.apiData.service_list, function (svc) {
-                    if (!svc.components) {
-                        svc.components = ["", "*"];
-                    }
-                });
-
-                scope.services = scope.apiData.service_list;
+                if ($rootScope.schedulerEnabled) {
+                    angular.forEach(scope.apiData.service_list, function (svc) {
+                        if (!svc.components) {
+                            svc.components = ["", "*"];
+                        }
+                    });
+                    scope.services = scope.apiData.service_list;
+                }
 
                 var ManagedTask = function (taskData) {
 

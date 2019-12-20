@@ -1,6 +1,6 @@
 <div>
 
-    <div data-ng-hide="currentEditTask">
+    <div data-ng-hide="!schedulerEnabled || currentEditTask">
 
         <!-- Section Header -->
         <df-section-header data-title="'Manage Tasks'"></df-section-header>
@@ -96,9 +96,13 @@
 
 
     <!-- Edit Role -->
-    <div data-ng-show="currentEditTask">
+    <div data-ng-show="schedulerEnabled && currentEditTask">
         <df-task-details data-task-data="currentEditTask" data-new-task="false"
                          data-api-data="apiData"></df-task-details>
+    </div>
+
+    <div data-ng-if="subscription_required">
+        <br/><h4>This feature requires a DreamFactory GOLD product subscription.</h4> Email <a href="mailto:sales@dreamfactory.com" >sales@dreamfactory.com</a> or call +1-415-993-5877 for pricing information.
     </div>
 
 </div>
