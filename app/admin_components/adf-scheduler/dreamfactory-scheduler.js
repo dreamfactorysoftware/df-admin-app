@@ -11,7 +11,7 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                     templateUrl: MOD_SCHEDULER_ASSET_PATH + 'views/main.html',
                     controller: 'SchedulerCtrl',
                     resolve: {
-                        checkAdmin:['checkAdminService', function (checkAdminService) {
+                        checkAdmin: ['checkAdminService', function (checkAdminService) {
                             return checkAdminService.checkAdmin();
                         }],
                         checkUser: ['checkUserService', function (checkUserService) {
@@ -124,6 +124,11 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
 
                     taskData['service_name'] = scope._getService(taskData['service_id']).name;
                     taskData['service'] = scope._getService(taskData['service_id']);
+                    if (taskData.hasOwnProperty('task_log_by_task_id') && taskData.task_log_by_task_id) {
+                        taskData['has_log'] = true;
+                    } else {
+                        taskData['has_log'] = false;
+                    }
                     return {
                         __dfUI: {
                             selected: false
@@ -175,6 +180,11 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                     {
                         name: 'frequency',
                         label: 'Frequency',
+                        active: true
+                    },
+                    {
+                        name: 'has_log',
+                        label: 'Log',
                         active: true
                     }
                 ];
@@ -447,7 +457,7 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                     var newTask = {
                         name: null,
                         description: null,
-                        is_active: false,
+                        is_active: true,
                         service_id: null,
                         component: null,
                         id: null,
@@ -471,6 +481,7 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
 
                 scope.task = null;
                 scope.isBasicTab = true;
+                scope.taskErrorEditorObj = {"editor": null};
 
                 // Is this going to be a new Task
                 if (scope.newTask) {
@@ -538,12 +549,14 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                         return;
                     }
 
-                        scope.prepareTaskPayload();
+                    scope.prepareTaskPayload();
                 };
 
                 scope.prepareTaskPayload = function () {
-                    if(scope.task.record.verb !== 'GET'){
+                    if (scope.task.record.verb !== 'GET') {
                         scope.task.record.payload = scope.taskPayloadEditorObj.editor.getValue();
+                    } else {
+                        scope.task.record.payload = null;
                     }
                 };
 
@@ -772,7 +785,11 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                     },
                     config: {
                         title: 'Scheduler Task Config',
-                        text: 'This section is responsible for scheduler task config: service, component, method, frequency, payload.'
+                        text: 'Use this interface to configure scheduled calls for an API endpoint.'
+                    },
+                    log: {
+                        title: 'Scheduler Task Log',
+                        text: 'This interface displays the scheduler task error log.'
                     }
                 };
             }
@@ -805,10 +822,7 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
 
                     scope.task.record.verb_mask = scope.verbs[nameStr].mask;
                     scope.task.record.verb = nameStr;
-
-                    if (scope.task.record.verb === "GET") {
-                        scope.task.record.payload = null;
-                    }
+                    scope.task.record.payload = scope.taskPayloadEditorObj.editor.getValue();
                     document.getElementById('task_verb_picker').click();
                 };
 
@@ -838,7 +852,6 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                     var components = ['', '*'];
 
                     scope._getComponents().then(
-
                         function (result) {
 
                             components = result.data.resource;

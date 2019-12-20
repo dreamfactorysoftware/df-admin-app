@@ -340,7 +340,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     },
                     scheduler: {
                         include_count: true,
-                        limit: limit
+                        limit: limit,
+                        related: 'task_log_by_task_id'
                     },
                 }
             };
