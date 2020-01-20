@@ -60,7 +60,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
                 return {
                     name: name,
-                    type: 'v8js',
+                    type: 'nodejs',
                     content: '',
                     is_active: false,
                     allow_event_modification: false,
@@ -876,9 +876,6 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                             break;
                         case 'python3':
                             fileExt = 'python3.py';
-                            break;
-                        case 'v8js':
-                            fileExt = 'v8.js';
                             break;
                         default:
                             return;
