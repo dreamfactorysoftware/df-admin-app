@@ -964,11 +964,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         "description": "Service that allows client-callable scripts utilizing the system scripting.",
                         "group": "Script"
                     }, {
-                        "name": "v8js",
-                        "label": "V8js",
-                        "description": "Service that allows client-callable scripts utilizing the system scripting.",
-                        "group": "Script"
-                    }, {
                         "name": "mongodb",
                         "label": "MongoDB",
                         "description": "Database service for MongoDB connections.",
@@ -1548,7 +1543,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'php':
                         case 'python':
                         case 'python3':
-                        case 'v8js':
                         case 'excel':
                             scope.selections.service = scope.getServiceById(scope.serviceConfig.storage_service_id);
                             break;
@@ -1588,10 +1582,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'python3':
                             scope.allowedConfigFormats = '.py,.python';
                             scope.allowedConfigGitFormats = ['py','python'];
-                            break;
-                        case 'v8js':
-                            scope.allowedConfigFormats = '.js';
-                            scope.allowedConfigGitFormats = ['js'];
                             break;
                         default:
                             scope.allowedConfigFormats = '.json,.js,.php,.yaml,.yml';
@@ -1708,8 +1698,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     if (type === 'nodejs' ||
                         type === 'php' ||
                         type === 'python' ||
-                        type === 'python3' ||
-                        type === 'v8js') {
+                        type === 'python3' ) {
 
                         // if linked to a service set script content to empty
                         if (scope.selections.service) {
@@ -1802,7 +1791,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'php':
                         case 'python':
                         case 'python3':
-                        case 'v8js':
                             scope.isServiceDefEditable = true;
                             break;
 
@@ -1822,7 +1810,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'php':
                         case 'python':
                         case 'python3':
-                        case 'v8js':
                             var content = scope.serviceDefEditorObj.editor.getValue();
                             if (content !== "") {
                                 doc = scope.serviceDetails.record.service_doc_by_service_id || {};
@@ -1887,7 +1874,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         case 'php':
                         case 'python':
                         case 'python3':
-                        case 'v8js':
                             // get content and format, if valid, otherwise use defaults
                             var doc = newValue.record.service_doc_by_service_id;
                             if (doc) {

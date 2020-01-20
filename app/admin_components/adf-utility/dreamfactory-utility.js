@@ -1813,7 +1813,7 @@ angular.module('dfUtility', ['dfApplication'])
                         console.log(scope.targetDiv, 'inputFormat', newValue);
                     }
                     if (newValue) {
-                        if (newValue === 'nodejs' || newValue === 'v8js') {
+                        if (newValue === 'nodejs') {
                             newValue = 'javascript';
                         } else if(newValue === 'python3') {
                             newValue = 'python';
