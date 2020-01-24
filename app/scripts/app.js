@@ -117,10 +117,10 @@ angular
     })
 
     // Set application version number
-    .constant('APP_VERSION', '3.1.0')
+    .constant('APP_VERSION', '3.2.0')
 
     // Set global url for this application
-    .constant('INSTANCE_BASE_URL', 'http://localhost')
+    .constant('INSTANCE_BASE_URL', '')
 
     // Make prefix configurable
     .constant('INSTANCE_API_PREFIX', '/api/v2')
