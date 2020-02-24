@@ -884,6 +884,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         "description": "SAML 2.0 service supporting SSO.",
                         "group": "SSO"
                     }, {
+                        "name": "okta-saml",
+                        "label": "Okta SAML",
+                        "description": "Okta service supporting SSO.",
+                        "group": "SSO"
+                    }, {
                         "name": "ibmdb2",
                         "label": "IBM DB2",
                         "description": "Database service supporting IBM DB2 SQL connections.",
@@ -942,6 +947,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         "name": "mysql",
                         "label": "MySQL",
                         "description": "Database service supporting MySLQ connections.",
+                        "group": "Database"
+                    }, {
+                        "name": "mariadb",
+                        "label": "MariaDB",
+                        "description": "Database service supporting MariaDB connections."
                         "group": "Database"
                     }, {
                         "name": "nodejs",
