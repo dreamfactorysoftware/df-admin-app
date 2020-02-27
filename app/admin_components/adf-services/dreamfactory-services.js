@@ -884,7 +884,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         "description": "SAML 2.0 service supporting SSO.",
                         "group": "SSO"
                     }, {
-                        "name": "okta-saml",
+                        "name": "okta_saml",
                         "label": "Okta SAML",
                         "description": "Okta service supporting SSO.",
                         "group": "SSO"
