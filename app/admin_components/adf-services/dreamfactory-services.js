@@ -951,7 +951,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                     }, {
                         "name": "mariadb",
                         "label": "MariaDB",
-                        "description": "Database service supporting MariaDB connections."
+                        "description": "Database service supporting MariaDB connections.",
                         "group": "Database"
                     }, {
                         "name": "nodejs",
