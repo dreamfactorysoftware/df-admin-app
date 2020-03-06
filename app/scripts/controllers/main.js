@@ -824,4 +824,21 @@ angular.module('dreamfactoryApp')
             e.stopPropagation();
             $scope.confirmLoginErrorMsg = errMsg.data.error.message;
         });
+    }])
+
+    .controller('PaywallCtrl', ['$scope', '$http', 'UserDataService', 'SystemConfigDataService', function($scope, $http, UserDataService, SystemConfigDataService) {
+        $scope.paywallLoaded = function() {
+            var sendData = {
+                email: UserDataService.getCurrentUser().email,
+                ip_address: SystemConfigDataService.getSystemConfig().client.ip_address
+            };
+
+            var req = {
+                method: 'POST',
+                url: 'https://updates.dreamfactory.com/paywall',
+                data: JSON.stringify(sendData)
+            };
+
+            $http(req).then();
+        };
     }]);
