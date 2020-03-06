@@ -51,7 +51,7 @@
         </div>
     </div>
 
-    <div data-ng-if="selectedSchema && !selectedSchema.available">
-        <br/><h4>This feature requires a DreamFactory {{selectedSchema.subscription_required}} product subscription.</h4> Email <a href="mailto:sales@dreamfactory.com" >sales@dreamfactory.com</a> or call +1-415-993-5877 for pricing information.
+    <div data-ng-if="selectedSchema && !selectedSchema.available" ng-controller="PaywallCtrl">
+        <df-paywall license-type="selectedSchema.subscription_required" service-name="selectedSchema.label"></df-paywall>
     </div>
 </div>

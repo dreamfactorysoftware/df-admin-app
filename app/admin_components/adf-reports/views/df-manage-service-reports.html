@@ -4,7 +4,7 @@
     <div data-ng-hide="!reportsEnabled">
 
         <!-- Section Header -->
-        <df-section-header data-title="'Manage Service Reports'"></df-section-header>
+        <df-large-help data-options="dfLargeHelp.manageReports"></df-large-help>
 
         <!-- ToolBar -->
         <df-section-toolbar>
@@ -105,7 +105,7 @@
         </div>
     </div>
 
-    <div data-ng-if="subscription_required">
-        <br/><h4>This feature will be available for root admin and requires a DreamFactory GOLD product subscription.</h4> Email <a href="mailto:sales@dreamfactory.com" >sales@dreamfactory.com</a> or call +1-415-993-5877 for pricing information.
+    <div data-ng-if="!reportsEnabled" ng-controller="PaywallCtrl">
+        <df-paywall license-type="'GOLD'" service-name="'Reports'"></df-paywall>
     </div>
 </div>

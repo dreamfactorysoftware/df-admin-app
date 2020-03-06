@@ -101,8 +101,8 @@
                          data-api-data="apiData"></df-task-details>
     </div>
 
-    <div data-ng-if="subscription_required">
-        <br/><h4>This feature requires a DreamFactory GOLD product subscription.</h4> Email <a href="mailto:sales@dreamfactory.com" >sales@dreamfactory.com</a> or call +1-415-993-5877 for pricing information.
+    <div ng-controller="PaywallCtrl" data-ng-if="subscription_required">
+        <df-paywall license-type="'GOLD'" service-name="'Scheduler'"></df-paywall>
     </div>
 
 </div>
