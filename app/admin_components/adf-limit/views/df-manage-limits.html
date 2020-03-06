@@ -196,8 +196,8 @@
     <div data-ng-show="limitEnabled && currentEditLimit.record.id">
         <df-limit-details data-limit-data="currentEditLimit" data-new-limit="false" data-api-data="apiData"></df-limit-details>
     </div>
-    <div data-ng-if="subscription_required">
-        <br/><h4>This feature requires a DreamFactory GOLD product subscription.</h4> Email <a href="mailto:sales@dreamfactory.com" >sales@dreamfactory.com</a> or call +1-415-993-5877 for pricing information.
+    <div data-ng-if="subscription_required" ng-controller="PaywallCtrl">
+        <df-paywall license-type="'GOLD'" service-name="'Limits'"></df-paywall>
     </div>
 
 

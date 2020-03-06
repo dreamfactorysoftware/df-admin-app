@@ -63,6 +63,14 @@ angular.module('dfReports', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 text: ''
             };
 
+            //HELP
+            $scope.dfLargeHelp = {
+                manageReports: {
+                    title: 'Manage Service Reports',
+                    text: 'Service reports tell you when each service was created, modified, and deleted.'
+                }
+            };
+
             // load data
 
             $scope.apiData = null;
