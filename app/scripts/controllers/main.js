@@ -827,16 +827,22 @@ angular.module('dreamfactoryApp')
     }])
 
     .controller('PaywallCtrl', ['$scope', '$http', 'UserDataService', 'SystemConfigDataService', function($scope, $http, UserDataService, SystemConfigDataService) {
-        $scope.paywallLoaded = function() {
-            var sendData = {
+
+        $scope.$on('hitPaywall', function (e, data) {
+            $scope.sendRequest(data);
+        });
+
+        $scope.sendRequest = function(serviceName) {
+            var data = {
                 email: UserDataService.getCurrentUser().email,
-                ip_address: SystemConfigDataService.getSystemConfig().client.ip_address
+                ip_address: SystemConfigDataService.getSystemConfig().client.ip_address,
+                service_name: serviceName
             };
 
             var req = {
                 method: 'POST',
                 url: 'https://updates.dreamfactory.com/paywall',
-                data: JSON.stringify(sendData)
+                data: JSON.stringify(data)
             };
 
             $http(req).then();

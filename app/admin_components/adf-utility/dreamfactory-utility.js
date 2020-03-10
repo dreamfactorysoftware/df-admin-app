@@ -2712,6 +2712,23 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
+    .directive('dfPaywall', ['MOD_UTILITY_ASSET_PATH', function (MOD_UTILITY_ASSET_PATH) {
+        return {
+            restrict: 'E',
+            scope: {
+                serviceName: '=?',
+                licenseType: '=?'
+            },
+            templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-paywall.html',
+
+            link: function (scope, elem, attrs) {
+                scope.$watch('serviceName', function (newValue, oldValue) {
+                    scope.$emit('hitPaywall', newValue);
+                });
+            }
+        }
+    }])
+
     // Helps merge objects.  Supports deep merge.  Many modules
     // need this
     .service('dfObjectService', [
