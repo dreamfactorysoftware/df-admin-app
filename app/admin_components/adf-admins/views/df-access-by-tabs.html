@@ -1,6 +1,6 @@
 <div class="panel">
     <div>
-        <a data-toggle="collapse" style="text-decoration: none; cursor: pointer" data-target="#select-access-tabs-body">
+        <a ng-click="loaded = true" data-toggle="collapse" style="text-decoration: none; cursor: pointer" data-target="#select-access-tabs-body">
             <h4>Access by tabs</h4>
         </a>
     </div>
@@ -31,10 +31,8 @@
             </div>
         </div>
 
-        <div data-ng-if="subscription_required">
-            <br/><h5>This feature requires a DreamFactory GOLD product subscription.</h5> Email <a
-                href="mailto:sales@dreamfactory.com">sales@dreamfactory.com</a> or call +1-415-993-5877 for pricing
-            information.
+        <div ng-controller="PaywallCtrl">
+            <df-paywall data-ng-if="subscription_required && loaded" license-type="'GOLD'" service-name="'Access by tabs'"></df-paywall>
         </div>
     </div>
     <hr/>

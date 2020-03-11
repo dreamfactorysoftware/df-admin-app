@@ -52,6 +52,6 @@
     </div>
 
     <div ng-controller="PaywallCtrl">
-        <df-paywall data-ng-if="selectedSchema && !selectedSchema.available" license-type="'SILVER'" service-name="selectedSchema.label"></df-paywall>
+        <df-paywall data-ng-if="selectedSchema && !selectedSchema.available" license-type="selectedSchema.subscription_required" service-name="selectedSchema.label"></df-paywall>
     </div>
 </div>

@@ -2717,13 +2717,16 @@ angular.module('dfUtility', ['dfApplication'])
             restrict: 'E',
             scope: {
                 serviceName: '=?',
-                licenseType: '=?'
+                licenseType: '=?',
+                additionalText: '=?'
             },
             templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-paywall.html',
 
             link: function (scope, elem, attrs) {
                 scope.$watch('serviceName', function (newValue, oldValue) {
-                    scope.$emit('hitPaywall', newValue);
+                    if (scope.serviceName) {
+                        scope.$emit('hitPaywall', newValue);
+                    }
                 });
             }
         }

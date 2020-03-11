@@ -105,7 +105,7 @@
         </div>
     </div>
 
-    <div data-ng-if="subscription_required" ng-controller="PaywallCtrl">
-        <br/><h4 ng-init="paywallLoaded()">This feature will be available for root admin and requires a DreamFactory GOLD product subscription.</h4> Email <a href="mailto:sales@dreamfactory.com" >sales@dreamfactory.com</a> or call +1-415-993-5877 for pricing information.
+    <div ng-controller="PaywallCtrl">
+        <df-paywall data-ng-if="subscription_required" license-type="'GOLD'" service-name="'Reports'" additional-text="'will be available for root admin and'"></df-paywall>
     </div>
 </div>

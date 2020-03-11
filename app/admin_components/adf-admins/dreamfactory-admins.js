@@ -494,6 +494,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             templateUrl: MOD_ADMIN_ASSET_PATH + 'views/df-access-by-tabs.html',
             link: function (scope, elem, attrs) {
                 var currentUser = UserDataService.getCurrentUser();
+                scope.loaded = false;
                 scope.subscription_required = !dfApplicationData.isGoldLicense();
                 scope.isRootAdmin = currentUser.is_root_admin;
                 scope.widgetDescription = "Restricted admin. An auto-generated role will be created for this admin.";
