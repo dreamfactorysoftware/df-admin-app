@@ -53,8 +53,8 @@
                             </div>
                           </div>
                       </div>
-                      <div ng-controller="PaywallCtrl">
-                          <df-paywall data-ng-if="subscription_required" license-type="'SILVER'" service-name="'Scripts'"></df-paywall>
+                      <div data-ng-if="subscription_required" ng-controller="PaywallCtrl">
+                          <df-paywall license-type="'SILVER'" service-name="'Scripts'"></df-paywall>
                       </div>
                   </pane>
                   <pane title="Script Samples">

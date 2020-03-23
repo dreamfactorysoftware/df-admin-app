@@ -410,8 +410,8 @@
         </div>
     </div>
 
-    <div ng-controller="PaywallCtrl">
-        <df-paywall data-ng-if="selectedSchema && !selectedSchema.available" license-type="selectedSchema.subscription_required"></df-paywall>
+    <div data-ng-if="selectedSchema && !selectedSchema.available" ng-controller="PaywallCtrl">
+        <df-paywall license-type="selectedSchema.subscription_required"></df-paywall>
     </div>
 
 </div>

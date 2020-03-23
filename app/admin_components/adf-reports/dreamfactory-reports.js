@@ -63,6 +63,15 @@ angular.module('dfReports', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 text: ''
             };
 
+            //HELP
+            $scope.dfLargeHelp = {
+                manageReports: {
+                    title: 'Manage Service Reports',
+                    text: 'Service reports show who and what did to the service.' +
+                        ' Also, this tab is only visible for the root admin.'
+                }
+            };
+
             // load data
 
             $scope.apiData = null;

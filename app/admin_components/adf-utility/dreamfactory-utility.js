@@ -2717,8 +2717,7 @@ angular.module('dfUtility', ['dfApplication'])
             restrict: 'E',
             scope: {
                 serviceName: '=?',
-                licenseType: '=?',
-                additionalText: '=?'
+                licenseType: '=?'
             },
             templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-paywall.html',
 
@@ -2726,6 +2725,7 @@ angular.module('dfUtility', ['dfApplication'])
                 scope.$watch('serviceName', function (newValue, oldValue) {
                     if (scope.serviceName) {
                         scope.$emit('hitPaywall', newValue);
+
                     }
                 });
             }

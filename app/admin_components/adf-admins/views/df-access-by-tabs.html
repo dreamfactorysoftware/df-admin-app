@@ -1,6 +1,6 @@
 <div class="panel">
     <div>
-        <a ng-click="loaded = true" data-toggle="collapse" style="text-decoration: none; cursor: pointer" data-target="#select-access-tabs-body">
+        <a ng-click="accessByTabsLoaded = true" data-toggle="collapse" style="text-decoration: none; cursor: pointer" data-target="#select-access-tabs-body">
             <h4>Access by tabs</h4>
         </a>
     </div>
@@ -31,8 +31,8 @@
             </div>
         </div>
 
-        <div ng-controller="PaywallCtrl">
-            <df-paywall data-ng-if="subscription_required && loaded" license-type="'GOLD'" service-name="'Access by tabs'"></df-paywall>
+        <div data-ng-if="subscription_required && loaded" ng-controller="PaywallCtrl">
+            <df-paywall license-type="'GOLD'" service-name="'Access by tabs'"></df-paywall>
         </div>
     </div>
     <hr/>
