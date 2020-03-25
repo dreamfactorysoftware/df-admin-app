@@ -27,7 +27,7 @@ angular.module('dreamfactoryApp')
             $scope.topLevelLinks = [
 
                 {
-                    path: 'https://genie.dreamfactory.com/pricing',
+                    path: 'https://www.dreamfactory.com/products/',
                     target: '_blank',
                     label: 'Subscribe',
                     name: 'upgrade',
@@ -360,7 +360,7 @@ angular.module('dreamfactoryApp')
                 dfApplicationData.resetApplicationObj();
             }
 
-            links = ['support'];
+            links = [];
 
             // get updated system config. it changes on login/logout
             systemConfig = SystemConfigDataService.getSystemConfig();
@@ -371,8 +371,6 @@ angular.module('dreamfactoryApp')
                     links.push("launchpad");
                 }
 
-                // Temporarily commenting this to hot fix subscribe link
-                // if (systemConfig.hasOwnProperty('platform') && systemConfig.platform.license == 'OPEN SOURCE'){
                 if (systemConfig.hasOwnProperty('platform')){
                     links.push("upgrade");
                 }
