@@ -15,11 +15,12 @@ angular
 
             var systemConfig = SystemConfigDataService.getSystemConfig();
             var licenseKey = systemConfig.platform.license_key;
+            var awsInstanceId = systemConfig.platform.aws_instance_id;
 
             if (licenseKeyExist(licenseKey)) {
                 return getShowBannerResponse();
             } else {
-                var headers = getHeadersForCheckingLicenseKey(licenseKey);
+                var headers = getHeadersForCheckingLicenseKey(licenseKey, awsInstanceId);
                 return $http.get(LICENSE_DATA_URL, {headers: headers})
                     .then(function successCallback(response) {
                             return response.data;
@@ -51,12 +52,13 @@ angular
             return deferred.promise;
         }
 
-        function getHeadersForCheckingLicenseKey(licenseKey) {
+        function getHeadersForCheckingLicenseKey(licenseKey, awsInstanceId) {
             return {
                 'Content-Type': 'application/json',
                 'X-DreamFactory-License-Key': licenseKey,
                 'X-DreamFactory-API-Key': undefined,
-                'X-DreamFactory-Session-Token': undefined
+                'X-DreamFactory-Session-Token': undefined,
+                'X-DreamFactory-Instance-Id': awsInstanceId || undefined
             };
         }
     }]);
