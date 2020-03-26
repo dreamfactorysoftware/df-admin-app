@@ -841,7 +841,7 @@ angular.module('dreamfactoryApp')
 
             var req = {
                 method: 'POST',
-                url: 'https://updates.dreamfactory.com/paywall',
+                url: 'https://updates.dreamfactory.com/api/paywall',
                 data: JSON.stringify(data)
             };
 
