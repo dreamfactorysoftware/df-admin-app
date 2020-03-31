@@ -8,13 +8,13 @@
                     <p>
                         License Level: {{systemEnv.platform.license}}
                     </p>
-                    <p>
+                    <p ng-if="paidLicense">
                         License Key: {{systemEnv.platform.license_key}}
                     </p>
-                    <p>
+                    <p ng-if="paidLicense">
                         Subscription Status: {{subscriptionData.msg}}
                     </p>
-                    <p>
+                    <p ng-if="paidLicense">
                         Subscription Expiration Date: {{subscriptionData.renewal_date}}
                     </p>
                     <p>
