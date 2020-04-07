@@ -108,6 +108,7 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                                     newApiData[value] = response[index].resource ? response[index].resource : response[index];
                                 });
                                 $scope.apiData = newApiData;
+                                $scope.services = newApiData.service_list;
                                 if (init) {
                                     $scope.$broadcast('toolbar:paginate:scheduler:load');
                                 }
@@ -141,14 +142,13 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                             svc.components = ["", "*"];
                         }
                     });
-                    scope.services = scope.apiData.service_list;
                 }
 
                 var ManagedTask = function (taskData) {
 
-
                     taskData['service_name'] = scope._getService(taskData['service_id']).name;
                     taskData['service'] = scope._getService(taskData['service_id']);
+                    taskData.frequency = parseInt(taskData.frequency);
                     if (taskData.hasOwnProperty('task_log_by_task_id') && taskData.task_log_by_task_id) {
                         taskData['has_log'] = true;
                     } else {
