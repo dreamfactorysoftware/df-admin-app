@@ -195,6 +195,7 @@ angular.module('dreamfactoryApp')
                     delete links.admins;
                     delete links.roles;
                     delete links.limits;
+                    delete links.scheduler;
                     $scope.componentNavOptions = {
                         links: Object.values(links)
                     };
