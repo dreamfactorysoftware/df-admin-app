@@ -84,6 +84,9 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                 };
 
                 scope._launchApp = function (app) {
+                    if(app.name === 'admin') {
+                        app.url += '#/home';
+                    }
 
                     $window.open(app.url);
                 };
