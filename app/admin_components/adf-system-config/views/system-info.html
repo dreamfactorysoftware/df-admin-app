@@ -8,6 +8,15 @@
                     <p>
                         License Level: {{systemEnv.platform.license}}
                     </p>
+                    <p ng-if="paidLicense">
+                        License Key: {{systemEnv.platform.license_key}}
+                    </p>
+                    <p ng-if="paidLicense">
+                        Subscription Status: {{subscriptionData.msg}}
+                    </p>
+                    <p ng-if="paidLicense">
+                        Subscription Expiration Date: {{subscriptionData.renewal_date}}
+                    </p>
                     <p>
                         DreamFactory Version: {{systemEnv.platform.version}}
                     </p>
