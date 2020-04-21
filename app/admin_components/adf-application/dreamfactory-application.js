@@ -666,9 +666,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                             var jsonData = angular.fromJson(data);
                             if (Array.isArray(jsonData)) {
                                 var result = {};
-                                var wrapper = systemConfigDataService.getSystemConfig().config.resources_wrapper;
+                                var resourcesWrapper = systemConfigDataService.getSystemConfig().config.resources_wrapper;
 
-                                result[wrapper] = jsonData;
+                                result[resourcesWrapper] = jsonData;
                                 return result;
                             }
                             return jsonData;
