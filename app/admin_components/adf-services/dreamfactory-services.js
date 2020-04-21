@@ -22,7 +22,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
     }])
 
-    .controller('ServicesCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, $scope, dfApplicationData, dfNotify, $location) {
+    .controller('ServicesCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location', 'SystemConfigDataService', function ($rootScope, $scope, dfApplicationData, dfNotify, $location, SystemConfigDataService) {
 
         $scope.$parent.title = 'Services';
         $scope.$parent.titleIcon = 'cubes';
@@ -66,11 +66,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
             // eventlist is loaded only as needed to improve user experience
             var apis = ['service', 'service_link', 'storage_service_link', 'service_type', 'environment'];
 
+            var resourcesWrapper = SystemConfigDataService.getSystemConfig().config.resources_wrapper;
+
             dfApplicationData.getApiData(apis).then(
                 function (response) {
                     var newApiData = {};
                     apis.forEach(function(value, index) {
-                        newApiData[value] = response[index].resource ? response[index].resource : response[index];
+                        newApiData[value] = response[index][resourcesWrapper] ? response[index][resourcesWrapper] : response[index];
                     });
                     $scope.apiData = newApiData;
                     if (init) {
