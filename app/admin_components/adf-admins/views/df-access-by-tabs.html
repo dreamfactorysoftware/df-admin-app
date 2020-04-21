@@ -31,7 +31,7 @@
             </div>
         </div>
 
-        <div data-ng-if="subscription_required && loaded" ng-controller="PaywallCtrl">
+        <div data-ng-if="subscription_required && accessByTabsLoaded" ng-controller="PaywallCtrl">
             <df-paywall license-type="'GOLD'" service-name="'Access by tabs'"></df-paywall>
         </div>
     </div>
