@@ -16,8 +16,12 @@ angular
             var systemConfig = SystemConfigDataService.getSystemConfig();
             var licenseKey = systemConfig.platform.license_key;
             var awsInstanceId = systemConfig.platform.aws_instance_id;
+            var awsProductCode = systemConfig.platform.aws_product_code;
 
-            if (licenseKeyExist(licenseKey)) {
+            if (isLicenseKeyNotExist(licenseKey)) {
+                if (awsInstanceId) {
+                    return getAWSMarketplaceResponse(awsProductCode, awsInstanceId);
+                }
                 return getShowBannerResponse();
             } else {
                 var headers = getHeadersForCheckingLicenseKey(licenseKey, awsInstanceId);
@@ -29,13 +33,32 @@ angular
                             return response.data;
                         })
                     .then(function finallyCallback(data) {
-                        return redirectToLicenseExpiredPageIfDisableUIEnabled(data)
-                    })
+                        return redirectToLicenseExpiredPageIfDisableUIEnabled(data);
+                    });
             }
 
         };
 
-        function licenseKeyExist(licenseKey) {
+        function getAWSMarketplaceResponse(awsProductCode, awsInstanceId) {
+            var deferred = $q.defer();
+            if (awsProductCode && awsProductCode.length === 25 && awsInstanceId.startsWith('i-')) {
+                deferred.resolve({
+                    'renewal_date': 'View in AWS Console',
+                    message: '',
+                    msg: 'Paid',
+                    'status_code': 200,
+                });
+            } else {
+                deferred.resolve({
+                    'renewal_date': '',
+                    message: 'License key is invalid.',
+                    'status_code': 401,
+                });
+            }
+            return deferred.promise;
+        }
+
+        function isLicenseKeyNotExist(licenseKey) {
             return licenseKey == '' || licenseKey == undefined
         }
 
