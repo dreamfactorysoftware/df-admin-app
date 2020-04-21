@@ -638,7 +638,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         };
     }])
 
-    .service('dfSystemData', ['INSTANCE_URL', '$resource', 'dfObjectService', function (INSTANCE_URL, $resource, dfObjectService) {
+    .service('dfSystemData', ['INSTANCE_URL', '$resource', 'dfObjectService', '$injector', function (INSTANCE_URL, $resource, dfObjectService, $injector) {
 
         return {
 
@@ -649,6 +649,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 var defaults = {
                     headers: ''
                 };
+                var systemConfigDataService = $injector.get('SystemConfigDataService');
 
                 options = dfObjectService.mergeObjects(options, defaults);
                 var url = options.url || INSTANCE_URL.url + '/system/:api/:id';
@@ -660,7 +661,18 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     get: {
                         method: 'GET',
-                        headers: options.headers
+                        headers: options.headers,
+                        transformResponse: function (data) {
+                            var jsonData = angular.fromJson(data);
+                            if (Array.isArray(jsonData)) {
+                                var result = {};
+                                var resourcesWrapper = systemConfigDataService.getSystemConfig().config.resources_wrapper;
+
+                                result[resourcesWrapper] = jsonData;
+                                return result;
+                            }
+                            return jsonData;
+                        }
                     },
                     post: {
                         method: 'POST',
