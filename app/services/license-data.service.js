@@ -18,12 +18,7 @@ angular
             var awsInstanceId = systemConfig.platform.aws_instance_id;
             var awsProductCode = systemConfig.platform.aws_product_code;
 
-            if (isLicenseKeyNotExist(licenseKey)) {
-                if (awsInstanceId) {
-                    return getAWSMarketplaceResponse(awsProductCode, awsInstanceId);
-                }
-                return getShowBannerResponse();
-            } else {
+            if (isLicenseKeyExist(licenseKey)) {
                 var headers = getHeadersForCheckingLicenseKey(licenseKey, awsInstanceId);
                 return $http.get(LICENSE_DATA_URL, {headers: headers})
                     .then(function successCallback(response) {
@@ -35,6 +30,11 @@ angular
                     .then(function finallyCallback(data) {
                         return redirectToLicenseExpiredPageIfDisableUIEnabled(data);
                     });
+            } else {
+                if (awsInstanceId) {
+                    return getAWSMarketplaceResponse(awsProductCode, awsInstanceId);
+                }
+                return getShowBannerResponse();
             }
 
         };
@@ -58,8 +58,8 @@ angular
             return deferred.promise;
         }
 
-        function isLicenseKeyNotExist(licenseKey) {
-            return licenseKey == '' || licenseKey == undefined
+        function isLicenseKeyExist(licenseKey) {
+            return !(licenseKey == '' || licenseKey == undefined);
         }
 
         function redirectToLicenseExpiredPageIfDisableUIEnabled(data) {
