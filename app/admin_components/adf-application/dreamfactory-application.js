@@ -7,7 +7,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
     }])
 
-    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', '$rootScope', '$location', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, $rootScope, $location) {
+    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', '$rootScope', '$location', '$injector', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, $rootScope, $location, $injector) {
 
         var dfApplicationObj = {
             apis: {}
@@ -145,7 +145,16 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 xhr.send();
 
                 if (xhr.readyState == 4 && xhr.status == 200) {
-                    dfApplicationObj.apis[api] = angular.fromJson(xhr.responseText);
+                    if (Array.isArray(angular.fromJson(xhr.responseText))) {
+                        var systemConfigDataService = $injector.get('SystemConfigDataService');
+                        var resourcesWrapper = systemConfigDataService.getSystemConfig().config.resources_wrapper;
+                        var result = {};
+
+                        result[resourcesWrapper] = angular.fromJson(xhr.responseText);
+                        dfApplicationObj.apis[api] = result;
+                    } else {
+                        dfApplicationObj.apis[api] = angular.fromJson(xhr.responseText);
+                    }
                     if (debugLevel >= 1) console.log('_getApiDataSync(' + api + ',' +  !!forceRefresh + '): ok from server', dfApplicationObj.apis[api]);
                     if (debugLevel >= 2) console.log('_getApiDataSync(' + api + ',' +  !!forceRefresh + '): dfApplicationObj', dfApplicationObj);
                 } else {
