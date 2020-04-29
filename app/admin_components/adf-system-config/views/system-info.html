@@ -47,6 +47,9 @@
                     <p ng-if="isSysAdmin">
                         Demo: {{systemEnv.platform.bitnami_demo}}
                     </p>
+                    <p ng-if="isSysAdmin">
+                        DreamFactory Instance ID: {{systemEnv.platform.df_instance_id}}
+                    </p>
                 </td>
                 <td ng-if="isSysAdmin" style="width: 40%; padding-left: 10px; border-left: dashed 1px;" valign="top" >
                     <h5>Installed Packages</h5>
