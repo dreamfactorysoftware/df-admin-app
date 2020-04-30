@@ -756,20 +756,26 @@ angular.module('dfUtility', ['dfApplication'])
                         winHeight = $(document).height(),
                         winWidth = $(document).width();
 
+                    var dfMenu = $('.df-menu')[0];
+                    var menuBottomPosition = dfMenu ? dfMenu.getBoundingClientRect().bottom : 0;
+
                     // If this is the swagger iframe
                     if (_elem.is('#apidocs')) {
-
-                        _elem.attr('height', winHeight - 25 + 'px');
+                        _elem.css({
+                            minHeight: window.innerHeight - menuBottomPosition - 26 + 'px'
+                        });
                     }
                     // If this is the swagger iframe
                     else if (_elem.is('#file-manager')) {
-
-                        _elem.attr('height', winHeight - 130 + 'px');
+                        _elem.css({
+                            minHeight: window.innerHeight - menuBottomPosition - 26 + 'px'
+                        });
                         $rootScope.$emit('filemanager:sized');
                     }
                     else if (_elem.is('#scripting-sidebar-list')) {
-
-                        _elem.css('height', winHeight - 280 + 'px');
+                        _elem.css({
+                            minHeight: window.innerHeight - menuBottomPosition - 350 + 'px'
+                        });
                     }
 
                     // if this is the scripting ide
@@ -790,12 +796,12 @@ angular.module('dfUtility', ['dfApplication'])
                     // else
                     else {
                         if (winWidth >= 992) {
-                            $(elem).css({
-                                height:  winHeight - 120
+                            _elem.css({
+                                minHeight: window.innerHeight - menuBottomPosition
                             });
                         }
                         else {
-                            $(elem).css({
+                            _elem.css({
                                 height: 'auto'
                             });
                         }
