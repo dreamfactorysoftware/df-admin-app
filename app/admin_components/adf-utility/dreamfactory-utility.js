@@ -746,6 +746,7 @@ angular.module('dfUtility', ['dfApplication'])
     // Used for setting the section heights
     .directive('dfFsHeight', ['$window', '$rootScope', function ($window, $rootScope) {
 
+        var defaultContainerPadding = 26;
         var dfFsHeight = {
             rules: [{
                 comment: 'If this is the swagger iframe',
@@ -755,7 +756,7 @@ angular.module('dfUtility', ['dfApplication'])
                 },
                 setSize: function (element, data) {
                     element.css({
-                        minHeight: data.windowInnerHeight - data.menuBottomPosition - 26
+                        minHeight: data.windowInnerHeight - data.menuBottomPosition - defaultContainerPadding
                     });
                 },
             }, {
@@ -766,7 +767,7 @@ angular.module('dfUtility', ['dfApplication'])
                 },
                 setSize: function (element, data) {
                     element.css({
-                        minHeight: data.windowInnerHeight - data.menuBottomPosition - 26
+                        minHeight: data.windowInnerHeight - data.menuBottomPosition - defaultContainerPadding
                     });
                     $rootScope.$emit('filemanager:sized');
                 },
@@ -778,7 +779,7 @@ angular.module('dfUtility', ['dfApplication'])
                 },
                 setSize: function (element, data) {
                     element.css({
-                        height: data.windowInnerHeight - element.offset().top - 26
+                        height: data.windowInnerHeight - element.offset().top - defaultContainerPadding
                     });
                 },
             }, {
@@ -789,7 +790,7 @@ angular.module('dfUtility', ['dfApplication'])
                 },
                 setSize: function (element, data) {
                     element.css({
-                        height: data.winHeight - element.offset().top - 26
+                        height: data.winHeight - element.offset().top - defaultContainerPadding
                     });
                 }
             }, {
