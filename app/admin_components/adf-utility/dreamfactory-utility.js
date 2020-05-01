@@ -746,121 +746,121 @@ angular.module('dfUtility', ['dfApplication'])
     // Used for setting the section heights
     .directive('dfFsHeight', ['$window', '$rootScope', function ($window, $rootScope) {
 
+        var dfFsHeight = {
+            rules: [{
+                comment: 'If this is the swagger iframe',
+                order: 10,
+                test: function (element, data) {
+                    return element.is('#apidocs');
+                },
+                setSize: function (element, data) {
+                    element.css({
+                        minHeight: data.windowInnerHeight - data.menuBottomPosition - 26
+                    });
+                },
+            }, {
+                comment: 'If this is the file manager iframe',
+                order: 20,
+                test: function (element, data) {
+                    return element.is('#file-manager');
+                },
+                setSize: function (element, data) {
+                    element.css({
+                        minHeight: data.windowInnerHeight - data.menuBottomPosition - 26
+                    });
+                    $rootScope.$emit('filemanager:sized');
+                },
+            }, {
+                comment: 'If this is the scripting sidebar list',
+                order: 30,
+                test: function (element, data) {
+                    return element.is('#scripting-sidebar-list');
+                },
+                setSize: function (element, data) {
+                    element.css({
+                        height: data.windowInnerHeight - element.offset().top - 26
+                    });
+                },
+            }, {
+                comment: 'If this is the scripting IDE',
+                order: 40,
+                test: function (element, data) {
+                    return element.attr('id') === 'ide';
+                },
+                setSize: function (element, data) {
+                    element.css({
+                        height: data.winHeight - element.offset().top - 26
+                    });
+                }
+            }, {
+                comment: 'If any element on desktop screen',
+                order: 50,
+                test: function (element, data) {
+                    return data.winWidth >= 992;
+                },
+                setSize: function (element, data) {
+                    element.css({
+                        minHeight: data.windowInnerHeight - data.menuBottomPosition
+                    });
+                },
+            }],
+            default: {
+                setSize: function (element, data) {
+                    element.css({
+                        height: 'auto'
+                    });
+                }
+            },
+            rulesOrderComparator: function (a, b) {
+                return a.order - b.order;
+            },
+        };
+
+        var setSize = function (elem) {
+
+            setTimeout(function () {
+                var _elem = $(elem);
+                var dfMenu = $('.df-menu')[0];
+                var data = {
+                    menuBottomPosition: dfMenu ? dfMenu.getBoundingClientRect().bottom : 0,
+                    windowInnerHeight: window.innerHeight,
+                    winWidth: $(document).width(),
+                    winHeight: $(document).height(),
+                };
+                var rule = dfFsHeight.rules
+                    .sort(dfFsHeight.rulesOrderComparator)
+                    .find(function (value) {
+                        return value.test(_elem, data);
+                    });
+                if (rule) {
+                    rule.setSize(_elem, data);
+                } else {
+                    dfFsHeight.default.setSize(_elem, data);
+                }
+            }, 10);
+        };
+
         return function (scope, elem, attrs) {
-
-            var setSize = function () {
-
-                setTimeout(function(){
-
-                    var _elem = $(elem),
-                        winHeight = $(document).height(),
-                        winWidth = $(document).width();
-
-                    var dfMenu = $('.df-menu')[0];
-                    var menuBottomPosition = dfMenu ? dfMenu.getBoundingClientRect().bottom : 0;
-
-                    // If this is the swagger iframe
-                    if (_elem.is('#apidocs')) {
-                        _elem.css({
-                            minHeight: window.innerHeight - menuBottomPosition - 26 + 'px'
-                        });
-                    }
-                    // If this is the swagger iframe
-                    else if (_elem.is('#file-manager')) {
-                        _elem.css({
-                            minHeight: window.innerHeight - menuBottomPosition - 26 + 'px'
-                        });
-                        $rootScope.$emit('filemanager:sized');
-                    }
-                    else if (_elem.is('#scripting-sidebar-list')) {
-                        _elem.css({
-                            minHeight: window.innerHeight - menuBottomPosition - 350 + 'px'
-                        });
-                    }
-
-                    // if this is the scripting ide
-                    else if (_elem.attr('id') === 'ide') {
-
-                        _elem.css({
-                            height: winHeight - 280 + 'px'
-                        });
-                    }
-
-                    else if (_elem.hasClass('package-export-table')) {
-
-                        _elem.css({
-                            height: winHeight - 600
-                        });
-                    }
-
-                    // else
-                    else {
-                        if (winWidth >= 992) {
-                            _elem.css({
-                                minHeight: window.innerHeight - menuBottomPosition
-                            });
-                        }
-                        else {
-                            _elem.css({
-                                height: 'auto'
-                            });
-                        }
-                    }
-                }, 10)
-
-
+            var eventHandler = function (e) {
+                setSize(elem);
             };
-
-            // Respond to swagger loaded
-            scope.$on('apidocs:loaded', function (e) {
-
-                setSize();
-            });
-
+                // Respond to swagger loaded
+            scope.$on('apidocs:loaded', eventHandler);
             // Respond to file manager loaded
-            scope.$on('filemanager:loaded', function (e) {
-
-                setSize();
-            });
-
+            scope.$on('filemanager:loaded', eventHandler);
             // Respond to scripts loaded
             // @TODO: This does not work.  Fires but no elem?????
-            scope.$on('script:loaded:success', function (e) {
-
-                setSize();
-            });
-
-
+            scope.$on('script:loaded:success', eventHandler);
             // Respond to sidebar change
-            scope.$on('sidebar-nav:view:change', function (e) {
-
-                setSize();
-            });
-
+            scope.$on('sidebar-nav:view:change', eventHandler);
             // Respond to component nav change
-            scope.$on('sidebar-nav:view:change', function (e) {
-
-                setSize();
-            });
-
+            scope.$on('sidebar-nav:view:change', eventHandler);
             // Respond to component nav change
-            $rootScope.$on('$routeChangeSuccess', function (e) {
+            $rootScope.$on('$routeChangeSuccess', eventHandler);
 
-                setSize();
-            });
-
-            $(document).ready(function () {
-
-                setSize();
-            });
-
+            $(document).ready(eventHandler);
             // Bind to resize
-            $(window).on('resize', function () {
-
-                setSize();
-            })
-
-
+            $(window).on('resize', eventHandler);
         }
     }])
 

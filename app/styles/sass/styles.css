@@ -9873,15 +9873,16 @@ body {
 /* line 99, partials/_base.scss */
 .df-empty-section-row {
   margin-top: 50px;
+  min-height: 300px;
 }
 
-/* line 107, partials/_base.scss */
+/* line 108, partials/_base.scss */
 .df-btn-group {
   margin-left: 5px;
   margin-right: 5px;
 }
 
-/* line 112, partials/_base.scss */
+/* line 113, partials/_base.scss */
 .df-search-box {
   margin-left: 10px;
   padding-left: 10px;
@@ -9890,12 +9891,12 @@ body {
   height: 30px;
 }
 
-/* line 120, partials/_base.scss */
+/* line 121, partials/_base.scss */
 .df-tab-has-error {
   color: red !important;
 }
 
-/* line 124, partials/_base.scss */
+/* line 125, partials/_base.scss */
 .mask {
   position: fixed;
   top: 0;
@@ -9907,7 +9908,7 @@ body {
   display: none;
 }
 
-/* line 136, partials/_base.scss */
+/* line 137, partials/_base.scss */
 #top-bar-mask {
   position: fixed;
   top: 0;
@@ -9919,7 +9920,7 @@ body {
   display: none;
 }
 
-/* line 148, partials/_base.scss */
+/* line 149, partials/_base.scss */
 #df-copyright-footer {
   position: fixed;
   width: 100%;
@@ -9930,30 +9931,30 @@ body {
   background: #888;
 }
 
-/* line 158, partials/_base.scss */
+/* line 159, partials/_base.scss */
 .df-footer-text {
   padding: 10px;
   display: inline-block;
   font-size: 12px;
 }
 @media screen and (max-width: 992px) {
-  /* line 158, partials/_base.scss */
+  /* line 159, partials/_base.scss */
   .df-footer-text {
     font-size: 10px;
   }
 }
 
-/* line 171, partials/_base.scss */
+/* line 172, partials/_base.scss */
 .checkbox input, i {
   margin-top: 4px !important;
 }
 
-/* line 175, partials/_base.scss */
+/* line 176, partials/_base.scss */
 .table tr {
   cursor: pointer;
 }
 
-/* line 179, partials/_base.scss */
+/* line 180, partials/_base.scss */
 .fa-clipboard {
   cursor: pointer;
 }
@@ -10273,21 +10274,16 @@ body {
 }
 
 /* line 21, partials/_df-scripting.scss */
-.scripting-list-group > a > i {
-  padding-top: 5px;
-}
-
-/* line 26, partials/_df-scripting.scss */
 .scripting-list-group a.highlighted {
   background: #fcf8e3;
 }
 
-/* line 30, partials/_df-scripting.scss */
+/* line 25, partials/_df-scripting.scss */
 .scripting-list-group > a:hover {
   background: #eeeeee;
 }
 
-/* line 37, partials/_df-scripting.scss */
+/* line 32, partials/_df-scripting.scss */
 .scripting-list-group > span > a {
   border: 1px solid #ddd;
   display: block;
@@ -10299,23 +10295,23 @@ body {
   background: white;
 }
 
-/* line 51, partials/_df-scripting.scss */
+/* line 46, partials/_df-scripting.scss */
 .scripting-list-group > span > a:hover {
   background: #eeeeee;
 }
 
-/* line 57, partials/_df-scripting.scss */
+/* line 52, partials/_df-scripting.scss */
 .scripting-list-group > span:first-child > a {
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
 
-/* line 63, partials/_df-scripting.scss */
+/* line 58, partials/_df-scripting.scss */
 .scripting-list-group > span:first-child > a.highlighted {
   background: #fcf8e3;
 }
 
-/* line 68, partials/_df-scripting.scss */
+/* line 63, partials/_df-scripting.scss */
 .scripting-list-group > span:last-child > a {
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
