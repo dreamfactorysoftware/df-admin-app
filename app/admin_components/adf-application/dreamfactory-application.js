@@ -7,7 +7,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
     }])
 
-    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', '$rootScope', '$location', '$injector', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, $rootScope, $location, $injector) {
+    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', '$injector', '$rootScope', '$location', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, $injector, $rootScope, $location) {
 
         var dfApplicationObj = {
             apis: {}
@@ -647,7 +647,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         };
     }])
 
-    .service('dfSystemData', ['INSTANCE_URL', '$resource', 'dfObjectService', '$injector', function (INSTANCE_URL, $resource, dfObjectService, $injector) {
+    .service('dfSystemData', ['INSTANCE_URL', '$resource', 'dfObjectService', 'dfDataWrapper', function (INSTANCE_URL, $resource, dfObjectService, dfDataWrapper) {
 
         return {
 
@@ -658,8 +658,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 var defaults = {
                     headers: ''
                 };
-                var systemConfigDataService = $injector.get('SystemConfigDataService');
-
                 options = dfObjectService.mergeObjects(options, defaults);
                 var url = options.url || INSTANCE_URL.url + '/system/:api/:id';
                 var queryParams = options.queryParams || { api: '@api', id: '@id' };
@@ -671,36 +669,61 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     get: {
                         method: 'GET',
                         headers: options.headers,
-                        transformResponse: function (data) {
-                            var jsonData = angular.fromJson(data);
-                            if (Array.isArray(jsonData)) {
-                                var result = {};
-                                var resourcesWrapper = systemConfigDataService.getSystemConfig().config.resources_wrapper;
-
-                                result[resourcesWrapper] = jsonData;
-                                return result;
-                            }
-                            return jsonData;
-                        }
+                        transformResponse: dfDataWrapper.wrapArrayResponse
                     },
                     post: {
                         method: 'POST',
-                        headers: options.headers
+                        headers: options.headers,
+                        transformResponse: dfDataWrapper.wrapArrayResponse
                     },
                     put: {
                         method: 'PUT',
-                        headers: options.headers
+                        headers: options.headers,
+                        transformResponse: dfDataWrapper.wrapArrayResponse
                     },
                     patch: {
                         method: 'PATCH',
-                        headers: options.headers
+                        headers: options.headers,
+                        transformResponse: dfDataWrapper.wrapArrayResponse
                     },
                     delete: {
                         method: 'DELETE',
-                        headers: options.headers
+                        headers: options.headers,
+                        transformResponse: dfDataWrapper.wrapArrayResponse
                     }
                 });
             }
+        };
+    }])
+
+    .service('dfDataWrapper', ['$injector', '$http', function ($injector, $http) {
+
+        function _wrapArrayResponse(data) {
+            try {
+                angular.fromJson(data);
+            } catch (error) {
+                return data;
+            }
+            var jsonData = angular.fromJson(data);
+            try {
+                var systemConfigDataService = $injector.get('SystemConfigDataService');
+                var resourcesWrapper = systemConfigDataService.getSystemConfig().config.resources_wrapper;
+            } catch (error) {
+                return jsonData;
+            }
+
+            if (Array.isArray(jsonData)) {
+                var result = {};
+                result[resourcesWrapper] = jsonData;
+                return result;
+            }
+            return jsonData;
+        }
+
+        $http.defaults.transformResponse.push(_wrapArrayResponse);
+
+        return {
+            wrapArrayResponse: _wrapArrayResponse,
         };
     }])
 
