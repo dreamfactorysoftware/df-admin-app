@@ -7,7 +7,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
     }])
 
-    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', '$injector', '$rootScope', '$location', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, $injector, $rootScope, $location) {
+    .service('dfApplicationData', ['$q', '$http', 'INSTANCE_URL', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfDataWrapper', '$rootScope', '$location', function ($q, $http, INSTANCE_URL, dfObjectService, UserDataService, dfSystemData, dfDataWrapper, $rootScope, $location) {
 
         var dfApplicationObj = {
             apis: {}
@@ -146,12 +146,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     if (Array.isArray(angular.fromJson(xhr.responseText))) {
-                        var systemConfigDataService = $injector.get('SystemConfigDataService');
-                        var resourcesWrapper = systemConfigDataService.getSystemConfig().config.resources_wrapper;
-                        var result = {};
-
-                        result[resourcesWrapper] = angular.fromJson(xhr.responseText);
-                        dfApplicationObj.apis[api] = result;
+                        dfApplicationObj.apis[api] = dfDataWrapper.wrapArrayResponse(xhr.responseText);
                     } else {
                         dfApplicationObj.apis[api] = angular.fromJson(xhr.responseText);
                     }
