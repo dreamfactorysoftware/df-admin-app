@@ -1001,6 +1001,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         });
                         if (matches.length === 0) {
                             svc.singleton = false;
+                            svc.available = false;
                             svc.config_schema = null;
                             svc.subscription_required = 'SILVER';
                             add.push(svc);
@@ -1014,6 +1015,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         });
                         if (matches.length === 0) {
                             svc.singleton = false;
+                            svc.available = false;
                             svc.config_schema = null;
                             svc.subscription_required = 'GOLD';
                             add.push(svc);
@@ -1022,20 +1024,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                     types = types.concat(add);
 
-                    // check for which service types are not available
-                    var product = 'OPEN SOURCE';
-                    var systemConfig = SystemConfigDataService.getSystemConfig();
-                    if (systemConfig && systemConfig.platform && systemConfig.platform.hasOwnProperty('license')) {
-                        product = systemConfig.platform.license;
-                    }
+                    // add available property to present services
                     angular.forEach(types, function (svc) {
-                        svc.available = true;
-                        if (svc.subscription_required) {
-                            if ((svc.subscription_required === 'GOLD' && product !== 'GOLD') ||
-                                (svc.subscription_required === 'SILVER' && product !== 'GOLD' && product !== 'SILVER')) {
-                                svc.available = false;
-                                svc.config_schema = null;
-                            }
+                        if (!svc.hasOwnProperty('available')) {
+                            svc.available = true;
                         }
                     });
 
