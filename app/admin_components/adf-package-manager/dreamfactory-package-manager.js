@@ -82,7 +82,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
             $scope.dataLoading = true;
 
             // these are required
-            var primaryApis = ['service_list', 'service_type_list', 'environment', 'package'];
+            var primaryApis = ['service_list', 'service_type_list', 'package'];
 
             // this one is optional, needed if we want to automatically add an app's storage service when the app is added
             // the storage service must be in service_list, meaning user has access to it, for this to work
@@ -331,7 +331,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
             }
         };
     }])
-    .directive('dfSelectContent', ['$http', '$timeout', 'MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', 'dfNotify', function ($http, $timeout, MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData, dfNotify) {
+    .directive('dfSelectContent', ['$http', '$timeout', 'MOD_PACKAGE_MANAGER_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'SystemConfigDataService', function ($http, $timeout, MOD_PACKAGE_MANAGER_ASSET_PATH, dfApplicationData, dfNotify, SystemConfigDataService) {
 
         return {
             restrict: 'E',
@@ -376,7 +376,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
 
                     scope.initVars();
 
-                    var env = scope.apiData.environment;
+                    var env = SystemConfigDataService.getSystemConfig();
                     scope.enablePassword = env['platform']['secured_package_export'];
 
                     var _serviceTypes = scope.apiData.service_type_list;
