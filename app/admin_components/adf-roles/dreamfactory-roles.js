@@ -123,6 +123,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-role-details.html',
             link: function (scope, elem, attrs) {
 
+                scope.adldap = 0;
+                var systemConfig = SystemConfigDataService.getSystemConfig();
+                if (systemConfig && systemConfig.authentication && systemConfig.authentication.hasOwnProperty('adldap')) {
+                    scope.adldap = systemConfig.authentication.adldap.length;
+                }
+
                 // @TODO: Refactor to factory.
                 var Role = function (roleData) {
 
@@ -206,7 +212,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     }
 
                     if(scope.adldap && scope.role.record.dn){
-                        scope.role.record.role_adldap_by_role_id = (scope.role.record.id)? [{'role_id':scope.role.record.id, 'dn':scope.role.record.dn}] : [{'dn':scope.role.record.dn}];
+                        scope.role.record.role_adldap_by_role_id = (scope.role.record.id)? {'role_id':scope.role.record.id, 'dn':scope.role.record.dn} : {'dn':scope.role.record.dn};
                         delete scope.role.record.dn;
                     }
 
@@ -349,8 +355,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                                     }
                                 }).get({'api': 'role', 'id': result.id, 'related': 'role_adldap_by_role_id'}).$promise.then(
                                     function (adResult) {
-                                        if (adResult.role_adldap_by_role_id && adResult.role_adldap_by_role_id.length > 0) {
-                                            result.dn = adResult.role_adldap_by_role_id[0].dn;
+                                        if (adResult.role_adldap_by_role_id && (adResult.role_adldap_by_role_id.length > 0 || adResult.role_adldap_by_role_id.hasOwnProperty('dn'))) {
+                                            if(adResult.role_adldap_by_role_id.length > 0) {
+                                                result.dn = adResult.role_adldap_by_role_id[0].dn;
+                                            } else {
+                                                result.dn = adResult.role_adldap_by_role_id.dn;
+                                            }
                                         }
                                         scope.role = new Role(result);
                                     },
@@ -378,8 +388,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         function (reject) {
                             var msg = reject.data.message;
 
-                            if (scope.role.record.role_adldap_by_role_id && scope.role.record.role_adldap_by_role_id.length > 0) {
-                                scope.role.record.dn = scope.role.record.role_adldap_by_role_id[0].dn;
+                            if (scope.role.record.role_adldap_by_role_id && (scope.role.record.role_adldap_by_role_id.length > 0 || scope.role.record.role_adldap_by_role_id.hasOwnProperty('dn'))) {
+                                if(scope.role.record.role_adldap_by_role_id.length > 0) {
+                                    scope.role.record.dn = scope.role.record.role_adldap_by_role_id[0].dn;
+                                } else {
+                                    scope.role.record.dn = scope.role.record.role_adldap_by_role_id.dn;
+                                }
                             }
                             var messageOptions = {
                                 module: 'Api Error',
@@ -916,8 +930,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             }
                         }).get({'api': 'role', 'id': role.id, 'related': 'role_adldap_by_role_id'}).$promise.then(
                             function (result) {
-                                if (result.role_adldap_by_role_id && result.role_adldap_by_role_id.length > 0) {
-                                    role.dn = result.role_adldap_by_role_id[0].dn;
+                                if (result.role_adldap_by_role_id && (result.role_adldap_by_role_id.length > 0 || result.role_adldap_by_role_id.hasOwnProperty('dn'))) {
+                                    if(result.role_adldap_by_role_id.length > 0) {
+                                        role.dn = result.role_adldap_by_role_id[0].dn;
+                                    } else {
+                                        role.dn = result.role_adldap_by_role_id.dn;
+                                    }
                                 }
                                 scope._editRole(role);
                             },
