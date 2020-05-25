@@ -1,5 +1,5 @@
 # Here are a few basic Python3 examples.
-# Requires Munch dictionary for dot notation, use PIP to install.
+# Requires Munch dictionary for dot notation, use PIP3 to install.
 # See wiki.dreamfactory.com for more examples.
 
 # ****************** Pre-processing script on a table ******************
