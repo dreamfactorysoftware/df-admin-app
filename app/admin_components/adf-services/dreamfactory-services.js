@@ -889,6 +889,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         "description": "Okta service supporting SSO.",
                         "group": "SSO"
                     }, {
+                        "name": "auth0_sso",
+                        "label": "Auth0 SSO",
+                        "description": "Auth0 service supporting SSO.",
+                        "group": "SSO"
+                    }, {
                         "name": "ibmdb2",
                         "label": "IBM DB2",
                         "description": "Database service supporting IBM DB2 SQL connections.",
