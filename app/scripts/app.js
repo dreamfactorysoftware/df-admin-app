@@ -120,7 +120,7 @@ angular
     })
 
     // Set application version number
-    .constant('APP_VERSION', '4.3.2')
+    .constant('APP_VERSION', '4.4.0')
 
     // Set global url for this application
     .constant('INSTANCE_BASE_URL', '')
