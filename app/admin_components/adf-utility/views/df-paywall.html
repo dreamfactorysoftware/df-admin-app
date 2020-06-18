@@ -1,2 +1,7 @@
 <br/><h4>This feature requires a DreamFactory {{ licenseType }} product subscription.</h4> Email <a href="mailto:sales@dreamfactory.com" >sales@dreamfactory.com</a> or call +1-415-993-5877 for pricing information.
 
+<div ng-switch on="serviceName">
+    <div ng-switch-when="Scripts"><div ng-include="assetPath + 'views/includes/df-paywall-scripts.html'"></div></div>
+    <div ng-switch-when="Logstash"><div ng-include="assetPath + 'views/includes/df-paywall-logstash.html'"></div></div>
+    <div ng-switch-default><div ng-include="assetPath + 'views/includes/df-paywall-default.html'"></div></div>
+</div>
