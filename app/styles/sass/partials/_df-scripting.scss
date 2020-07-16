@@ -67,3 +67,23 @@
   margin-bottom: 0;
 
 }
+
+.script-search {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  top: 25px;
+  left: 260px;
+  width: 400px;
+
+  input {
+    flex-grow: 4;
+  }
+
+  button {
+    flex-grow: 1;
+    margin-left: 10px;
+  }
+}

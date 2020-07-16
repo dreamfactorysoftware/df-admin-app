@@ -40,8 +40,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
     }])
 
-    .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$rootScope', '$http', 'dfApplicationData', 'dfNotify', '$location',
-        function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify, $location) {
+  .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$rootScope', '$http', 'dfApplicationData', 'dfNotify', '$location', '$window',
+      function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify, $location, $window) {
 
             $scope.$parent.title = 'Scripts';
             $scope.$parent.titleIcon = 'code';
@@ -53,6 +53,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             $scope.disableServiceLinkRefresh = true;
             $scope.selections = {
                 "service": null
+            };
+
+            $scope.search = {
+              text: '',
+            };
+
+            $scope.searchForScripts = function() {
+              $window.open('https://www.google.com/search?q=' + $scope.search.text, '_blank');
             };
 
             // Loosely defined script object for when a script is non-existent.

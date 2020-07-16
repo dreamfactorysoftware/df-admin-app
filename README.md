@@ -4,7 +4,7 @@ AngularJS admin application for DreamFactory v2.0 and up.
 Administer your DreamFactory instance from anywhere with this admin application.  Customize with themes from Bootswatch or roll your own with SCSS/SASS.  Concat, minify, and uglify component modules with Node.js, Grunt, and the included grunt script for a deployment ready application.
 
 ## Installing the app
-Clone the repo.  Navigate to the top level directory of where you cloned the repo and type `bower install`.  **NOTE: you must have Node, Grunt, and GruntCLI installed.**  
+Clone the repo.  Navigate to the top level directory of where you cloned the repo and type `bower install`.  **NOTE: you must have Node, Grunt, and GruntCLI installed.**
 
 
 ## Building the app with Node and Grunt
@@ -23,7 +23,7 @@ npm install
 bower install (creates sym link app/bower_components)
 ```
 
-The app was built using Sass/Scss and compiled with Compass.  This requires [Ruby](https://www.ruby-lang.org/en/downloads/) and Compass.  Follow this [guide](http://compass-style.org/install/) to set it all up. 
+The app was built using Sass/Scss and compiled with Compass.  This requires [Ruby](https://www.ruby-lang.org/en/downloads/) and Compass.  Follow this [guide](http://compass-style.org/install/) to set it all up.
 
 Then to rebuild dist folder:
 
@@ -31,7 +31,9 @@ Then to rebuild dist folder:
 grunt build
 ```
 
-Or you can simply run a development mode using Docker:
+The final compiled CSS will be written to `app/styles/styles.css`.
+
+You can also run a development mode using Docker:
 ```
 docker-compose up
 ```
@@ -41,7 +43,7 @@ To build with Docker:
 docker-compose run --rm web-dev bash -c "grunt build --force && chmod -R a+rwX ."
 ```
 
-The final compiled CSS will be written to `app/styles/styles.css`.
+This docker container doesn't include ruby and compass, so this won't build CSS file, hence `--force` in the command above.
 
 ## Building a release version
 
@@ -76,7 +78,7 @@ git push --tags
 ## Administer your DreamFactory instance from anywhere
 The app can be configured to manage your DreamFactory instance from another remote server.  Simply open the `app.js` file contained in `app/scripts` directory and add your DreamFactory instance host name to the `INSTANCE_BASE_URL` constant at the top.  You can now optionally build the app and deploy the `dist` directory.  You must enable CORS in the DreamFactory instance you will be deploying the app to.
 
-## Theme the app 
+## Theme the app
 In `app/styles/sass/partials` you can find the stylesheets for all the custom parts of the app as well as a few bootswatch templates in the `themes` directory.  All of these are added in a specific order in `styles.scss`.  To change to a different bootswatch theme simply change all occurrences of the theme name in `styles.scss`. Dont forget to run `grunt build` to compile the stylesheets and build the app.
 
 ## App Architecture
@@ -91,13 +93,13 @@ Authentication controllers provide attachment points for authentication/register
 
 ### Data repository and Utility modules
 
-A data repository module called `dfApplicationData` facilitates the loading and management of frequently used application data.  It creates an object called `dfApplicationObj`.  It contains generic methods to access, modify, and delete data in the application and on the server.  It also provides accessor methods to retrieve and save the actual dfApplicationObj.  While not recommended to interact with this object directly it is sometimes a necessary evil.  The module also contains init code to check whether it is necessary to build a new app object or to refresh the screen with local data as well as what apis to load.  
+A data repository module called `dfApplicationData` facilitates the loading and management of frequently used application data.  It creates an object called `dfApplicationObj`.  It contains generic methods to access, modify, and delete data in the application and on the server.  It also provides accessor methods to retrieve and save the actual dfApplicationObj.  While not recommended to interact with this object directly it is sometimes a necessary evil.  The module also contains init code to check whether it is necessary to build a new app object or to refresh the screen with local data as well as what apis to load.
 
-The utility module provides services, factories, directives, and filters related to the operation of modules.  Things like our icon service, navs, table filtering/pagination, etc are stored here.  Basically, things that multiple modules may need access to and/or have no other place to go.  
+The utility module provides services, factories, directives, and filters related to the operation of modules.  Things like our icon service, navs, table filtering/pagination, etc are stored here.  Basically, things that multiple modules may need access to and/or have no other place to go.
 
 ## Module Design
 
-A module is defined in the usual AngularJS fashion.  `angular.module(MODULE_NAME, [DEPENDENCIES])`.  Below that line we define a few constants and config for the module.  Because modules are generally small SPA's we have included only one main route.  A sub section of the `dfApps` module is shown below to illustrate this point.  
+A module is defined in the usual AngularJS fashion.  `angular.module(MODULE_NAME, [DEPENDENCIES])`.  Below that line we define a few constants and config for the module.  Because modules are generally small SPA's we have included only one main route.  A sub section of the `dfApps` module is shown below to illustrate this point.
 
 ```javascript
 // Module definition
@@ -124,9 +126,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         }])
 
     .run([function () {
-            
+
     }])
-    
+
     // More module code
 
 
@@ -208,7 +210,7 @@ All the directives(contexts) work in a similar fashion of having data passed to 
 ```javascript
 {
     __dfUI: {
-        selected: false  
+        selected: false
     },
     record: {
         // app data for editing
@@ -235,18 +237,18 @@ Each one of the directives is organized in a similar fashion.  See the stubbed o
         },
         templateUrl: CONSTANT_PATH + 'views/TEMPLATE.html',
         link: function (scope, elem, attrs) {
-        
-        // LOCAL FUNCTIONS: 
+
+        // LOCAL FUNCTIONS:
         // things pertaining to this directive that won't be shared or stored on scope
         // Object constructors usually
-        
+
         var Thing = function (thingData) {
             var thingModel = {
                 thingName: 'My Awesome thing name'
             };
-            
+
             thingData = thingData || thingModel;
-            
+
             return {
                 __dfUI: {
                     selected: false,
@@ -256,54 +258,54 @@ Each one of the directives is organized in a similar fashion.  See the stubbed o
                 recordCopy: angular.copy(thingData);
             }
         };
-        
+
         scope.theThing = null;
-        
-        
-        
+
+
+
         // PUBLIC API
         // Scope functions that attach to our UI
         // we do preliminary checking here
         scope.saveThing = function () {
-            
+
             if (scope.theThing.__dfUI.hasError) {
                 alert('Thing has error');
                 return;
             }
-            
+
             scope._saveThing()
         };
-        
-        
+
+
         // PRIVATE API
         // functions stored on/off scope that provide
         // targeted functionality
         scope._myPrivFuncOne = function () {
-        
+
             // Do someting
         };
-        
+
          scope._saveThingToServer = function () {
-        
+
             // Save thing to server.  Return promise
         };
-        
-        
+
+
         // COMPLEX IMPLEMENTATION
         // These scope functions generally are called from the public api
         // Their names usually correspond with a preceding underscore
-        // We call private api functions targeted for specific tasks 
+        // We call private api functions targeted for specific tasks
         // and build our...COMPLEX IMPLEMENTATION of the public function.
-        
+
         scope._saveThing = function () {
-            
+
             // private func to do someting
             scope._myPrivFuncOne();
-            
+
             // save thing to server
             scope._saveThingToServer(scope.theThing).then(
                 function (result) {
-                    
+
                     scope.theThing = new Thing(result.data)
                 },
                 function (reject) {
@@ -311,24 +313,24 @@ Each one of the directives is organized in a similar fashion.  See the stubbed o
                 }
             );
         };
-        
-        
-        // WATCHERS 
+
+
+        // WATCHERS
         // place any watchers here
         var watchThing = scope.$watch('thingData', function (newValue, oldValue) {
-        
+
             scope.theThing = new Thing(newValue);
         };
-        
-        
+
+
         // MESSAGES
         // Handle messaging/events here
         scope.$on('$destroy', function (e) {
-        
+
             watchThing();
         };
-        
-        
+
+
     }
 }])
 ```
