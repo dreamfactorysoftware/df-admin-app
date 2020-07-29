@@ -10,12 +10,10 @@
             </div>
 
             <div data-ng-show="!isHostedSystem">
-              <div class="script-search">
+              <form class="script-search form-controls" ng-submit="searchForScripts()">
                 <input type="text" class="form-control" data-ng-model="search.text" />
-                <button class="btn btn-dark" type="button" data-ng-click="searchForScripts()">
-                  Search &raquo;
-                </button>
-              </div>
+                <input type="submit" value="Search &raquo;" class="btn btn-default btn-primary">
+              </form>
               <tabs style="padding-top: 25px">
                   <pane title="Scripts">
                       <div class="row row-no-padding" data-ng-hide="!scriptsEnabled" style="margin-top: 15px">

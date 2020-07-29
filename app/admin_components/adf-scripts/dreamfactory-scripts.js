@@ -60,7 +60,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
             };
 
             $scope.searchForScripts = function() {
-              $window.open('https://www.google.com/search?q=' + $scope.search.text, '_blank');
+              $window.open('https://dreamfactory.com/scripts/search/' + $scope.search.text, '_blank');
             };
 
             // Loosely defined script object for when a script is non-existent.

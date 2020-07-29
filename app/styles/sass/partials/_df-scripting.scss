@@ -78,11 +78,11 @@
   left: 260px;
   width: 400px;
 
-  input {
+  input[type=text] {
     flex-grow: 4;
   }
 
-  button {
+  input[type=submit] {
     flex-grow: 1;
     margin-left: 10px;
   }
