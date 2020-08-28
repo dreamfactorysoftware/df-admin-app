@@ -1,0 +1,43 @@
+.df-paywall {
+  text-align: center;
+  min-width: 600px;
+  max-width: 800px;
+  margin: 0 auto;
+
+  h1 {
+    margin: 5% 0;
+  }
+
+  h2, h4 {
+    color: #1d3d56;
+  }
+
+  h2 {
+    font-weight: bold;
+  }
+
+  p {
+    text-align: left;
+  }
+
+  .paywall-options {
+    display: flex;
+
+  }
+
+  .paywall-column:nth-child(1) {
+    margin: 5% 2.5% 5% 5%;
+  }
+
+  .paywall-column:nth-child(2) {
+    margin: 5% 5% 5% 2.5%;
+  }
+
+  .paywall-column {
+    flex: 1;
+  }
+}
+
+.df-paywall-contact {
+  text-align: center;
+}

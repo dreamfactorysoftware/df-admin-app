@@ -2729,12 +2729,17 @@ angular.module('dfUtility', ['dfApplication'])
             templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-paywall.html',
 
             link: function (scope, elem, attrs) {
-                scope.assetPath = MOD_UTILITY_ASSET_PATH;
                 scope.$watch('serviceName', function (newValue, oldValue) {
                     if (scope.serviceName) {
                         scope.$emit('hitPaywall', newValue);
 
                     }
+                });
+
+                Calendly.initInlineWidget({
+                  url: 'https://calendly.com/dreamfactory-platform/dreamfactory-q-a-session-intro',
+                  parentElement: document.querySelector('.calendly-inline-widget'),
+                  autoLoad: false,
                 });
             }
         }
