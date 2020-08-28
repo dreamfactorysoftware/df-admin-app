@@ -812,8 +812,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     {
                         name: 'Address Book for ReactJS',
                         description: '',
-                        package_url: 'https://raw.github.com/dreamfactorysoftware/reactjs-sdk/master/add_reactjs.dfpkg',
-                        repo_url: 'https://github.com/dreamfactorysoftware/reactjs-sdk'
+                        package_url: 'https://github.com/dreamfactorysoftware/df-react-example-application/raw/master/df-react-example-application.dfpkg',
+                        repo_url: 'https://github.com/dreamfactorysoftware/df-react-example-application'
                     },
                     {
                         name: 'Address Book for .NET',
