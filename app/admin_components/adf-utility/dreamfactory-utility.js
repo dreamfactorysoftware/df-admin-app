@@ -2735,6 +2735,12 @@ angular.module('dfUtility', ['dfApplication'])
 
                     }
                 });
+
+                Calendly.initInlineWidget({
+                  url: 'https://calendly.com/dreamfactory-platform/unlock-all-features',
+                  parentElement: document.querySelector('.calendly-inline-widget'),
+                  autoLoad: false,
+                });
             }
         }
     }])
