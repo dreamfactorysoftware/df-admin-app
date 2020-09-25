@@ -120,6 +120,7 @@ angular
     })
 
     // Set application version number
+
     .constant('APP_VERSION', '4.5.1')
 
     // Set global url for this application
