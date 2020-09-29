@@ -50,8 +50,4 @@
             <label><input id="services_info_active" data-ng-model="serviceInfo.is_active" type="checkbox">Active</label>
         </div>
     </div>
-
-    <div data-ng-if="selectedSchema && !selectedSchema.available" ng-controller="PaywallCtrl">
-        <df-paywall license-type="selectedSchema.subscription_required" service-name="selectedSchema.label"></df-paywall>
-    </div>
 </div>

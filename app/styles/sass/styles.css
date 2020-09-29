@@ -10365,6 +10365,51 @@ body {
   margin: 0;
 }
 
+/* line 1, partials/_df-paywall.scss */
+.df-paywall {
+  text-align: center;
+  min-width: 600px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+/* line 7, partials/_df-paywall.scss */
+.df-paywall h1 {
+  margin: 5% 0;
+}
+/* line 11, partials/_df-paywall.scss */
+.df-paywall h2, .df-paywall h4 {
+  color: #1d3d56;
+}
+/* line 15, partials/_df-paywall.scss */
+.df-paywall h2 {
+  font-weight: bold;
+}
+/* line 19, partials/_df-paywall.scss */
+.df-paywall p {
+  text-align: left;
+}
+/* line 23, partials/_df-paywall.scss */
+.df-paywall .paywall-options {
+  display: flex;
+}
+/* line 28, partials/_df-paywall.scss */
+.df-paywall .paywall-column:nth-child(1) {
+  margin: 5% 2.5% 5% 5%;
+}
+/* line 32, partials/_df-paywall.scss */
+.df-paywall .paywall-column:nth-child(2) {
+  margin: 5% 5% 5% 2.5%;
+}
+/* line 36, partials/_df-paywall.scss */
+.df-paywall .paywall-column {
+  flex: 1;
+}
+
+/* line 41, partials/_df-paywall.scss */
+.df-paywall-contact {
+  text-align: center;
+}
+
 /* line 2, ../../admin_components/adf-help/styles/style.scss */
 .help-container {
   display: inline;
@@ -10418,7 +10463,7 @@ body {
   z-index: 10001;
 }
 
-/* line 40, styles.scss */
+/* line 41, styles.scss */
 [data-ng-click] {
   cursor: pointer;
 }
