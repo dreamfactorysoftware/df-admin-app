@@ -995,6 +995,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         "label": "Logstash",
                         "description": "Logstash service.",
                         "group": "Log"
+                    }, {
+                        "name": "snowflake",
+                        "label": "Snowflake",
+                        "description": "Database service supporting Snowflake connections.",
+                        "group": "Big Data"
                     }];
 
                     var add = [];
