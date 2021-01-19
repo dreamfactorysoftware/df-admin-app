@@ -1104,6 +1104,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                         var sortingArray = [
                             'Database',
+                            'Big Data',
                             'File',
                             'Email',
                             'Notification',
