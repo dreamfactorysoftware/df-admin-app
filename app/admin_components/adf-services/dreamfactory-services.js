@@ -1000,6 +1000,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                         "label": "Snowflake",
                         "description": "Database service supporting Snowflake connections.",
                         "group": "Big Data"
+                    }, {
+                        "name": "apache_hive",
+                        "label": "Apache Hive",
+                        "description": "The Apache Hive data warehouse software facilitates reading, writing, and managing large datasets residing in distributed storage using SQL",
+                        "group": "Big Data"
+                    }, {
+                        "name": "hadoop_hdfs",
+                        "label": "Hadoop HDFS",
+                        "description": "Hadoop Distributed File System",
+                        "group": "File"
                     }];
 
                     var add = [];
