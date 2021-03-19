@@ -70,7 +70,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.dataLoading = true;
 
             // eventlist is loaded only as needed to improve user experience
-            var apis = ['service', 'service_link', 'storage_service_link', 'service_type', 'environment'];
+            var apis = ['service', 'service_link', 'storage_service_link', 'service_type'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
