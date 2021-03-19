@@ -700,7 +700,10 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     scope.emailTemplates = null;
                     scope.selectedEmailTemplate = null;
 
-
+                    scope.changeEmailTemplate = function (emailTemplate) {
+                        scope.selectedEmailTemplate = emailTemplate;
+                    }
+                    
                     // PUBLIC API
                     scope.addEmailTemplate = function () {
 
