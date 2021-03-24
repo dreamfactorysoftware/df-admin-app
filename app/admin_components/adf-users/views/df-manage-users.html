@@ -8,7 +8,20 @@
 
         <!-- ToolBar -->
         <df-section-toolbar>
-            <input type="text" data-ng-model="$parent.filterText" data-ng-change="changeFilter($parent.filterText)" class="df-search-box" placeholder="Search">
+            <div class="btn-toolbar pull-left" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <df-toolbar-paginate data-api="'user'" ></df-toolbar-paginate>
+                </div>
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <input type="text" data-ng-model="$parent.filterText" data-ng-change="changeFilter($parent.filterText)" class="df-search-box" placeholder="Search">
+                </div>
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <div class="btn-group btn-group-sm hidden-xs df-btn-group"  ng-show="users.length">
+                        <button class="btn btn-default" data-ng-click="deleteSelectedUsers()" data-ng-disabled="selectedUsers.length === 0" title="Delete selected users"><i class="fa fa-fw fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+
             <div class="btn-group btn-group-sm pull-right df-btn-group">
                 <button df-import-users
                         type="button"
@@ -37,10 +50,6 @@
             </div>
 
 
-            <df-toolbar-paginate data-api="'user'" ></df-toolbar-paginate>
-            <div class="btn-group btn-group-sm hidden-xs df-btn-group"  ng-show="users.length">
-                <button class="btn btn-default" data-ng-click="deleteSelectedUsers()" data-ng-disabled="selectedUsers.length === 0" title="Delete selected users"><i class="fa fa-fw fa-trash"></i></button>
-            </div>
             <div style="clear: both"></div>
         </df-section-toolbar>
 
