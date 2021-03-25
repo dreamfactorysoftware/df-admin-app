@@ -1,7 +1,7 @@
 'use strict';
 
 
-angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
+angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
     .constant('MOD_ROLES_ROUTER_PATH', '/roles')
     .constant('MOD_ROLES_ASSET_PATH', 'admin_components/adf-roles/')
     .config(['$routeProvider', 'MOD_ROLES_ROUTER_PATH', 'MOD_ROLES_ASSET_PATH',
@@ -44,6 +44,12 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 path: 'create-role'
             }
         ];
+
+        // set empty search result message
+        $scope.emptySearchResult = {
+            title: 'You have no Roles that match your search criteria!',
+            text: ''
+        };
 
         $scope.adldap = 0;
         var systemConfig = SystemConfigDataService.getSystemConfig();
@@ -1114,7 +1120,11 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 // this fires when the API data changes
                 // apiData is passed in to the details directive as data-api-data
-                var watchApiData = scope.$watchCollection('apiData.role', function (newValue, oldValue) {
+                var watchApiData = scope.$watchCollection(function(){
+                   // this is how the table repopulates after an update
+                    return dfApplicationData.getApiDataFromCache('role');
+                
+                }, function (newValue, oldValue) {
 
                     var _roles = [];
 
@@ -1126,6 +1136,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     }
 
                     scope.roles = _roles;
+    
                 });
 
 
@@ -1141,6 +1152,10 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     // Destroy watchers
                     watchApiData();
+
+                    // when filter is changed the controller is reloaded and we get destroy event
+                    // the reset event tells pagination engine to update based on filter
+                    scope.$broadcast('toolbar:paginate:role:reset');
                 });
             }
         };
