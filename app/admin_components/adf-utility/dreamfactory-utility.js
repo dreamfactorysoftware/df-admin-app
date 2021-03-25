@@ -1928,9 +1928,7 @@ angular.module('dfUtility', ['dfApplication'])
             link: function (scope, elem, attrs) {
 
                 scope.changeFilter = function (searchStr) {
-
                     $timeout(function() {
-
                         // if searchStr is still the same..
                         // go ahead and retrieve the data
                         if (searchStr === scope.filterText || !scope.filterText) {
@@ -1943,7 +1941,6 @@ angular.module('dfUtility', ['dfApplication'])
                 };
 
                 scope.filterText = ($location.search() && $location.search().filter) ? $location.search().filter : '';
-
                 if(elem.find('input')[0]) {
                     elem.find('input')[0].focus();
                 }
@@ -2117,13 +2114,18 @@ angular.module('dfUtility', ['dfApplication'])
 
                 //local function for filter detection
                 var detectFilter = function() {
-
                     // Checking if we have filters applied
                     var filterText = ($location.search() && $location.search().filter) ? $location.search().filter : '';
 
                     if(!filterText) return '';
 
+                    // default array for search query (Users, Admins)
                     var arr = [ "first_name", "last_name", "name", "email" ];
+                    
+                    // and this will update the search queries to be used for other tabs.
+                    if ($location.path().includes('roles')) {
+                        arr = [ "name", "description" ];
+                    }
 
                     if ($location.path().includes('reports')) {
                         arr = ["id", "service_id", "service_name", "user_email", "action", "request_verb"];
