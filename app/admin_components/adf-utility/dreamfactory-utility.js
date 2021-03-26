@@ -2123,9 +2123,19 @@ angular.module('dfUtility', ['dfApplication'])
                     var arr = [ "first_name", "last_name", "name", "email" ];
                     
                     // and this will update the search queries to be used for other tabs.
+                    if ($location.path().includes('apps')) {
+                        arr = [ "name", "description" ];
+                    }
+                    
+                    
                     if ($location.path().includes('roles')) {
                         arr = [ "name", "description" ];
                     }
+
+                    if ($location.path().includes('services')) {
+                        arr = [ "name", "label", "description", "type" ];
+                    }
+
 
                     if ($location.path().includes('reports')) {
                         arr = ["id", "service_id", "service_name", "user_email", "action", "request_verb"];
