@@ -59,6 +59,12 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
             active: false
         };
 
+        // set empty search result message
+        $scope.emptySearchResult = {
+            title: 'You have no Apps that match your search criteria!',
+            text: ''
+        };
+
         $scope.$on('$destroy', function (e) {
 
             // dump data if not on page 1
@@ -700,7 +706,11 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                 // this fires when the API data changes
                 // apiData is passed in to the details directive as data-api-data
-                var watchApiData = scope.$watchCollection('apiData.app', function (newValue, oldValue) {
+                var watchApiData = scope.$watchCollection(function() {
+                    // this is how the table repopulates after an update
+                    return dfApplicationData.getApiDataFromCache('app');
+
+                }, function (newValue, oldValue) {
 
                     var _apps = [];
 
@@ -726,6 +736,10 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     // Destroy watchers
                     watchApiData();
+
+                    // when filter is changed the controller is reloaded and we get destroy event
+                    // the reset event tells pagination engine to update based on filter
+                    scope.$broadcast('toolbar:paginate:app:reset');
                 });
             }
         };
