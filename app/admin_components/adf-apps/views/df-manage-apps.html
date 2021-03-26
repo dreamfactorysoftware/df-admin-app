@@ -6,18 +6,31 @@
 
         <!-- Toolbar -->
         <df-section-toolbar>
-            <div>
-                <df-toolbar-paginate data-api="'app'" ></df-toolbar-paginate>
-                <div class="btn-group btn-group-sm hidden-xs df-btn-group">
-                    <button class="btn btn-default" data-ng-click="deleteSelectedApps()" data-ng-disabled="selectedApps.length === 0" title="Delete selected apps"><i class="fa fa-fw fa-trash"></i></button>
+            <div class="btn-toolbar pull-left" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <df-toolbar-paginate data-api="'app'" ></df-toolbar-paginate>
                 </div>
-                <df-download-sdk data-btn-size="'btn-group-sm'"></df-download-sdk>
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <input type="text" data-ng-model="$parent.filterText" data-ng-change="changeFilter($parent.filterText)" class="df-search-box" placeholder="Search">
+                </div>
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <div class="btn-group btn-group-sm hidden-xs df-btn-group">
+                        <button class="btn btn-default" data-ng-click="deleteSelectedApps()" data-ng-disabled="selectedApps.length === 0" title="Delete selected apps"><i class="fa fa-fw fa-trash"></i></button>
+                    </div>
+                </div>
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <df-download-sdk data-btn-size="'btn-group-sm'"></df-download-sdk>
+                </div>
                 <div style="clear: both"></div>
             </div>
         </df-section-toolbar>
 
-        <div data-ng-show="apps.length === 0 && emptySectionOptions.active">
+        <div data-ng-show="apps.length === 0 && !filterText && emptySectionOptions.active">
             <df-empty-section></df-empty-section>
+        </div>
+
+        <div data-ng-show="apps.length === 0 && filterText">
+            <df-empty-search-result></df-empty-search-result>
         </div>
 
         <div data-ng-show="apps.length > 0">

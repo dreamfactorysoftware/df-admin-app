@@ -1,7 +1,7 @@
 'use strict';
 
 
-angular.module('dfServices', ['ngRoute', 'dfUtility'])
+angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
     .constant('MOD_SERVICES_ROUTER_PATH', '/services')
     .constant('MOD_SERVICES_ASSET_PATH', 'admin_components/adf-services/')
     .config(['$routeProvider', 'MOD_SERVICES_ROUTER_PATH', 'MOD_SERVICES_ASSET_PATH',
@@ -40,6 +40,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
                 path: 'create-service'
             }
         ];
+
+         // set empty search result message
+         $scope.emptySearchResult = {
+            title: 'You have no Services that match your search criteria!',
+            text: ''
+        };
 
         // Set empty section options
         $scope.emptySectionOptions = {
@@ -319,7 +325,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                 // this fires when the API data changes
                 // apiData is passed in to the details directive as data-api-data
-                var watchApiServiceData = scope.$watchCollection('apiData.service', function (newValue, oldValue) {
+                var watchApiServiceData = scope.$watchCollection(function() {
+                    // this is how the table repopulates after an update
+                    return dfApplicationData.getApiDataFromCache('service');
+                }, function (newValue, oldValue) {
 
                     var _services = [];
 
@@ -346,6 +355,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility'])
 
                     // Destroy watchers
                     watchApiServiceData();
+
+                    // when filter is changed the controller is reloaded and we get destroy event
+                    // the reset event tells pagination engine to update based on filter
+                    scope.$broadcast('toolbar:paginate:service:reset');
                 });
             }
         };
