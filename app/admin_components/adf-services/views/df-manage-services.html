@@ -8,15 +8,28 @@
 
         <!-- Tool Bar -->
         <df-section-toolbar>
-            <df-toolbar-paginate data-api="'service'" ></df-toolbar-paginate>
-            <div class="btn-group btn-group-sm hidden-xs df-btn-group">
-                <button class="btn btn-default" data-ng-click="deleteSelectedServices()" data-ng-disabled="selectedServices.length === 0" title="Delete selected services"><i class="fa fa-fw fa-trash"></i></button>
+            <div class="btn-toolbar pull-left" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <df-toolbar-paginate data-api="'service'" ></df-toolbar-paginate>
+                </div>
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <input type="text" data-ng-model="$parent.filterText" data-ng-change="changeFilter($parent.filterText)" class="df-search-box" placeholder="Search">
+                </div>
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <div class="btn-group btn-group-sm hidden-xs df-btn-group">
+                        <button class="btn btn-default" data-ng-click="deleteSelectedServices()" data-ng-disabled="selectedServices.length === 0" title="Delete selected services"><i class="fa fa-fw fa-trash"></i></button>
+                    </div>
+                </div>
             </div>
             <div style="clear: both"></div>
         </df-section-toolbar>
 
-        <div data-ng-show="services.length === 0">
+        <div data-ng-show="services.length === 0 && !filterText">
             <df-empty-section></df-empty-section>
+        </div>
+
+        <div data-ng-show="services.length === 0 && filterText">
+            <df-empty-search-result></df-empty-search-result>
         </div>
 
 
