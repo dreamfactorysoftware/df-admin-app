@@ -5,7 +5,8 @@
                 <select class="form-control input-sm"
                     id="roles_details_access_service_{{$parent.$index}}"
                     data-ng-model="serviceAccess.record.service"
-                    data-ng-options="service as service.name for service in $parent.services">
+                    data-ng-options="service as service.name for service in $parent.services | orderBy:'name'">
+                    <option value="">--Select a Service--</option>
                 </select>
             </div>
             <div class="btn-group col-xs-3" role="group" aria-label="">
@@ -15,6 +16,7 @@
                         data-ng-model="serviceAccess.record.component"
                         data-ng-options="component as component for component in serviceAccess.record.service.components">
                         <option value="">--Select a component--</option>
+                        
                     </select>
                 </div>
                 <div data-ng-if="serviceAccess.__dfUI.hasError">
