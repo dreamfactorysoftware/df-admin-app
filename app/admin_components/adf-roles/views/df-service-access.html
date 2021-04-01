@@ -5,8 +5,7 @@
                 <select class="form-control input-sm"
                     id="roles_details_access_service_{{$parent.$index}}"
                     data-ng-model="serviceAccess.record.service"
-                    data-ng-options="service as service.name for service in $parent.services | orderBy:'name'">
-                    <option value="">--Select a Service--</option>
+                    data-ng-options="service as service.name for service in $parent.services">
                 </select>
             </div>
             <div class="btn-group col-xs-3" role="group" aria-label="">
