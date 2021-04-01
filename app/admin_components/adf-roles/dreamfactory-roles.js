@@ -479,6 +479,26 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
 
                     scope.services = angular.copy(newValue);
 
+                    // The array scope.services needs to be sorted by name before shifting 'All to the top'
+
+
+                    // function compare( a, b ) {
+                    //     if ( a.name < b.name ){
+                    //       return -1;
+                    //     }
+                    //     if ( a.name > b.name ){
+                    //       return 1;
+                    //     }
+                    //     return 0;
+                    //   }
+                    //   scope.services.sort(compare);
+
+                    // ************ Refactoring (lines 483 to 492) ******************
+
+                      scope.services.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+
+
+                    // The below will force 'All' to appear at the top of the dropdown options list.
                     if (scope.services[0].name !== 'All') {
                         scope.services.unshift({id: null, name: 'All'});
                     }
@@ -488,6 +508,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
                         if (!svc.components) {
                             svc.components = ["", "*"];
                         }
+                        
                     });
                 });
 
@@ -893,11 +914,13 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
                 scope.roles = null;
 
                 scope.currentEditRole = null;
+                // console.log(scope)
+
 
                 scope.fields = [
                     {
                         name: 'id',
-                        label: 'Id',
+                        label: 'label',
                         active: true
                     },
                     {
@@ -1147,7 +1170,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
 
                     scope.loadTabData();
                 });
-
+                
                 scope.$on('$destroy', function (e) {
 
                     // Destroy watchers
