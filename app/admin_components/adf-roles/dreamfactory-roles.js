@@ -1165,7 +1165,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
                         });
                         scope.emptySectionOptions.active = (newValue.length === 0);
                     }
-
                     scope.roles = _roles;
     
                 });
