@@ -920,8 +920,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
                 scope.roles = null;
 
                 scope.currentEditRole = null;
-                // console.log(scope)
-
 
 
 
