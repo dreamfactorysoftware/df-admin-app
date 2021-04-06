@@ -482,20 +482,16 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
                     // The array scope.services needs to be sorted by name before shifting 'All to the top'
 
 
-                    // function compare( a, b ) {
-                    //     if ( a.name < b.name ){
-                    //       return -1;
-                    //     }
-                    //     if ( a.name > b.name ){
-                    //       return 1;
-                    //     }
-                    //     return 0;
-                    //   }
-                    //   scope.services.sort(compare);
-
-                    // ************ Refactoring (lines 483 to 492) ******************
-
-                      scope.services.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+                     function compare( a, b ) {
+                         if ( a.name < b.name ){
+                           return -1;
+                         }
+                         if ( a.name > b.name ){
+                           return 1;
+                         }
+                         return 0;
+                       }
+                       scope.services.sort(compare);
 
 
                     // The below will force 'All' to appear at the top of the dropdown options list.
