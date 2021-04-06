@@ -790,7 +790,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 scope._getComponents = function () {
 
                     var name = scope.serviceAccess.record.service.name;
-                    return $http.get(INSTANCE_URL.url + '/' + name + '/?as_access_list=true');
+                    return $http.get(INSTANCE_URL.url + '/' + name + '/?as_list=true');
                 };
 
                 // WATCHERS
@@ -824,7 +824,14 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                         function (result) {
 
-                            components = result.data.resource;
+                            // The list of componenets received from the DB does not include an option to allow access to 
+                            // all components (i.e '*'). So we need to add the '*' option to the front of the created array
+                            // for the view.
+                            var listOfComponents = result.data.resource;
+       	                    
+                            listOfComponents.forEach(function(component) {
+          	                    components.push(component);
+                            });
                         },
 
                         function (reject) {
