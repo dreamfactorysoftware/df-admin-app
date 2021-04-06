@@ -817,9 +817,10 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
                 scope._getComponents = function () {
 
                     var name = scope.serviceAccess.record.service.name;
-                    return $http.get(INSTANCE_URL.url + '/' + name + '/?as_access_list=true');
-                };
 
+                    return $http.get(INSTANCE_URL.url + '/' + name + '/?as_list=true');
+                };
+                
                 // WATCHERS
 
                 var watchServiceAccessRecordService = scope.$watch('serviceAccess.record.service', function (newValue, oldValue) {
@@ -833,6 +834,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
                     // set filters if allowed
                     scope.allowFilters();
 
+                    
                     // update service_id prop
                     scope.serviceAccess.record.service_id = newValue.id;
 
@@ -841,6 +843,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
                     if (name === 'All' || group === null || group === 'Email') {
                         // use default components
                         return;
+
                     }
 
                     // try to get actual components
@@ -852,13 +855,14 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
                         function (result) {
 
                             components = result.data.resource;
+
                         },
-
+                        
                         function (reject) {
-
+                            
                             scope.serviceAccess.__dfUI.hasError = true;
                             scope.serviceAccess.record.component = null;
-
+                            
                             var messageOptions = {
                                 module: 'Roles',
                                 type: 'error',
@@ -866,13 +870,15 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
                                 message: reject
                             };
 
+                            
                             dfNotify.error(messageOptions);
                         }
-                    ).finally(
-                        function () {
-                            scope.serviceAccess.record.service.components = components;
-                        }
-                    );
+                        ).finally(
+                            function () {
+                                scope.serviceAccess.record.service.components = components;
+                            }
+                            );
+
                 });
 
 
@@ -914,7 +920,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
                 scope.roles = null;
 
                 scope.currentEditRole = null;
-                // console.log(scope)
+
 
 
                 scope.fields = [
