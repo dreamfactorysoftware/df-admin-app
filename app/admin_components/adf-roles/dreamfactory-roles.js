@@ -814,7 +814,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
 
                     var name = scope.serviceAccess.record.service.name;
 
-                    return $http.get(INSTANCE_URL.url + '/' + name + '/?as_list=true');
+                    return $http.get(INSTANCE_URL.url + '/' + name + '/?as_access_list=true');
                 };
                 
                 // WATCHERS
