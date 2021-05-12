@@ -179,6 +179,11 @@ angular.module('dreamfactoryApp')
                     name: 'scheduler',
                     label: 'Scheduler',
                     path: '/scheduler'
+                },
+                wizard: {
+                    name: 'wizard',
+                    label: 'Wizard',
+                    path: '/wizard'
                 }
         };
 
