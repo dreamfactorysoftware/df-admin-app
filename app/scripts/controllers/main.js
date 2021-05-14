@@ -463,7 +463,7 @@ angular.module('dreamfactoryApp')
     // We inject $location because we'll want to update our location on a successful
     // login and the UserEventsService from our DreamFactory User Management Module to be able
     // to respond to events generated from that module
-    .controller('LoginCtrl', ['$scope', '$window', '$location', '$timeout', 'UserDataService', 'UserEventsService', 'dfApplicationData', 'SystemConfigDataService', 'dfNotify', function($scope, $window, $location, $timeout, UserDataService, UserEventsService, dfApplicationData, SystemConfigDataService, dfNotify) {
+    .controller('LoginCtrl', ['$scope', '$cookies', '$window', '$location', '$timeout', 'UserDataService', 'UserEventsService', 'dfApplicationData', 'SystemConfigDataService', 'dfNotify', function($scope, $cookies, $window, $location, $timeout, UserDataService, UserEventsService, dfApplicationData, SystemConfigDataService, dfNotify) {
 
         // Login options array
         $scope.loginOptions = {
@@ -537,7 +537,11 @@ angular.module('dreamfactoryApp')
                             $location.url('/home');
                         }
                     } else {
-                        $location.url('/home');
+                        if ($cookies.get("Wizard")) {
+                            $location.url('/home');
+                        } else {
+                            $location.url('/wizard');
+                        }
                     }
                 }
             } else {

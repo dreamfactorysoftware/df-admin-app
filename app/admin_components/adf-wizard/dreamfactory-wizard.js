@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility'])
+angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'])
     .constant('MOD_WIZARD_ROUTER_PATH', '/wizard')
     .constant('MOD_WIZARD_ASSET_PATH', 'admin_components/adf-wizard/')
     .config(['$routeProvider', 'MOD_WIZARD_ROUTER_PATH', 'MOD_WIZARD_ASSET_PATH',
@@ -24,8 +24,8 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility'])
 
     }])
 
-    .controller('WizardCtrl', ['$rootScope', '$scope', '$q', '$location', 'dfApplicationData', 'dfNotify',
-        function($rootScope, $scope, $location, $q, dfApplicationData, dfNotify) {
+    .controller('WizardCtrl', ['$rootScope', '$scope', '$cookies', '$q', '$location', 'dfApplicationData', 'dfNotify',
+        function($rootScope, $scope, $cookies, $location, $q, dfApplicationData, dfNotify) {
 
             var closeEditor = function() {
 
@@ -39,6 +39,7 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility'])
               $scope.password = '';
 
               console.log("API Saved!");
+              $cookies.put("Wizard", "Created");
             }
 
 
@@ -101,5 +102,9 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility'])
 
                     }
                 );
+            }
+
+            $scope.removeCookie = function() {
+                $cookies.remove("Wizard");
             }
     }])
