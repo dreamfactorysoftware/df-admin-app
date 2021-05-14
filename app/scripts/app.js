@@ -40,7 +40,8 @@ angular
         'dfLicenseExpiredBanner',
         'dfLimit',
         'dfReports',
-        'dfScheduler'
+        'dfScheduler',
+        'dfWizard'
     ])
 
     // each tab uses this in its resolve function to make sure user is allowed access
