@@ -1,24 +1,27 @@
 <!-- Creation Form -->
 <div ng-show="!submitted">
   <h2>Welcome To DreamFactory!</h2>
-  <p>Thank you for signing up to DreamFactory.To help get you started, we have provided you with a dedicated MySQL Database containing several million records spread across six tables.</p>
-  <p>Let's use this database to create your first API. In the email we sent you, we have provided the necessary credentials to hook up to this MySQL database. Go ahead and copy paste them into the fields below:</p>
+  <p>Thank you for signing up to DreamFactory.To help get you started, we have provided you with a dedicated MySQL Database containing several million records spread across six tables.<br>Let's use this database to create your first API. Lets start off by assigining a namepace (the URI endpoint), and a label so we can find it later.</p>
   
   <form ng-submit="saveService()">
     <div class="form-group">
       <label for="mysqlNamespace">Namespace</label>
-      <input type="text" class="form-control" id="mysqlNamespace" placeholder="Namespace" ng-model="createService.namespace">
+      <input type="text" class="form-control" id="mysqlNamespace" placeholder="e.g. db" ng-model="createService.namespace" aria-describedby="namespaceHelp">
+      <span id="namespaceHelp" class="help-block"><p class="text-muted">The namespace used for the API’s URI structure, such as 'db' in /api/v2/db. It should be lowercase and alphanumeric.</p></span>
     </div>
     <div class="form-group">
       <label for="mysqlLabel">Label</label>
-      <input type="text" class="form-control" id="mysqlLabel" placeholder="Label" ng-model="label">
+      <input type="text" class="form-control" id="mysqlLabel" placeholder="e.g. mysql_db" ng-model="createService.label" aria-describedby="labelHelp">
+      <span id="labelHelp" class="help-block"><p class="text-muted">Assign a display name or label for the service.</p></span>
     </div>
     <div class="form-group">
       <label for="mysqlDescription">Description</label>
-      <input type="text" class="form-control" id="mysqlDescription" placeholder="Description" ng-model="createService.description">
+      <input type="text" class="form-control" id="mysqlDescription" placeholder="e.g. My Test mySql Database" ng-model="createService.description" aria-describedby="descriptionHelp">
+      <span id="descriptionHelp" class="help-block"><p class="text-muted">Write a brief description of the API (optional).</p></span>
     </div>
     <hr>
     <h4>Configuration Settings</h4>
+    <p>In the email we sent you, we have provided the necessary credentials to hook up to this MySQL database. Go ahead and copy paste them into the fields below:</p>
     <div class="form-group">
       <label for="mysqlHost">Host</label>
       <input type="text" class="form-control" id="mysqlHost" placeholder="Host" ng-model="createService.host">
