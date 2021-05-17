@@ -1,0 +1,40 @@
+<div ng-show="!submitted">
+  <h2>Welcome To DreamFactory!</h2>
+  <p>Thank you for signing up to DreamFactory.To help get you started, we have provided you with a dedicated MySQL Database containing several million records spread across six tables.</p>
+  <p>Let's use this database to create your first API. In the email we sent you, we have provided the necessary credentials to hook up to this MySQL database. Go ahead and copy paste them into the fields below:</p>
+  
+  <form ng-submit="saveService()">
+    <div class="form-group">
+      <label for="mysqlNamespace">Namespace</label>
+      <input type="text" class="form-control" id="mysqlNamespace" placeholder="Namespace" ng-model="createService.namespace">
+    </div>
+    <div class="form-group">
+      <label for="mysqlLabel">Label</label>
+      <input type="text" class="form-control" id="mysqlLabel" placeholder="Label" ng-model="label">
+    </div>
+    <div class="form-group">
+      <label for="mysqlDescription">Description</label>
+      <input type="text" class="form-control" id="mysqlDescription" placeholder="Description" ng-model="createService.description">
+    </div>
+    <hr>
+    <h4>Configuration Settings</h4>
+    <div class="form-group">
+      <label for="mysqlHost">Host</label>
+      <input type="text" class="form-control" id="mysqlHost" placeholder="Host" ng-model="createService.host">
+    </div>
+    <div class="form-group">
+      <label for="mysqlDatabase">Database</label>
+      <input type="text" class="form-control" id="mysqlDatabase" placeholder="Database" ng-model="createService.database">
+    </div>
+    <div class="form-group">
+      <label for="mysqlUsername">Username</label>
+      <input type="text" class="form-control" id="mysqlUsername" placeholder="Username" ng-model="createService.username">
+    </div>
+    <div class="form-group">
+      <label for="mysqlPassword">Password</label>
+      <input type="password" class="form-control" id="mysqlPassword" placeholder="Password" ng-model="createService.password">
+    </div>
+    <button type="submit" class="btn btn-default">Create API</button>
+  </form>
+  <br>
+</div>  
