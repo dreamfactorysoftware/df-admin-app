@@ -27,17 +27,21 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
     .controller('WizardCtrl', ['$rootScope', '$scope', '$cookies', '$q', '$location', 'dfApplicationData', 'dfNotify',
         function($rootScope, $scope, $cookies, $location, $q, dfApplicationData, dfNotify) {
             
+            $scope.createService = {};
+            
             // In order to save a new service, dfApplicationObj which is in the dfApplicationData service, needs to 
             // contain a "service" property. This function will fire when the view is initialized and populate the object. so that
             // the saveAPIData function below can fire properly.
+            
             var init = function() {
+                // Makes the loading icon run, and prevents the form from loading in until it is finished. 
+                $scope.dataLoading = true;
+
                 var apis = ['service'];
 
                 dfApplicationData.getApiData(apis).then(
                     function (response) {
-                        // TODO, perhaps some kind of functionality to only show the form once this stuff has loaded first
-                        // Perhaps a little spinny wheel thing
-                        console.log("finished loading");
+                        // We need this function even if it doesnt do anything so angularjs loads everything in properly.
                     },
                     function (error) {
                         var msg = 'There was an error loading the required data for the wizard to function. Please try logging out and back in';
@@ -53,22 +57,19 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                         };
                         dfNotify.error(messageOptions);
                     }
-                );
-                // TODO: Here we can probably chain a .finally function that will get rid of some kind of spinny loady icon thing.
-            }
+                ).finally(function () {
+                    // remove loading icon
+                    $scope.dataLoading = false;
+                });
+            };
 
             var closeEditor = function() {
 
               // Reset values of the form fields
-              $scope.namespace = '';
-              $scope.label = '';
-              $scope.description = '';
-              $scope.database = '';
-              $scope.host = '';
-              $scope.username = '';
-              $scope.password = '';
+              $scope.createService = {};
 
               console.log("API Saved!");
+              // We will use a cookie so that after login the router will know whether to go the wizard, or to the home page.
               $cookies.put("Wizard", "Created");
               // Reset the Application Data in dreamfactory-application.js to an empty object
               dfApplicationData.resetApplicationObj();
@@ -78,18 +79,18 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                 
                 var data = {
                     "id": null,
-                    "name": $scope.namespace,
-                    "label": $scope.label,
-                    "description": $scope.description,
+                    "name": $scope.createService.namespace,
+                    "label": $scope.createService.label,
+                    "description": $scope.createService.description,
                     "is_active": true,
                     "type": "mysql",
                     "service_doc_by_service_id": null,
                     "config": {
-                        "database": $scope.database,
-                        "host": $scope.host,
-                        "username": $scope.username,
+                        "database": $scope.createService.database,
+                        "host": $scope.createService.host,
+                        "username": $scope.createService.username,
                         "max_records": 1000,
-                        "password": $scope.password
+                        "password": $scope.createService.password
                     }
                 }
 
@@ -136,4 +137,11 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
             }
 
             init();
+    }])
+
+    .directive('dfWizardLoading', [function() {
+        return {
+            restrict: 'E',
+            template: "<div class='col-lg-12' ng-if='dataLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
+        };
     }])
