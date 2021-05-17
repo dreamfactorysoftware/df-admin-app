@@ -59,7 +59,7 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                 $scope.dataLoading = false;
             });
         };
-
+        // TODO: Delete this after testing and befire pushing to production.
         $scope.removeCookie = function() {
             $cookies.remove("Wizard");
         }
@@ -91,8 +91,6 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
     
                     // Reset values of the form fields
                     scope.createService = {};
-        
-                    console.log("API Saved!");
                     // We will use a cookie so that after login the router will know whether to go the wizard, or to the home page.
                     $cookies.put("Wizard", "Created");
                     // Reset the Application Data in dreamfactory-application.js to an empty object
