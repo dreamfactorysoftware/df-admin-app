@@ -1,3 +1,4 @@
+<!-- Creation Form -->
 <div ng-show="!submitted">
   <h2>Welcome To DreamFactory!</h2>
   <p>Thank you for signing up to DreamFactory.To help get you started, we have provided you with a dedicated MySQL Database containing several million records spread across six tables.</p>
@@ -38,3 +39,12 @@
   </form>
   <br>
 </div>  
+<!-- Show only the below after succesful service creation -->
+<div ng-show="submitted">
+  <h2>Congratulations, you've created your first API Service!</h2>
+  <p>You can create a role to grant users access control from the Roles tab. After that, you can create an app (from the Apps tab) which will generate an api key to give to your users.<br>But for now, lets go to the API Docs page so you can familiarise yourself with the API you just created.</p>
+  
+  <div class="form-controls">
+    <a class="btn btn-default btn-primary" href="#/apidocs" >Take Me There!</a>
+  </div>
+</div>

@@ -3,14 +3,17 @@
 
   <df-wizard-loading></df-wizard-loading>
 
-  <df-wizard-create-service ng-if="!dataLoading"></df-wizard-create-service>
-
-  <p>No thanks, take me back to the homepage</p>
-  <div class="form-controls">
-    <a class="btn btn-default btn-primary" href="#/home" >Home</a>
+  <div ng-if=!dataLoading>
+    <df-wizard-create-service ng-if="!dataLoading"></df-wizard-create-service>
+    <hr>
+    <p>No thanks, take me back to the homepage</p>
+    <div class="form-controls">
+      <a class="btn btn-default btn-primary" href="#/home" >Home</a>
+    </div>
+  
+    <p>Remove the Cookie for Testing Purposes, delete this on full release</p>
+    <button type="button" class="btn btn-danger" ng-click="removeCookie()">Remove Cookie</button>
   </div>
 
-  <p>Remove the Cookie for Testing Purposes, delete this on full release</p>
-  <button type="button" class="btn btn-danger" ng-click="removeCookie()">Remove Cookie</button>
 </div>
 
