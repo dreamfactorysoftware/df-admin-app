@@ -3,8 +3,8 @@
 
   <df-wizard-loading></df-wizard-loading>
 
-  <div ng-if=!dataLoading>
-    <df-wizard-create-service ng-if="!dataLoading"></df-wizard-create-service>
+  <div ng-if="!dataLoading">
+    <df-wizard-create-service></df-wizard-create-service>
     <hr>
     <p>No thanks, take me back to the homepage</p>
     <div class="form-controls">
