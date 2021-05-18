@@ -108,7 +108,7 @@ angular.module('dfAdmins', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             $scope.loadTabData();
         }])
 
-    .directive('dfAdminDetails', ['INSTANCE_URL', 'MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$http', '$cookies', 'UserDataService', '$cookieStore', 'SystemConfigDataService', function (INSTANCE_URL, MOD_ADMIN_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, $http, $cookies, UserDataService, $cookieStore, SystemConfigDataService) {
+    .directive('dfAdminDetails', ['INSTANCE_URL', 'MOD_ADMIN_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$http', '$cookies', 'UserDataService', 'SystemConfigDataService', function (INSTANCE_URL, MOD_ADMIN_ASSET_PATH, dfApplicationData, dfNotify, dfObjectService, $http, $cookies, UserDataService, SystemConfigDataService) {
 
         return {
 
