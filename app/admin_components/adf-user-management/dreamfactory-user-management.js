@@ -18,10 +18,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
     */
 
-    .run(['$cookieStore', 'UserDataService', 'SystemConfigDataService', function ($cookieStore, UserDataService, SystemConfigDataService) {
+    .run(['$cookies', 'UserDataService', 'SystemConfigDataService', function ($cookies, UserDataService, SystemConfigDataService) {
 
         // try to get current user from cookie
-        var cookie = $cookieStore.get('CurrentUserObj');
+        var cookie = $cookies.getObject('CurrentUserObj');
         if (cookie) {
             // set user and query the system config to verify session token is still good
             // the cache in dfApplicationData is empty at this point
@@ -1671,7 +1671,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
     // This service gives us access to the current user.  While it's pretty sparse
     // at the moment it does give us access to critical user/session data.  Inject this
     // service where ever you need to access the current user.
-    .service('UserDataService', ['$cookieStore', '$http', function ($cookieStore, $http) {
+    .service('UserDataService', ['$cookies', '$http', function ($cookies, $http) {
 
         // Stored user.
         var currentUser = false;
@@ -1690,7 +1690,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             delete userDataObj.session_id;
 
             // Set the cookie
-            $cookieStore.put('CurrentUserObj', userDataObj);
+            $cookies.putObject('CurrentUserObj', userDataObj);
 
             // Set the DreamFactory session header
             $http.defaults.headers.common['X-DreamFactory-Session-Token'] = userDataObj.session_token;
@@ -1702,7 +1702,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         function _unsetCurrentUser() {
 
             // remove the cookie
-            $cookieStore.remove('CurrentUserObj');
+            $cookies.remove('CurrentUserObj');
 
             // Unset DreamFactory header
             delete $http.defaults.headers.common['X-DreamFactory-Session-Token'];

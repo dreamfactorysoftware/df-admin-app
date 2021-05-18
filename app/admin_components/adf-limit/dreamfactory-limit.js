@@ -731,7 +731,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
     '$http',
     '$cookies',
     'UserDataService',
-    '$cookieStore',
     '$rootScope',
     'editLimitService',
     function(
@@ -742,7 +741,6 @@ angular.module('dfLimit', ['ngRoute', 'dfUtility'])
         $http,
         $cookies,
         UserDataService,
-        $cookieStore,
         $rootScope,
         editLimitService
         ) {
