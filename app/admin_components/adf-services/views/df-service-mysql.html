@@ -1,0 +1,11 @@
+    <!-- This has to be seen at glance for user -->
+    <h3>Basic Config</h3>
+    <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-if="field.display && field.name != 'schema'" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'"></div>
+
+    <!-- This has to be seen at glance for user -->
+    <h3>Caching</h3>
+    <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-if="field.is_caching" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'"></div>
+
+    <!-- We want to hide this -->
+    <p class="help-block" style="cursor: pointer;" ng-click="toggleShowAdvancedSettings()">Advanced Settings</p>
+    <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-if="!field.display && !field.is_caching" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'" ng-show="showAdvancedSettings"></div>

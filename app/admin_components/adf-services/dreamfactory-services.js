@@ -11,7 +11,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     templateUrl: MOD_SERVICES_ASSET_PATH + 'views/main.html',
                     controller: 'ServicesCtrl',
                     resolve: {
-                        checkUser:['checkUserService', function (checkUserService) {
+                        checkUser: ['checkUserService', function (checkUserService) {
                             return checkUserService.checkUser();
                         }]
                     }
@@ -41,8 +41,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
             }
         ];
 
-         // set empty search result message
-         $scope.emptySearchResult = {
+        // set empty search result message
+        $scope.emptySearchResult = {
             title: 'You have no Services that match your search criteria!',
             text: ''
         };
@@ -65,7 +65,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
         $scope.apiData = null;
 
-        $scope.loadTabData = function(init) {
+        $scope.loadTabData = function (init) {
 
             $scope.dataLoading = true;
 
@@ -75,7 +75,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
             dfApplicationData.getApiData(apis).then(
                 function (response) {
                     var newApiData = {};
-                    apis.forEach(function(value, index) {
+                    apis.forEach(function (value, index) {
                         newApiData[value] = response[index].resource ? response[index].resource : response[index];
                     });
                     $scope.apiData = newApiData;
@@ -105,7 +105,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
         $scope.loadTabData(true);
     }])
 
-    .directive('dfServiceLoading', [function() {
+    .directive('dfServiceLoading', [function () {
         return {
             restrict: 'E',
             template: "<div class='col-lg-12' ng-if='dataLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
@@ -156,7 +156,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
                         dfApplicationData.deleteApiData('service', requestDataObj).$promise.then(
-
                             function (result) {
 
                                 // notify success
@@ -212,7 +211,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
                         dfApplicationData.deleteApiData('service', requestDataObj).$promise.then(
-
                             function (result) {
 
                                 var messageOptions = {
@@ -325,7 +323,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 // this fires when the API data changes
                 // apiData is passed in to the details directive as data-api-data
-                var watchApiServiceData = scope.$watchCollection(function() {
+                var watchApiServiceData = scope.$watchCollection(function () {
                     // this is how the table repopulates after an update
                     return dfApplicationData.getApiDataFromCache('service');
                 }, function (newValue, oldValue) {
@@ -367,441 +365,437 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
     .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$timeout', '$http', 'INSTANCE_URL',
         function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, $timeout, $http, INSTANCE_URL) {
 
-        return {
+            return {
 
-            restrict: 'E',
-            scope: {
-                serviceData: '=?',
-                newService: '=?',
-                apiData: '=?'
-            },
-            templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-details.html',
-            link: function (scope, elem, attrs) {
-                scope.isInfoTab = true;
+                restrict: 'E',
+                scope: {
+                    serviceData: '=?',
+                    newService: '=?',
+                    apiData: '=?'
+                },
+                templateUrl: MOD_SERVICES_ASSET_PATH + 'views/df-service-details.html',
+                link: function (scope, elem, attrs) {
+                    scope.isInfoTab = true;
 
-                var ServiceDetails = function (service) {
+                    var ServiceDetails = function (service) {
 
-                    var newService = {
-                        "id": null,
-                        "name": '',
-                        "label": '',
-                        "description": '',
-                        "is_active": true,
-                        "type": "",
-                        "config": {},
-                        "service_doc_by_service_id": null
+                        var newService = {
+                            "id": null,
+                            "name": '',
+                            "label": '',
+                            "description": '',
+                            "is_active": true,
+                            "type": "",
+                            "config": {},
+                            "service_doc_by_service_id": null
+                        };
+
+                        service = service || newService;
+
+                        // Convert object from config types to array. Used with config.options.
+                        // This will be undone by normalizeKeyValuePairs() on Save or Update.
+                        //
+                        // {"username":"bn_df","password":"23e4bedd53"}
+                        //
+                        // becomes
+                        //
+                        // [{"key":"username","value":"bn_df"},{"key":"password","value":"23e4bedd53"}]
+
+                        if (service && service.config) {
+                            Object.keys(service.config).forEach(function (key) {
+                                if (service.config[key] && service.config[key].constructor === Object) {
+                                    var arr = [];
+                                    Object.keys(service.config[key]).forEach(function (objKey) {
+                                        arr.push({key: objKey, value: service.config[key][objKey]});
+                                    });
+                                    service.config[key] = arr;
+                                }
+                            });
+                        }
+
+                        return {
+                            __dfUI: {
+                                selected: false
+                            },
+                            record: angular.copy(service),
+                            recordCopy: angular.copy(service)
+                        };
                     };
 
-                    service = service || newService;
+                    // the service being edited, set by watcher on serviceData
+                    // this is where we store the current record and a backup copy for comparison
+                    // data gets exploded from serviceDetails.record into serviceInfo, serviceConfig, serviceDefinition
+                    // the user edits these copies, then on save or update prepareServiceData() does the reverse to update
+                    // serviceDetails.record
+                    scope.serviceDetails = null;
 
-                    // Convert object from config types to array. Used with config.options.
-                    // This will be undone by normalizeKeyValuePairs() on Save or Update.
+                    // all service types
+                    scope.editableServiceTypes = [];
+
+                    // all service types except non-creatable ones like system or user
+                    scope.creatableServiceTypes = [];
+
+                    function __throwApiError(infoData) {
+
+                        var field = '';
+                        if (!infoData.name && !infoData.label) {
+                            field = 'namespace and label fields';
+                        } else if (!infoData.name) {
+                            field = 'namespace field';
+                        } else {
+                            field = 'label field';
+                        }
+
+                        var msg = 'Invalid data supplied. The ' + field + ' is required.';
+                        var messageOptions = {
+                            module: 'Api Error',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: msg
+
+                        };
+
+                        dfNotify.error(messageOptions);
+                    }
+
+                    scope.saveOrUpdateService = function () {
+
+
+                        if (!scope.serviceInfo.name || !scope.serviceInfo.label) {
+                            scope.serviceInfoError = true;
+                            __throwApiError(scope.serviceInfo);
+                            return;
+                        } else {
+                            scope.serviceInfoError = false;
+                        }
+
+                        if (scope.newService) {
+
+                            scope.saveService();
+                        } else {
+
+                            scope.updateService();
+                        }
+                    };
+
+                    scope.cancelEditor = function () {
+
+                        // merge data from UI into current edit record
+                        scope.prepareServiceData();
+
+                        // then compare to original edit record
+                        if (!dfObjectService.compareObjectsAsJson(scope.serviceDetails.record, scope.serviceDetails.recordCopy)) {
+
+                            if (!dfNotify.confirmNoSave()) {
+
+                                return false;
+                            }
+                        }
+
+                        scope.closeEditor();
+                    };
+
+                    scope.prepareServiceData = function () {
+
+                        // merge settings from each tab into base record
+                        scope.serviceDetails.record = scope.prepareServiceInfo();
+                        scope.serviceDetails.record.config = scope.prepareServiceConfig();
+                        scope.serviceDetails.record.service_doc_by_service_id = scope.prepareServiceDefinition();
+                    };
+
+                    scope.clearCache = function () {
+                        $http.delete(INSTANCE_URL.url + '/system/cache/' + scope.serviceDetails.record.name)
+                            .then(function () {
+                                },
+                                function (error) {
+
+                                    var messageOptions = {
+                                        module: 'Api Error',
+                                        type: 'error',
+                                        provider: 'dreamfactory',
+                                        message: error
+                                    };
+
+                                    dfNotify.error(messageOptions);
+                                });
+                    };
+
+                    scope.closeEditor = function () {
+
+                        // same object as currentEditService used in ng-show
+                        scope.serviceData = null;
+
+                        scope.serviceDetails = new ServiceDetails();
+
+                        // reset tabs
+                        $timeout(function () {
+                            angular.element('#info-tab').trigger('click');
+                        });
+
+                        // reset errors
+                        scope.serviceInfoError = false;
+
+                        // force to manage view
+                        scope.$emit('sidebar-nav:view:reset');
+                    };
+
+                    // Convert array back to object. Used with config.options.
                     //
-                    // {"username":"bn_df","password":"23e4bedd53"}
+                    // [{"key":"username","value":"bn_df"},{"key":"password","value":"23e4bedd53"}]
                     //
                     // becomes
                     //
-                    // [{"key":"username","value":"bn_df"},{"key":"password","value":"23e4bedd53"}]
+                    // {"username":"bn_df","password":"23e4bedd53"}
 
-                    if (service && service.config) {
-                        Object.keys(service.config).forEach(function(key) {
-                          if (service.config[key] && service.config[key].constructor === Object) {
-                            var arr = [];
-                            Object.keys(service.config[key]).forEach(function (objKey) {
-                                arr.push({ key: objKey, value: service.config[key][objKey] });
+                    var normalizeKeyValuePairs = function () {
+
+                        var data = angular.copy(scope.serviceDetails.record);
+
+                        var convert = function (item) {
+                            var arr = data.config[item.name];
+                            data.config[item.name] = {};
+                            arr.forEach(function (arrItem) {
+                                data.config[item.name][arrItem.key] = arrItem.value;
                             });
-                              service.config[key] = arr;
-                          }
-                        });
-                    }
+                        };
 
-                    return {
-                        __dfUI: {
-                            selected: false
-                        },
-                        record: angular.copy(service),
-                        recordCopy: angular.copy(service)
-                    };
-                };
-
-                // the service being edited, set by watcher on serviceData
-                // this is where we store the current record and a backup copy for comparison
-                // data gets exploded from serviceDetails.record into serviceInfo, serviceConfig, serviceDefinition
-                // the user edits these copies, then on save or update prepareServiceData() does the reverse to update
-                // serviceDetails.record
-                scope.serviceDetails = null;
-
-                // all service types
-                scope.editableServiceTypes = [];
-
-                // all service types except non-creatable ones like system or user
-                scope.creatableServiceTypes = [];
-
-                function __throwApiError(infoData) {
-
-                    var field = '';
-                    if(!infoData.name && !infoData.label) {
-                        field = 'namespace and label fields';
-                    }
-                    else if(!infoData.name) {
-                        field = 'namespace field';
-                    }
-                    else {
-                        field = 'label field';
-                    }
-
-                    var msg = 'Invalid data supplied. The ' + field + ' is required.';
-                    var messageOptions = {
-                        module: 'Api Error',
-                        type: 'error',
-                        provider: 'dreamfactory',
-                        message: msg
-
-                    };
-
-                    dfNotify.error(messageOptions);
-                }
-
-                scope.saveOrUpdateService = function () {
-
-
-                    if (!scope.serviceInfo.name || !scope.serviceInfo.label) {
-                        scope.serviceInfoError = true;
-                        __throwApiError(scope.serviceInfo);
-                        return;
-                    } else {
-                        scope.serviceInfoError = false;
-                    }
-
-                    if (scope.newService) {
-
-                        scope.saveService();
-                    }
-                    else {
-
-                        scope.updateService();
-                    }
-                };
-
-                scope.cancelEditor = function () {
-
-                    // merge data from UI into current edit record
-                    scope.prepareServiceData();
-
-                    // then compare to original edit record
-                    if (!dfObjectService.compareObjectsAsJson(scope.serviceDetails.record, scope.serviceDetails.recordCopy)) {
-
-                        if (!dfNotify.confirmNoSave()) {
-
-                            return false;
+                        if (scope.selectedSchema.hasOwnProperty('config_schema') && scope.selectedSchema.config_schema !== null) {
+                            // convert key, value pair array to object
+                            scope.selectedSchema.config_schema.forEach(function (item) {
+                                if (item.type.indexOf('object') > -1 && data.config[item.name] && data.config[item.name].length) {
+                                    convert(item);
+                                }
+                            });
                         }
-                    }
 
-                    scope.closeEditor();
-                };
-
-                scope.prepareServiceData = function () {
-
-                    // merge settings from each tab into base record
-                    scope.serviceDetails.record = scope.prepareServiceInfo();
-                    scope.serviceDetails.record.config = scope.prepareServiceConfig();
-                    scope.serviceDetails.record.service_doc_by_service_id = scope.prepareServiceDefinition();
-                };
-
-                scope.clearCache = function () {
-                    $http.delete(INSTANCE_URL.url + '/system/cache/' + scope.serviceDetails.record.name)
-                        .then(function () {},
-                            function (error) {
-
-                            var messageOptions = {
-                                module: 'Api Error',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: error
-                            };
-
-                            dfNotify.error(messageOptions);
-                        });
-                };
-
-                scope.closeEditor = function () {
-
-                    // same object as currentEditService used in ng-show
-                    scope.serviceData = null;
-
-                    scope.serviceDetails = new ServiceDetails();
-
-                    // reset tabs
-                    $timeout(function(){
-                        angular.element('#info-tab').trigger('click');
-                    });
-
-                    // reset errors
-                    scope.serviceInfoError = false;
-
-                    // force to manage view
-                    scope.$emit('sidebar-nav:view:reset');
-                };
-
-                // Convert array back to object. Used with config.options.
-                //
-                // [{"key":"username","value":"bn_df"},{"key":"password","value":"23e4bedd53"}]
-                //
-                // becomes
-                //
-                // {"username":"bn_df","password":"23e4bedd53"}
-
-                var normalizeKeyValuePairs = function () {
-
-                    var data = angular.copy(scope.serviceDetails.record);
-
-                    var convert = function (item) {
-                        var arr = data.config[item.name];
-                        data.config[item.name] = {};
-                        arr.forEach(function(arrItem) {
-                          data.config[item.name][arrItem.key] = arrItem.value;
-                        });
+                        return data;
                     };
 
-                    if (scope.selectedSchema.hasOwnProperty('config_schema') && scope.selectedSchema.config_schema !== null) {
-                        // convert key, value pair array to object
-                        scope.selectedSchema.config_schema.forEach(function(item) {
-                            if (item.type.indexOf('object') > -1 && data.config[item.name] && data.config[item.name].length) {
-                                convert(item);
-                            }
-                        });
-                    }
+                    scope.saveService = function () {
 
-                    return data;
-                };
+                        // merge data from UI into current edit record
+                        scope.prepareServiceData();
 
-                scope.saveService = function () {
+                        var data = normalizeKeyValuePairs();
 
-                    // merge data from UI into current edit record
-                    scope.prepareServiceData();
+                        var requestDataObj = {
+                            params: {
+                                fields: '*',
+                                related: 'service_doc_by_service_id'
+                            },
+                            data: data
+                        };
 
-                    var data = normalizeKeyValuePairs();
+                        dfApplicationData.saveApiData('service', requestDataObj).$promise.then(
+                            function (result) {
 
-                    var requestDataObj = {
-                        params: {
-                            fields: '*',
-                            related: 'service_doc_by_service_id'
-                        },
-                        data: data
-                    };
+                                var messageOptions = {
+                                    module: 'Services',
+                                    type: 'success',
+                                    provider: 'dreamfactory',
+                                    message: 'Service saved successfully.'
 
-                    dfApplicationData.saveApiData('service', requestDataObj).$promise.then(
+                                };
 
-                        function (result) {
+                                dfNotify.success(messageOptions);
 
-                            var messageOptions = {
-                                module: 'Services',
-                                type: 'success',
-                                provider: 'dreamfactory',
-                                message: 'Service saved successfully.'
-
-                            };
-
-                            dfNotify.success(messageOptions);
-
-                            scope.closeEditor();
-                        },
-
-                        function (reject) {
-
-                            var messageOptions = {
-                                module: 'Api Error',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-
-                            };
-
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(
-                        function () {
-
-                        }
-                    );
-                };
-
-                scope.updateService = function () {
-
-                    // merge data from UI into current edit record
-                    scope.prepareServiceData();
-
-                    var data = normalizeKeyValuePairs();
-
-                    var requestDataObj = {
-                        params: {
-                            fields: '*',
-                            related: 'service_doc_by_service_id'
-                        },
-                        data: data
-                    };
-
-                    dfApplicationData.updateApiData('service', requestDataObj).$promise.then(
-
-                        function (result) {
-
-                            var messageOptions = {
-                                module: 'Services',
-                                type: 'success',
-                                provider: 'dreamfactory',
-                                message: 'Service updated successfully'
-                            };
-
-                            if (scope.selections.saveAndClearCache) {
-                                scope.clearCache();
-                                messageOptions.message = 'Service updated successfully and cache cleared.';
-                            }
-
-                            dfNotify.success(messageOptions);
-
-                            if (scope.selections.saveAndClose) {
                                 scope.closeEditor();
-                            } else {
-                                scope.serviceDetails = new ServiceDetails(result);
+                            },
+
+                            function (reject) {
+
+                                var messageOptions = {
+                                    module: 'Api Error',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
+
+                                };
+
+                                dfNotify.error(messageOptions);
                             }
-                        },
+                        ).finally(
+                            function () {
 
-                        function (reject) {
+                            }
+                        );
+                    };
 
-                            var messageOptions = {
-                                module: 'Api Error',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
+                    scope.updateService = function () {
 
-                            };
+                        // merge data from UI into current edit record
+                        scope.prepareServiceData();
 
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(
-                        function () {
+                        var data = normalizeKeyValuePairs();
 
-                        }
-                    );
-                };
+                        var requestDataObj = {
+                            params: {
+                                fields: '*',
+                                related: 'service_doc_by_service_id'
+                            },
+                            data: data
+                        };
 
-                // Refresh the editors when switching tabs
+                        dfApplicationData.updateApiData('service', requestDataObj).$promise.then(
+                            function (result) {
 
-                scope.refreshServiceConfigEditor = function() {
+                                var messageOptions = {
+                                    module: 'Services',
+                                    type: 'success',
+                                    provider: 'dreamfactory',
+                                    message: 'Service updated successfully'
+                                };
 
-                    $('#config-tab').tab('show');
-                    scope.isInfoTab = false;
+                                if (scope.selections.saveAndClearCache) {
+                                    scope.clearCache();
+                                    messageOptions.message = 'Service updated successfully and cache cleared.';
+                                }
 
-                    var editor = scope.serviceConfigEditorObj.editor;
-                    if (editor) {
-                        editor.renderer.updateText();
-                        editor.resize(true);
-                        editor.focus();
-                    }
-                };
+                                dfNotify.success(messageOptions);
 
-                scope.refreshServiceInfoEditor = function() {
-                    scope.isInfoTab = true;
-                };
+                                if (scope.selections.saveAndClose) {
+                                    scope.closeEditor();
+                                } else {
+                                    scope.serviceDetails = new ServiceDetails(result);
+                                }
+                            },
 
-                scope.refreshServiceDefEditor = function() {
-                    scope.isInfoTab = false;
+                            function (reject) {
 
-                    var editor = scope.serviceDefEditorObj.editor;
-                    if (editor) {
-                        editor.renderer.updateText();
-                        editor.resize(true);
-                        editor.focus();
-                    }
-                };
+                                var messageOptions = {
+                                    module: 'Api Error',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: reject
 
-                scope.serviceTypeToSchema = function (type) {
+                                };
 
-                    var types = scope.newService ? scope.creatableServiceTypes : scope.editableServiceTypes;
-                    var schema = types.filter(function (item) {
-                        return item.name === type;
-                    });
-                    if (schema.length > 0) {
-                        return schema[0];
-                    }
-                    return null;
-                };
+                                dfNotify.error(messageOptions);
+                            }
+                        ).finally(
+                            function () {
 
-                // WATCHERS
+                            }
+                        );
+                    };
 
-                var watchServiceData = scope.$watch('serviceData', function (newValue, oldValue) {
+                    // Refresh the editors when switching tabs
 
-                    scope.serviceDetails = new ServiceDetails(newValue);
-                    scope.updateHelpText(newValue);
-                });
+                    scope.refreshServiceConfigEditor = function () {
 
+                        $('#config-tab').tab('show');
+                        scope.isInfoTab = false;
 
-                // MESSAGES
-
-                scope.$on('$destroy', function (e) {
-
-                    watchServiceData();
-                });
-
-
-                // HELP
-
-                scope.dfHelp = {
-
-                    createService: {
-                        title: 'Create Service Information',
-                        text: 'Create Service information help text'
-                    }
-                };
-
-                scope.updateHelpText = function (record) {
-
-                    var details, configText, serviceDefText, serviceDefReadOnlyText;
-
-                    details = " this service ";
-                    if (record && record.label) {
-                        details = '<b> ' + record.label  + ' </b>';
-                    }
-                    configText = 'Specify any service-specific configuration for' + details + 'below.';
-
-                    details = "remote and script services";
-                    if (record && record.label) {
-                        details = '<b> ' + record.label  + '</b>';
-                    }
-                    serviceDefText = 'For ' + details + ', you can specify a definition of the service below. ' +
-                        'Refer to the <a target="_blank" href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md" title="Link to Swagger">OpenAPI docs</a> ' +
-                        'for details, or build and export your own from <a target="_blank" href="http://editor.swagger.io/#/" title="Link to Swagger Editor">here</a>.';
-
-                    details = " this service ";
-                    if (record && record.label) {
-                        details = '<b> ' + record.label  + ' </b>';
-                    }
-                    serviceDefReadOnlyText = 'The service definition for ' + details  + 'is pre-defined and can not be edited.';
-
-                    scope.dfLargeHelp = {
-
-                        basic: {
-                            title: 'Services Overview',
-                            text: 'Services are where you set up REST API connections to databases, file storage, email, remote web services, and more.'
-                        },
-                        config: {
-                            title: 'Config Overview',
-                            text: configText
-                        },
-                        serviceDef: {
-                            title: 'Service Definition Overview',
-                            text: serviceDefText
-                        },
-                        serviceDefReadOnly: {
-                            title: 'Service Definition Overview',
-                            text: serviceDefReadOnlyText
+                        var editor = scope.serviceConfigEditorObj.editor;
+                        if (editor) {
+                            editor.renderer.updateText();
+                            editor.resize(true);
+                            editor.focus();
                         }
                     };
-                };
-            }
-        };
-    }])
-    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'SystemConfigDataService' , 'dfNotify', function (MOD_SERVICES_ASSET_PATH, SystemConfigDataService, dfNotify) {
+
+                    scope.refreshServiceInfoEditor = function () {
+                        scope.isInfoTab = true;
+                    };
+
+                    scope.refreshServiceDefEditor = function () {
+                        scope.isInfoTab = false;
+
+                        var editor = scope.serviceDefEditorObj.editor;
+                        if (editor) {
+                            editor.renderer.updateText();
+                            editor.resize(true);
+                            editor.focus();
+                        }
+                    };
+
+                    scope.serviceTypeToSchema = function (type) {
+
+                        var types = scope.newService ? scope.creatableServiceTypes : scope.editableServiceTypes;
+                        var schema = types.filter(function (item) {
+                            return item.name === type;
+                        });
+                        if (schema.length > 0) {
+                            return schema[0];
+                        }
+                        return null;
+                    };
+
+                    // WATCHERS
+
+                    var watchServiceData = scope.$watch('serviceData', function (newValue, oldValue) {
+
+                        scope.serviceDetails = new ServiceDetails(newValue);
+                        scope.updateHelpText(newValue);
+                    });
+
+
+                    // MESSAGES
+
+                    scope.$on('$destroy', function (e) {
+
+                        watchServiceData();
+                    });
+
+
+                    // HELP
+
+                    scope.dfHelp = {
+
+                        createService: {
+                            title: 'Create Service Information',
+                            text: 'Create Service information help text'
+                        }
+                    };
+
+                    scope.updateHelpText = function (record) {
+
+                        var details, configText, serviceDefText, serviceDefReadOnlyText;
+
+                        details = " this service ";
+                        if (record && record.label) {
+                            details = '<b> ' + record.label + ' </b>';
+                        }
+                        configText = 'Specify any service-specific configuration for' + details + 'below.';
+
+                        details = "remote and script services";
+                        if (record && record.label) {
+                            details = '<b> ' + record.label + '</b>';
+                        }
+                        serviceDefText = 'For ' + details + ', you can specify a definition of the service below. ' +
+                            'Refer to the <a target="_blank" href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md" title="Link to Swagger">OpenAPI docs</a> ' +
+                            'for details, or build and export your own from <a target="_blank" href="http://editor.swagger.io/#/" title="Link to Swagger Editor">here</a>.';
+
+                        details = " this service ";
+                        if (record && record.label) {
+                            details = '<b> ' + record.label + ' </b>';
+                        }
+                        serviceDefReadOnlyText = 'The service definition for ' + details + 'is pre-defined and can not be edited.';
+
+                        scope.dfLargeHelp = {
+
+                            basic: {
+                                title: 'Services Overview',
+                                text: 'Services are where you set up REST API connections to databases, file storage, email, remote web services, and more.'
+                            },
+                            config: {
+                                title: 'Config Overview',
+                                text: configText
+                            },
+                            serviceDef: {
+                                title: 'Service Definition Overview',
+                                text: serviceDefText
+                            },
+                            serviceDefReadOnly: {
+                                title: 'Service Definition Overview',
+                                text: serviceDefReadOnlyText
+                            }
+                        };
+                    };
+                }
+            };
+        }])
+    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'SystemConfigDataService', 'dfNotify', function (MOD_SERVICES_ASSET_PATH, SystemConfigDataService, dfNotify) {
 
         return {
             restrict: 'E',
@@ -824,17 +818,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     return scope.serviceInfo;
                 };
 
-                scope.sortArray = function(groupsArray, orderArray) {
+                scope.sortArray = function (groupsArray, orderArray) {
                     var result = [];
 
-                    orderArray.forEach(function(group){
+                    orderArray.forEach(function (group) {
                         if (groupsArray.indexOf(group) !== -1) {
                             result.push(group);
                         }
                     });
 
                     if (groupsArray.length > orderArray.length) {
-                        var unsortedGroups = groupsArray.filter(function(i) {return result.indexOf(i) < 0;});
+                        var unsortedGroups = groupsArray.filter(function (i) {
+                            return result.indexOf(i) < 0;
+                        });
                         result.push.apply(result, unsortedGroups);
                     }
 
@@ -854,7 +850,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.validateServiceName = function () {
                     var isNameValid = scope.serviceInfo.name.match(/^[a-z0-9_-]+$/);
-                    if(!isNameValid || isNameValid.length === 0) {
+                    if (!isNameValid || isNameValid.length === 0) {
                         var msg = 'Be sure that service name is in lowercase and alphanumeric. It should only contain letters, numbers, underscores and dashes.';
                         var messageOptions = {
                             module: 'Services',
@@ -1082,6 +1078,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         scope.decorateSchema();
                     }
 
+
                     // clear out service def
                     scope.resetServiceDef();
                 };
@@ -1113,7 +1110,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         var typeObj = {};
 
-                        var groups = scope.creatableServiceTypes.map(function(obj) {
+                        var groups = scope.creatableServiceTypes.map(function (obj) {
                             if (!typeObj.hasOwnProperty(obj.group)) {
                                 typeObj[obj.group] = [];
                             }
@@ -1123,7 +1120,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             return obj.group;
                         });
 
-                        groups = groups.filter(function(v,i) { return groups.indexOf(v) === i; });
+                        groups = groups.filter(function (v, i) {
+                            return groups.indexOf(v) === i;
+                        });
 
                         var sortingArray = [
                             'Database',
@@ -1231,9 +1230,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 scope.serviceConfigUpdateCounter = 0;
                 scope.eventList = [];
                 scope.allowedConfigFormats = '.json,.js,.php,.py,.python,.yaml,.yml';
-                scope.allowedConfigGitFormats = ['json','js','php','py','python','yaml','yml'];
+                scope.allowedConfigGitFormats = ['json', 'js', 'php', 'py', 'python', 'yaml', 'yml'];
                 scope.serviceConfigGitHubTarget = 'configmodal';
-                scope.serviceConfigEditorObj={'editor': null};
+                scope.serviceConfigEditorObj = {'editor': null};
                 scope.isArray = angular.isArray;
                 scope.disableServiceLinkRefresh = true;
                 scope.uploadSpreadsheet = null;
@@ -1250,7 +1249,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         var reader = new FileReader();
                         reader.readAsText(file, "UTF-8");
                         reader.onload = function (evt) {
-                            scope.$apply(function() {
+                            scope.$apply(function () {
                                 scope.serviceConfig["content"] = evt.target.result;
                                 scope.serviceConfigUpdateCounter++;
                             });
@@ -1357,7 +1356,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     return INSTANCE_URL.url + '/' + scope.selections.service.name + storagePath;
                 };
 
-                scope.getRefreshEnable = function() {
+                scope.getRefreshEnable = function () {
 
                     var type, enable = false;
 
@@ -1392,7 +1391,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     var servicePath = scope.serviceConfig.storage_path;
                     var url = INSTANCE_URL.url + '/' + serviceName;
 
-                    if(scope.selections.service && (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket')){
+                    if (scope.selections.service && (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket')) {
                         var params = {
                             path: servicePath,
                             branch: serviceRef,
@@ -1439,10 +1438,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 scope.deleteScriptFromCache = function () {
 
                     $http({
-                        method:'DELETE',
+                        method: 'DELETE',
                         url: INSTANCE_URL.url + '/system/cache/_event/' + scope.serviceInfo.name
                     }).then(
-                        function(result){
+                        function (result) {
 
                             var messageOptions = {
                                 module: 'Services',
@@ -1452,7 +1451,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             };
                             dfNotify.error(messageOptions);
                         },
-                        function(error) {
+                        function (error) {
 
                             var messageOptions = {
                                 module: 'Services',
@@ -1462,7 +1461,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             };
                             dfNotify.error(messageOptions);
                         }
-                    ).finally(function() {
+                    ).finally(function () {
                     });
                 };
 
@@ -1487,12 +1486,22 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         configObj[key] = [];
                     }
 
+                    angular.forEach(
+                        function (field) {
+                            if (field.required) {
+                                scope.serviceField = true;
+                            } else if (!field.required) {
+                                scope.serviceField = false;
+                            }
+                        });
+
+
                     var schema = scope.selectedSchema.config_schema.filter(function (item) {
                         return item.name == key;
                     })[0] || {};
 
                     if (schema.items instanceof Array) {
-                        scope.serviceConfig[key].push({ });
+                        scope.serviceConfig[key].push({});
                     } else if (schema.items === 'string') {
                         scope.serviceConfig[key].push('');
                     }
@@ -1547,7 +1556,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.getReferences = function (key, valueField) {
                     var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
-                    if(dfApplicationObjApis && dfApplicationObjApis[key] && dfApplicationObjApis[key].record) {
+                    if (dfApplicationObjApis && dfApplicationObjApis[key] && dfApplicationObjApis[key].record) {
                         return dfApplicationObjApis[key].record.map(function (item) {
                             return {name: item.name, value: item[valueField] || item.id};
                         });
@@ -1556,7 +1565,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.getServiceById = function (id) {
 
-                    var matches = scope.apiData['service_link'].filter(function(service){
+                    var matches = scope.apiData['service_link'].filter(function (service) {
                         return service.id === id;
                     });
                     if (matches.length === 0) {
@@ -1613,15 +1622,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             break;
                         case 'python':
                             scope.allowedConfigFormats = '.py,.python';
-                            scope.allowedConfigGitFormats = ['py','python'];
+                            scope.allowedConfigGitFormats = ['py', 'python'];
                             break;
                         case 'python3':
                             scope.allowedConfigFormats = '.py,.python';
-                            scope.allowedConfigGitFormats = ['py','python'];
+                            scope.allowedConfigGitFormats = ['py', 'python'];
                             break;
                         default:
                             scope.allowedConfigFormats = '.json,.js,.php,.yaml,.yml';
-                            scope.allowedConfigGitFormats = ['json','js','php','yaml','yml'];
+                            scope.allowedConfigGitFormats = ['json', 'js', 'php', 'yaml', 'yml'];
                     }
 
                     // Some services need an event list, currently GCM, APN, and Logstash. These all have a
@@ -1679,7 +1688,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             });
                         });
 
-                        angular.forEach(temp, function(items, service) {
+                        angular.forEach(temp, function (items, service) {
                             items.unshift({'label': 'All ' + service + ' events', 'name': service + '.*'});
                             serviceEvents.push({'label': service, 'name': service, 'items': items});
                         });
@@ -1734,7 +1743,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     if (type === 'nodejs' ||
                         type === 'php' ||
                         type === 'python' ||
-                        type === 'python3' ) {
+                        type === 'python3') {
 
                         // if linked to a service set script content to empty
                         if (scope.selections.service) {
@@ -1763,14 +1772,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         if (scope.selections.service &&
                             (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket')) {
                             config.scm_reference = (config.scm_reference ? config.scm_reference : null);
-                        }  else {
+                        } else {
                             config.scm_reference = null;
                         }
 
                         // path is allowed for any link service, replace empty string with null
                         if (scope.selections.service) {
                             config.storage_path = (config.storage_path ? config.storage_path : null);
-                        }  else {
+                        } else {
                             config.storage_path = null;
                         }
                     }
@@ -1783,13 +1792,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         // path is allowed for any link service, replace empty string with null
                         if (scope.selections.service) {
                             config.storage_container = (config.storage_container ? config.storage_container : null);
-                        }  else {
+                        } else {
                             config.storage_container = null;
                         }
                     }
 
                     return config;
                 };
+
+                scope.showAdvancedSettings = false;
+
+                scope.toggleShowAdvancedSettings = function () {
+                    scope.showAdvancedSettings = !scope.showAdvancedSettings;
+                }
             }
         };
     }])
@@ -1880,8 +1895,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                             if (files[0].name.indexOf('yml') !== -1 || files[0].name.indexOf('yaml') !== -1) {
                                 format = "yaml";
-                            }
-                            else {
+                            } else {
                                 format = "json";
                             }
                             scope.serviceDefinition.format = format;
