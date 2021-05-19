@@ -1,28 +1,8 @@
 'use strict';
 
 angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'])
-    .constant('MOD_WIZARD_ROUTER_PATH', '/wizard')
+    // Constant is used to pass down the html path to our directive.
     .constant('MOD_WIZARD_ASSET_PATH', 'admin_components/adf-wizard/')
-    .config(['$routeProvider', 'MOD_WIZARD_ROUTER_PATH', 'MOD_WIZARD_ASSET_PATH',
-        function ($routeProvider, MOD_WIZARD_ROUTER_PATH, MOD_WIZARD_ASSET_PATH) {
-            $routeProvider
-                .when(MOD_WIZARD_ROUTER_PATH, {
-                    templateUrl: MOD_WIZARD_ASSET_PATH + 'views/main.html',
-                    controller: 'WizardCtrl',
-                    resolve: {
-                        checkAdmin:['checkAdminService', function (checkAdminService) {
-                            return checkAdminService.checkAdmin();
-                        }],
-                        checkUser:['checkUserService', function (checkUserService) {
-                            return checkUserService.checkUser();
-                        }]
-                    }
-                });
-        }])
-
-    .run([function () {
-
-    }])
 
     .controller('WizardCtrl', ['$rootScope', '$scope', '$cookies','$location', '$q', 'dfApplicationData', 'dfNotify', function($rootScope, $scope, $cookies, $location, $q, dfApplicationData, dfNotify) {
             
@@ -59,7 +39,8 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                 $scope.dataLoading = false;
             });
         };
-        // TODO: Delete this after testing and befire pushing to production.
+        // To open the modal manually, we need to remove the wizard cookie, so ng-if in adf-home will pick up the change
+        // and fire it up.
         $scope.removeCookie = function() {
             $cookies.remove("Wizard");
         }

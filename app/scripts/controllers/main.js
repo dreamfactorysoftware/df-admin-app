@@ -446,7 +446,6 @@ angular.module('dreamfactoryApp')
                     $scope.showLicenseExpiredBanner = false;
                     $scope.showAdminComponentNav = false;
                     break;
-                case '/wizard':
                 default:
                     $scope.showAdminComponentNav = false;
                     break;
