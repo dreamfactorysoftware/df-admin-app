@@ -4,12 +4,34 @@
         <df-sidebar-nav></df-sidebar-nav>
     </div>
     <div class="col-md-10 df-section" data-ng-class="df-section-all-round" df-fs-height>
-
+        
         <div data-ng-repeat="link in links" data-ng-if="activeView.name === link.name" style="height: 100%">
             <div style="height:100%">
                 <!--<iframe ng-src="{{ trustUrl(link.href) }}" data-ng-if="link.href" style="padding-bottom: 75px; height: 100%; width: 100%; border: 0px"></iframe>-->
 
                 <ng-include src="link.template"></ng-include>
+ 
+                <div ng-controller="WizardCtrl">
+                    <button id="wizardbutton" type="button" class="btn btn-primary btn-lg" data-target="#wizardModal" ng-click="removeCookie()">
+                        Launch demo modal
+                    </button>
+                    <div ng-if="!hasCookie()">
+                        <div class="modal fade" tabindex="-1" role="dialog" id="wizardModal">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <!-- <button type="button" class="close" ng-click="setCookie()" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
+                                        <h4 class="modal-title">API Wizard</h4>
+                                    </div>
+                                    <div class="modal-body">           
+                                        <df-wizard-loading></df-wizard-loading>
+                                        <df-wizard-create-service ng-if="!dataLoading"></df-wizard-create-service>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
             </div>
         </div>
     </div>
