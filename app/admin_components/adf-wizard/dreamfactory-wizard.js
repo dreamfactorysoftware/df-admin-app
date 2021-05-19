@@ -39,11 +39,6 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                 $scope.dataLoading = false;
             });
         };
-        // To open the modal manually, we need to remove the wizard cookie, so ng-if in adf-home will pick up the change
-        // and fire it up.
-        $scope.removeCookie = function() {
-            $cookies.remove("Wizard");
-        }
 
         $scope.hasCookie = function() {
                 
