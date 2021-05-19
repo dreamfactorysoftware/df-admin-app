@@ -1487,6 +1487,39 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         configObj[key] = [];
                     }
 
+                    angular.forEach(field => {
+                        if (field.required) {
+                            scope.serviceField = true;
+                            [
+                                {
+                                    // Should I populate these fields? Seems like the preexisting part of the object that `config_schema` we can see in the inspector
+                                    field: something,
+                                    field: something,
+                                    field: something,
+                                    required: true,
+                                    field: something
+                                },
+                                {
+                                    field: something,
+                                    field: something,
+                                    field: something,
+                                    required: false,
+                                    field: something
+                                },
+                                {
+                                    field: something,
+                                    field: something,
+                                    field: something,
+                                    required: true,
+                                    field: something
+                                },
+                            ];
+                        } else if (!field.required) {
+                            scope.serviceField = false;
+                            }                  
+                    });
+
+
                     var schema = scope.selectedSchema.config_schema.filter(function (item) {
                         return item.name == key;
                     })[0] || {};
