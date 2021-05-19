@@ -19,7 +19,7 @@
 'use strict';
 
 
-angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
+angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'ngCookies'])
 
     .constant('MOD_HOME_ROUTER_PATH', '/home')
     .constant('MOD_HOME_ASSET_PATH', 'admin_components/adf-home/')
@@ -41,8 +41,8 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
     }])
 
-    .controller('HomeCtrl', ['$q', '$scope', '$sce', 'dfApplicationData', 'SystemConfigDataService',
-        function($q, $scope, $sce, dfApplicationData, SystemConfigDataService){
+    .controller('HomeCtrl', ['$q', '$scope', '$sce', 'dfApplicationData', 'SystemConfigDataService','$cookies',
+        function($q, $scope, $sce, dfApplicationData, SystemConfigDataService, $cookies){
 
             $scope.trustUrl = function (url) {
                 return $sce.trustAsResourceUrl(url);
@@ -100,4 +100,10 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     link.label = link.name;
                 }
             });
+
+            // To open the wizard manually, we need to remove the wizard cookie, so ng-if in adf-home will pick up the change
+            // and fire it up.
+            $scope.removeCookie = function() {
+                $cookies.remove("Wizard");
+            }
         }])
