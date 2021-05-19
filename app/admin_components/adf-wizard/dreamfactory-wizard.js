@@ -24,16 +24,16 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
 
     }])
 
-    .controller('WizardCtrl', ['$rootScope', '$scope', '$cookies', '$q', '$location', 'dfApplicationData', 'dfNotify', function($rootScope, $scope, $cookies, $location, $q, dfApplicationData, dfNotify) {
+    .controller('WizardCtrl', ['$rootScope', '$scope', '$cookies','$location', '$q', 'dfApplicationData', 'dfNotify', function($rootScope, $scope, $cookies, $location, $q, dfApplicationData, dfNotify) {
             
         // In order to save a new service, dfApplicationObj which is in the dfApplicationData service, needs to 
         // contain a "service" property. This function will fire when the view is initialized and populate the object. so that
         // the saveAPIData function below can fire properly.
-        
         var init = function() {
+
             // Makes the loading icon run, and prevents the form from loading in until it is finished. 
             $scope.dataLoading = true;
-
+            
             var apis = ['service'];
 
             dfApplicationData.getApiData(apis).then(
@@ -64,6 +64,15 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
             $cookies.remove("Wizard");
         }
 
+        $scope.hasCookie = function() {
+                
+            if ($cookies.get('Wizard')) {
+                return true;
+            }
+
+            return false;
+        };
+
         init();
     }])
 
@@ -74,7 +83,7 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
         };
     }])
 
-    .directive('dfWizardCreateService', ['$rootScope', 'MOD_WIZARD_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$cookies', '$q', function($rootScope, MOD_WIZARD_ASSET_PATH, dfApplicationData, dfNotify, $cookies, $q) {
+    .directive('dfWizardCreateService', ['$rootScope', 'MOD_WIZARD_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$cookies', '$q', '$location', function($rootScope, MOD_WIZARD_ASSET_PATH, dfApplicationData, dfNotify, $cookies, $q, $location) {
 
         return {
             
@@ -83,6 +92,11 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
             templateUrl: MOD_WIZARD_ASSET_PATH + 'views/df-wizard-create-service.html',
             link: function (scope, ele, attrs) {
                 
+                // This will automatically open the modal, rather than a button toggling it. The 
+                // ng-if in the view will make sure that this only fires if a cookie is not set, or
+                // if the user clicks on the api wizard button.
+                $('#wizardModal').modal('show');
+
                 scope.createService = {};
 
                 scope.submitted = false;
@@ -91,8 +105,6 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
     
                     // Reset values of the form fields
                     scope.createService = {};
-                    // We will use a cookie so that after login the router will know whether to go the wizard, or to the home page.
-                    $cookies.put("Wizard", "Created");
                     // Reset the Application Data in dreamfactory-application.js to an empty object
                     dfApplicationData.resetApplicationObj();
                     // hide the form
@@ -154,6 +166,32 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                             dfNotify.error(messageOptions);
                         }
                     );
+                }
+
+                var removeModal = function () {
+                    // There is an issue with angular and bootstrap where the .modal-open class is not removed
+                    // when jumping to a new page from inside the modal. As a result it prevents the newly loaded page
+                    // from being scrollable. The below removes the class if it exists
+                    var body = document.getElementsByTagName('body');
+                    if (body[0].classList.contains('modal-open')) body[0].classList.remove('modal-open');
+                    // Closes the modal, and also removes the darkened background (otherwise this will still
+                    // show when the new page renders)
+                    $('#wizardModal').modal('hide');
+                    $('.modal-backdrop').remove();
+                }
+
+                scope.setCookie = function() {
+                    $cookies.put("Wizard", "Created");
+                    removeModal();
+                }
+
+                scope.goToDocs = function() {
+                    // Apply a cookie so that the modal will not automatically open on going to /home 
+                    // the next time around.
+                    scope.setCookie();
+                    // reset the api wizard back to the first page (form input)
+                    scope.submitted = false;
+                    $location.url('/apidocs');
                 }
             }
         };
