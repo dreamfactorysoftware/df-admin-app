@@ -1,5 +1,5 @@
 <div>
-
+    <p><strong>Basic Options:</strong></p>
     <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema">
 
         <div class="form-group ng-scope" data-ng-if="field.type == 'boolean'">
@@ -119,6 +119,8 @@
                id="services_details_config_text_{{$index}}"
                data-ng-model="serviceConfig[field.name]"
                type="text" data-ng-required="field.required"/>
+        <!-- Filtering the required fiel -->
+        <hr data-ng-if="field.type !== 'required'">Advanced
 
         <df-ace-editor data-ng-if="field.type == 'text' && field.name == 'content'"
                        data-input-type="'string'"
