@@ -2,6 +2,9 @@
 
     <div class="col-md-2 df-sidebar-nav">
         <df-sidebar-nav></df-sidebar-nav>
+        <hr>
+        <p>Need a hand? Create an API to a dedicated Mysql database we have provided to get you started.</p>
+        <button type="button" class="btn btn-primary btn-block" data-target="#wizardModal" ng-click="removeCookie()"><i class="fa fa-magic" aria-hidden="true"></i>  Api Wizard</button>
     </div>
     <div class="col-md-10 df-section" data-ng-class="df-section-all-round" df-fs-height>
         
@@ -12,9 +15,6 @@
                 <ng-include src="link.template"></ng-include>
  
                 <div ng-controller="WizardCtrl">
-                    <button id="wizardbutton" type="button" class="btn btn-primary btn-lg" data-target="#wizardModal" ng-click="removeCookie()">
-                        Launch demo modal
-                    </button>
                     <div ng-if="!hasCookie()">
                         <div class="modal fade" tabindex="-1" role="dialog" id="wizardModal">
                             <div class="modal-dialog modal-lg" role="document">
