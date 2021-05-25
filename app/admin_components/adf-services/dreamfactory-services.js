@@ -463,7 +463,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 }
 
                 scope.saveOrUpdateService = function () {
-
+                    console.log(scope.serviceInfo);
 
                     if (!scope.serviceInfo.name || !scope.serviceInfo.label) {
                         scope.serviceInfoError = true;
@@ -1824,6 +1824,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                     return config;
                 };
+                
+                scope.showAdvancedSettings = false;
+
+                scope.toggleShowAdvancedSettings = function() {
+                    scope.showAdvancedSettings = !scope.showAdvancedSettings;
+                }
             }
         };
     }])
