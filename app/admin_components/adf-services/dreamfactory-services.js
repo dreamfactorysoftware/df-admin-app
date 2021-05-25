@@ -463,7 +463,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 }
 
                 scope.saveOrUpdateService = function () {
-                    console.log(scope.serviceInfo);
+
 
                     if (!scope.serviceInfo.name || !scope.serviceInfo.label) {
                         scope.serviceInfoError = true;
@@ -1081,7 +1081,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     if (scope.selectedSchema) {
                         scope.decorateSchema();
                     }
-                    console.log(scope.selectedSchema);
+
 
                     // clear out service def
                     scope.resetServiceDef();
