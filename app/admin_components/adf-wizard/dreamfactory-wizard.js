@@ -49,6 +49,17 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
             return false;
         };
 
+        // There is a peculiar edgecase bug where if the user manually deletes the cookie
+        // while on the "Home" page, moving to another tab or logging out will create a 
+        // a dark backdrop and lock the screen. The below will remove these backdrops when moving
+        // away from Home.
+        $scope.$on('$locationChangeStart', function() {
+            var body = document.getElementsByTagName('body');
+            if (body[0].classList.contains('modal-open')) body[0].classList.remove('modal-open');
+            $('#wizardModal').modal('hide');
+            $('.modal-backdrop').remove();
+        });
+
         init();
     }])
 
