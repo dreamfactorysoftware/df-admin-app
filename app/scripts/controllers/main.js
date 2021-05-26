@@ -110,6 +110,11 @@ angular.module('dreamfactoryApp')
                     label: 'Home',
                     path: '/home'
                 },
+                services: {
+                    name: 'services',
+                    label: 'Services',
+                    path: '/services'
+                },
                 apps: {
                     name: 'apps',
                     label: 'Apps',
@@ -129,11 +134,6 @@ angular.module('dreamfactoryApp')
                     name: 'roles',
                     label: 'Roles',
                     path: '/roles'
-                },
-                services: {
-                    name: 'services',
-                    label: 'Services',
-                    path: '/services'
                 },
                 apidocs: {
                     name: 'apidocs',
