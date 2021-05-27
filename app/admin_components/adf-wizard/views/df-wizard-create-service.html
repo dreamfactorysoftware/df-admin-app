@@ -1,7 +1,23 @@
 <!-- Creation Form -->
 <div class="modal fade" tabindex="-1" role="dialog" id="wizardModal">
 
-  <div class="modal-dialog modal-lg" role="document">
+<!--  Some styles to override bootstrap css, make the modal smaller, and remove the need for scrolling on regular screens -->
+  <style>
+    .modal-wizard {
+      margin: 0 auto;
+    }
+    .modal-wizard hr {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    .modal-wizard .modal-body {
+      padding-top: 5px;
+    }
+    .modal-wizard .modal-header {
+      padding-bottom: 10px;
+    }
+  </style>
+  <div class="modal-wizard modal-dialog modal-lg" role="document">
     <div class="modal-content">  
       <div class="modal-header">
         <h4 class="modal-title">API Wizard</h4>
