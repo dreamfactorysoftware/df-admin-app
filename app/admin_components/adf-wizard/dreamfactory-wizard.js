@@ -40,7 +40,7 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
             });
         };
 
-        $scope.hasCookie = function() {
+        $scope.hasWizardCookie = function() {
                 
             if ($cookies.get('Wizard')) {
                 return true;
@@ -84,36 +84,34 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                 // if the user clicks on the api wizard button.
                 $('#wizardModal').modal('show');
 
-                scope.createService = {};
+                scope.wizardData = {};
 
                 scope.submitted = false;
 
                 var closeEditor = function() {
-    
+
                     // Reset values of the form fields
-                    scope.createService = {};
-                    // Reset the Application Data in dreamfactory-application.js to an empty object
-                    dfApplicationData.resetApplicationObj();
+                    scope.wizardData = {};
                     // hide the form
                     scope.submitted = true;
                 }
 
-                scope.saveService = function(){         
+                scope.saveService = function() {         
                     
                     var data = {
                         "id": null,
-                        "name": scope.createService.namespace,
-                        "label": scope.createService.label,
-                        "description": scope.createService.description,
+                        "name": scope.wizardData.namespace,
+                        "label": scope.wizardData.label,
+                        "description": scope.wizardData.description,
                         "is_active": true,
                         "type": "mysql",
                         "service_doc_by_service_id": null,
                         "config": {
-                            "database": scope.createService.database,
-                            "host": scope.createService.host,
-                            "username": scope.createService.username,
+                            "database": scope.wizardData.database,
+                            "host": scope.wizardData.host,
+                            "username": scope.wizardData.username,
                             "max_records": 1000,
-                            "password": scope.createService.password
+                            "password": scope.wizardData.password
                         }
                     }
     
@@ -167,15 +165,15 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                     $('.modal-backdrop').remove();
                 }
 
-                scope.setCookie = function() {
+                scope.setWizardCookie = function() {
                     $cookies.put("Wizard", "Created");
                     removeModal();
                 }
 
-                scope.goToDocs = function() {
+                scope.goToApiDocs = function() {
                     // Apply a cookie so that the modal will not automatically open on going to /home 
                     // the next time around.
-                    scope.setCookie();
+                    scope.setWizardCookie();
                     // reset the api wizard back to the first page (form input)
                     scope.submitted = false;
                     $location.url('/apidocs');
