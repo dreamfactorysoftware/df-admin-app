@@ -27,13 +27,6 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
         });
     }])
 
-    .directive('dfWizardLoading', [function () {
-        return {
-            restrict: 'E',
-            template: "<div class='col-lg-12' ng-if='dataLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
-        };
-    }])
-
     .directive('dfWizardCreateService', ['$rootScope', 'MOD_WIZARD_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$cookies', '$q', '$http', 'INSTANCE_URL', '$location', function ($rootScope, MOD_WIZARD_ASSET_PATH, dfApplicationData, dfNotify, $cookies, $q, $http, INSTANCE_URL, $location) {
 
         return {
@@ -49,6 +42,7 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                 $('#wizardModal').modal('show');
 
                 scope.wizardData = {};
+                scope.dataLoading = false;
 
                 scope.submitted = false;
 
@@ -92,6 +86,7 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                         data: {'resource': [data]}
                     };
                     scope.dataLoading = true;
+                    $('.modal-wizard').removeClass('modal-wizard');
 
                     $http({
                         method: 'POST',
