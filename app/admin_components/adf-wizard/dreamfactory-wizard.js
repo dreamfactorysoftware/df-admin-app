@@ -4,44 +4,10 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
     // Constant is used to pass down the html path to our directive.
     .constant('MOD_WIZARD_ASSET_PATH', 'admin_components/adf-wizard/')
 
-    .controller('WizardCtrl', ['$rootScope', '$scope', '$cookies','$location', '$q', 'dfApplicationData', 'dfNotify', function($rootScope, $scope, $cookies, $location, $q, dfApplicationData, dfNotify) {
-            
-        // In order to save a new service, dfApplicationObj which is in the dfApplicationData service, needs to 
-        // contain a "service" property. This function will fire when the view is initialized and populate the object. so that
-        // the saveAPIData function below can fire properly.
-        var init = function() {
+    .controller('WizardCtrl', ['$rootScope', '$scope', '$cookies', '$location', '$q', 'dfApplicationData', 'dfNotify', function ($rootScope, $scope, $cookies, $location, $q, dfApplicationData, dfNotify) {
 
-            // Makes the loading icon run, and prevents the form from loading in until it is finished. 
-            $scope.dataLoading = true;
-            
-            var apis = ['service'];
+        $scope.hasWizardCookie = function () {
 
-            dfApplicationData.getApiData(apis).then(
-                function (response) {
-                    // We need this function even if it doesnt do anything so angularjs loads everything in properly.
-                },
-                function (error) {
-                    var msg = 'There was an error loading the required data for the wizard to function. Please try logging out and back in';
-                    if (error && error.error && (error.error.code === 401 || error.error.code === 403)) {
-                        msg = 'To use the Wizard your role must allow GET access to system/service and system/service_type. To create, update, or delete services you need POST, PUT, DELETE access to /system/service and/or /system/service/*.';
-                        $location.url('/home');
-                    }
-                    var messageOptions = {
-                        module: 'Services',
-                        provider: 'dreamfactory',
-                        type: 'error',
-                        message: msg
-                    };
-                    dfNotify.error(messageOptions);
-                }
-            ).finally(function () {
-                // remove loading icon
-                $scope.dataLoading = false;
-            });
-        };
-
-        $scope.hasWizardCookie = function() {
-                
             if ($cookies.get('Wizard')) {
                 return true;
             }
@@ -50,35 +16,33 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
         };
 
         // There is a peculiar edgecase bug where if the user manually deletes the cookie
-        // while on the "Home" page, moving to another tab or logging out will create a 
+        // while on the "Home" page, moving to another tab or logging out will create a
         // a dark backdrop and lock the screen. The below will remove these backdrops when moving
         // away from Home.
-        $scope.$on('$locationChangeStart', function() {
+        $scope.$on('$locationChangeStart', function () {
             var body = document.getElementsByTagName('body');
             if (body[0].classList.contains('modal-open')) body[0].classList.remove('modal-open');
             $('#wizardModal').modal('hide');
             $('.modal-backdrop').remove();
         });
-
-        init();
     }])
 
-    .directive('dfWizardLoading', [function() {
+    .directive('dfWizardLoading', [function () {
         return {
             restrict: 'E',
             template: "<div class='col-lg-12' ng-if='dataLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
         };
     }])
 
-    .directive('dfWizardCreateService', ['$rootScope', 'MOD_WIZARD_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$cookies', '$q', '$location', function($rootScope, MOD_WIZARD_ASSET_PATH, dfApplicationData, dfNotify, $cookies, $q, $location) {
+    .directive('dfWizardCreateService', ['$rootScope', 'MOD_WIZARD_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$cookies', '$q', '$http', 'INSTANCE_URL', '$location', function ($rootScope, MOD_WIZARD_ASSET_PATH, dfApplicationData, dfNotify, $cookies, $q, $http, INSTANCE_URL, $location) {
 
         return {
-            
+
             restrict: 'E',
             scope: false,
             templateUrl: MOD_WIZARD_ASSET_PATH + 'views/df-wizard-create-service.html',
             link: function (scope, ele, attrs) {
-                
+
                 // This will automatically open the modal, rather than a button toggling it. The 
                 // ng-if in the view will make sure that this only fires if a cookie is not set, or
                 // if the user clicks on the api wizard button.
@@ -88,57 +52,67 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
 
                 scope.submitted = false;
 
-                var closeEditor = function() {
+                var closeEditor = function () {
 
                     // Reset values of the form fields
                     scope.wizardData = {};
                     // hide the form
                     scope.submitted = true;
+
+                    $('.modal-wizard').removeClass('modal-wizard');
+
+                    // force to manage view
+                    scope.$emit('sidebar-nav:view:reset');
                 }
 
-                scope.saveService = function() {         
-                    
+                scope.saveService = function () {
                     var data = {
-                        "id": null,
-                        "name": scope.wizardData.namespace,
-                        "label": scope.wizardData.label,
-                        "description": scope.wizardData.description,
-                        "is_active": true,
-                        "type": "mysql",
-                        "service_doc_by_service_id": null,
-                        "config": {
-                            "database": scope.wizardData.database,
-                            "host": scope.wizardData.host,
-                            "username": scope.wizardData.username,
-                            "max_records": 1000,
-                            "password": scope.wizardData.password
+                        'id': null,
+                        'name': scope.wizardData.namespace,
+                        'label': scope.wizardData.label,
+                        'description': scope.wizardData.description,
+                        'is_active': true,
+                        'type': 'mysql',
+                        'service_doc_by_service_id': null,
+                        'config': {
+                            'database': scope.wizardData.database,
+                            'host': scope.wizardData.host,
+                            'username': scope.wizardData.username,
+                            'max_records': 1000,
+                            'password': scope.wizardData.password
                         }
                     }
-    
+
                     var requestDataObj = {
+
                         params: {
                             fields: '*',
                             related: 'service_doc_by_service_id'
                         },
-                        data: data
+                        data: {'resource': [data]}
                     };
-        
-                    dfApplicationData.saveApiData('service', requestDataObj).$promise.then(
-    
+                    scope.dataLoading = true;
+
+                    $http({
+                        method: 'POST',
+                        url: INSTANCE_URL.url + '/system/service',
+                        params: requestDataObj.params,
+                        data: requestDataObj.data
+                    }).then(
                         function (result) {
-    
+
                             var messageOptions = {
                                 module: 'Services',
                                 type: 'success',
                                 provider: 'dreamfactory',
                                 message: 'Service saved successfully.'
                             };
-    
+
                             dfNotify.success(messageOptions);
-    
+
                             closeEditor();
                         },
-        
+
                         function (reject) {
 
                             var messageOptions = {
@@ -149,6 +123,10 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                             };
 
                             dfNotify.error(messageOptions);
+                        }
+                    ).finally(
+                        function () {
+                            scope.dataLoading = false;
                         }
                     );
                 }
@@ -165,12 +143,12 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                     $('.modal-backdrop').remove();
                 }
 
-                scope.setWizardCookie = function() {
-                    $cookies.put("Wizard", "Created");
+                scope.setWizardCookie = function () {
+                    $cookies.put('Wizard', 'Created');
                     removeModal();
                 }
 
-                scope.goToApiDocs = function() {
+                scope.goToApiDocs = function () {
                     // Apply a cookie so that the modal will not automatically open on going to /home 
                     // the next time around.
                     scope.setWizardCookie();
