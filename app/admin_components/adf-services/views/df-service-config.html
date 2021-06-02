@@ -1,8 +1,8 @@
 <div>
-    <div ng-if="selectedSchema.name === 'mysql'" ng-include="'admin_components/adf-services/views/df-service-mysql.html'"></div>
-    <div ng-if="selectedSchema.name != 'mysql'" class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'"></div>
+    <div ng-if="selectedSchema.name === 'mysql' || selectedSchema.name === 'sqlsrv' || selectedSchema.name === 'oracle' || selectedSchema.name === 'pgsql'" ng-include="'admin_components/adf-services/views/df-service-fields-separated.html'"></div>
+    <div ng-if="selectedSchema.name !== 'mysql' && selectedSchema.name !== 'sqlsrv' && selectedSchema.name !== 'oracle' && selectedSchema.name !== 'pgsql'" class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'"></div>
 </div>
-
+ 
 <df-github-modal editor-obj="serviceConfigEditorObj"
                  accept="allowedConfigGitFormats"
                  target="serviceConfigGitHubTarget">
