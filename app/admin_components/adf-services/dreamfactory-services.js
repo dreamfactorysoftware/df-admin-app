@@ -1486,15 +1486,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         configObj[key] = [];
                     }
 
-                    angular.forEach(
-                        function (field) {
-                            if (field.required) {
-                                scope.serviceField = true;
-                            } else if (!field.required) {
-                                scope.serviceField = false;
-                            }
-                        });
-
 
                     var schema = scope.selectedSchema.config_schema.filter(function (item) {
                         return item.name == key;
