@@ -1,5 +1,5 @@
 <div>
-    <div ng-if="selectedSchema.name === 'mysql' || selectedSchema.name === 'sqlsrv' || selectedSchema.name === 'oracle' || selectedSchema.name === 'pgsql'" ng-include="'admin_components/adf-services/views/df-service-fields-separated.html'"></div>
+    <div ng-if="selectedSchema.name === 'mysqla' || selectedSchema.name === 'sqlsrv' || selectedSchema.name === 'oracle' || selectedSchema.name === 'pgsql'" ng-include="'admin_components/adf-services/views/df-service-fields-separated.html'"></div>
     <div ng-if="selectedSchema.name !== 'mysql' && selectedSchema.name !== 'sqlsrv' && selectedSchema.name !== 'oracle' && selectedSchema.name !== 'pgsql'" class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'"></div>
 </div>
 
