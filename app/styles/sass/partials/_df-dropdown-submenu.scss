@@ -33,3 +33,36 @@
 
   display:inline-block;
 }
+
+// Advanced fields drop down
+.advanced-fields {
+  max-height: 255px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.advanced-fields .button {
+  height: 35px;
+  border-radius: 4px;
+  box-shadow: 0 13px 14px -10px rgba(0, 0, 0, 0.2), 0 0 10px 0 rgba(0, 0, 0, 0.05);
+  background-image: linear-gradient(113deg, #5a6aff, #789dff);
+  background-color: #789dff;
+  border: none;
+}
+.advanced-fields .more-fields {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  padding-top: 100px;
+
+  background-image: linear-gradient(to bottom, transparent, white 70%);
+}
+.advanced-fields .less-fields {
+  bottom: 0;
+  display: none;
+  left: 0;
+  width: 100%;
+  margin: 0;
+}

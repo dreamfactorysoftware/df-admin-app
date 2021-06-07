@@ -156,7 +156,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
                         dfApplicationData.deleteApiData('service', requestDataObj).$promise.then(
-
                             function (result) {
 
                                 // notify success
@@ -212,7 +211,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
 
                         dfApplicationData.deleteApiData('service', requestDataObj).$promise.then(
-
                             function (result) {
 
                                 var messageOptions = {
@@ -1791,10 +1789,65 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     return config;
                 };
 
-                scope.showAdvancedSettings = false;
+                scope.isFieldsSeparated = function (schemaName) {
+                    return schemaName === 'mysql' || schemaName === 'sqlsrv' || schemaName === 'oracle' || schemaName === 'pgsql'
+                }
 
-                scope.toggleShowAdvancedSettings = function () {
+                scope.isBasic = function (field) {
+                    var basicFieldsNames = new Set(['host', 'port', 'database', 'username', 'password', 'schema']);
+
+                    return basicFieldsNames.has(field.name);
+                }
+
+                scope.isCaching = function (field) {
+                    return field.name.includes('cache') || field.name.includes('caching')
+                }
+
+                scope.showAdvancedSettings = true;
+                scope.showAdvancedFields = function () {
+                    var moreButton, lessButton, advancedFieldWrapper, advancedFieldContent, totalHeight;
+
+                    totalHeight = 0
+
+                    moreButton = $(".sidebar-box .more-fields .button").parent();
+                    lessButton = $(".sidebar-box .less-fields .button").parent();
+                    advancedFieldWrapper = moreButton.parent();
+                    advancedFieldContent = advancedFieldWrapper.find("#advanced-fields-wrapper:not('.more-fields')");
+                    moreButton.fadeOut();
+                    lessButton.fadeIn();
+
                     scope.showAdvancedSettings = !scope.showAdvancedSettings;
+
+                    // measure how tall inside should be by adding the height of advanced fields wrapper + the less button
+                    totalHeight += advancedFieldContent.outerHeight();
+
+                    advancedFieldWrapper
+                        .css({
+                            // Set height to prevent instant jumpdown when max height is removed
+                            "height": advancedFieldWrapper.height(),
+                            "max-height": 9999
+                        })
+                        .animate({
+                            "height": totalHeight
+                        });
+
+                    // prevent jump-down
+                    return false;
+
+                };
+                scope.hideAdvancedFields = function () {
+                    var moreButton, lessButton, advancedFieldWrapper;
+
+                    moreButton = $(".advanced-fields .more-fields .button").parent();
+                    lessButton = $(".advanced-fields .less-fields .button").parent();
+                    advancedFieldWrapper = moreButton.parent();
+
+                    moreButton.fadeIn();
+                    lessButton.fadeOut();
+                    advancedFieldWrapper.animate({
+                        "height": 255
+                    });
+                    return false;
                 }
             }
         };
