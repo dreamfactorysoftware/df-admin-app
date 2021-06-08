@@ -575,6 +575,32 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     return data;
                 };
 
+                scope.testServiceConnection = function () {
+
+                    // Build the URI for the API call to the service schema.
+                    var url = INSTANCE_URL.url + '/' + scope.serviceInfo.name + '/_schema';
+                    
+                    var messageOptions = {
+                        module: 'Services',
+                        provider: 'dreamfactory'
+                    };
+
+                    $http.get(url).then(function (response) {
+                        messageOptions.type = 'success';
+                        messageOptions.message = 'Test connection succeeded';
+                        dfNotify.success(messageOptions);
+                    
+                    }, function(reject) {
+                        messageOptions.type = 'error';
+                        messageOptions.message = reject.data.error.message;
+                        dfNotify.error(messageOptions);
+                    });
+                };
+
+                scope.isServiceTypeDatabase = function () {
+                    return scope.selectedSchema.group == 'Database';
+                }
+
                 scope.saveService = function () {
 
                     // merge data from UI into current edit record

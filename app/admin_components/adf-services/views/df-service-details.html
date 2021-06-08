@@ -64,6 +64,10 @@
                        type="submit"
                        value="Save and Clear Cache"
                        data-ng-click="selections.saveAndClearCache=true"/>
+                <button data-ng-if="!newService && selectedSchema.config_schema && isServiceTypeDatabase()"
+                        class="btn btn-default btn-primary save-service-btn"
+                        type="button"
+                        data-ng-click="testServiceConnection()">Test Connection</button>
                 <button data-ng-if="selectedSchema && selectedSchema.config_schema"
                         id="services_details_cancel"
                         type="button"
