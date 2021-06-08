@@ -609,6 +609,55 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         return data;
                     };
 
+                    scope.testServiceSchema = function () {
+                        // Build the URI for the API call to the service schema.
+                        var url = INSTANCE_URL.url + '/' + scope.serviceInfo.name + '/_schema';
+
+                        return $http.get(url).then(function (response) {
+
+                            return  {
+                                type: 'success',
+                                message:'Test connection succeeded.'
+                            };
+
+                        }, function(reject) {
+
+                            return {
+                                type: 'error',
+                                message: 'Test connection failed, could just be a typo.' + '<br>' + 'Message: ' + reject.data.error.message
+                            };
+
+                        });
+                    };
+
+                    scope.isServiceTypeDatabase = function () {
+                        return scope.selectedSchema.group === 'Database';
+                    };
+
+                    scope.notifyWithMessage = function (messageOptions) {
+                        messageOptions.type === 'success' ? dfNotify.success(messageOptions) : dfNotify.error(messageOptions);
+                    }
+
+                    var testServiceConnection = function (messageOptions) {
+                        // If the service is a database connector and saved successfully we want to test the connection to make sure everything is running
+                        // smoothly.
+                        if (scope.isServiceTypeDatabase() && messageOptions.type === 'success') {
+                            // Fire the test connection function, and wait for the promise to resolve.
+                            var testResults = scope.testServiceSchema();
+                                testResults.then(function (result) {
+                                    // Update our message options. A successful save may still result in an unsuccessful error so we may
+                                    // need to reassign the type
+                                    messageOptions.type = result.type;
+                                    messageOptions.message = '<span style="color:green">' + messageOptions.message + '</span>' + '<br> ' + result.message;
+                                    // Send out the notification to the user.
+                                    scope.notifyWithMessage(messageOptions);
+                                })
+                        } else {
+                            // If not a database connector just send out the notification of whether successful save or not.
+                            scope.notifyWithMessage(messageOptions);
+                        }
+                    }
+
                     scope.saveService = function () {
 
                         // merge data from UI into current edit record
@@ -637,9 +686,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 };
 
-                                dfNotify.success(messageOptions);
-
-                                scope.closeEditor();
+                                return messageOptions;
                             },
 
                             function (reject) {
@@ -652,11 +699,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 };
 
-                                dfNotify.error(messageOptions);
+                                return messageOptions;
+                            }
+                        ).then(
+                            function (messageOptions) {
+
+                                testServiceConnection(messageOptions);
+
+                                if (messageOptions.type === 'success') {
+                                    scope.closeEditor();
+                                }
                             }
                         ).finally(
                             function () {
-
                             }
                         );
                     };
@@ -691,13 +746,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                     messageOptions.message = 'Service updated successfully and cache cleared.';
                                 }
 
-                                dfNotify.success(messageOptions);
-
                                 if (scope.selections.saveAndClose) {
                                     scope.closeEditor();
                                 } else {
                                     scope.serviceDetails = new ServiceDetails(result);
                                 }
+
+                                return messageOptions;
                             },
 
                             function (reject) {
@@ -707,14 +762,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                     type: 'error',
                                     provider: 'dreamfactory',
                                     message: reject
-
                                 };
+                            
+                                return messageOptions;
+                            }
 
-                                dfNotify.error(messageOptions);
+                        ).then(
+                            function (messageOptions) {
+                                testServiceConnection(messageOptions);
                             }
                         ).finally(
                             function () {
-
                             }
                         );
                     };
@@ -1180,7 +1238,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         groups = scope.sortArray(groups, sortingArray);
 
                         // sort each array of service types into a staggered list to
-                        // accomodate 2 columns when there are more than X items.
+                        // accommodate 2 columns when there are more than X items.
                         // doing this work here allows the CSS to remain really simple
                         // with a float left to create the 2 columns. we want them ordered
                         // top to bottom not left to right. first column 1 then column 2.
