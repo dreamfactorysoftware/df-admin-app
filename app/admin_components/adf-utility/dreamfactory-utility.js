@@ -479,6 +479,19 @@ angular.module('dfUtility', ['dfApplication'])
             // handle updating the active link
             link: function (scope, elem, attrs) {
 
+                // From the Services Dashboard, if there are no roles associated with that service, they have
+                // the option to jump straight to the create role view. We use a hash location to jump to /roles,
+                // and then when the sidebar initializes, it will check the current url, and change the view to
+                // create.
+                var init = function () {
+                    var currentUrl = location.hash;
+                    if (currentUrl === '#/roles#create') {
+                        // links is the array of sidebar links on any given tab, and in the case
+                        // of the roles tab, index 1 is equal to the "Create" Link.
+                        scope.setActiveView(scope.links[1]);
+                    }
+                }
+
 
                 scope.activeView = scope.links[0];
                 scope.toggleMenu = false;
@@ -647,6 +660,8 @@ angular.module('dfUtility', ['dfApplication'])
 
                     setMargin(newValue);
                 });
+
+                init();
             }
         };
     }])

@@ -888,7 +888,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
         };
     }])
 
-    .directive('dfManageRoles', ['$rootScope', 'MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfSystemData', 'SystemConfigDataService', function ($rootScope, MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfSystemData, SystemConfigDataService) {
+    .directive('dfManageRoles', ['$rootScope', 'MOD_ROLES_ASSET_PATH', 'dfApplicationData', 'dfNotify', 'dfSystemData', 'SystemConfigDataService', 'dfSelectedService', function ($rootScope, MOD_ROLES_ASSET_PATH, dfApplicationData, dfNotify, dfSystemData, SystemConfigDataService, dfSelectedService) {
 
         return {
 
@@ -896,6 +896,16 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
             scope: false,
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-manage-roles.html',
             link: function (scope, elem, attrs) {
+
+                // Initialize
+                var init = function () {
+                    // We only want to go to a particular service's role if the user is coming from the service
+                    // dashboard. Otherwise we just load the Roles tab as normal. As editRole() takes an entire
+                    // Role object, we do not need to wait for the Roles tab to load everything in.
+                    if (dfSelectedService.relatedRole) {
+                        scope.editRole(dfSelectedService.relatedRole);
+                    }
+                };
 
                 // @TODO: Refactor to factory.
                 var ManagedRole = function (roleData) {
@@ -1180,7 +1190,14 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
                     // when filter is changed the controller is reloaded and we get destroy event
                     // the reset event tells pagination engine to update based on filter
                     scope.$broadcast('toolbar:paginate:role:reset');
+                    // If we have come  to the Roles tab by directly clicking an associated role
+                    // in the Service dashboard, we need to remove this role from the factory to
+                    // allow all roles to load properly next time we come to it.
+                    dfSelectedService.relatedRole = null;
                 });
+
+                // Initialize
+                init();
             }
         };
     }])
