@@ -22,6 +22,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
     }])
 
+    // We will use this factory to be able to send the currently selected service to the scripts controller
+    // (ScriptsCtrl). This will allow the service's scripts to directly load when going there from the
+    // services tab. currentService will be populated when goToSelectedServiceScripts() is called.
+    .factory('dfSelectedService', function () {
+        return {
+            currentService: null
+        };
+    })
+
     .controller('ServicesCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, $scope, dfApplicationData, dfNotify, $location) {
 
         $scope.$parent.title = 'Services';
@@ -793,9 +802,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
                     };
                 }
-            };
-        }])
-    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'SystemConfigDataService', 'dfNotify', function (MOD_SERVICES_ASSET_PATH, SystemConfigDataService, dfNotify) {
+            }
+    }])
+    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'SystemConfigDataService' , 'dfNotify', '$location', 'dfSelectedService', function (MOD_SERVICES_ASSET_PATH, SystemConfigDataService, dfNotify, $location, dfSelectedService) {
 
         return {
             restrict: 'E',
@@ -1210,9 +1219,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         text: 'Write a brief description of the API (optional).'
                     }
                 };
+
+                scope.goToSelectedServiceScripts = function (service) {
+                    dfSelectedService.currentService = {
+                        name: service.name
+                    };
+                    $location.url('/scripts');
+                };
             }
         };
     }])
+
     .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfObjectService', '$compile', '$rootScope', 'dfNotify', '$http', 'INSTANCE_URL', 'UserDataService', function (MOD_SERVICES_ASSET_PATH, dfApplicationData, dfObjectService, $compile, $rootScope, dfNotify, $http, INSTANCE_URL, UserDataService) {
 
 
