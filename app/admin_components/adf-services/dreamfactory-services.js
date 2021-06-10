@@ -27,7 +27,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
     // services tab. currentService will be populated when goToSelectedServiceScripts() is called.
     .factory('dfSelectedService', function () {
         return {
-            currentService: null
+            currentService: null,
+            selectedRelatedRole: null
         };
     })
 
@@ -35,6 +36,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
         $scope.$parent.title = 'Services';
         $scope.$parent.titleIcon = 'cubes';
+
+        // Provide rootscope to the roles related to a Service, which will load in at the time
+        // a particular Service is selected
+        $scope.relatedRoles = [];
 
         // Set module links
         $scope.links = [
@@ -121,7 +126,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
         };
     }])
 
-    .directive('dfManageServices', ['$rootScope', 'MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfNotify', function ($rootScope, MOD_SERVICES_ASSET_PATH, dfApplicationData, dfNotify) {
+    .directive('dfManageServices', ['$rootScope', 'MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$http', 'INSTANCE_URL', 'dfSelectedService', function ($rootScope, MOD_SERVICES_ASSET_PATH, dfApplicationData, dfNotify, $http, INSTANCE_URL, dfSelectedService) {
 
         return {
             restrict: 'E',
@@ -149,9 +154,54 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 // for selecting services to delete in the table view
                 scope.selectedServices = [];
 
+                // When a Service is selected, make an api call to get the Roles that are related with it.
+                var getRelatedRoles = function () {
+
+                    scope.$root.dataLoading = true;
+
+                    $http({
+                        method: 'GET',
+                        url: INSTANCE_URL.url + '/system/role',
+                        params: {"related": "role_service_access_by_role_id"}
+                    }).then(
+                        function (result) {
+                            var currentServiceID = scope.currentEditService.id;
+                            var roles = result.data.resource;
+
+                            // The API Loads in all roles, we only want the roles that are associated
+                            // with the current Service in question.
+                            var relatedRoles = roles.reduce(function (filtered, role) {
+                                // Because not all roles will have a service associated with them, we 
+                                // need to check that the JOIN exists. If it does we will create the new
+                                // array. 
+                                if (role.role_service_access_by_role_id.length != 0 && role.role_service_access_by_role_id[0].service_id === currentServiceID) {
+                                    var relatedRole = { name: role.name }
+                                    filtered.push(relatedRole);
+                                }
+                                return filtered;
+                            }, []);
+                            // Assign the array of related Roles, and pass it up to the controller so
+                            // that our view in df-service-info is able to iterate and create a list.
+                            scope.$root.relatedRoles = relatedRoles;
+                        },
+                        function (reject) {
+                            var messageOptions = {
+                                module: 'Roles',
+                                provider: 'dreamfactory',
+                                type: 'error',
+                                message: reject
+                            };
+                            dfNotify.error(messageOptions);
+                        }
+                    ).finally(function () {
+                        scope.$root.dataLoading = false;
+                    });
+                };
+
                 scope.editService = function (service) {
 
                     scope.currentEditService = service;
+                    getRelatedRoles();
                 };
 
                 scope.deleteService = function (service) {
@@ -362,6 +412,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                     // Destroy watchers
                     watchApiServiceData();
+
+                    // Clear the Roles associated with the Service we had selected.
+                    scope.$root.relatedRoles = [];
 
                     // when filter is changed the controller is reloaded and we get destroy event
                     // the reset event tells pagination engine to update based on filter
@@ -1220,9 +1273,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     }
                 };
 
-                scope.goToSelectedServiceScripts = function (service) {
+                scope.goToSelectedServiceScripts = function () {
                     dfSelectedService.currentService = {
-                        name: service.name
+                        name: scope.serviceInfo.name
                     };
                     $location.url('/scripts');
                 };
