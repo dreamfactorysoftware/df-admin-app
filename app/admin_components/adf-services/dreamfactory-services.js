@@ -26,7 +26,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
         $scope.$parent.title = 'Services';
         $scope.$parent.titleIcon = 'cubes';
-
+        $scope.nextSteps = false;
         // Set module links
         $scope.links = [
             {
@@ -352,7 +352,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 });
 
                 scope.$on('$destroy', function (e) {
-
+                    scope.$root.nextSteps = false;
                     // Destroy watchers
                     watchApiServiceData();
 
@@ -621,7 +621,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         }
                     ).finally(
                         function () {
-
+                            scope.$root.nextSteps = true;
                         }
                     );
                 };
