@@ -162,7 +162,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     $http({
                         method: 'GET',
                         url: INSTANCE_URL.url + '/system/role',
-                        params: {"related": "role_service_access_by_role_id"}
+                        params: {"related": "role_service_access_by_role_id,lookup_by_role_id"}
                     }).then(
                         function (result) {
                             var currentServiceID = scope.currentEditService.id;
