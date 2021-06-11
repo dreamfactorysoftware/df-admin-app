@@ -647,6 +647,19 @@ angular.module('dfUtility', ['dfApplication'])
 
                     setMargin(newValue);
                 });
+
+                // From the Services Dashboard, if there are no roles associated with that service, they have
+                // the option to jump straight to the create role view. We use a hash location to jump to /roles,
+                // and then when the sidebar initializes, it will check the current url, and change the view to
+                // create.
+                var init = function () {
+                    var check = location.hash;
+                    if (check == '#/roles#create') {
+                        scope.setActiveView(scope.links[1]);
+                    }
+                }
+
+                init();
             }
         };
     }])
