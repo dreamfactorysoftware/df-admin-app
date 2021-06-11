@@ -123,7 +123,7 @@ angular
     .constant('APP_VERSION', '4.7.0')
 
     // Set global url for this application
-    .constant('INSTANCE_BASE_URL', '')
+    .constant('INSTANCE_BASE_URL', 'http://localhost')
 
     // Make prefix configurable
     .constant('INSTANCE_API_PREFIX', '/api/v2')
