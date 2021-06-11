@@ -175,7 +175,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 // need to check that the JOIN exists. If it does we will create the new
                                 // array. 
                                 if (role.role_service_access_by_role_id.length != 0 && role.role_service_access_by_role_id[0].service_id === currentServiceID) {
-                                    var relatedRole = { name: role.name }
+                                    var relatedRole = role;
                                     filtered.push(relatedRole);
                                 }
                                 return filtered;
@@ -1279,6 +1279,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     };
                     $location.url('/scripts');
                 };
+
+                scope.goToSelectedServiceRole = function (role) {
+                    dfSelectedService.selectedRelatedRole = role;
+                    $location.url('/roles');
+                }
             }
         };
     }])

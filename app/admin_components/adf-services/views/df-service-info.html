@@ -59,7 +59,7 @@
                 <a ng-click="goToSelectedServiceScripts(serviceInfo)" style="cursor: pointer;">Scripted Endpoints associated with {{ serviceInfo.name }}</a>
             </li>
             <li>
-                <a style="cursor: pointer;">{{ serviceInfo.name }} API Docs (Doesnt work)</a>
+                <a style="cursor: pointer;">{{ serviceInfo.name }} API Docs (Still Doesnt Work)</a>
             </li>
         </ul>
         
@@ -68,13 +68,13 @@
             <div ng-if="$root.relatedRoles.length != 0">
                 <ul>
                     <li ng-repeat="role in $root.relatedRoles">
-                      <a style="cursor: pointer;">{{ role.name }}</a>
+                      <a ng-click="goToSelectedServiceRole(role)" style="cursor: pointer;">{{ role.name }}</a>
                     </li>
                 </ul>
             </div>
             <div ng-if="$root.relatedRoles.length === 0">
                 <p>You haven't assigned any roles to this service.</p>
-                <a href="">Click here to create one!</a>
+                <a href="#/roles#create">Click here to create one! (Also Doesnt Work)</a>
             </div>
         </div>
     </div>           
