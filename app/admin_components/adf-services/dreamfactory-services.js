@@ -26,7 +26,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
         $scope.$parent.title = 'Services';
         $scope.$parent.titleIcon = 'cubes';
-
+        $scope.nextSteps = false;
         // Set module links
         $scope.links = [
             {
@@ -65,7 +65,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
         $scope.apiData = null;
 
-        $scope.loadTabData = function (init) {
+        $scope.loadTabData = function(init) {
 
             $scope.dataLoading = true;
 
@@ -75,7 +75,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
             dfApplicationData.getApiData(apis).then(
                 function (response) {
                     var newApiData = {};
-                    apis.forEach(function (value, index) {
+                    apis.forEach(function(value, index) {
                         newApiData[value] = response[index].resource ? response[index].resource : response[index];
                     });
                     $scope.apiData = newApiData;
@@ -105,7 +105,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
         $scope.loadTabData(true);
     }])
 
-    .directive('dfServiceLoading', [function () {
+    .directive('dfServiceLoading', [function() {
         return {
             restrict: 'E',
             template: "<div class='col-lg-12' ng-if='dataLoading'><span style='display: block; width: 100%; text-align: center; color: #A0A0A0; font-size: 50px; margin-top: 100px'><i class='fa fa-refresh fa-spin'></i></div>"
@@ -323,7 +323,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 // this fires when the API data changes
                 // apiData is passed in to the details directive as data-api-data
-                var watchApiServiceData = scope.$watchCollection(function () {
+                var watchApiServiceData = scope.$watchCollection(function() {
                     // this is how the table repopulates after an update
                     return dfApplicationData.getApiDataFromCache('service');
                 }, function (newValue, oldValue) {
@@ -350,7 +350,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 });
 
                 scope.$on('$destroy', function (e) {
-
+                    scope.$root.nextSteps = false;
                     // Destroy watchers
                     watchApiServiceData();
 
@@ -612,14 +612,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 };
 
-                                dfNotify.error(messageOptions);
-                            }
-                        ).finally(
-                            function () {
-
-                            }
-                        );
-                    };
+                            dfNotify.error(messageOptions);
+                        }
+                    ).finally(
+                        function () {
+                            scope.$root.nextSteps = true;
+                        }
+                    );
+                };
 
                     scope.updateService = function () {
 
@@ -818,10 +818,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     return scope.serviceInfo;
                 };
 
-                scope.sortArray = function (groupsArray, orderArray) {
+                scope.sortArray = function(groupsArray, orderArray) {
                     var result = [];
 
-                    orderArray.forEach(function (group) {
+                    orderArray.forEach(function(group){
                         if (groupsArray.indexOf(group) !== -1) {
                             result.push(group);
                         }
@@ -850,7 +850,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.validateServiceName = function () {
                     var isNameValid = scope.serviceInfo.name.match(/^[a-z0-9_-]+$/);
-                    if (!isNameValid || isNameValid.length === 0) {
+                    if(!isNameValid || isNameValid.length === 0) {
                         var msg = 'Be sure that service name is in lowercase and alphanumeric. It should only contain letters, numbers, underscores and dashes.';
                         var messageOptions = {
                             module: 'Services',
@@ -1109,7 +1109,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         var typeObj = {};
 
-                        var groups = scope.creatableServiceTypes.map(function (obj) {
+                        var groups = scope.creatableServiceTypes.map(function(obj) {
                             if (!typeObj.hasOwnProperty(obj.group)) {
                                 typeObj[obj.group] = [];
                             }
@@ -1229,7 +1229,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 scope.serviceConfigUpdateCounter = 0;
                 scope.eventList = [];
                 scope.allowedConfigFormats = '.json,.js,.php,.py,.python,.yaml,.yml';
-                scope.allowedConfigGitFormats = ['json', 'js', 'php', 'py', 'python', 'yaml', 'yml'];
+                scope.allowedConfigGitFormats = ['json','js','php','py','python','yaml','yml'];
                 scope.serviceConfigGitHubTarget = 'configmodal';
                 scope.serviceConfigEditorObj = {'editor': null};
                 scope.isArray = angular.isArray;
@@ -1248,7 +1248,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         var reader = new FileReader();
                         reader.readAsText(file, "UTF-8");
                         reader.onload = function (evt) {
-                            scope.$apply(function () {
+                            scope.$apply(function() {
                                 scope.serviceConfig["content"] = evt.target.result;
                                 scope.serviceConfigUpdateCounter++;
                             });
@@ -1355,7 +1355,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     return INSTANCE_URL.url + '/' + scope.selections.service.name + storagePath;
                 };
 
-                scope.getRefreshEnable = function () {
+                scope.getRefreshEnable = function() {
 
                     var type, enable = false;
 
@@ -1390,7 +1390,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     var servicePath = scope.serviceConfig.storage_path;
                     var url = INSTANCE_URL.url + '/' + serviceName;
 
-                    if (scope.selections.service && (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket')) {
+                    if(scope.selections.service && (scope.selections.service.type === 'github' || scope.selections.service.type === 'gitlab' || scope.selections.service.type === 'bitbucket')){
                         var params = {
                             path: servicePath,
                             branch: serviceRef,
@@ -1440,7 +1440,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         method: 'DELETE',
                         url: INSTANCE_URL.url + '/system/cache/_event/' + scope.serviceInfo.name
                     }).then(
-                        function (result) {
+                        function(result){
 
                             var messageOptions = {
                                 module: 'Services',
@@ -1450,7 +1450,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             };
                             dfNotify.error(messageOptions);
                         },
-                        function (error) {
+                        function(error) {
 
                             var messageOptions = {
                                 module: 'Services',
@@ -1460,7 +1460,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             };
                             dfNotify.error(messageOptions);
                         }
-                    ).finally(function () {
+                    ).finally(function() {
                     });
                 };
 
@@ -1490,7 +1490,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     })[0] || {};
 
                     if (schema.items instanceof Array) {
-                        scope.serviceConfig[key].push({});
+                        scope.serviceConfig[key].push({ });
                     } else if (schema.items === 'string') {
                         scope.serviceConfig[key].push('');
                     }
@@ -1545,7 +1545,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.getReferences = function (key, valueField) {
                     var dfApplicationObjApis = dfApplicationData.getApplicationObj().apis || [];
-                    if (dfApplicationObjApis && dfApplicationObjApis[key] && dfApplicationObjApis[key].record) {
+                    if(dfApplicationObjApis && dfApplicationObjApis[key] && dfApplicationObjApis[key].record) {
                         return dfApplicationObjApis[key].record.map(function (item) {
                             return {name: item.name, value: item[valueField] || item.id};
                         });
@@ -1554,7 +1554,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 scope.getServiceById = function (id) {
 
-                    var matches = scope.apiData['service_link'].filter(function (service) {
+                    var matches = scope.apiData['service_link'].filter(function(service){
                         return service.id === id;
                     });
                     if (matches.length === 0) {
@@ -1611,15 +1611,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             break;
                         case 'python':
                             scope.allowedConfigFormats = '.py,.python';
-                            scope.allowedConfigGitFormats = ['py', 'python'];
+                            scope.allowedConfigGitFormats = ['py','python'];
                             break;
                         case 'python3':
                             scope.allowedConfigFormats = '.py,.python';
-                            scope.allowedConfigGitFormats = ['py', 'python'];
+                            scope.allowedConfigGitFormats = ['py','python'];
                             break;
                         default:
                             scope.allowedConfigFormats = '.json,.js,.php,.yaml,.yml';
-                            scope.allowedConfigGitFormats = ['json', 'js', 'php', 'yaml', 'yml'];
+                            scope.allowedConfigGitFormats = ['json','js','php','yaml','yml'];
                     }
 
                     // Some services need an event list, currently GCM, APN, and Logstash. These all have a
@@ -1677,7 +1677,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             });
                         });
 
-                        angular.forEach(temp, function (items, service) {
+                        angular.forEach(temp, function(items, service) {
                             items.unshift({'label': 'All ' + service + ' events', 'name': service + '.*'});
                             serviceEvents.push({'label': service, 'name': service, 'items': items});
                         });
@@ -1732,7 +1732,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     if (type === 'nodejs' ||
                         type === 'php' ||
                         type === 'python' ||
-                        type === 'python3') {
+                        type === 'python3' ) {
 
                         // if linked to a service set script content to empty
                         if (scope.selections.service) {

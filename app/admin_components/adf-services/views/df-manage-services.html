@@ -1,6 +1,6 @@
 <div>
 
-    <div data-ng-hide="currentEditService">
+    <div data-ng-hide="currentEditService || $root.nextSteps">
 
         <!-- Section Header -->
         <df-section-header data-title="'Manage Services'"></df-section-header>
@@ -88,7 +88,17 @@
             </div>
         </div>
     </div>
-
+    <div ng-show="$root.nextSteps">
+        <div class="col-sm-6"><h3>Next steps</h3>
+            <a class="btn btn-primary" href="/#/apidocs" role="button">Review the API Docs</a>
+            <p>Review the API Docs</p>
+            <a class="btn btn-primary" href="/#/roles" role="button">Create a new role</a>
+            <p>Create a role-based access control</p>
+            <a class="btn btn-primary" href="/#/apps" role="button">Generate an API Key</a>
+            <p>Generate an API key and associate it with the role-based access control</p>
+            <button ng-click="$root.nextSteps = false" class="btn btn-primary">Close</button>
+        </div>
+    </div>
 
     <!-- Edit Service -->
     <div data-ng-show="currentEditService">
