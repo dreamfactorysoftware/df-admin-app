@@ -1793,14 +1793,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     return schemaName === 'mysql' || schemaName === 'sqlsrv' || schemaName === 'oracle' || schemaName === 'pgsql'
                 }
 
-                scope.isBasic = function (field) {
+                scope.isBasic = function (fieldName) {
                     var basicFieldsNames = new Set(['host', 'port', 'database', 'username', 'password', 'schema']);
 
-                    return basicFieldsNames.has(field.name);
+                    return basicFieldsNames.has(fieldName);
                 }
 
-                scope.isCaching = function (field) {
-                    return field.name.includes('cache') || field.name.includes('caching')
+                scope.isCaching = function (fieldName) {
+                    return fieldName.includes('cache') || fieldName.includes('caching')
                 }
 
                 scope.showAdvancedSettings = true;
@@ -1809,8 +1809,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                     totalHeight = 0
 
-                    moreButton = $(".sidebar-box .more-fields .button").parent();
-                    lessButton = $(".sidebar-box .less-fields .button").parent();
+                    moreButton = $(".advanced-fields .more-fields .button").parent();
+                    lessButton = $(".advanced-fields .less-fields .button").parent();
                     advancedFieldWrapper = moreButton.parent();
                     advancedFieldContent = advancedFieldWrapper.find("#advanced-fields-wrapper:not('.more-fields')");
                     moreButton.fadeOut();
@@ -1818,7 +1818,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                     scope.showAdvancedSettings = !scope.showAdvancedSettings;
 
-                    // measure how tall inside should be by adding the height of advanced fields wrapper + the less button
+                    // measure how tall inside should be by adding the height of advanced fields wrapper
                     totalHeight += advancedFieldContent.outerHeight();
 
                     advancedFieldWrapper

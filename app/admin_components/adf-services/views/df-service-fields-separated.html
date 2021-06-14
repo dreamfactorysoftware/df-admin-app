@@ -1,16 +1,16 @@
     <!-- This has to be seen at glance for user -->
     <h3>Basic Config</h3>
-    <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-if="isBasic(field)" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'"></div>
+    <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-if="isBasic(field.name)" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'"></div>
 
     <!-- This has to be seen at glance for user -->
     <h3>Caching</h3>
-    <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-if="isCaching(field)" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'"></div>
+    <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-if="isCaching(field.name)" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'"></div>
 
     <!-- We want to hide this -->
-    <h3 class="ng-scope" ng-click="toggleShowAdvancedSettings()">Advanced Settings </h3>
+    <h3 class="ng-scope">Advanced Settings </h3>
     <div class="advanced-fields">
         <div id="advanced-fields-wrapper">
-            <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-if="!isBasic(field) && !isCaching(field)" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'"></div>
+            <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-if="!isBasic(field.name) && !isCaching(field.name)" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'"></div>
             <p class="less-fields"><a href class="button btn btn-default btn-primary save-service-btn ng-scope" ng-click="hideAdvancedFields()">Less...</a></p>
         </div>
         <p class="more-fields"><a href class="button btn btn-default btn-primary save-service-btn ng-scope" ng-click="showAdvancedFields()">More...</a></p>
