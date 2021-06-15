@@ -174,9 +174,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 // Because not all roles will have a service associated with them, we 
                                 // need to check that the JOIN exists. If it does we will create the new
                                 // array. 
-                                if (role.role_service_access_by_role_id.length != 0 && role.role_service_access_by_role_id[0].service_id === currentServiceID) {
-                                    var relatedRole = role;
-                                    filtered.push(relatedRole);
+                                var roleServiceAccessArray = role.role_service_access_by_role_id
+                                if (roleServiceAccessArray.length != 0) {
+                                    roleServiceAccessArray.forEach(function (service) {
+                                        if (service.service_id === currentServiceID) {
+                                            var relatedRole = role;
+                                            filtered.push(relatedRole);
+                                        }
+                                    });
                                 }
                                 return filtered;
                             }, []);
