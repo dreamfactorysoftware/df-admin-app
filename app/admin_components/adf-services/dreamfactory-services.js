@@ -1796,6 +1796,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 scope.isBasic = function (fieldName) {
                     var basicFieldsNames = new Set(['host', 'port', 'database', 'username', 'password', 'schema']);
 
+                    // mysql exception for schema field
+                    if(scope.selectedSchema.name === 'mysql' && fieldName === 'schema') {
+                        return false;
+                    }
+
                     return basicFieldsNames.has(fieldName);
                 }
 

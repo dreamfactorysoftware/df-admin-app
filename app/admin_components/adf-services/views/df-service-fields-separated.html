@@ -7,7 +7,7 @@
     <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-if="isCaching(field.name)" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'"></div>
 
     <!-- We want to hide this -->
-    <h3 class="ng-scope">Advanced Settings </h3>
+    <h3 class="ng-scope">Optional Advanced Settings </h3>
     <div class="advanced-fields">
         <div id="advanced-fields-wrapper">
             <div class="form-group" data-ng-repeat="field in selectedSchema.config_schema" ng-if="!isBasic(field.name) && !isCaching(field.name)" ng-include="'admin_components/adf-services/views/df-service-config-fields.html'"></div>
