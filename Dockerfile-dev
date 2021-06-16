@@ -7,4 +7,6 @@ WORKDIR /app
 RUN npm install -g bower
 RUN npm install -g grunt-cli
 
+RUN apt-get update && apt-get install -y ruby-full && cd app/styles && gem install compass && cd ../..
+
 CMD npm install && bower --allow-root install && grunt serve --force
