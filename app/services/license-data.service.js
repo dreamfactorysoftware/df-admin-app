@@ -17,6 +17,7 @@ angular
             var licenseKey = systemConfig.platform.license_key;
             var awsInstanceId = systemConfig.platform.aws_instance_id;
             var awsProductCode = systemConfig.platform.aws_product_code;
+            var userLicense = systemConfig.platform.user_license;
 
             if (isLicenseKeyExist(licenseKey)) {
                 var headers = getHeadersForCheckingLicenseKey(licenseKey, awsInstanceId);
