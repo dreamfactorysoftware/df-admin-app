@@ -26,10 +26,18 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
     // (ScriptsCtrl). This will allow the service's scripts to directly load when going there from the
     // services tab. currentService will be populated when goToSelectedServiceScripts() is called.
     .factory('dfSelectedService', function () {
+
+        var cleanCurrentService = function () {
+            currentServiceName = null;
+        }
+
         return {
-            currentService: null,
-            selectedRelatedRole: null
-        };
+            currentServiceName: null,
+            RelatedRole: null,
+            cleanCurrentService: function () {
+                cleanCurrentService()
+            }
+        }
     })
 
     .controller('ServicesCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, $scope, dfApplicationData, dfNotify, $location) {
@@ -84,7 +92,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.dataLoading = true;
 
             // eventlist is loaded only as needed to improve user experience
-            var apis = ['service', 'service_link', 'storage_service_link', 'service_type'];
+            var apis = ['service', 'service_link', 'storage_service_link', 'service_type', 'role'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -154,53 +162,24 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 // for selecting services to delete in the table view
                 scope.selectedServices = [];
 
-                // When a Service is selected, make an api call to get the Roles that are related with it.
+                // When a Service is selected, find roles (if any) associated with it.
                 var getRelatedRoles = function () {
 
-                    scope.$root.dataLoading = true;
+                    var currentServiceId = scope.currentEditService.id;
+                    var roles = scope.apiData.role;
 
-                    $http({
-                        method: 'GET',
-                        url: INSTANCE_URL.url + '/system/role',
-                        params: {"related": "role_service_access_by_role_id,lookup_by_role_id"}
-                    }).then(
-                        function (result) {
-                            var currentServiceID = scope.currentEditService.id;
-                            var roles = result.data.resource;
-
-                            // The API Loads in all roles, we only want the roles that are associated
-                            // with the current Service in question.
-                            var relatedRoles = roles.reduce(function (filtered, role) {
-                                // Because not all roles will have a service associated with them, we 
-                                // need to check that the JOIN exists. If it does we will create the new
-                                // array. 
-                                var roleServiceAccessArray = role.role_service_access_by_role_id
-                                if (roleServiceAccessArray.length != 0) {
-                                    roleServiceAccessArray.forEach(function (service) {
-                                        if (service.service_id === currentServiceID) {
-                                            var relatedRole = role;
-                                            filtered.push(relatedRole);
-                                        }
-                                    });
-                                }
-                                return filtered;
-                            }, []);
-                            // Assign the array of related Roles, and pass it up to the controller so
-                            // that our view in df-service-info is able to iterate and create a list.
-                            scope.$root.relatedRoles = relatedRoles;
-                        },
-                        function (reject) {
-                            var messageOptions = {
-                                module: 'Roles',
-                                provider: 'dreamfactory',
-                                type: 'error',
-                                message: reject
-                            };
-                            dfNotify.error(messageOptions);
-                        }
-                    ).finally(function () {
-                        scope.$root.dataLoading = false;
+                    // The API Loads in all roles, we only want the roles that are associated
+                    // with the current Service in question. So we can filter through everything
+                    // and just get back whatever matches the currently selected Service.
+                    var relatedRoles = roles.filter(function (role) {
+                        return role.role_service_access_by_role_id.some(function (service) {
+                            return currentServiceId === service.service_id;
+                        })
                     });
+
+                    // Assign the array of related Roles, and pass it up to the controller so
+                    // that our view in df-service-info is able to iterate and create a list.
+                    scope.$root.relatedRoles = relatedRoles;
                 };
 
                 scope.editService = function (service) {
@@ -1279,14 +1258,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 };
 
                 scope.goToSelectedServiceScripts = function () {
-                    dfSelectedService.currentService = {
+                    dfSelectedService.currentServiceName = {
                         name: scope.serviceInfo.name
                     };
                     $location.url('/scripts');
                 };
 
                 scope.goToSelectedServiceRole = function (role) {
-                    dfSelectedService.selectedRelatedRole = role;
+                    dfSelectedService.RelatedRole = role;
                     $location.url('/roles');
                 }
             }
