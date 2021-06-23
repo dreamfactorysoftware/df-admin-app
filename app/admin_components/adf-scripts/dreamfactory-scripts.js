@@ -154,6 +154,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                             });
                                             // all done
                                             $scope.apiData = newApiData;
+                                            // Run a check to see if the user is coming from a link in the services dashboard.
+                                            // If so, load up the scripts for that particular service.
+                                            if (dfSelectedService.currentServiceName) {
+                                                $scope.selectService(dfSelectedService.currentServiceName);
+                                            }
                                         },
                                         function (error) {
                                             var msg = 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.';
@@ -834,28 +839,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 watchCurrentScriptObj();
                 watchSelections();
                 watchApiData();
-                dfSelectedService.currentService = null;
+                dfSelectedService.cleanCurrentService();
             });
-
-            // Initialize
-
-            var init = function () {
-                // We only want to go to a particular service's scripts if the user is coming from the service
-                // dashboard. Otherwise we just load the Scripts tab as normal.
-                if (dfSelectedService.currentService) {
-                    // We want to fire selectService() after the scripts page has finished loading everything in
-                    // otherwise we will get dozens of (unable to load null) errors. The below will call init()
-                    // every 300 milliseconds until everything has loaded in, then load the scripts for the service
-                    // the user came from.
-                    if (!$scope.dataLoading) {
-                        $scope.selectService(dfSelectedService.currentService);
-                    } else {
-                        setTimeout(init, 300);
-                    }
-                }
-            };
-
-            init();
         }])
 
     .directive('scriptSidebarMenu', ['MODSCRIPTING_ASSET_PATH', function (MODSCRIPTING_ASSET_PATH) {
