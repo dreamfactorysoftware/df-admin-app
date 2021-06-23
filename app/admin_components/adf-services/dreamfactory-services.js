@@ -27,15 +27,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
     // services tab. currentService will be populated when goToSelectedServiceScripts() is called.
     .factory('dfSelectedService', function () {
 
-        var cleanCurrentService = function () {
-            currentServiceName = null;
-        }
-
         return {
             currentServiceName: null,
             RelatedRole: null,
             cleanCurrentService: function () {
-                cleanCurrentService()
+                this.currentServiceName = null;
             }
         }
     })
