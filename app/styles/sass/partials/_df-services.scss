@@ -1,0 +1,18 @@
+
+/**** Services Dashboard Styling ****/
+
+.links-card {
+  border-radius: 4px;
+  box-shadow: 1px 1px 0px 2px rgba(0,0,0,0.3);
+  border-color: #232b2b;
+  width: 64%;
+  padding: 16px;
+
+   li>a {
+    color: #5a6aff;
+  }
+
+  h3 {
+    margin-top: 0;
+  }
+}

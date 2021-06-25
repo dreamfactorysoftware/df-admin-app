@@ -29,7 +29,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
         return {
             currentServiceName: null,
-            RelatedRole: null,
+            relatedRole: null,
             cleanCurrentService: function () {
                 this.currentServiceName = null;
             }
@@ -1261,7 +1261,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 };
 
                 scope.goToSelectedServiceRole = function (role) {
-                    dfSelectedService.RelatedRole = role;
+                    dfSelectedService.relatedRole = role;
                     $location.url('/roles');
                 }
             }
