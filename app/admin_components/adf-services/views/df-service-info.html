@@ -52,29 +52,33 @@
         </div>
     </div>
 
-    <div data-ng-if="!newService" class="col-md-6">
-        <h3>Quick Links</h3>
-        <ul>
-            <li>
-                <a ng-click="goToSelectedServiceScripts(serviceInfo)" style="cursor: pointer;">Scripted Endpoints associated with {{ serviceInfo.name }}</a>
-            </li>
-            <li>
-                <a style="cursor: pointer;" href="#/apidocs#{{ serviceInfo.name }}">API Documentation associated with {{ serviceInfo.name }}</a>
-            </li>
-        </ul>
-        
-        <div ng-if="!$root.dataLoading">
-            <h4>Roles Associated with this Service</h4>
-            <div ng-if="$root.relatedRoles.length != 0">
-                <ul>
-                    <li ng-repeat="role in $root.relatedRoles">
-                      <a ng-click="goToSelectedServiceRole(role)" style="cursor: pointer;">{{ role.name }}</a>
-                    </li>
-                </ul>
-            </div>
-            <div ng-if="$root.relatedRoles.length === 0">
-                <p>You haven't assigned any roles to this service.</p>
-                <a href="#/roles#create">Click here to create one!</a>
+    <div data-ng-if="!newService" class="col-md-6" >
+        <div class="links-card">
+            <h3>Quick Links</h3>
+            <ul>
+                <li>
+                    <a ng-click="goToSelectedServiceScripts(serviceInfo)" style="cursor: pointer;">Scripted Endpoints associated with {{ serviceInfo.name }}</a>
+                </li>
+                <li>
+                    <a style="cursor: pointer;" href="#/apidocs#{{ serviceInfo.name }}">API Documentation associated with {{ serviceInfo.name }}</a>
+                </li>
+            </ul>
+
+            <div ng-if="!$root.dataLoading">
+                <h4>Roles Associated with this Service</h4>
+                <div ng-if="$root.relatedRoles.length != 0">
+                    <ul>
+                        <li ng-repeat="role in $root.relatedRoles">
+                          <a ng-click="goToSelectedServiceRole(role)" style="cursor: pointer;">{{ role.name }}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div ng-if="$root.relatedRoles.length === 0">
+                    <p>You haven't assigned any roles to this service.</p>
+                    <div class="form-controls">
+                        <a href="#/roles#create" class="btn btn-default btn-primary save-service-btn">Click here to create one!</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>           
