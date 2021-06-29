@@ -22,10 +22,28 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
     }])
 
+    // We will use this factory to be able to send the currently selected service to the scripts controller
+    // (ScriptsCtrl). This will allow the service's scripts to directly load when going there from the
+    // services tab. currentService will be populated when goToSelectedServiceScripts() is called.
+    .factory('dfSelectedService', function () {
+
+        return {
+            currentServiceName: null,
+            relatedRole: null,
+            cleanCurrentService: function () {
+                this.currentServiceName = null;
+            }
+        }
+    })
+
     .controller('ServicesCtrl', ['$rootScope', '$scope', 'dfApplicationData', 'dfNotify', '$location', function ($rootScope, $scope, dfApplicationData, dfNotify, $location) {
 
         $scope.$parent.title = 'Services';
         $scope.$parent.titleIcon = 'cubes';
+
+        // Provide rootscope to the roles related to a Service, which will load in at the time
+        // a particular Service is selected
+        $scope.relatedRoles = [];
 
         // Set module links
         $scope.links = [
@@ -70,7 +88,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.dataLoading = true;
 
             // eventlist is loaded only as needed to improve user experience
-            var apis = ['service', 'service_link', 'storage_service_link', 'service_type'];
+            var apis = ['service', 'service_link', 'storage_service_link', 'service_type', 'role'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -112,7 +130,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
         };
     }])
 
-    .directive('dfManageServices', ['$rootScope', 'MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfNotify', function ($rootScope, MOD_SERVICES_ASSET_PATH, dfApplicationData, dfNotify) {
+    .directive('dfManageServices', ['$rootScope', 'MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$http', 'INSTANCE_URL', 'dfSelectedService', function ($rootScope, MOD_SERVICES_ASSET_PATH, dfApplicationData, dfNotify, $http, INSTANCE_URL, dfSelectedService) {
 
         return {
             restrict: 'E',
@@ -140,9 +158,30 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 // for selecting services to delete in the table view
                 scope.selectedServices = [];
 
+                // When a Service is selected, find roles (if any) associated with it.
+                var getRelatedRoles = function () {
+
+                    var currentServiceId = scope.currentEditService.id;
+                    var roles = scope.apiData.role;
+
+                    // The API Loads in all roles, we only want the roles that are associated
+                    // with the current Service in question. So we can filter through everything
+                    // and just get back whatever matches the currently selected Service.
+                    var relatedRoles = roles.filter(function (role) {
+                        return role.role_service_access_by_role_id.some(function (service) {
+                            return currentServiceId === service.service_id;
+                        })
+                    });
+
+                    // Assign the array of related Roles, and pass it up to the controller so
+                    // that our view in df-service-info is able to iterate and create a list.
+                    scope.$root.relatedRoles = relatedRoles;
+                };
+
                 scope.editService = function (service) {
 
                     scope.currentEditService = service;
+                    getRelatedRoles();
                 };
 
                 scope.deleteService = function (service) {
@@ -353,6 +392,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                     // Destroy watchers
                     watchApiServiceData();
+
+                    // Clear the Roles associated with the Service we had selected.
+                    scope.$root.relatedRoles = [];
 
                     // when filter is changed the controller is reloaded and we get destroy event
                     // the reset event tells pagination engine to update based on filter
@@ -793,9 +835,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         };
                     };
                 }
-            };
-        }])
-    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'SystemConfigDataService', 'dfNotify', function (MOD_SERVICES_ASSET_PATH, SystemConfigDataService, dfNotify) {
+            }
+    }])
+    .directive('dfServiceInfo', ['MOD_SERVICES_ASSET_PATH', 'SystemConfigDataService' , 'dfNotify', '$location', 'dfSelectedService', function (MOD_SERVICES_ASSET_PATH, SystemConfigDataService, dfNotify, $location, dfSelectedService) {
 
         return {
             restrict: 'E',
@@ -1210,9 +1252,22 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         text: 'Write a brief description of the API (optional).'
                     }
                 };
+
+                scope.goToSelectedServiceScripts = function () {
+                    dfSelectedService.currentServiceName = {
+                        name: scope.serviceInfo.name
+                    };
+                    $location.url('/scripts');
+                };
+
+                scope.goToSelectedServiceRole = function (role) {
+                    dfSelectedService.relatedRole = role;
+                    $location.url('/roles');
+                }
             }
         };
     }])
+
     .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfObjectService', '$compile', '$rootScope', 'dfNotify', '$http', 'INSTANCE_URL', 'UserDataService', function (MOD_SERVICES_ASSET_PATH, dfApplicationData, dfObjectService, $compile, $rootScope, dfNotify, $http, INSTANCE_URL, UserDataService) {
 
 

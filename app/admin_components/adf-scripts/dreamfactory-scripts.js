@@ -40,8 +40,8 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
 
     }])
 
-    .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$rootScope', '$http', 'dfApplicationData', 'dfNotify', '$location',
-        function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify, $location) {
+    .controller('ScriptsCtrl', ['INSTANCE_URL', 'SystemConfigDataService', '$scope', '$rootScope', '$http', 'dfApplicationData', 'dfNotify', '$location', 'dfSelectedService',
+        function (INSTANCE_URL, SystemConfigDataService, $scope, $rootScope, $http, dfApplicationData, dfNotify, $location, dfSelectedService) {
 
             $scope.$parent.title = 'Scripts';
             $scope.$parent.titleIcon = 'code';
@@ -154,6 +154,11 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                                             });
                                             // all done
                                             $scope.apiData = newApiData;
+                                            // Run a check to see if the user is coming from a link in the services dashboard.
+                                            // If so, load up the scripts for that particular service.
+                                            if (dfSelectedService.currentServiceName) {
+                                                $scope.selectService(dfSelectedService.currentServiceName);
+                                            }
                                         },
                                         function (error) {
                                             var msg = 'There was an error loading data for the Scripts tab. Please try refreshing your browser and logging in again.';
@@ -834,6 +839,7 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                 watchCurrentScriptObj();
                 watchSelections();
                 watchApiData();
+                dfSelectedService.cleanCurrentService();
             });
         }])
 
