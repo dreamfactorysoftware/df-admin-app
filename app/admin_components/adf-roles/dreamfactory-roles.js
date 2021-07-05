@@ -534,7 +534,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfApplication', 'dfTable'])
                     },
                     access: {
                         title: 'Access Overview',
-                        text: 'This section allows you set set up rules for a role restricting what' +
+                        text: 'This section allows you set up rules for a role restricting what' +
                         ' services and components users assigned to the role will have access to.' +
                         ' Advanced Filters are for implementing additional server side filter logic ' +
                         'on database transactions.'
