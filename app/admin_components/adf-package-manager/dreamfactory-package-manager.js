@@ -749,7 +749,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
             }
         };
     }])
-    .directive('dfExportPackage', ['INSTANCE_URL', 'INSTANCE_API_PREFIX', 'APP_API_KEY', 'dfNotify', '$http', '$window', '$timeout', 'UserDataService', function (INSTANCE_URL, INSTANCE_API_PREFIX, APP_API_KEY, dfNotify, $http, $window, $timeout, UserDataService) {
+    .directive('dfExportPackage', ['INSTANCE_URL', 'INSTANCE_API_PREFIX', 'SystemConfigDataService', 'dfNotify', '$http', '$window', '$timeout', 'UserDataService', function (INSTANCE_URL, INSTANCE_API_PREFIX, SystemConfigDataService, dfNotify, $http, $window, $timeout, UserDataService) {
 
         return {
 
@@ -912,7 +912,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility', 'ngclipboard'])
                 scope.exportDownload = function()
                 {
                     if (exportPath !== '') {
-                        var params = "?api_key=" + APP_API_KEY;
+                        var params = "?api_key=" + SystemConfigDataService.getApiKey();
                         var currentUser = UserDataService.getCurrentUser();
                         if (currentUser && currentUser.session_token) {
                             params += "&session_token=" + currentUser.session_token;
