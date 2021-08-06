@@ -173,15 +173,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         })
                     });
 
-                    // Assign the array of related Roles, and pass it up to the controller so
-                    // that our view in df-service-info is able to iterate and create a list.
-                    scope.$root.relatedRoles = relatedRoles;
+                    return relatedRoles;
                 };
 
                 scope.editService = function (service) {
 
                     scope.currentEditService = service;
-                    getRelatedRoles();
+                    scope.$root.relatedRoles = getRelatedRoles();
+                    console.log(scope.$root.relatedRoles);
                 };
 
                 scope.deleteService = function (service) {
