@@ -167,13 +167,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     // The API Loads in all roles, we only want the roles that are associated
                     // with the current Service in question. So we can filter through everything
                     // and just get back whatever matches the currently selected Service.
-                    var relatedRoles = roles.filter(function (role) {
+                    return roles.filter(function (role) {
                         return role.role_service_access_by_role_id.some(function (service) {
                             return currentServiceId === service.service_id;
-                        })
+                        });
                     });
-
-                    return relatedRoles;
                 };
 
                 scope.editService = function (service) {
