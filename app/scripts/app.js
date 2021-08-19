@@ -41,7 +41,8 @@ angular
         'dfLimit',
         'dfReports',
         'dfScheduler',
-        'dfWizard'
+        'dfWizard',
+        'dfETL'
     ])
 
     // each tab uses this in its resolve function to make sure user is allowed access

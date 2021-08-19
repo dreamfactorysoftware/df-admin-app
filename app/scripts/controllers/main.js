@@ -145,6 +145,11 @@ angular.module('dreamfactoryApp')
                     label: 'Schema',
                     path: '/schema'
                 },
+                etl: {
+                    name: 'ETL',
+                    label: 'ETL',
+                    path: '/etl'
+                },
                 data: {
                     name: 'data',
                     label: 'Data',
@@ -431,6 +436,7 @@ angular.module('dreamfactoryApp')
                 case '/services':
                 case '/apidocs':
                 case '/schema':
+                case '/etl':
                 case '/data':
                 case '/file-manager':
                 case '/scripts':
