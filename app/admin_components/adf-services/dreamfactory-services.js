@@ -180,7 +180,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                     scope.currentEditService = service;
                     scope.$root.relatedRoles = getRelatedRoles();
-                    console.log(scope.$root.relatedRoles);
                 };
 
                 scope.deleteService = function (service) {
@@ -629,6 +628,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         dfApplicationData.saveApiData('service', requestDataObj).$promise.then(
                             function (result) {
+                                // update service_list throughout the instance so the new service is visible
+                                dfApplicationData.getApiData(['service_list'], true);
 
                                 var messageOptions = {
                                     module: 'Services',
