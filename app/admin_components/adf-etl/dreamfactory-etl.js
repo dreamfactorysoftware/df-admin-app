@@ -19,13 +19,16 @@ angular.module('dfETL', ['ngRoute'])
     .controller('ETLCtrl', ['UserDataService', '$http', function (UserDataService, $http) {
 
         // When the user comes to this page, we will make an api call to updates.dreamfactory.com
-        // with their email address.
-        var userEmail = UserDataService.getCurrentUser().email;
-        
+        // with their email address. This is only for the hosted environment.
+
+        var data = {
+            email: UserDataService.getCurrentUser().email,
+        };
+
         var req = {
           method: 'POST',
           url: 'https://updates.dreamfactory.com/api/etl',
-          data: userEmail
+          data: JSON.stringify(data)
         };
 
         $http(req).then();
