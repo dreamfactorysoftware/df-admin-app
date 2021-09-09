@@ -880,6 +880,7 @@ angular.module('dfScheduler', ['ngRoute', 'dfUtility'])
                         function (result) {
 
                             components = result.data.resource;
+                            scope.task.__dfUI.hasError = false;
                         },
 
                         function (reject) {
