@@ -58,7 +58,7 @@
                     <span>Error:</span>
                     <div id="jsonEditor" class="tab-pane active">
                         <df-ace-editor data-input-type="'string'"
-                                       data-input-content="task.record.task_log_by_task_id.content"
+                                       data-input-content="task.record.task_log_by_task_id.length ? task.record.task_log_by_task_id[0].content : task.record.task_log_by_task_id.content"
                                        data-input-update="0"
                                        data-input-format="'json'"
                                        data-is-editable="false"
