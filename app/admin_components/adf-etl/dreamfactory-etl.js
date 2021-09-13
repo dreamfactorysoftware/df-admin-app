@@ -27,7 +27,7 @@ angular.module('dfETL', ['ngRoute'])
 
         var req = {
           method: 'POST',
-          url: 'https://updates.dreamfactory.com/api/etl',
+          url: 'https://dashboard.dreamfactory.com/api/etl',
           data: JSON.stringify(data)
         };
 
