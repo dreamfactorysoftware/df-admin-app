@@ -127,6 +127,16 @@
                data-target-div="'serviceConfig'">
 </df-ace-editor>
 
+<df-ace-editor data-ng-if="field.type == 'text' && field.name == 'application_credentials_json'"
+               data-input-type="'json'"
+               data-input-content="serviceConfig[field.name]"
+               data-input-update="serviceConfigUpdateCounter"
+               data-input-format="serviceInfo.type"
+               data-is-editable="isServiceConfigEditable"
+               data-editor-obj="serviceConfigEditorObj"
+               data-target-div="'serviceConfig'">
+</df-ace-editor>
+
 <input class="form-control" data-ng-if="field.type == 'integer' && field.name !== 'storage_service_id'"
        id="services_details_config_integer_{{$index}}"
        data-ng-model="serviceConfig[field.name]"

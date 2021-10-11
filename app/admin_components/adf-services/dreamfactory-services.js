@@ -1882,6 +1882,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         } else {
                             config.storage_path = null;
                         }
+                    } else if(type === 'bigquery') {
+                        config.application_credentials_json = scope.serviceConfigEditorObj.editor.getValue();
                     }
 
                     if (type === 'excel') {
