@@ -111,7 +111,7 @@
        data-ng-model="serviceConfig[field.name]"
        type="password" data-ng-required="field.required"/>
 
-<input class="form-control" data-ng-if="field.type == 'text' && field.name !== 'content' && field.name !== 'password'"
+<input class="form-control" data-ng-if="field.type == 'text' && field.name !== 'content' && field.name !== 'password' && field.name !== 'application_credentials_json'"
        id="services_details_config_text_{{$index}}"
        data-ng-model="serviceConfig[field.name]"
        type="text" data-ng-required="field.required"/>
