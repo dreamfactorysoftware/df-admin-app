@@ -543,9 +543,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             },
 
             // save data to server and update app obj
-            saveApiData: function (api, options) {
+            saveApiData: function (api, options, force) {
 
-                if (dfApplicationObj.apis.hasOwnProperty(api)) {
+                if (dfApplicationObj.apis.hasOwnProperty(api) || !!force) {
 
                     return _saveApiData(api, options);
                 }
