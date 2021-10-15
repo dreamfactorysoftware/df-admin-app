@@ -1,0 +1,41 @@
+<div class="progress-bar-container">
+  <div id="progress-bar">
+      <div class="progress-step">
+          <div class="progress-marker" ng-class="{active: !namespaceDone && !apiCreated}">
+              <span ng-if="!namespaceDone && !apiCreated">1</span>
+              <span ng-if="namespaceDone || apiCreated"><ng-include src="'images/progress-marker-tick.svg'"></ng-include></span>
+          </div>
+          <p class="progress-step-text">Data Source</p>
+      </div>
+      <div class="progress-step">
+          <div class="progress-line"></div>
+      </div>
+      <div class="progress-step">
+          <div class="progress-marker" ng-class="{active: namespaceDone && !apiCreated}">
+              <span ng-if="!apiCreated">2</span>
+              <span ng-if="apiCreated"><ng-include src="'images/progress-marker-tick.svg'"></ng-include></span>
+          </div>
+          <p class="progress-step-text">Credentials</p>
+      </div>
+      <div class="progress-step">
+          <div class="progress-line"></div>
+      </div>
+      <div class="progress-step">
+          <div class="progress-marker" ng-class="{active: !permissionsCreated && apiCreated}">
+              <span ng-if="!permissionsCreated">3</span>
+              <span ng-if="permissionsCreated"><ng-include src="'images/progress-marker-tick.svg'"></ng-include></span>
+          </div>
+          <p class="progress-step-text">Permissions</p>
+      </div>
+      <div class="progress-step">
+          <div class="progress-line"></div>
+      </div>
+      <div class="progress-step">
+          <div class="progress-marker" ng-class="{active: permissionsCreated}">
+              <span ng-if="!apiKeyCreated">4</span>
+              <span ng-if="apiKeyCreated"><ng-include src="'images/progress-marker-tick.svg'"></ng-include></span>
+          </div>
+          <p class="progress-step-text">API Key</p>
+      </div>
+  </div>
+</div> 

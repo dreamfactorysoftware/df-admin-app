@@ -27,7 +27,7 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
         });
     }])
 
-    .directive('dfWizardCreateService', ['$rootScope', 'MOD_WIZARD_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$cookies', '$q', '$http', 'INSTANCE_URL', '$location', function ($rootScope, MOD_WIZARD_ASSET_PATH, dfApplicationData, dfNotify, $cookies, $q, $http, INSTANCE_URL, $location) {
+    .directive('dfWizardCreateService', ['$rootScope', 'MOD_WIZARD_ASSET_PATH', 'dfApplicationData', 'dfNotify', '$cookies', '$q', '$http', 'INSTANCE_URL', '$location', 'UserDataService', function ($rootScope, MOD_WIZARD_ASSET_PATH, dfApplicationData, dfNotify, $cookies, $q, $http, INSTANCE_URL, $location, UserDataService) {
 
         return {
 
@@ -43,15 +43,17 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
 
                 scope.wizardData = {};
                 scope.dataLoading = false;
-
-                scope.submitted = false;
+                scope.namespaceDone = false;
+                scope.apiCreated = false;
+                scope.permissionsCreated = false;
+                scope.serviceId = null;
+                scope.apiKey = '';
+                scope.serviceTypes = ['MySQL', 'SQL Server'];
 
                 var closeEditor = function () {
 
-                    // Reset values of the form fields
-                    scope.wizardData = {};
                     // hide the form
-                    scope.submitted = true;
+                    scope.apiCreated = true;
 
                     $('.modal-wizard').removeClass('modal-wizard');
 
@@ -59,21 +61,39 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                     scope.$emit('sidebar-nav:view:reset');
                 }
 
+                var sendWizardProgressStatus = function (message) {
+                    var data = {
+                        email: UserDataService.getCurrentUser().email,
+                        message: UserDataService.getCurrentUser().name + message,
+                    };
+
+                    var req = {
+                        method: 'POST',
+                        url: 'https://dashboard.dreamfactory.com/api/wizard',
+                        data: JSON.stringify(data)
+                    };
+
+                    $http(req).then();
+                }
+
                 scope.saveService = function () {
+
                     var data = {
                         'id': null,
                         'name': scope.wizardData.namespace,
                         'label': scope.wizardData.label,
                         'description': scope.wizardData.description,
                         'is_active': true,
-                        'type': 'mysql',
+                        //there's only two types at the moment for the wizard, but the below should let it grow a bit easier in future.
+                        'type': (scope.wizardData.type === 'SQL Server' ? 'sqlsrv' : scope.wizardData.type.toLowerCase()),
                         'service_doc_by_service_id': null,
                         'config': {
                             'database': scope.wizardData.database,
                             'host': scope.wizardData.host,
                             'username': scope.wizardData.username,
                             'max_records': 1000,
-                            'password': scope.wizardData.password
+                            'password': scope.wizardData.password,
+                            'schema': scope.wizardData.schema
                         }
                     }
 
@@ -83,17 +103,11 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                             fields: '*',
                             related: 'service_doc_by_service_id'
                         },
-                        data: {'resource': [data]}
+                        data: data
                     };
                     scope.dataLoading = true;
-                    $('.modal-wizard').removeClass('modal-wizard');
 
-                    $http({
-                        method: 'POST',
-                        url: INSTANCE_URL.url + '/system/service',
-                        params: requestDataObj.params,
-                        data: requestDataObj.data
-                    }).then(
+                    dfApplicationData.saveApiData('service', requestDataObj, true).$promise.then(
                         function (result) {
 
                             var messageOptions = {
@@ -103,8 +117,123 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                                 message: 'Service saved successfully.'
                             };
 
+                            // We need the id the service is assigned to so we can create a role if the user wishes to do so.
+                            // Result returns an array of length 1, we need the id from it.
+                            scope.serviceId = result.resource[0].id;
                             dfNotify.success(messageOptions);
+                            sendWizardProgressStatus(' created a ' + scope.wizardData.type + ' service!');
+                            closeEditor();
+                        },
 
+                        function (reject) {
+
+                            var messageOptions = {
+                                module: 'Api Error',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            };
+
+                            dfNotify.error(messageOptions);
+                        }
+                    ).finally(
+                        function () {
+                            scope.dataLoading = false;
+                        }
+                    );
+                }
+
+                /*
+                requestor_mask: 1 -> API
+                requestor_mask: 2 -> Script
+                requestor_mask: 3 -> API, Script
+                */
+
+                /*
+                verb_mask: 1 -> GET
+                verb_mask: 2 -> POST
+                verb_mask: 4 -> PUT
+                verb_mask: 8 -> PATCH
+                verb_mask: 16 -> DELETE
+                Add these together for the permission value you want. Eg GET + POST = 3, ALL = 31 
+                */
+
+                scope.createReadOnlyPermissions = function () {
+                    // Build our data to send to the backend to create a role:
+                    var roleDescription = scope.wizardData.namespace + ' read only';
+                    var data = {
+                        default_app_id: null,
+                        description: roleDescription,
+                        id: null,
+                        is_active: true,
+                        lookup_by_role_id: [],
+                        name: scope.wizardData.namespace,
+                        role_service_access_by_role_id: [{
+                            component: '*',
+                            filter_op: 'AND',
+                            filters: [],
+                            requestor_mask: 1,
+                            service_id: scope.serviceId,
+                            verb_mask: 1
+                        }]
+                    };
+
+                    var requestDataObj = {
+                        params: {
+                            api: 'role',
+                            fields: '*',
+                            related: 'role_service_access_by_role_id,lookup_by_role_id'
+                        },
+                        data: data
+                    };
+
+                    // Create the Role with access of GET, all components and active, followed by creating an
+                    // app to generate the api key.
+                    scope.dataLoading = true;
+                    $('.modal-wizard').removeClass('modal-wizard');
+
+                    // First create the role. This gets a little bit chainy / callback helly, but not too bad. We will
+                    // defer the promise so that a rejection will break the promise, until the very end.
+                    dfApplicationData.saveApiData('role', requestDataObj, true).$promise.then(
+                        function (result) {
+
+                            // if successful, generate the api key
+                            var roleId = result.resource[0].id;
+                            var appDescription = scope.wizardData.namespace + ' read only';
+                            var data = {
+                                description: appDescription,
+                                is_active: true,
+                                name: scope.wizardData.namespace,
+                                role_id: roleId,
+                                type: 0
+                            };
+                            var requestDataObj = {
+                                params: {
+                                    api: 'app',
+                                    fields: '*',
+                                    related: 'role_by_role_id'
+                                },
+                                data: data
+                            };
+
+                            return dfApplicationData.saveApiData('app', requestDataObj, true).$promise;
+                        }).then(
+                        function (result) {
+
+                            // Everything's come back great, so get that api key, and pass it to the view to present a
+                            // curl example to the user.
+                            scope.apiKey = result.resource[0].api_key;
+
+                            var messageOptions = {
+                                module: 'Wizard',
+                                type: 'success',
+                                provider: 'dreamfactory',
+                                message: 'API saved successfully.'
+                            };
+
+                            dfNotify.success(messageOptions);
+                            sendWizardProgressStatus(' created a role and app for their ' + scope.wizardData.type + ' service!');
+                            scope.permissionsCreated = true;
                             closeEditor();
                         },
 
@@ -143,13 +272,22 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                     removeModal();
                 }
 
-                scope.goToApiDocs = function () {
-                    // Apply a cookie so that the modal will not automatically open on going to /home 
+                scope.closeWizard = function () {
+                    // Reset values of the form fields
+                    scope.wizardData = {};
+                    // reset the api wizard back to the first page (form input)
+                    scope.apiCreated = false;
+                    scope.permissionsCreated = false;
+                    scope.namespaceDone = false;
+                    // Apply a cookie so that the modal will not automatically open on going to /home
                     // the next time around.
                     scope.setWizardCookie();
-                    // reset the api wizard back to the first page (form input)
-                    scope.submitted = false;
-                    $location.url('/apidocs');
+                }
+
+                scope.pageLink = function (link) {
+                    sendWizardProgressStatus(' completed the wizard and went to ' + link);
+                    scope.closeWizard();
+                    $location.url(link);
                 }
             }
         };

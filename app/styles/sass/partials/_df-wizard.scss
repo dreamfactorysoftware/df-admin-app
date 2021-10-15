@@ -1,0 +1,118 @@
+/* Some styles to override bootstrap css, make the modal smaller, and remove the need for scrolling on regular screens */
+.wizard-container {
+  padding: 16px 24px 24px 24px;
+  position: relative;
+}
+
+.wizard-close-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  cursor: pointer;
+}
+
+.modal-wizard {
+  margin: 0 auto;
+  padding-top: 30px;
+}
+
+.modal-wizard hr {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.modal-wizard .modal-body {
+  padding-top: 5px;
+}
+
+.modal-wizard .modal-header {
+  padding-bottom: 10px;
+}
+
+.wizard-api-created {
+  border-radius: 6px;
+  border: 1px solid #1D3D56;
+  background-color: #1D3D56;
+  color: white;
+  padding: 12px;
+}
+
+pre {
+  background-color: rgba(90,106,255,0.15);
+}
+
+/* Just some colours for the radio buttons */
+.wizard-service-label {
+  margin-bottom: 0;
+}
+.wizard-service-label input {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #5a6AFF;
+  border-radius: 50%;
+  background-clip: content-box;
+  vertical-align: bottom;
+  cursor: pointer;
+}
+
+.wizard-service-label :hover {
+  background-color: #5a6AFF;
+  opacity: 60%;
+  transition: background-color 0.5s;
+}
+
+/* progress bar styles */
+.progress-bar-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 0px;
+}
+  
+#progress-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin: 0 auto;
+}
+
+.progress-step {
+  text-align: center;
+}
+
+.progress-marker {
+  border: 1px solid #cae0e5;
+  height: 16px;
+  width: 16px;
+  border-radius: 100%;
+  color: white;
+  display: inline-block;
+  position: relative;
+  transition: background-color 500ms;
+  line-height: 15px;
+  background-color: #cae0e5;
+  opacity: 40%;
+  font-size: 12px;
+}
+
+.progress-marker.active {
+  background-color: #5a6AFF;
+  border: 1px solid #5a6AFF;
+  opacity: 100%;
+}
+
+.progress-line {
+  content: '';
+  height: 0px;
+  width: 178px;
+  border-top: 1px solid #cae0e5;
+  border-width: 1px;
+  position: relative;
+  top: -38px;
+  left: -6px;
+}
+
+.progress-step-text {
+  color: #2b5172;
+  margin: 4px 0px 6px 0px;
+}
