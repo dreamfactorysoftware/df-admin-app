@@ -473,6 +473,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     // all service types except non-creatable ones like system or user
                     scope.creatableServiceTypes = [];
 
+                    // We can't return two variables so we will put the result of any service update here so we can use further it down the chain.
+                    scope.serviceUpdatedResult = {};
+
                     function __throwApiError(infoData) {
 
                         var field = '';
@@ -638,26 +641,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         messageOptions.type === 'success' ? dfNotify.success(messageOptions) : dfNotify.error(messageOptions);
                     }
 
-                    var testServiceConnection = function (messageOptions) {
-                        // If the service is a database connector and saved successfully we want to test the connection to make sure everything is running
-                        // smoothly.
-                        if (scope.isServiceTypeDatabase() && messageOptions.type === 'success') {
-                            // Fire the test connection function, and wait for the promise to resolve.
-                            var testResults = scope.testServiceSchema();
-                                testResults.then(function (result) {
-                                    // Update our message options. A successful save may still result in an unsuccessful error so we may
-                                    // need to reassign the type
-                                    messageOptions.type = result.type;
-                                    messageOptions.message = '<span style="color:green">' + messageOptions.message + '</span>' + '<br> ' + result.message;
-                                    // Send out the notification to the user.
-                                    scope.notifyWithMessage(messageOptions);
-                                })
-                        } else {
-                            // If not a database connector just send out the notification of whether successful save or not.
-                            scope.notifyWithMessage(messageOptions);
-                        }
-                    }
-
                     scope.saveService = function () {
 
                         // merge data from UI into current edit record
@@ -703,10 +686,23 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             }
                         ).then(
                             function (messageOptions) {
-
-                                testServiceConnection(messageOptions);
-
-                                if (messageOptions.type === 'success') {
+                                if (scope.isServiceTypeDatabase() && messageOptions.type === 'success') {
+                                    // Fire the test connection function, and wait for the promise to resolve.
+                                    var testResults = scope.testServiceSchema();
+                                        testResults.then(function (result) {
+                                            // Update our message options. A successful save may still result in an unsuccessful error so we may
+                                            // need to reassign the type
+                                            messageOptions.type = result.type;
+                                            messageOptions.message = '<span style="color:green">' + messageOptions.message + '</span>' + '<br> ' + result.message;
+                                            // Send out the notification to the user.
+                                            scope.notifyWithMessage(messageOptions);
+                                            if (messageOptions.type === 'success') {
+                                                scope.closeEditor()
+                                            }
+                                        })
+                                } else {
+                                    // If not a database connector just send out the notification of whether successful save or not.
+                                    scope.notifyWithMessage(messageOptions);
                                     scope.closeEditor();
                                 }
                             }
@@ -715,6 +711,23 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             }
                         );
                     };
+
+                    var updateServiceView = function (messageOptions) {
+                        
+                        if (scope.selections.saveAndClearCache) {
+                            scope.clearCache();
+                            messageOptions.message = (scope.isServiceTypeDatabase() ? messageOptions.message + '<br>' + 'Cache cleared.' : 'Service updated successfully and cache cleared.');
+                        }
+                        // Send out the notification to the user.
+                        scope.notifyWithMessage(messageOptions);
+
+                        if (scope.selections.saveAndClose) {
+                            scope.closeEditor();
+                        } else {
+                            scope.serviceDetails = new ServiceDetails(scope.serviceUpdatedResult);
+                        }
+
+                    }
 
                     scope.updateService = function () {
 
@@ -741,17 +754,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                     message: 'Service updated successfully'
                                 };
 
-                                if (scope.selections.saveAndClearCache) {
-                                    scope.clearCache();
-                                    messageOptions.message = 'Service updated successfully and cache cleared.';
-                                }
-
-                                if (scope.selections.saveAndClose) {
-                                    scope.closeEditor();
-                                } else {
-                                    scope.serviceDetails = new ServiceDetails(result);
-                                }
-
+                                // We need this result when creating the service details in the next callback, but cannot pass it 
+                                // down the chain.
+                                scope.serviceUpdatedResult = result;
                                 return messageOptions;
                             },
 
@@ -769,7 +774,31 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         ).then(
                             function (messageOptions) {
-                                testServiceConnection(messageOptions);
+                                // Successful save, move onto testing the connector itself if a database API, or just the notification process if not.
+                                if (messageOptions.type === 'success') {
+                                    if (scope.isServiceTypeDatabase()) {
+                                        var testResults = scope.testServiceSchema();
+                                        testResults.then(function (result) {
+                                            // Update our message options. A successful save may still result in an unsuccessful error so we may
+                                            // need to reassign the type
+                                            messageOptions.type = result.type;
+                                            var testSuccessful = messageOptions.type === 'success';
+                                            messageOptions.message = '<span style="color:green">' + messageOptions.message + '</span>' + '<br> ' + result.message;
+
+                                            if (testSuccessful) {
+                                                updateServiceView(messageOptions);
+                                            } else {
+                                                scope.notifyWithMessage(messageOptions);
+                                            }
+                                        })
+                                    } else {
+                                        // Non Database Connectors
+                                        updateServiceView(messageOptions);
+                                    }
+                                } else {
+                                    // Notification for a failed save.
+                                    scope.notifyWithMessage(messageOptions);
+                                }
                             }
                         ).finally(
                             function () {
