@@ -638,25 +638,26 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         messageOptions.type === 'success' ? dfNotify.success(messageOptions) : dfNotify.error(messageOptions);
                     }
 
-                    var testServiceConnection = function (messageOptions) {
-                        // If the service is a database connector and saved successfully we want to test the connection to make sure everything is running
-                        // smoothly.
-                        if (scope.isServiceTypeDatabase() && messageOptions.type === 'success') {
-                            // Fire the test connection function, and wait for the promise to resolve.
-                            var testResults = scope.testServiceSchema();
-                                testResults.then(function (result) {
-                                    // Update our message options. A successful save may still result in an unsuccessful error so we may
-                                    // need to reassign the type
-                                    messageOptions.type = result.type;
-                                    messageOptions.message = '<span style="color:green">' + messageOptions.message + '</span>' + '<br> ' + result.message;
-                                    // Send out the notification to the user.
-                                    scope.notifyWithMessage(messageOptions);
-                                })
-                        } else {
-                            // If not a database connector just send out the notification of whether successful save or not.
-                            scope.notifyWithMessage(messageOptions);
-                        }
-                    }
+                    // var testServiceConnection = function (messageOptions) {
+                    //     // If the service is a database connector and saved successfully we want to test the connection to make sure everything is running
+                    //     // smoothly.
+                    //     if (scope.isServiceTypeDatabase() && messageOptions.type === 'success') {
+                    //         // Fire the test connection function, and wait for the promise to resolve.
+                    //         var testResults = scope.testServiceSchema();
+                    //             testResults.then(function (result) {
+                    //                 // Update our message options. A successful save may still result in an unsuccessful error so we may
+                    //                 // need to reassign the type
+                    //                 messageOptions.type = result.type;
+                    //                 messageOptions.message = '<span style="color:green">' + messageOptions.message + '</span>' + '<br> ' + result.message;
+                    //                 // Send out the notification to the user.
+                    //                 scope.notifyWithMessage(messageOptions);
+                    //             })
+                    //     } else {
+                    //         // If not a database connector just send out the notification of whether successful save or not.
+                    //         scope.notifyWithMessage(messageOptions);
+                    //     }
+                    //     return messageOptions;
+                    // }
 
                     scope.saveService = function () {
 
@@ -703,10 +704,23 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             }
                         ).then(
                             function (messageOptions) {
-
-                                testServiceConnection(messageOptions);
-
-                                if (messageOptions.type === 'success') {
+                                if (scope.isServiceTypeDatabase() && messageOptions.type === 'success') {
+                                    // Fire the test connection function, and wait for the promise to resolve.
+                                    var testResults = scope.testServiceSchema();
+                                        testResults.then(function (result) {
+                                            // Update our message options. A successful save may still result in an unsuccessful error so we may
+                                            // need to reassign the type
+                                            messageOptions.type = result.type;
+                                            messageOptions.message = '<span style="color:green">' + messageOptions.message + '</span>' + '<br> ' + result.message;
+                                            // Send out the notification to the user.
+                                            scope.notifyWithMessage(messageOptions);
+                                            if (messageOptions.type === 'success') {
+                                                scope.closeEditor()
+                                            }
+                                        })
+                                } else {
+                                    // If not a database connector just send out the notification of whether successful save or not.
+                                    scope.notifyWithMessage(messageOptions);
                                     scope.closeEditor();
                                 }
                             }
