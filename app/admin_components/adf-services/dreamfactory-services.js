@@ -712,6 +712,23 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         );
                     };
 
+                    var updateServiceView = function (messageOptions) {
+                        
+                        if (scope.selections.saveAndClearCache) {
+                            scope.clearCache();
+                            messageOptions.message = (scope.isServiceTypeDatabase() ? messageOptions.message + '<br>' + 'Cache cleared.' : 'Service updated successfully and cache cleared.');
+                        }
+                        // Send out the notification to the user.
+                        scope.notifyWithMessage(messageOptions);
+
+                        if (scope.selections.saveAndClose) {
+                            scope.closeEditor();
+                        } else {
+                            scope.serviceDetails = new ServiceDetails(scope.serviceUpdatedResult);
+                        }
+
+                    }
+
                     scope.updateService = function () {
 
                         // merge data from UI into current edit record
@@ -757,48 +774,34 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         ).then(
                             function (messageOptions) {
-                                if (scope.isServiceTypeDatabase() && messageOptions.type === 'success') {
-                                    // Fire the test connection function, and wait for the promise to resolve.
-                                    var testResults = scope.testServiceSchema();
-                                    testResults.then(function (result) {
-                                        // Update our message options. A successful save may still result in an unsuccessful error so we may
-                                        // need to reassign the type
-                                        messageOptions.type = result.type;
-                                        messageOptions.message = '<span style="color:green">' + messageOptions.message + '</span>' + '<br> ' + result.message;
+                                // Successful save, move onto testing the connector itself if a database API, or just the notification process if not.
+                                if (messageOptions.type === 'success') {
+                                    if (scope.isServiceTypeDatabase()) {
+                                        var testResults = scope.testServiceSchema();
+                                        testResults.then(function (result) {
+                                            // Update our message options. A successful save may still result in an unsuccessful error so we may
+                                            // need to reassign the type
+                                            messageOptions.type = result.type;
+                                            var testSuccessful = messageOptions.type === 'success';
+                                            messageOptions.message = '<span style="color:green">' + messageOptions.message + '</span>' + '<br> ' + result.message;
 
-                                        if (messageOptions.type === 'success' && scope.selections.saveAndClearCache) {
-                                            scope.clearCache();
-                                            messageOptions.message = messageOptions.message + '<br>' + 'Cache cleared.'
-                                        }
-                                        // Send out the notification to the user.
-                                        scope.notifyWithMessage(messageOptions);
-
-                                        if (messageOptions.type === 'success' && scope.selections.saveAndClose) {
-                                            scope.closeEditor();
-                                        } else if (messageOptions.type === 'success') {
-                                            scope.serviceDetails = new ServiceDetails(scope.serviceUpdatedResult);
-                                        }
-                                    })
-                                } else if (messageOptions.type === 'success') {
-                                    if (scope.selections.saveAndClearCache) {
-                                        scope.clearCache();
-                                        messageOptions.message = 'Service updated successfully and cache cleared.';
-                                    }
-
-                                    scope.notifyWithMessage(messageOptions);
-
-                                    if (scope.selections.saveAndClose) {
-                                        scope.closeEditor();
+                                            if (testSuccessful) {
+                                                updateServiceView(messageOptions);
+                                            } else {
+                                                scope.notifyWithMessage(messageOptions);
+                                            }
+                                        })
                                     } else {
-                                        scope.serviceDetails = new ServiceDetails(scope.serviceUpdatedResult);
+                                        // Non Database Connectors
+                                        updateServiceView(messageOptions);
                                     }
                                 } else {
+                                    // Notification for a failed save.
                                     scope.notifyWithMessage(messageOptions);
                                 }
                             }
                         ).finally(
                             function () {
-                                scope.serviceUpdatedResult = {};
                             }
                         );
                     };
