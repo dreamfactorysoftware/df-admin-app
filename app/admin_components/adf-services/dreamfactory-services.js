@@ -665,11 +665,24 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                     module: 'Services',
                                     type: 'success',
                                     provider: 'dreamfactory',
-                                    message: 'Service saved successfully.'
-
+                                    message: (scope.isServiceTypeDatabase() ? 'Service saved successfully. Now running connection test in the background.' : 'Service saved successfully.')
                                 };
-
-                                return messageOptions;
+                                
+                                dfNotify.success(messageOptions);
+                                // We will close upon a successful save, and then run the connection test if a db connector,
+                                // this will allow the user to do other things while the test is running in the background.
+                                scope.closeEditor()
+                                if (scope.isServiceTypeDatabase()) {
+                                    // Fire the test connection function, and wait for the promise to resolve.
+                                    var testResults = scope.testServiceSchema();
+                                    testResults.then(function (result) {
+                                        // Update our message options.
+                                        messageOptions.type = result.type;
+                                        messageOptions.message = '<strong>Connection Test for ' + data.name + ' completed.</strong><br>' + result.message;
+                                        // Send out the notification to the user.
+                                        scope.notifyWithMessage(messageOptions);
+                                    })
+                                }  
                             },
 
                             function (reject) {
@@ -679,32 +692,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                     type: 'error',
                                     provider: 'dreamfactory',
                                     message: reject
-
                                 };
 
-                                return messageOptions;
-                            }
-                        ).then(
-                            function (messageOptions) {
-                                if (scope.isServiceTypeDatabase() && messageOptions.type === 'success') {
-                                    // Fire the test connection function, and wait for the promise to resolve.
-                                    var testResults = scope.testServiceSchema();
-                                        testResults.then(function (result) {
-                                            // Update our message options. A successful save may still result in an unsuccessful error so we may
-                                            // need to reassign the type
-                                            messageOptions.type = result.type;
-                                            messageOptions.message = '<span style="color:green">' + messageOptions.message + '</span>' + '<br> ' + result.message;
-                                            // Send out the notification to the user.
-                                            scope.notifyWithMessage(messageOptions);
-                                            if (messageOptions.type === 'success') {
-                                                scope.closeEditor()
-                                            }
-                                        })
-                                } else {
-                                    // If not a database connector just send out the notification of whether successful save or not.
-                                    scope.notifyWithMessage(messageOptions);
-                                    scope.closeEditor();
-                                }
+                                dfNotify.error(messageOptions);
                             }
                         ).finally(
                             function () {
