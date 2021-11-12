@@ -1,3 +1,14 @@
+<style>
+    .background-process-status-card {
+        border-radius: 4px;
+        box-shadow: 1px 1px 0px 2px rgba(0,0,0,0.3);
+        border-color: #232b2b;
+        padding: 16px;
+    }
+
+</style>
+
+
 <div class="">
 
     <!-- Regular side bar menu shown on medium/large -->
@@ -5,6 +16,12 @@
         <li id="{{link.label}}" data-ng-repeat="link in links" data-ng-class="link.active ? 'active' : ''" data-ng-click="setActiveView(link)">
             <a id="{{link.label}}">{{link.label}}</a>
         </li>
+        <div class=background-process-status-card>
+            <p style="color: #5b5bd9;"><strong>Background Task Status</strong></p>
+            <li id="{{testStatus.service}}" data-ng-repeat="testStatus in testDbStatuses">
+                {{testStatus.serviceName}}: {{testStatus.status}}
+            </li>
+        </div>
     </ul>
 
 

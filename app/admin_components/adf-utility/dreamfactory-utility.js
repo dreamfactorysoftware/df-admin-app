@@ -462,7 +462,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // declare our directive and pass in our constant
-    .directive('dfSidebarNav', ['MOD_UTILITY_ASSET_PATH', '$rootScope', '$location', function (MOD_UTILITY_ASSET_PATH, $rootScope, $location) {
+    .directive('dfSidebarNav', ['MOD_UTILITY_ASSET_PATH', '$rootScope', '$location', 'dfTestDbStatusService', function (MOD_UTILITY_ASSET_PATH, $rootScope, $location, dfTestDbStatusService) {
 
         return {
 
@@ -495,7 +495,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                 scope.activeView = scope.links[0];
                 scope.toggleMenu = false;
-
+                scope.testDbStatuses = dfTestDbStatusService.getTestDbStatuses();
 
                 // PUBLIC API
 
@@ -3167,6 +3167,30 @@ angular.module('dfUtility', ['dfApplication'])
                 }
             }
             return result;
+        }
+    }])
+
+    .service('dfTestDbStatusService', [function () {
+
+        var testDbStatuses = [];
+
+        return {
+
+            setTestDbStatus: function(databaseTest) {
+
+                var indexOfExistingTest = testDbStatuses.map(function(testStatus) { return testStatus.serviceName; }).indexOf(databaseTest.serviceName);
+                if (indexOfExistingTest !== -1) {
+                    testDbStatuses[indexOfExistingTest].status = databaseTest.status;
+                    testDbStatuses.push(testDbStatuses.splice(indexOfExistingTest, 1)[0]);
+                } else {
+                    testDbStatuses.push(databaseTest);
+                }
+            },
+
+            getTestDbStatuses: function() {
+                return testDbStatuses;
+            }
+
         }
     }])
 

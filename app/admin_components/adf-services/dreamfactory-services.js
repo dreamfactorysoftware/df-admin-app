@@ -400,8 +400,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
         };
     }])
 
-    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$timeout', '$http', 'INSTANCE_URL',
-        function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, $timeout, $http, INSTANCE_URL) {
+    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$timeout', '$http', 'INSTANCE_URL', 'dfTestDbStatusService',
+        function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, $timeout, $http, INSTANCE_URL, dfTestDbStatusService) {
 
             return {
 
@@ -640,6 +640,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         messageOptions.message = '<strong>Connection Test for ' + scope.serviceInfo.name + ' completed.</strong><br>' + testResult.message;
                         // Send out the notification to the user.
                         messageOptions.type === 'success' ? dfNotify.success(messageOptions) : dfNotify.error(messageOptions);
+                        dfTestDbStatusService.setTestDbStatus({serviceName: scope.serviceInfo.name, status: testResult.message});
                     }
 
                     scope.saveService = function () {
@@ -675,6 +676,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 scope.closeEditor()
                                 if (scope.isServiceTypeDatabase()) {
                                     // Fire the test connection function, and wait for the promise to resolve.
+                                    dfTestDbStatusService.setTestDbStatus({serviceName: scope.serviceInfo.name, status: 'Testing Connection'});
                                     var testResults = scope.testServiceSchema();
                                     testResults.then(function (result) {
                                         scope.notifyTestResults(messageOptions, result);
@@ -716,7 +718,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         dfApplicationData.updateApiData('service', requestDataObj).$promise.then(
                             function (result) {
-
+                                angular.element('#background-process-items').append('<p>Hi Tomo</p>');
                                 var messageOptions = {
                                     module: 'Services',
                                     type: 'success',
@@ -741,6 +743,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 // things while the test runs in the background.
                                 if (scope.isServiceTypeDatabase()) {
                                     // Fire the test connection function, and wait for the promise to resolve.
+                                    dfTestDbStatusService.setTestDbStatus({serviceName: scope.serviceInfo.name, status: 'Testing Connection'});
                                     var testResults = scope.testServiceSchema();
                                     testResults.then(function (result) {
                                         scope.notifyTestResults(messageOptions, result);
