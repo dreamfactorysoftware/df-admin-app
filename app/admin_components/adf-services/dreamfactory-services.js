@@ -473,9 +473,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     // all service types except non-creatable ones like system or user
                     scope.creatableServiceTypes = [];
 
-                    // We can't return two variables so we will put the result of any service update here so we can use further it down the chain.
-                    scope.serviceUpdatedResult = {};
-
                     function __throwApiError(infoData) {
 
                         var field = '';
@@ -637,7 +634,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         return scope.selectedSchema.group === 'Database';
                     };
 
-                    scope.notifyWithMessage = function (messageOptions) {
+                    scope.notifyTestResults = function (messageOptions, testResult) {
+                        // Update our message options.
+                        messageOptions.type = testResult.type;
+                        messageOptions.message = '<strong>Connection Test for ' + scope.serviceInfo.name + ' completed.</strong><br>' + testResult.message;
+                        // Send out the notification to the user.
                         messageOptions.type === 'success' ? dfNotify.success(messageOptions) : dfNotify.error(messageOptions);
                     }
 
@@ -667,7 +668,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                     provider: 'dreamfactory',
                                     message: (scope.isServiceTypeDatabase() ? 'Service saved successfully. Now running connection test in the background.' : 'Service saved successfully.')
                                 };
-                                
+
                                 dfNotify.success(messageOptions);
                                 // We will close upon a successful save, and then run the connection test if a db connector,
                                 // this will allow the user to do other things while the test is running in the background.
@@ -676,11 +677,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                     // Fire the test connection function, and wait for the promise to resolve.
                                     var testResults = scope.testServiceSchema();
                                     testResults.then(function (result) {
-                                        // Update our message options.
-                                        messageOptions.type = result.type;
-                                        messageOptions.message = '<strong>Connection Test for ' + data.name + ' completed.</strong><br>' + result.message;
-                                        // Send out the notification to the user.
-                                        scope.notifyWithMessage(messageOptions);
+                                        scope.notifyTestResults(messageOptions, result);
                                     })
                                 }  
                             },
@@ -701,23 +698,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             }
                         );
                     };
-
-                    var updateServiceView = function (messageOptions) {
-                        
-                        if (scope.selections.saveAndClearCache) {
-                            scope.clearCache();
-                            messageOptions.message = (scope.isServiceTypeDatabase() ? messageOptions.message + '<br>' + 'Cache cleared.' : 'Service updated successfully and cache cleared.');
-                        }
-                        // Send out the notification to the user.
-                        scope.notifyWithMessage(messageOptions);
-
-                        if (scope.selections.saveAndClose) {
-                            scope.closeEditor();
-                        } else {
-                            scope.serviceDetails = new ServiceDetails(scope.serviceUpdatedResult);
-                        }
-
-                    }
 
                     scope.updateService = function () {
 
@@ -741,13 +721,32 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                     module: 'Services',
                                     type: 'success',
                                     provider: 'dreamfactory',
-                                    message: 'Service updated successfully'
+                                    message: (scope.isServiceTypeDatabase() ? 'Service updated successfully. Now running connection test in the background.' : 'Service updated successfully.')
                                 };
 
-                                // We need this result when creating the service details in the next callback, but cannot pass it 
-                                // down the chain.
-                                scope.serviceUpdatedResult = result;
-                                return messageOptions;
+                                if (scope.selections.saveAndClearCache) {
+                                    scope.clearCache();
+                                    messageOptions.message = (scope.isServiceTypeDatabase() ? 'Service updated successfully and cache cleared. Now running connection test in the background.' : 'Service updated and cache successfully.');
+                                }
+
+                                dfNotify.success(messageOptions);
+
+                                if (scope.selections.saveAndClose) {
+                                    scope.closeEditor();
+                                } else {
+                                    scope.serviceDetails = new ServiceDetails(result);
+                                }
+
+                                // The connection test for databases will run after the service has been updated, allowing the user to do other
+                                // things while the test runs in the background.
+                                if (scope.isServiceTypeDatabase()) {
+                                    // Fire the test connection function, and wait for the promise to resolve.
+                                    var testResults = scope.testServiceSchema();
+                                    testResults.then(function (result) {
+                                        scope.notifyTestResults(messageOptions, result);
+                                    })
+                                }
+
                             },
 
                             function (reject) {
@@ -758,37 +757,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                     provider: 'dreamfactory',
                                     message: reject
                                 };
-                            
-                                return messageOptions;
-                            }
 
-                        ).then(
-                            function (messageOptions) {
-                                // Successful save, move onto testing the connector itself if a database API, or just the notification process if not.
-                                if (messageOptions.type === 'success') {
-                                    if (scope.isServiceTypeDatabase()) {
-                                        var testResults = scope.testServiceSchema();
-                                        testResults.then(function (result) {
-                                            // Update our message options. A successful save may still result in an unsuccessful error so we may
-                                            // need to reassign the type
-                                            messageOptions.type = result.type;
-                                            var testSuccessful = messageOptions.type === 'success';
-                                            messageOptions.message = '<span style="color:green">' + messageOptions.message + '</span>' + '<br> ' + result.message;
-
-                                            if (testSuccessful) {
-                                                updateServiceView(messageOptions);
-                                            } else {
-                                                scope.notifyWithMessage(messageOptions);
-                                            }
-                                        })
-                                    } else {
-                                        // Non Database Connectors
-                                        updateServiceView(messageOptions);
-                                    }
-                                } else {
-                                    // Notification for a failed save.
-                                    scope.notifyWithMessage(messageOptions);
-                                }
+                                dfNotify.error(messageOptions);
                             }
                         ).finally(
                             function () {
