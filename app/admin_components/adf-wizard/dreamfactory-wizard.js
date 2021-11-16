@@ -49,6 +49,8 @@ angular.module('dfWizard', ['ngRoute', 'dfApplication', 'dfUtility', 'ngCookies'
                 scope.serviceId = null;
                 scope.apiKey = '';
                 scope.serviceTypes = ['MySQL', 'SQL Server'];
+                // Used for creating example curl request.
+                scope.baseUrl = $location.protocol() + '://' + $location.host() + '/api/v2/';
 
                 var closeEditor = function () {
 
