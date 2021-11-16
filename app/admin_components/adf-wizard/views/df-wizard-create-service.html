@@ -108,9 +108,9 @@
                     <div class="wizard-api-created">🎉 We have generated a read only set of permissions.<br>󠀠󠀠󠀠  Your API Key is {{apiKey}}</div>
                     <hr>
                     <p>Copy the following curl command and execute it in your terminal to see the list of tables in your database</p>
-                    <pre><code>curl -X GET "http://localhost/api/v2/{{wizardData.namespace}}/_table/" -H "accept: application/json" -H "X-DreamFactory-Api-Key: {{apiKey}}"</code></pre>
+                    <pre><code>curl -X GET "{{baseUrl}}{{wizardData.namespace}}/_table/" -H "accept: application/json" -H "X-DreamFactory-Api-Key: {{apiKey}}"</code></pre>
                     <p>Or copy the following curl command, amending the {tableName} and execute it in your terminal to see the first two results of that table:</p>
-                    <pre><code>curl -X GET "http://localhost/api/v2/{{wizardData.namespace}}/_table/{tableName}?limit=2" -H "accept: application/json" -H "X-DreamFactory-Api-Key: {{apiKey}}"</code></pre>
+                    <pre><code>curl -X GET "{{baseUrl}}{{wizardData.namespace}}/_table/{tableName}?limit=2" -H "accept: application/json" -H "X-DreamFactory-Api-Key: {{apiKey}}"</code></pre>
                     <hr>
                     <p>That's it! From here you can go to:</p>
                     <ul>
