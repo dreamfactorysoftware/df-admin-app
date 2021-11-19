@@ -624,7 +624,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                             return {
                                 type: 'error',
-                                message: 'Test connection failed, could just be a typo.' + '<br>' + 'Message: ' + reject.data.error.message
+                                message: 'Test connection failed, Message: ' + reject.data.error.message
                             };
 
                         });
@@ -639,7 +639,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         messageOptions.type = testResult.type;
                         messageOptions.message = '<strong>Connection Test for ' + scope.serviceInfo.name + ' completed.</strong><br>' + testResult.message;
                         // Send out the notification to the user.
-                        messageOptions.type === 'success' ? dfNotify.success(messageOptions) : dfNotify.error(messageOptions);
                         dfTestDbStatusService.setTestDbStatus({serviceName: scope.serviceInfo.name, status: testResult.message});
                     }
 

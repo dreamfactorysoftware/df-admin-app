@@ -3175,7 +3175,7 @@ angular.module('dfUtility', ['dfApplication'])
         var testDbStatuses = [];
 
         return {
-
+            // hello
             setTestDbStatus: function(databaseTest) {
 
                 var indexOfExistingTest = testDbStatuses.map(function(testStatus) { return testStatus.serviceName; }).indexOf(databaseTest.serviceName);
