@@ -610,21 +610,29 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     };
 
                     scope.testServiceSchema = function () {
+
                         // Build the URI for the API call to the service schema.
                         var url = INSTANCE_URL.url + '/' + scope.serviceInfo.name + '/_schema';
+                        // When updating using the save and close button, the service name gets deleted, presumably from the watcher. As a result
+                        // we need to store the service name locally so we can update our view after completion.
+                        var serviceName = scope.serviceInfo.name;
+
+                        dfTestDbStatusService.setTestDbStatus({serviceName: scope.serviceInfo.name, status: "Testing Connection", testing: true});
 
                         return $http.get(url).then(function (response) {
 
                             return  {
                                 type: 'success',
-                                message:'Test connection succeeded.'
+                                message:'Test connection succeeded.',
+                                serviceName: serviceName
                             };
 
                         }, function(reject) {
 
                             return {
                                 type: 'error',
-                                message: 'Test connection failed, Message: ' + reject.data.error.message
+                                message: 'Test connection failed, Message: ' + reject.data.error.message,
+                                serviceName: serviceName
                             };
 
                         });
@@ -634,12 +642,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         return scope.selectedSchema.group === 'Database';
                     };
 
-                    scope.notifyTestResults = function (messageOptions, testResult) {
-                        // Update our message options.
-                        messageOptions.type = testResult.type;
-                        messageOptions.message = '<strong>Connection Test for ' + scope.serviceInfo.name + ' completed.</strong><br>' + testResult.message;
-                        // Send out the notification to the user.
-                        dfTestDbStatusService.setTestDbStatus({serviceName: scope.serviceInfo.name, status: testResult.message});
+                    scope.notifyTestResults = function (testResult) {
+                        dfTestDbStatusService.setTestDbStatus({serviceName: testResult.serviceName, status: testResult.message, testing: false});
                     }
 
                     scope.saveService = function () {
@@ -675,10 +679,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 scope.closeEditor()
                                 if (scope.isServiceTypeDatabase()) {
                                     // Fire the test connection function, and wait for the promise to resolve.
-                                    dfTestDbStatusService.setTestDbStatus({serviceName: scope.serviceInfo.name, status: 'Testing Connection'});
                                     var testResults = scope.testServiceSchema();
                                     testResults.then(function (result) {
-                                        scope.notifyTestResults(messageOptions, result);
+                                        scope.notifyTestResults(result);
                                     })
                                 }  
                             },
@@ -742,10 +745,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 // things while the test runs in the background.
                                 if (scope.isServiceTypeDatabase()) {
                                     // Fire the test connection function, and wait for the promise to resolve.
-                                    dfTestDbStatusService.setTestDbStatus({serviceName: scope.serviceInfo.name, status: 'Testing Connection'});
                                     var testResults = scope.testServiceSchema();
                                     testResults.then(function (result) {
-                                        scope.notifyTestResults(messageOptions, result);
+                                        scope.notifyTestResults(result);
                                     })
                                 }
 

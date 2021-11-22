@@ -3175,12 +3175,12 @@ angular.module('dfUtility', ['dfApplication'])
         var testDbStatuses = [];
 
         return {
-            // hello
             setTestDbStatus: function(databaseTest) {
 
+                // Look for the original service, if it already exists, then update that. If not, then add a new element to the array.
                 var indexOfExistingTest = testDbStatuses.map(function(testStatus) { return testStatus.serviceName; }).indexOf(databaseTest.serviceName);
                 if (indexOfExistingTest !== -1) {
-                    testDbStatuses[indexOfExistingTest].status = databaseTest.status;
+                    testDbStatuses[indexOfExistingTest] = databaseTest;
                     testDbStatuses.push(testDbStatuses.splice(indexOfExistingTest, 1)[0]);
                 } else {
                     testDbStatuses.push(databaseTest);
