@@ -627,7 +627,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         }, function(reject) {
 
-                            if (scope.apiData.environment.platform.log_level === 'debug') {
+                            if (scope.apiData.environment.platform.app_debug === true) {
                                 var errorMessage = 'Test connection failed<br>'+ 'Message: ' + reject.data.error.message;
                             } else {
                                 var errorMessage = 'Test connection failed, could just be a typo. Please check config credentials for Service Name: ' + serviceName;
