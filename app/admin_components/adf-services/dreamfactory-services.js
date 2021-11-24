@@ -720,7 +720,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         dfApplicationData.updateApiData('service', requestDataObj).$promise.then(
                             function (result) {
-                                angular.element('#background-process-items').append('<p>Hi Tomo</p>');
+
                                 var messageOptions = {
                                     module: 'Services',
                                     type: 'success',
