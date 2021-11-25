@@ -16,7 +16,8 @@
     "pnotify": "~3.2.1",
     "ace-builds": "^1.4.12",
     "angular-ui-ace": "^0.2.3",
-    "ngclipboard": "^1.1.1"
+    "ngclipboard": "^1.1.1",
+    "animate.css": "^4.1.1"
   },
   "devDependencies": {
     "angular-mocks": "1.8.2",

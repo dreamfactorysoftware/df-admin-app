@@ -5,12 +5,6 @@
         <li id="{{link.label}}" data-ng-repeat="link in links" data-ng-class="link.active ? 'active' : ''" data-ng-click="setActiveView(link)">
             <a id="{{link.label}}">{{link.label}}</a>
         </li>
-        <div ng-if="testDbStatuses.length" class="background-process-status-card">
-            <p style="color: #5b5bd9;"><strong>Background Task Status</strong></p>
-            <li id="{{testStatus.service}}" data-ng-repeat="testStatus in testDbStatuses">
-                {{testStatus.serviceName}}: {{testStatus.status}} <i ng-if="testStatus.testing" class='fa fa-refresh fa-spin'></i><hr style="margin: 4px 0;">
-            </li>
-        </div>
     </ul>
 
 

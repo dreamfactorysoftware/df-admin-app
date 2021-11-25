@@ -400,8 +400,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
         };
     }])
 
-    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$timeout', '$http', 'INSTANCE_URL', 'dfTestDbStatusService',
-        function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, $timeout, $http, INSTANCE_URL, dfTestDbStatusService) {
+    .directive('dfServiceDetails', ['MOD_SERVICES_ASSET_PATH', '$q', 'dfApplicationData', 'dfNotify', 'dfObjectService', '$timeout', '$http', 'INSTANCE_URL',
+        function (MOD_SERVICES_ASSET_PATH, $q, dfApplicationData, dfNotify, dfObjectService, $timeout, $http, INSTANCE_URL) {
 
             return {
 
@@ -617,8 +617,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         // we need to store the service name locally so we can update our view after completion.
                         var serviceName = scope.serviceInfo.name;
 
-                        dfTestDbStatusService.setTestDbStatus({serviceName: scope.serviceInfo.name, status: "Testing Connection", testing: true});
-
                         return $http.get(url).then(function (response) {
 
                             return  {
@@ -643,7 +641,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     };
 
                     scope.notifyTestResults = function (testResult) {
-                        dfTestDbStatusService.setTestDbStatus({serviceName: testResult.serviceName, status: testResult.message, testing: false});
+                        
+                        var messageOptions = {
+                            module: 'Services',
+                            type: testResult.type,
+                            message: '<strong>' + testResult.serviceName + '</strong>: ' + testResult.message
+                        }
+
+                        messageOptions.type === 'success' ? dfNotify.success(messageOptions) : dfNotify.error(messageOptions);
                     }
 
                     scope.saveService = function () {

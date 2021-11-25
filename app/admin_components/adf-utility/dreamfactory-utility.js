@@ -462,7 +462,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // declare our directive and pass in our constant
-    .directive('dfSidebarNav', ['MOD_UTILITY_ASSET_PATH', '$rootScope', '$location', 'dfTestDbStatusService', function (MOD_UTILITY_ASSET_PATH, $rootScope, $location, dfTestDbStatusService) {
+    .directive('dfSidebarNav', ['MOD_UTILITY_ASSET_PATH', '$rootScope', '$location', function (MOD_UTILITY_ASSET_PATH, $rootScope, $location) {
 
         return {
 
@@ -495,7 +495,6 @@ angular.module('dfUtility', ['dfApplication'])
 
                 scope.activeView = scope.links[0];
                 scope.toggleMenu = false;
-                scope.testDbStatuses = dfTestDbStatusService.getTestDbStatuses();
 
                 // PUBLIC API
 
@@ -3012,15 +3011,13 @@ angular.module('dfUtility', ['dfApplication'])
         var stack_topleft = {"dir1": "down", "dir2": "right", "push": "top", "firstpos1": 25, "firstpos2": 25, "spacing1": 5, spacing2: 5};
         var stack_bottomleft = {"dir1": "right", "dir2": "up", "push": "top"};
         var stack_bar_top = {"dir1": "down", "dir2": "right", "push": "top", "spacing1": 0, "spacing2": 0};
-        var stack_bar_bottom = {"dir1": "up", "dir2": "right", "spacing1": 0, "spacing2": 0};
+        var stack_bar_bottom = {"dir1": "up", "dir2": "right", "spacing1": 5};
         var stack_context = {"dir1": "down", "dir2": "left", "context": $("#stack-context")};
 
 
         function pnotify (messageOptions) {
 
             (function() {
-
-                PNotify.removeAll();
 
                 // Set PNotify options
                 PNotify.prototype.options.styling = "fontawesome";
@@ -3029,12 +3026,16 @@ angular.module('dfUtility', ['dfApplication'])
                     title: messageOptions.module,
                     type:  messageOptions.type,
                     text:  messageOptions.message,
-                    addclass: "stack_topleft",
-                    animation: 'fade',
+                    addclass: 'stack-bottomleft',
+                    animate: {
+                        animate: true,
+                        in_class: 'animate__slideInLeft',
+                        out_class: 'animate__slideOutLeft'
+                    },
                     animate_speed: 'normal',
                     hide: true,
-                    delay: 3000,
-                    stack: stack_topleft,
+                    delay: 5000,
+                    stack: stack_bar_bottom,
                     mouse_reset: true
                 })
             })();
@@ -3167,30 +3168,6 @@ angular.module('dfUtility', ['dfApplication'])
                 }
             }
             return result;
-        }
-    }])
-
-    .service('dfTestDbStatusService', [function () {
-
-        var testDbStatuses = [];
-
-        return {
-            setTestDbStatus: function(databaseTest) {
-
-                // Look for the original service, if it already exists, then update that. If not, then add a new element to the array.
-                var indexOfExistingTest = testDbStatuses.map(function(testStatus) { return testStatus.serviceName; }).indexOf(databaseTest.serviceName);
-                if (indexOfExistingTest !== -1) {
-                    testDbStatuses[indexOfExistingTest] = databaseTest;
-                    testDbStatuses.push(testDbStatuses.splice(indexOfExistingTest, 1)[0]);
-                } else {
-                    testDbStatuses.push(databaseTest);
-                }
-            },
-
-            getTestDbStatuses: function() {
-                return testDbStatuses;
-            }
-
         }
     }])
 
