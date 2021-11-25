@@ -641,11 +641,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     };
 
                     scope.notifyTestResults = function (testResult) {
-                        
+
                         var messageOptions = {
-                            module: 'Services',
+                            module: 'Test Result for ' + testResult.serviceName,
                             type: testResult.type,
-                            message: '<strong>' + testResult.serviceName + '</strong>: ' + testResult.message
+                            message: testResult.message
                         }
 
                         messageOptions.type === 'success' ? dfNotify.success(messageOptions) : dfNotify.error(messageOptions);
@@ -672,7 +672,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 dfApplicationData.getApiData(['service_list'], true);
 
                                 var messageOptions = {
-                                    module: 'Services',
+                                    module: 'Services: ' + scope.serviceInfo.name,
                                     type: 'success',
                                     provider: 'dreamfactory',
                                     message: (scope.isServiceTypeDatabase() ? 'Service saved successfully. Now running connection test in the background.' : 'Service saved successfully.')
@@ -727,7 +727,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             function (result) {
 
                                 var messageOptions = {
-                                    module: 'Services',
+                                    module: 'Services: ' + scope.serviceInfo.name,
                                     type: 'success',
                                     provider: 'dreamfactory',
                                     message: (scope.isServiceTypeDatabase() ? 'Service updated successfully. Now running connection test in the background.' : 'Service updated successfully.')

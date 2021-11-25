@@ -10107,14 +10107,6 @@ body {
   z-index: 2000;
 }
 
-/* line 67, partials/_df-sidebar-nav.scss */
-.background-process-status-card {
-  border-radius: 4px;
-  box-shadow: 1px 1px 0px 2px rgba(0, 0, 0, 0.3);
-  border-color: #232b2b;
-  padding: 16px;
-}
-
 /* line 3, partials/_df-launchpad.scss */
 #df-launchpad {
   background-size: cover;
