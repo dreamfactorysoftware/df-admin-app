@@ -88,7 +88,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.dataLoading = true;
 
             // eventlist is loaded only as needed to improve user experience
-            var apis = ['service', 'service_link', 'storage_service_link', 'service_type', 'role'];
+            var apis = ['service', 'service_link', 'storage_service_link', 'service_type', 'role', 'environment'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -627,9 +627,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         }, function(reject) {
 
+                            if (scope.apiData.environment.platform.log_level === 'debug') {
+                                var errorMessage = 'Test connection failed<br>'+ 'Message: ' + reject.data.error.message;
+                            } else {
+                                var errorMessage = 'Test connection failed, could just be a typo. Please check config credentials for Service Name: ' + serviceName;
+                            }
+
                             return {
                                 type: 'error',
-                                message: 'Test connection failed, Message: ' + reject.data.error.message,
+                                message: errorMessage,
                                 serviceName: serviceName
                             };
 
@@ -641,11 +647,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     };
 
                     scope.notifyTestResults = function (testResult) {
-                        
+
                         var messageOptions = {
-                            module: 'Services',
+                            module: 'Test Result for ' + testResult.serviceName,
                             type: testResult.type,
-                            message: '<strong>' + testResult.serviceName + '</strong>: ' + testResult.message
+                            message: testResult.message,
+                            tag: testResult.serviceName
                         }
 
                         messageOptions.type === 'success' ? dfNotify.success(messageOptions) : dfNotify.error(messageOptions);
@@ -672,10 +679,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 dfApplicationData.getApiData(['service_list'], true);
 
                                 var messageOptions = {
-                                    module: 'Services',
-                                    type: 'success',
+                                    module: 'Services: ' + scope.serviceInfo.name,
+                                    type: (scope.isServiceTypeDatabase() ? 'testing' : 'success'),
                                     provider: 'dreamfactory',
-                                    message: (scope.isServiceTypeDatabase() ? 'Service saved successfully. Now running connection test in the background.' : 'Service saved successfully.')
+                                    message: (scope.isServiceTypeDatabase() ? 'Service saved successfully. Now running connection test in the background.' : 'Service saved successfully.'),
+                                    tag: (scope.isServiceTypeDatabase() ? scope.serviceInfo.name : null)
                                 };
 
                                 dfNotify.success(messageOptions);
@@ -727,10 +735,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                             function (result) {
 
                                 var messageOptions = {
-                                    module: 'Services',
-                                    type: 'success',
+                                    module: 'Services: ' + scope.serviceInfo.name,
+                                    type: (scope.isServiceTypeDatabase() ? 'testing': 'success'),
                                     provider: 'dreamfactory',
-                                    message: (scope.isServiceTypeDatabase() ? 'Service updated successfully. Now running connection test in the background.' : 'Service updated successfully.')
+                                    message: (scope.isServiceTypeDatabase() ? 'Service updated successfully. Now running connection test in the background.' : 'Service updated successfully.'),
+                                    tag: (scope.isServiceTypeDatabase() ? scope.serviceInfo.name : null)
                                 };
 
                                 if (scope.selections.saveAndClearCache) {
@@ -951,7 +960,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         var messageOptions = {
                             module: 'Services',
                             provider: 'dreamfactory',
-                            type: 'warning',
+                            type: 'warn',
                             message: msg
                         };
                         dfNotify.warn(messageOptions);

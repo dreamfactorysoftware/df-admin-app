@@ -20,15 +20,14 @@
 <div data-ng-show="!newUser">
     <div data-ng-if="user.record.confirmed">
         <p>
-            <label>Confirmed</label>
-            </br>Yes
+            <label>Confirmed:</label> Yes
         </p>
     </div>
     <div data-ng-if="!user.record.confirmed">
         <p>
-            <label>Confirmed</label>
-            </br>No&nbsp;&nbsp;
-            <button type="button" class="btn btn-default" data-ng-click="invite()"><i class="icon-envelope"></i> Send Invite</button>
+            <label>Confirmed: </label>No&nbsp;&nbsp;
+            <br>
+            <button type="button" class="btn btn-default" data-ng-click="invite()"><i class="fa fa-envelope"></i> Send Invite</button>
         </p>
     </div>
 </div>
