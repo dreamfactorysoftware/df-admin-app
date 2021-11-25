@@ -3008,37 +3008,83 @@ angular.module('dfUtility', ['dfApplication'])
     // Notification service
     .service('dfNotify', ['dfApplicationData', function(dfApplicationData) {
 
-        var stack_topleft = {"dir1": "down", "dir2": "right", "push": "top", "firstpos1": 25, "firstpos2": 25, "spacing1": 5, spacing2: 5};
+        var notifications = [];
         var stack_bottomleft = {"dir1": "right", "dir2": "up", "push": "top"};
-        var stack_bar_top = {"dir1": "down", "dir2": "right", "push": "top", "spacing1": 0, "spacing2": 0};
-        var stack_bar_bottom = {"dir1": "up", "dir2": "right", "spacing1": 5};
-        var stack_context = {"dir1": "down", "dir2": "left", "context": $("#stack-context")};
-
+        var stack_bar_bottom = {"dir1": "up", "dir2": "right", "spacing1": 10};
 
         function pnotify (messageOptions) {
 
-            (function() {
+            // css classes for different notification types
+            var notificationCardStyle = '';
+            var notificationIcon = '';
 
-                // Set PNotify options
-                PNotify.prototype.options.styling = "fontawesome";
+            switch (messageOptions.type) {
+                case 'success':
+                    notificationCardStyle = 'notification-card-success';
+                    notificationIcon = 'fa fa-check fa-lg fa-green';
+                    break;
+                case 'error':
+                    notificationCardStyle = 'notification-card-error';
+                    notificationIcon = 'fa fa-exclamation-triangle fa-lg fa-red';
+                    break;
+                case 'warn':
+                    notificationCardStyle = 'notification-card-warn';
+                    notificationIcon = 'fa fa-exclamation fa-lg fa-yellow';
+                    break;
+                case 'testing':
+                    notificationCardStyle = 'notification-card-success';
+                    notificationIcon = 'fa fa-refresh fa-spin fa-lg';
+                    break;
+            }
 
-                new PNotify({
-                    title: messageOptions.module,
-                    type:  messageOptions.type,
-                    text:  messageOptions.message,
-                    addclass: 'stack-bottomleft',
-                    animate: {
-                        animate: true,
-                        in_class: 'animate__slideInLeft',
-                        out_class: 'animate__slideOutLeft'
-                    },
-                    animate_speed: 'normal',
-                    hide: true,
-                    delay: 5000,
-                    stack: stack_bar_bottom,
-                    mouse_reset: true
-                })
-            })();
+            var notificationOptions = {
+                title: messageOptions.module,
+                type:  messageOptions.type,
+                text:  messageOptions.message,
+                addclass: 'stack-bottomleft ' + notificationCardStyle,
+                animate: {
+                    animate: true,
+                    in_class: 'animate__slideInLeft',
+                    out_class: 'animate__slideOutLeft'
+                },
+                animate_speed: 'normal',
+                buttons: {
+                    closer: true,
+                    sticker: true,
+                    classes: {closer: 'fa fa-times-circle', pin_up: 'fa fa-pause', pin_down: 'fa fa-play'}
+                },
+                icon: notificationIcon,
+                tag: messageOptions.tag, // Tag will be the serviceName so we can update the same notification later, or null
+                hide: (messageOptions.type === 'testing' ? false : true), // permanent notification if connection is been tested
+                delay: (messageOptions.type === 'testing' ? null : 5000),
+                stack: stack_bar_bottom,
+                mouse_reset: true,
+            }
+
+            // Check if it is a "new notification" to be updated later, or an existing notification to be updated now.
+            function notificationExists(notification) {
+                return notification.options.tag === messageOptions.tag;
+            }
+            // Only instantiate indexOfExistingNotice if findIndex() doesn't return -1 (not found).
+            if (messageOptions.tag && notifications.findIndex(notificationExists) >= 0) {
+                var indexOfExistingNotice = notifications.findIndex(notificationExists);
+            }
+
+            if (indexOfExistingNotice !== undefined) {
+                // Update our preexisting notice, and if for some reason it had already been closed by the user, reopen it.
+                var updatedNotice = notifications[indexOfExistingNotice].update(notificationOptions);
+                if (updatedNotice.state === 'closed') {
+                    updatedNotice.open();
+                }
+                // After the test connection result notification is displayed, we dont need to keep the notification in our own array anymore.
+                notifications.splice(indexOfExistingNotice, 1);
+            } else {
+                // Brand new notification
+                var notice = new PNotify(notificationOptions);
+                if (notice.options.tag) {
+                    notifications.push(notice);
+                }
+            }
         }
 
         function parseDreamfactoryError (errorDataObj) {

@@ -1,0 +1,34 @@
+.notification-card-success {
+  border-left: 8px solid #d4edda;
+  box-shadow: 0.5px 0.5px 1px 0 rgba(0, 0, 0, .2);
+  background-color: white;
+}
+
+.notification-card-error {
+  border-left: 8px solid #f8d7da;
+  box-shadow: 0.5px 0.5px 1px 0 rgba(0, 0, 0, .2);
+  background-color: white;
+}
+
+.notification-card-warn {
+  border-left: 8px solid #fff3cd;
+  box-shadow: 0.5px 0.5px 1px 0 rgba(0, 0, 0, .2);
+  background-color: white;
+}
+
+//override default pnotify icon positioning
+.ui-pnotify-icon span {
+  line-height: normal;
+}
+
+.fa-green {
+  color: #d4edda;
+}
+
+.fa-red {
+  color: #f8d7da;
+}
+
+.fa-yellow {
+  color: #ddd3cd;
+}
