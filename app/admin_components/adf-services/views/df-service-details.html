@@ -43,9 +43,9 @@
 
         <div class="form-group form-controls">
             <div>
-                <a ng-click="refreshServiceConfigEditor()"
+                <button ng-click="refreshServiceConfigEditor()"
                    data-ng-if="isInfoTab && selectedSchema && selectedSchema.config_schema"
-                   class="btn btn-default btn-primary save-service-btn">Next ></a>
+                   class="btn btn-default btn-primary save-service-btn">Next ></button>
                 <input data-ng-if="!isInfoTab && selectedSchema && selectedSchema.config_schema"
                        id="services_details_save"
                        class="btn btn-default btn-primary save-service-btn"
