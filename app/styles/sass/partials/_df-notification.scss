@@ -1,19 +1,25 @@
 .notification-card-success {
-  border: 2px solid #d4edda;
-  border-radius: 6px;
+  // border: 2px solid #d4edda;
+  border-left: 8px solid #d4edda;
+  // border-radius: 6px;
   box-shadow: 0.5px 0.5px 1px 0 rgba(0, 0, 0, .2);
+  background-color: white;
 }
 
 .notification-card-error {
-  border: 2px solid #f8d7da;
-  border-radius: 6px;
+  // border: 2px solid #f8d7da;
+  border-left: 8px solid #f8d7da;
+  // border-radius: 6px;
   box-shadow: 0.5px 0.5px 1px 0 rgba(0, 0, 0, .2);
+  background-color: white;
 }
 
 .notification-card-warn {
-  border: 2px solid #fff3cd;
-  border-radius: 6px;
+  // border: 2px solid #fff3cd;
+  border-left: 8px solid #fff3cd;
+  // border-radius: 6px;
   box-shadow: 0.5px 0.5px 1px 0 rgba(0, 0, 0, .2);
+  background-color: white;
 }
 
 //override default pnotify icon positioning
