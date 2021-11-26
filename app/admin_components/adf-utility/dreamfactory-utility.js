@@ -3011,7 +3011,7 @@ angular.module('dfUtility', ['dfApplication'])
         var stack_topleft = {"dir1": "down", "dir2": "right", "push": "top", "firstpos1": 25, "firstpos2": 25, "spacing1": 5, spacing2: 5};
         var stack_bottomleft = {"dir1": "right", "dir2": "up", "push": "top"};
         var stack_bar_top = {"dir1": "down", "dir2": "right", "push": "top", "spacing1": 0, "spacing2": 0};
-        var stack_bar_bottom = {"dir1": "up", "dir2": "right", "spacing1": 5};
+        var stack_bar_bottom = {"dir1": "up", "dir2": "right", "spacing1": 10};
         var stack_context = {"dir1": "down", "dir2": "left", "context": $("#stack-context")};
 
 
@@ -3019,20 +3019,43 @@ angular.module('dfUtility', ['dfApplication'])
 
             (function() {
 
-                // Set PNotify options
-                PNotify.prototype.options.styling = "fontawesome";
+                // css classes for different notification types
+                var notificationCardStyle = '';
+                var notificationIcon = '';
 
+                switch (messageOptions.type) {
+                    case 'success':
+                        notificationCardStyle = 'notification-card-success';
+                        notificationIcon = 'fa fa-check fa-lg fa-green';
+                        break;
+                    case 'error':
+                        notificationCardStyle = 'notification-card-error';
+                        notificationIcon = 'fa fa-exclamation-triangle fa-lg fa-red';
+                        break;
+                    case 'warn':
+                        notificationCardStyle = 'notification-card-warn';
+                        notificationIcon = 'fa fa-exclamation fa-lg fa-yellow';
+                        break;
+                }
+
+                // Set PNotify options
                 new PNotify({
                     title: messageOptions.module,
                     type:  messageOptions.type,
                     text:  messageOptions.message,
-                    addclass: 'stack-bottomleft',
+                    addclass: 'stack-bottomleft ' + notificationCardStyle,
                     animate: {
                         animate: true,
                         in_class: 'animate__slideInLeft',
                         out_class: 'animate__slideOutLeft'
                     },
                     animate_speed: 'normal',
+                    buttons: {
+                        closer: true,
+                        sticker: true,
+                        classes: {closer: 'fa fa-times-circle', pin_up: 'fa fa-pause', pin_down: 'fa fa-play'}
+                    },
+                    icon: notificationIcon,
                     hide: true,
                     delay: 5000,
                     stack: stack_bar_bottom,

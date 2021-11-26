@@ -951,7 +951,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         var messageOptions = {
                             module: 'Services',
                             provider: 'dreamfactory',
-                            type: 'warning',
+                            type: 'warn',
                             message: msg
                         };
                         dfNotify.warn(messageOptions);
