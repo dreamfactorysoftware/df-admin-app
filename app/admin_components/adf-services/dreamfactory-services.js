@@ -645,7 +645,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         var messageOptions = {
                             module: 'Test Result for ' + testResult.serviceName,
                             type: testResult.type,
-                            message: testResult.message
+                            message: testResult.message,
+                            tag: testResult.serviceName
                         }
 
                         messageOptions.type === 'success' ? dfNotify.success(messageOptions) : dfNotify.error(messageOptions);
@@ -673,9 +674,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 var messageOptions = {
                                     module: 'Services: ' + scope.serviceInfo.name,
-                                    type: 'success',
+                                    type: (scope.isServiceTypeDatabase() ? 'testing' : 'success'),
                                     provider: 'dreamfactory',
-                                    message: (scope.isServiceTypeDatabase() ? 'Service saved successfully. Now running connection test in the background.' : 'Service saved successfully.')
+                                    message: (scope.isServiceTypeDatabase() ? 'Service saved successfully. Now running connection test in the background.' : 'Service saved successfully.'),
+                                    tag: (scope.isServiceTypeDatabase() ? scope.serviceInfo.name : null)
                                 };
 
                                 dfNotify.success(messageOptions);
@@ -728,9 +730,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                                 var messageOptions = {
                                     module: 'Services: ' + scope.serviceInfo.name,
-                                    type: 'success',
+                                    type: (scope.isServiceTypeDatabase() ? 'testing': 'success'),
                                     provider: 'dreamfactory',
-                                    message: (scope.isServiceTypeDatabase() ? 'Service updated successfully. Now running connection test in the background.' : 'Service updated successfully.')
+                                    message: (scope.isServiceTypeDatabase() ? 'Service updated successfully. Now running connection test in the background.' : 'Service updated successfully.'),
+                                    tag: (scope.isServiceTypeDatabase() ? scope.serviceInfo.name : null)
                                 };
 
                                 if (scope.selections.saveAndClearCache) {
@@ -951,7 +954,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         var messageOptions = {
                             module: 'Services',
                             provider: 'dreamfactory',
-                            type: 'warning',
+                            type: 'warn',
                             message: msg
                         };
                         dfNotify.warn(messageOptions);

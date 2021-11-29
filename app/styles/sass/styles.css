@@ -10466,6 +10466,47 @@ body {
   text-align: center;
 }
 
+/* line 1, partials/_df-notification.scss */
+.notification-card-success {
+  border-left: 8px solid #d4edda;
+  box-shadow: 0.5px 0.5px 1px 0 rgba(0, 0, 0, 0.2);
+  background-color: white;
+}
+
+/* line 7, partials/_df-notification.scss */
+.notification-card-error {
+  border-left: 8px solid #f8d7da;
+  box-shadow: 0.5px 0.5px 1px 0 rgba(0, 0, 0, 0.2);
+  background-color: white;
+}
+
+/* line 13, partials/_df-notification.scss */
+.notification-card-warn {
+  border-left: 8px solid #fff3cd;
+  box-shadow: 0.5px 0.5px 1px 0 rgba(0, 0, 0, 0.2);
+  background-color: white;
+}
+
+/* line 20, partials/_df-notification.scss */
+.ui-pnotify-icon span {
+  line-height: normal;
+}
+
+/* line 24, partials/_df-notification.scss */
+.fa-green {
+  color: #d4edda;
+}
+
+/* line 28, partials/_df-notification.scss */
+.fa-red {
+  color: #f8d7da;
+}
+
+/* line 32, partials/_df-notification.scss */
+.fa-yellow {
+  color: #ddd3cd;
+}
+
 /* line 2, ../../admin_components/adf-help/styles/style.scss */
 .help-container {
   display: inline;
@@ -10519,7 +10560,7 @@ body {
   z-index: 10001;
 }
 
-/* line 42, styles.scss */
+/* line 43, styles.scss */
 [data-ng-click] {
   cursor: pointer;
 }
