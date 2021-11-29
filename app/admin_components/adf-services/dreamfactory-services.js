@@ -88,7 +88,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.dataLoading = true;
 
             // eventlist is loaded only as needed to improve user experience
-            var apis = ['service', 'service_link', 'storage_service_link', 'service_type', 'role'];
+            var apis = ['service', 'service_link', 'storage_service_link', 'service_type', 'role', 'environment'];
 
             dfApplicationData.getApiData(apis).then(
                 function (response) {
@@ -627,9 +627,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                         }, function(reject) {
 
+                            if (scope.apiData.environment.platform.log_level === 'debug') {
+                                var errorMessage = 'Test connection failed<br>'+ 'Message: ' + reject.data.error.message;
+                            } else {
+                                var errorMessage = 'Test connection failed, could just be a typo. Please check config credentials for Service Name: ' + serviceName;
+                            }
+
                             return {
                                 type: 'error',
-                                message: 'Test connection failed, Message: ' + reject.data.error.message,
+                                message: errorMessage,
                                 serviceName: serviceName
                             };
 
