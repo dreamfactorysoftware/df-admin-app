@@ -28,7 +28,7 @@
         "wiki":   "https://wiki.dreamfactory.com"
     },
     "require":           {
-        "dreamfactory/installer": "*"
+        "dreamfactory/installer": "dev-DP-453"
     },
     "extra":             {
         "branch-alias":   {
