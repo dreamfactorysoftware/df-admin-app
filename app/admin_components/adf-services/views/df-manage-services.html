@@ -77,8 +77,12 @@
                                     </span>
                                 </div>
 
+                                <div ng-switch-when="type">
+                                  {{ value === 'memsql' ? 'memsql (singlestore)' : value }}
+                                </div>
+
                                 <div ng-switch-default>
-                                    {{value}}
+                                  {{ value }}
                                 </div>
                             </div>
                         </td>

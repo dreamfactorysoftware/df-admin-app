@@ -373,6 +373,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                     }
 
                     scope.services = _services;
+
                 });
 
 
@@ -696,7 +697,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                                     testResults.then(function (result) {
                                         scope.notifyTestResults(result);
                                     })
-                                }  
+                                }
                             },
 
                             function (reject) {
@@ -1044,7 +1045,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         "group": "Database"
                     }, {
                         "name": "memsql",
-                        "label": "MemSQL",
+                        "label": "MemSQL (SingleStore)",
                         "description": "Database service supporting MemSQL connections.",
                         "group": "Database"
                     }, {
@@ -1243,7 +1244,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         // sort groups per above list
                         // service types within each group are ordered as returned by server
                         groups = scope.sortArray(groups, sortingArray);
-
                         // sort each array of service types into a staggered list to
                         // accommodate 2 columns when there are more than X items.
                         // doing this work here allows the CSS to remain really simple
@@ -1266,7 +1266,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         angular.forEach(typeObj, function (types, group) {
                             var newTypes = angular.copy(types);
                             var limit = scope.serviceTypesSingleColLimit, i, j;
+
                             if (types.length > limit) {
+
+                                // // Order Database services by label --> MemSQL re-branded to SingleStore
+                                // if(types.map(function(obj) {return obj.label}).includes('SingleStore')) {
+                                //   types = types.sort(
+                                //     function(a,b){
+                                //       return a.label.toLowerCase() > b.label.toLowerCase() ? 1:-1;
+                                //     });
+                                // }
+
                                 for (i = 0, j = 0; i < types.length; i += 2) {
                                     newTypes[i] = types[j++];
                                 }
@@ -1280,7 +1290,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         var _serviceTypes = [];
 
                         for (var i = 0; i < groups.length; i++) {
-
                             _serviceTypes.push({"group_name": groups[i], "group_types": newTypeObj[groups[i]]});
                         }
                         scope.serviceTypes = _serviceTypes;
@@ -1329,6 +1338,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                 }
             }
         };
+
     }])
 
     .directive('dfServiceConfig', ['MOD_SERVICES_ASSET_PATH', 'dfApplicationData', 'dfObjectService', '$compile', '$rootScope', 'dfNotify', '$http', 'INSTANCE_URL', 'UserDataService', function (MOD_SERVICES_ASSET_PATH, dfApplicationData, dfObjectService, $compile, $rootScope, dfNotify, $http, INSTANCE_URL, UserDataService) {
