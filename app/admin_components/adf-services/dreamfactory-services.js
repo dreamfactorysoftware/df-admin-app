@@ -1045,7 +1045,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
                         "group": "Database"
                     }, {
                         "name": "memsql",
-                        "label": "SingleStore",
+                        "label": "MemSQL (SingleStore)",
                         "description": "Database service supporting MemSQL connections.",
                         "group": "Database"
                     }, {
@@ -1269,13 +1269,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                             if (types.length > limit) {
 
-                                // Order Database services by label --> MemSQL re-branded to SingleStore
-                                if(types.map(function(obj) {return obj.label}).includes('SingleStore')) {
-                                  types = types.sort(
-                                    function(a,b){
-                                      return a.label.toLowerCase() > b.label.toLowerCase() ? 1:-1;
-                                    });
-                                }
+                                // // Order Database services by label --> MemSQL re-branded to SingleStore
+                                // if(types.map(function(obj) {return obj.label}).includes('SingleStore')) {
+                                //   types = types.sort(
+                                //     function(a,b){
+                                //       return a.label.toLowerCase() > b.label.toLowerCase() ? 1:-1;
+                                //     });
+                                // }
 
                                 for (i = 0, j = 0; i < types.length; i += 2) {
                                     newTypes[i] = types[j++];
