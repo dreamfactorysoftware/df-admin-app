@@ -6,7 +6,7 @@
         <div class="col-sm-4 col-md-3">
             <select id="select-email-template" class="form-control input-sm"
                     data-ng-model="$parent.selectedEmailTemplate"
-                    data-ng-options="email as email.record.name for email in emailTemplates"
+                    data-ng-options="email as email.record.name for email in emailTemplates | orderBy:'record.name'"
                     data-ng-change="changeEmailTemplate($parent.selectedEmailTemplate)">
                 <option value="">-- Select Email Template --</option>
             </select>
