@@ -85,6 +85,12 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                     scope.bitnami_demo = systemConfig.platform.bitnami_demo;
                 }
 
+                // Require the user's password if a user wants to change their email.
+                scope.requireCurrentPassword = false;
+                scope.emailChange = function () {
+                    scope.requireCurrentPassword = true;
+                }
+
                 scope.updateUser = function () {
                     
                     if (scope.setPassword) {
@@ -146,6 +152,12 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                             }
 
                             // success, now update profile
+                            // check if the email address is gonna be changed, if it is, then 
+                            // as we have done validation with the password change, we can set it as the current
+                            // password (so user doesnt have to enter it twice)
+                            if (scope.requireCurrentPassword) {
+                                scope.user.current_password = scope.password.new_password;
+                            }
                             scope.updateProfile(true);
                         },
 
@@ -216,7 +228,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                                 provider: 'dreamfactory',
                                 message: message + " updated successfully."
                             };
-
+                            scope.requireCurrentPassword = false;
                             dfNotify.success(messageOptions);
                         },
 
@@ -230,10 +242,13 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                                 provider: 'dreamfactory',
                                 message: message
                             };
-
+                            
                             dfNotify.error(messageOptions);
                         }
-                    );
+                    ).finally( function () {
+                        // we want to clear this box no matter what happens
+                        scope.user.current_password = '';
+                    })
                 };
 
                 scope.updateUserToServer = function (requestDataObj) {
@@ -257,8 +272,11 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                 scope.$watch('setPassword', function (newValue) {
 
+                    
                     if (newValue) {
-
+                        // if changing the password, we dont need the user to put their current password in two places
+                        // i.e in the email section either
+                        scope.user.current_password = '';
                         scope.requireOldPassword = true;
 
                         scope.password = {
