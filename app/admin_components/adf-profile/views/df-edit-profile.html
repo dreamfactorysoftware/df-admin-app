@@ -18,7 +18,11 @@
                 </div>
                 <div class="form-group">
                     <label>{{ (loginAttribute==='username')? 'Email' : 'Email (Required for login)'}}</label>
-                    <input type="text" class="form-control" data-ng-model="user.email" placeholder="Enter email address." data-ng-required="true">
+                    <input type="text" class="form-control" data-ng-model="user.email" placeholder="Enter email address." data-ng-required="true" data-ng-change="emailChange()">
+                </div>
+                <div class="form-group" ng-if="requireCurrentPassword && !setPassword">
+                    <label>Current Password (Required if Changing Email)</label>
+                    <input type="password" class="form-control" data-ng-model="user.current_password" placeholder="Enter current password" data-ng-required="false">
                 </div>
                 <div class="form-group">
                     <label>First Name</label>
