@@ -31,7 +31,7 @@
                         <!-- Admin Email -->
                         <div class="form-group">
                             <label>{{ (loginAttribute==='username')? 'Email' : 'Email (Required for login)'}}</label>
-                            <input id="admins_details_info_email" type="email" class="form-control" data-ng-model="admin.record.email" placeholder="Email"/>
+                            <input id="admins_details_info_email" type="email" class="form-control" data-ng-model="admin.record.email" placeholder="Email" data-ng-disabled="admin.record.integrateio_id"/>
                         </div>
 
                         <!-- Admin First Name -->
@@ -81,7 +81,7 @@
                         </div>
 
                         <!-- Admin Password -->
-                        <div class="form-group">
+                        <div class="form-group" data-ng-hide="admin.record.integrateio_id">
                             <df-set-user-password></df-set-user-password>
                         </div>
 
