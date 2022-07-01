@@ -37,7 +37,7 @@
                         <!-- User Email -->
                         <div class="form-group">
                             <label>{{ (loginAttribute==='username')? 'Email' : 'Email (Required for login)'}}</label>
-                            <input id="user_details_info_email" type="email" class="form-control" data-ng-model="user.record.email" placeholder="Email"/>
+                            <input id="user_details_info_email" type="email" class="form-control" data-ng-model="user.record.email" placeholder="Email" data-ng-disabled="user.record.integrateio_id"/>
                         </div>
 
                         <!-- User First Name -->
@@ -73,7 +73,7 @@
                         </div>
 
                         <!-- User Password -->
-                        <div class="form-group">
+                        <div class="form-group" data-ng-hide="user.record.integrateio_id">
                             <df-set-user-password></df-set-user-password>
                         </div>
 

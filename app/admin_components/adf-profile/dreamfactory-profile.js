@@ -35,10 +35,12 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
         }).then(
             function (result) {
                 $scope.user = result.data;
-                if($scope.user.adldap || $scope.user.oauth_provider) {
+
+                if($scope.user.adldap || $scope.user.oauth_provider || $scope.user.integrateio_id) {
                     angular.element('#set-password-section').hide();
                     angular.element('#set-security-question-section').hide();
                 }
+
             },
             function (error) {
                 var messageOptions = {
