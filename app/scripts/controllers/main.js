@@ -27,10 +27,11 @@ angular.module('dreamfactoryApp')
             $scope.topLevelLinks = [
 
                 {
-                    path: 'https://www.dreamfactory.com/products/',
+                    path: 'https://go.dreamfactory.com/thank-you',
                     target: '_blank',
-                    label: 'Subscribe',
+                    label: 'BUY NOW',
                     name: 'upgrade',
+                    style: 'background-color: #84f542;font-weight: bold;border-radius: 10px;border: 1px solid purple;',
                     icon: dfIconService().upgrade,
                     show: true
                 },
