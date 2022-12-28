@@ -31,7 +31,6 @@ angular.module('dreamfactoryApp')
                     target: '_blank',
                     label: 'BUY NOW',
                     name: 'upgrade',
-                    style: 'background-color: #84f542;font-weight: bold;border-radius: 10px;border: 1px solid purple;',
                     icon: dfIconService().upgrade,
                     show: true
                 },
