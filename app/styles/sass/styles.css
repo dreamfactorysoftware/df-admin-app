@@ -5011,11 +5011,6 @@ tbody.collapse.in {
   margin-bottom: 2px;
 }
 
-.ng-binding {
-  color: red !important;
-  background-color: green !important;
-}
-
 @media (min-width: 768px) {
   /* line 207, ../../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/_dropdowns.scss */
   .navbar-right .dropdown-menu {
