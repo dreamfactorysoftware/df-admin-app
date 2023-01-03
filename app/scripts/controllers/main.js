@@ -29,7 +29,7 @@ angular.module('dreamfactoryApp')
                 {
                     path: 'https://go.dreamfactory.com/thank-you',
                     target: '_blank',
-                    label: 'BUY NOW',
+                    label: 'BUY NOW!',
                     name: 'upgrade',
                     icon: dfIconService().upgrade,
                     show: true
