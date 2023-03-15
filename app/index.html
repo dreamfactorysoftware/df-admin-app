@@ -140,42 +140,54 @@
 <script>
   setTimeout(function(){
 
-      var _updateIntercom = function(userData) {
-          var host = $body.injector().get("$location").host();
+      const _updateIntercom = function (userData) {
+          const host = $body.injector().get("$location").host();
 
-          var intercomData = {
+          const intercomData = {
               email: userData.email,
               name: userData.name,
               firstName: userData.first_name,
               lastName: userData.last_name,
               host: host,
-          }
+          };
 
           window.Intercom('update', intercomData);
-      }
+      };
 
-      var $body = angular.element(document.body),
-          es = $body.injector().get("UserEventsService").login,
-          $rootScope = $body.scope().$root
+      const $body = angular.element(document.body);
+      const userEventsService = $body.injector().get("UserEventsService");
+      const $rootScope = $body.scope().$root;
 
       // Handle a case when user has logged in and so update the widget with user data
-      $rootScope.$on(es.loginSuccess, function (e, userData) {
+      $rootScope.$on(userEventsService.login.loginSuccess, function (e, userData) {
           _updateIntercom(userData);
       });
 
-      // Handle a case when user is not logged in. Just show the widget
-      window.Intercom('boot', {
-          app_id: "ymvqkyiw",
+      // Handle a case when user has logged in and so update the widget with user data
+      $rootScope.$on(userEventsService.logout.logoutSuccess, function (e, userData) {
+          shutdownIntercom();
+          startIntercom();
       });
 
+      // Handle a case when user is not logged in. Just show the widget
+      startIntercom();
+
       // Handle a case when user is logged in and reloads the page
-      var currentUser = $body.injector().get("UserDataService").getCurrentUser();
+      const currentUser = $body.injector().get("UserDataService").getCurrentUser();
       if (currentUser) {
           _updateIntercom(currentUser);
       }
   }, 1000)
 
+function shutdownIntercom() {
+    window.Intercom('shutdown');
+}
 
+function startIntercom() {
+    window.Intercom('boot', {
+        app_id: "ymvqkyiw",
+    });
+}
 </script>
 
 <script>
