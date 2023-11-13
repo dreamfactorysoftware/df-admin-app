@@ -268,7 +268,7 @@ angular.module('dreamfactoryApp')
             $scope._setAccessibleLinks = function (tabsLinks) {
 
                 // Roles tab is not allowed for restricted admins by default
-                delete tabsLinks.roles;
+                // delete tabsLinks.roles;
 
                 $http.get(INSTANCE_URL.url + '/system/role/' + $scope.currentUser.role_id + '?related=role_service_access_by_role_id&accessible_tabs=true').then(
                     // success method
