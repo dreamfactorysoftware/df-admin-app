@@ -1,0 +1,753 @@
+repo_name: dreamfactorysoftware/df-admin-app
+report_id: 1feba326d9ba8e9ac41e236b2b3d2972
+repo_type: Public
+timestamp: '2023-12-06T22:37:24+00:00'
+requested_by: anas-srikou
+provider: github
+branch: master
+detected_tools_count: 57
+tools:
+- name: CSS 3
+  description: The latest evolution of the Cascading Style Sheets language
+  website_url: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS3
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/6727/css.png
+  detection_source: Repo Metadata
+- name: JavaScript
+  description: Lightweight, interpreted, object-oriented language with first-class
+    functions
+  website_url: https://developer.mozilla.org/en-US/docs/Web/JavaScript
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/1209/javascript.jpeg
+  detection_source: Repo Metadata
+- name: PHP
+  description: A popular general-purpose scripting language that is especially suited
+    to web development
+  website_url: http://www.php.net/
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/991/hwUcGZ41_400x400.jpg
+  detection_source: Repo Metadata
+- name: Python
+  description: A clear and powerful object-oriented programming language, comparable
+    to Perl, Ruby, Scheme, or Java.
+  website_url: https://www.python.org
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/993/pUBY5pVj.png
+  detection_source: Repo Metadata
+- name: Ruby
+  description: A dynamic, interpreted, open source programming language with a focus
+    on simplicity and productivity
+  website_url: https://www.ruby-lang.org
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/989/ruby.png
+  detection_source: Repo Metadata
+- name: 'Animate.css '
+  description: A library of CSS animations
+  website_url: https://animate.style/
+  version: 4.1.1
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Front-End Frameworks
+  image_url: https://img.stackshare.io/service/9195/default_5aa00f79c6648507ba5f6c66c130a832332e5adc.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Tomo Norman
+  last_updated_on: 2021-11-11 11:07:33.000000000 Z
+- name: jQuery
+  description: The Write Less, Do More, JavaScript Library.
+  website_url: http://jquery.com/
+  version: 3.5.1
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Javascript UI Libraries
+  image_url: https://img.stackshare.io/service/1021/lxEKmMnB_400x400.jpg
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Yaroslav Mokhurenko
+  last_updated_on: 2020-05-14 09:12:19.000000000 Z
+- name: Eclipse
+  description: IDE for Java EE Developers
+  website_url: https://www.eclipse.org/
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Integrated Development Environment
+  image_url: https://img.stackshare.io/service/1446/8cyY6D_m.png
+  detection_source: app/vendor/ace/theme-eclipse.js
+  last_updated_by: javascriptboss99
+  last_updated_on: 2016-01-21 20:59:00.000000000 Z
+- name: Git
+  description: Fast, scalable, distributed revision control system
+  website_url: http://git-scm.com/
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Version Control System
+  image_url: https://img.stackshare.io/service/1046/git.png
+  detection_source: Repo Metadata
+- name: Grunt
+  description: The JavaScript Task Runner
+  website_url: http://gruntjs.com/
+  version: 1.5.3
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: JS Build Tools / JS Task Runners
+  image_url: https://img.stackshare.io/service/845/falgg2jybmhgk16y62lr.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: JSHint
+  description: A Static Code Analysis Tool for JavaScript
+  website_url: http://www.jshint.com/about/
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Code Review
+  image_url: https://img.stackshare.io/service/1945/mzh2bRes_400x400.png
+  detection_source: package.json
+  last_updated_by: Lee Hicks
+  last_updated_on: 2015-05-04 13:19:29.000000000 Z
+- name: Jasmine
+  description: DOM-less simple JavaScript testing framework
+  website_url: http://jasmine.github.io/
+  open_source: false
+  hosted_saas: true
+  category: Build, Test, Deploy
+  sub_category: Javascript Testing Framework
+  image_url: https://img.stackshare.io/service/831/7c0b595409af531b9cdeb07f8c513e8b.png
+  detection_source: package.json
+  last_updated_by: Todd Appleton
+  last_updated_on: 2017-10-25 00:13:27.000000000 Z
+- name: Karma
+  description: Spectacular Test Runner for JavaScript
+  website_url: http://karma-runner.github.io/
+  version: 6.3.20
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Browser Testing
+  image_url: https://img.stackshare.io/service/1420/TidYGd6a.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: Tomo Norman
+  last_updated_on: 2022-05-27 06:43:47.000000000 Z
+- name: PhantomJS
+  description: Scriptable Headless WebKit
+  website_url: https://phantomjs.org/
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Headless Browsers
+  image_url: https://img.stackshare.io/service/1832/phantomjs.png
+  detection_source: package.json
+  last_updated_by: Todd Appleton
+  last_updated_on: 2017-10-25 00:13:27.000000000 Z
+- name: npm
+  description: The package manager for JavaScript.
+  website_url: https://www.npmjs.com/
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Front End Package Manager
+  image_url: https://img.stackshare.io/service/1120/lejvzrnlpb308aftn31u.png
+  detection_source: package.json
+  last_updated_by: Lee Hicks
+  last_updated_on: 2015-05-04 13:19:29.000000000 Z
+- name: HTML
+  description: Hypertext Markup Language for creating web pages.
+  website_url: http://
+  open_source: false
+  hosted_saas: false
+  image_url: https://img.stackshare.io/service/2270/no-img-open-source.png
+  detection_source: app/404.html
+  last_updated_by: Lee Hicks
+  last_updated_on: 2015-05-04 13:19:29.000000000 Z
+- name: connect
+  description: High performance middleware framework
+  package_url: https://www.npmjs.com/connect
+  version: 3.6.6
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/16202/default_2c2f2c7b016f84c0fad2576cb986cb14a5dbbc2f.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: Volodymyr Tymtsiv
+  last_updated_on: 2018-07-19 10:46:00.000000000 Z
+- name: grunt-autoprefixer
+  description: Parse CSS and add vendor-prefixed CSS properties using the Can I Use
+    database
+  package_url: https://www.npmjs.com/grunt-autoprefixer
+  version: 3.0.4
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/17148/default_9746cbb559e39df4afd8298f9a252dff8519e646.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-concurrent
+  description: Run grunt tasks concurrently
+  package_url: https://www.npmjs.com/grunt-concurrent
+  version: 2.3.1
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/16823/default_9a5182350af29cb82b3344853e865051f508ac6c.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-contrib-clean
+  description: Clean files and folders
+  package_url: https://www.npmjs.com/grunt-contrib-clean
+  version: 1.1.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/15939/default_8b5680d4e916298d08363c291a0d6e34c07ceb15.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-contrib-compass
+  description: Compile Sass to CSS using Compass
+  package_url: https://www.npmjs.com/grunt-contrib-compass
+  version: 1.1.1
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/17938/default_e0b07170ab7d7ea66954ff35fdeaae5255c4c0aa.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-contrib-concat
+  description: Concatenate files
+  package_url: https://www.npmjs.com/grunt-contrib-concat
+  version: 1.0.1
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/16075/default_d4e765f8a43dcfd232c8b9ee9732058bc27c727a.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-contrib-connect
+  description: Start a connect web server
+  package_url: https://www.npmjs.com/grunt-contrib-connect
+  version: 1.0.2
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/16236/default_380ae3d73e22c7ca1f42b96479bcd0095dabc0d3.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-contrib-copy
+  description: Copy files and folders
+  package_url: https://www.npmjs.com/grunt-contrib-copy
+  version: 1.0.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/16056/default_c7b204838197013798409fa2b4dafce450edc7fb.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-contrib-cssmin
+  description: Minify CSS
+  package_url: https://www.npmjs.com/grunt-contrib-cssmin
+  version: 2.2.1
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/16324/default_b5c8f3c8e46d368f74a982d06d7f13291fe651ea.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-contrib-htmlmin
+  description: Minify HTML
+  package_url: https://www.npmjs.com/grunt-contrib-htmlmin
+  version: 2.4.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/17474/default_e5adc22c59a44962e41dfaec51edeb42c083f2f4.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-contrib-imagemin
+  description: Minify images
+  package_url: https://www.npmjs.com/grunt-contrib-imagemin
+  version: 2.0.1
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/17791/default_abcc2eea82e62d338a749f334647866df76198b8.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-contrib-jshint
+  description: Validate files with JSHint
+  package_url: https://www.npmjs.com/grunt-contrib-jshint
+  version: 1.1.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/15898/default_59a1b5716eefa3750c20936c3d53ff13a6390ee1.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-contrib-uglify
+  description: Minify JavaScript files with UglifyJS
+  package_url: https://www.npmjs.com/grunt-contrib-uglify
+  version: 3.1.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/15954/default_ac622bc364a601d766b9a6f6039f191492f54d65.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-contrib-watch
+  description: Run predefined tasks whenever watched file patterns are added
+  package_url: https://www.npmjs.com/grunt-contrib-watch
+  version: 1.0.1
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/15932/default_4dc9671df0093fd7061f6455afdf054e6cc9dacb.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-karma
+  description: Grunt plugin for karma test runner
+  package_url: https://www.npmjs.com/grunt-karma
+  version: 2.0.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/16328/default_e8196e273db814cf9be505b35dec386fafb0dbaa.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: Tomo Norman
+  last_updated_on: 2022-05-27 06:43:47.000000000 Z
+  vulnerabilities:
+  - name: Grunt-karma vulnerable to prototype pollution
+    cve_id: CVE-2022-37602
+    cve_url: https://github.com/advisories/GHSA-hcj4-xf6x-63wj
+    detected_date: Oct 20
+    severity: critical
+    first_patched: 
+- name: grunt-newer
+  description: Run Grunt tasks with only those source files modified since the last
+    successful run
+  package_url: https://www.npmjs.com/grunt-newer
+  version: 1.3.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/17008/default_d17bbf7e4f3b102e29ff09c01b8165e7ba600319.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-svgmin
+  description: Minify SVG
+  package_url: https://www.npmjs.com/grunt-svgmin
+  version: 4.0.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/18677/default_ee6b4297c393c737b2e05ae6453ec620a6c456eb.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: grunt-usemin
+  description: Replaces references to non-optimized scripts or stylesheets into a
+    set of HTML files
+  package_url: https://www.npmjs.com/grunt-usemin
+  version: 3.1.1
+  license: BSD-2-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/17796/default_abcc2eea82e62d338a749f334647866df76198b8.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: jshint-stylish
+  description: Stylish reporter for JSHint
+  package_url: https://www.npmjs.com/jshint-stylish
+  version: 2.2.1
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/16031/default_261820f5687b4c88a3e8f95c71b5e8dccd34c1d7.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: Todd Appleton
+  last_updated_on: 2017-10-25 00:13:27.000000000 Z
+- name: karma-jasmine
+  description: A Karma plugin - adapter for Jasmine testing framework
+  package_url: https://www.npmjs.com/karma-jasmine
+  version: 1.1.2
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/15886/default_7c39a83d4acd952df89b1ebfdb94c8646324fbf1.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: Tomo Norman
+  last_updated_on: 2022-05-27 06:43:47.000000000 Z
+- name: karma-phantomjs-launcher
+  description: A Karma plugin. Launcher for PhantomJS
+  package_url: https://www.npmjs.com/karma-phantomjs-launcher
+  version: 1.0.4
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/15947/default_54b691c123fc8979741e800e4dcd3936c0f3b246.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: Tomo Norman
+  last_updated_on: 2022-05-27 06:43:47.000000000 Z
+- name: load-grunt-tasks
+  description: Load multiple grunt tasks using globbing patterns
+  package_url: https://www.npmjs.com/load-grunt-tasks
+  version: 3.5.2
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/16062/default_924b66c04aa848a4028c1a5753a23dae0f835f86.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: serve-static
+  description: Serve static files
+  package_url: https://www.npmjs.com/serve-static
+  version: 1.13.2
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/16295/default_f04d39fc656c2e32ee1b9d3875a3002459aa3b69.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: Volodymyr Tymtsiv
+  last_updated_on: 2018-07-19 10:46:00.000000000 Z
+- name: time-grunt
+  description: Display the elapsed execution time of grunt tasks
+  package_url: https://www.npmjs.com/time-grunt
+  version: 1.4.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: npm Packages
+  image_url: https://img.stackshare.io/package/16275/default_ab17554b7e80af3d234b14168ed61e75d43f8eee.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/package-lock.json
+  detection_source: package.json
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2022-05-25 23:01:12.000000000 Z
+- name: ace-builds
+  description: Ace
+  package_url: http://bower.io/ace-builds
+  version: 1.4.12
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Yaroslav Mokhurenko
+  last_updated_on: 2021-05-19 12:30:03.000000000 Z
+- name: angular
+  description: Bower package for AngularJS
+  package_url: http://bower.io/angular
+  version: 1.8.2
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Yaroslav Mokhurenko
+  last_updated_on: 2021-05-18 14:48:27.000000000 Z
+- name: angular-animate
+  description: Bower package for the AngularJS animation module
+  package_url: http://bower.io/angular-animate
+  version: 1.8.2
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Tomo Norman
+  last_updated_on: 2021-11-11 11:07:33.000000000 Z
+- name: angular-cookies
+  description: Angular-cookies bower repo
+  package_url: http://bower.io/angular-cookies
+  version: 1.8.2
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Yaroslav Mokhurenko
+  last_updated_on: 2021-05-18 14:48:27.000000000 Z
+- name: angular-mocks
+  description: Angular-mocks.js bower repo
+  package_url: http://bower.io/angular-mocks
+  version: 1.8.2
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Yaroslav Mokhurenko
+  last_updated_on: 2021-05-18 14:48:27.000000000 Z
+- name: angular-resource
+  description: Angular-resource bower repo
+  package_url: http://bower.io/angular-resource
+  version: 1.8.2
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Yaroslav Mokhurenko
+  last_updated_on: 2021-05-18 14:48:27.000000000 Z
+- name: angular-route
+  description: Angular-route bower repo
+  package_url: http://bower.io/angular-route
+  version: 1.8.2
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Yaroslav Mokhurenko
+  last_updated_on: 2021-05-18 14:48:27.000000000 Z
+- name: angular-sanitize
+  description: Angular-sanitize bower repo
+  package_url: http://bower.io/angular-sanitize
+  version: 1.8.2
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Yaroslav Mokhurenko
+  last_updated_on: 2021-05-18 14:48:27.000000000 Z
+- name: angular-scenario
+  description: Bower repo for angular-scenario.js
+  package_url: http://bower.io/angular-scenario
+  version: 1.8.2
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Yaroslav Mokhurenko
+  last_updated_on: 2021-05-18 14:48:27.000000000 Z
+- name: angular-touch
+  package_url: http://bower.io/angular-touch
+  version: 1.8.2
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Yaroslav Mokhurenko
+  last_updated_on: 2021-05-18 14:48:27.000000000 Z
+- name: angular-ui-ace
+  description: This directive allows you to add ACE editor elements
+  package_url: http://bower.io/angular-ui-ace
+  version: 0.2.3
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Yaroslav Mokhurenko
+  last_updated_on: 2021-05-18 14:48:27.000000000 Z
+- name: animate.css
+  description: A cross-browser library of CSS animations
+  package_url: http://bower.io/animate.css
+  version: 4.1.1
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Tomo Norman
+  last_updated_on: 2021-11-11 11:07:33.000000000 Z
+- name: bootstrap-sass
+  description: Bootstrap-sass is a Sass-powered version of Bootstrap 3
+  package_url: http://bower.io/bootstrap-sass
+  version: 3.3.7
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Todd Appleton
+  last_updated_on: 2017-10-24 02:05:36.000000000 Z
+- name: es5-shim
+  description: ECMAScript 5 compatibility shims for legacy JavaScript engines
+  package_url: http://bower.io/es5-shim
+  version: 3.1.0
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Carsten Jacobsen
+  last_updated_on: 2016-05-27 05:48:00.000000000 Z
+- name: json3
+  description: A modern JSON implementation compatible with nearly all JavaScript
+    platforms
+  package_url: http://bower.io/json3
+  version: 3.3.1
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Carsten Jacobsen
+  last_updated_on: 2016-05-27 05:48:00.000000000 Z
+- name: ngclipboard
+  description: Angularjs directive for clipboard.js
+  package_url: http://bower.io/ngclipboard
+  version: 1.1.1
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Tomo Norman
+  last_updated_on: 2021-11-11 11:07:33.000000000 Z
+- name: pnotify
+  description: JavaScript notification plugin
+  package_url: http://bower.io/pnotify
+  version: 3.2.1
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/bower/image.png
+  detection_source_url: github.com/dreamfactorysoftware/df-admin-app/blob/master/bower.json
+  detection_source: bower.json
+  last_updated_by: Todd Appleton
+  last_updated_on: 2017-10-25 00:13:27.000000000 Z
